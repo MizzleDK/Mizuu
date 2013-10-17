@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/identify"
+        android:enabled="true"
+        android:title="@string/identify">
+    </item>
+
+</menu>

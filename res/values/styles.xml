@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="MizuuTheme" parent="android:Theme.Holo">
+        <item name="android:windowBackground">@drawable/bg</item>
+        <item name="android:actionBarStyle">@style/MizuuActionBar</item>
+    </style>
+
+    <style name="MizuuActionBar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">#aa000000</item>
+    </style>
+
+    <style name="PhotoGridLayout">
+        <item name="android:drawSelectorOnTop">true</item>
+    </style>
+
+    <style name="TextHeader2">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:background">@drawable/accent_bottom_border</item>
+    </style>
+
+    <style name="MenuHeader">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">#999999</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:background">@drawable/accent_bottom_border_grey</item>
+    </style>
+
+</resources>

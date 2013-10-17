@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/watched"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/stringMarkAsWatched"/>
+    <item
+        android:id="@+id/identify"
+        android:icon="@drawable/search"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/identifyEpisodeTitle"/>
+    <item
+        android:id="@+id/menuDeleteEpisode"
+        android:icon="@drawable/delete"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/removeEpisode"/>
+
+</menu>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:background="@drawable/menu_selector"
+    android:gravity="center_vertical"
+    android:paddingBottom="5dp"
+    android:paddingLeft="@dimen/list_padding"
+    android:paddingRight="@dimen/list_padding"
+    android:paddingTop="5dp" >
+
+    <ImageView
+        android:id="@+id/row_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerInside" />
+
+    <TextView
+        android:id="@+id/row_title"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignBottom="@+id/row_icon"
+        android:layout_alignTop="@+id/row_icon"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/local_movie_count"
+        android:layout_toRightOf="@+id/row_icon"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#fff"
+        android:textIsSelectable="false"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/local_movie_count"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignBottom="@+id/row_title"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/row_title"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textAllCaps="false"
+        android:textColor="#aaa"
+        android:textIsSelectable="false"
+        android:textSize="16sp" />
+
+</RelativeLayout>

@@ -1,0 +1,76 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/search_textbox"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/search"
+        android:showAsAction="always|collapseActionView"
+        android:title="@string/stringSearch">
+    </item>
+    <item
+        android:icon="@drawable/sort"
+        android:showAsAction="ifRoom"
+        android:title="@string/stringSort">
+        <menu>
+            <item
+                android:id="@+id/menuSortTitle"
+                android:title="@string/sortTitle"/>
+            <item
+                android:id="@+id/menuSortRelease"
+                android:title="@string/sortRelease"/>
+            <item
+                android:id="@+id/menuSortRating"
+                android:title="@string/sortRating"/>
+            <item
+                android:id="@+id/menuSortWeightedRating"
+                android:title="@string/sortWeightedRating"/>
+            <item
+                android:id="@+id/menuSortAdded"
+                android:title="@string/sortAdded"/>
+        </menu>
+    </item>
+    <item
+        android:icon="@drawable/ic_action_filter"
+        android:showAsAction="ifRoom"
+        android:title="@string/filters">
+        <menu>
+            <item
+                android:id="@+id/genres"
+                android:icon="@drawable/ic_action_tags"
+                android:showAsAction="always"
+                android:title="@string/choiceGenres"/>
+            <item
+                android:id="@+id/certifications"
+                android:icon="@drawable/ic_action_emo_basic"
+                android:title="@string/detailsCertification"/>
+            <item
+                android:id="@+id/fileSources"
+                android:icon="@drawable/file"
+                android:title="@string/fileSources"/>
+            <item
+                android:id="@+id/folders"
+                android:icon="@drawable/folder"
+                android:title="@string/folders"/>
+        </menu>
+    </item>
+        <item
+        android:id="@+id/update"
+        android:icon="@drawable/refresh"
+        android:showAsAction="ifRoom"
+        android:title="@string/menuUpdateTitle">
+    </item>
+
+    <group android:id="@+id/group1" >
+        <item
+            android:id="@+id/menuSettings"
+            android:enabled="true"
+            android:icon="@drawable/ic_action_settings"
+            android:title="@string/settings_name">
+        </item>
+        <item
+            android:id="@+id/menuContact"
+            android:icon="@drawable/ic_action_mail"
+            android:title="@string/menuAboutContact"/>
+    </group>
+
+</menu>

@@ -1,0 +1,88 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/prefsIdentification" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/localizedinfo"
+            android:key="prefsUseLocalData"
+            android:summary="@string/prefsUseLocalDataDescription"
+            android:title="@string/prefsUseLocalDataTitle" >
+        </CheckBoxPreference>
+
+        <Preference
+            android:fragment="com.miz.mizuu.fragments.CustomTagsFragment"
+            android:icon="@drawable/ic_action_tags"
+            android:summary="@string/ignoreFilenameTagsDescription"
+            android:title="@string/ignoredFilenameTagsTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefsSearchNavTitle" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:icon="@drawable/folder"
+            android:key="prefsEnableSubFolderSearch"
+            android:summary="@string/prefsSubfolderSearch"
+            android:title="@string/prefsSubfolderSearchTitle" />
+
+        <ListPreference
+            android:defaultValue="@string/smallFilesOption_2"
+            android:dialogTitle="@string/setFileSizeLimit"
+            android:entries="@array/smallFiles"
+            android:entryValues="@array/smallFiles"
+            android:icon="@drawable/ignoresmallfiles"
+            android:key="prefsIgnoreFilesSize"
+            android:summary="@string/ignoreSmallFilesDescription"
+            android:title="@string/setFileSizeLimit" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:icon="@drawable/file"
+            android:key="prefsIgnoreNfoFiles"
+            android:summary="@string/ignorenfo"
+            android:title="@string/ignorenfotitle" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/delete"
+            android:key="prefsIgnoredFilesEnabled"
+            android:summary="@string/includePreviouslyRemovedFiles"
+            android:title="@string/includePreviouslyRemovedFilesTitle" />
+
+        <Preference
+            android:fragment="com.miz.mizuu.fragments.IgnoredFilesFragment"
+            android:icon="@drawable/ic_action_list_2"
+            android:key="prefsIgnoredFiles"
+            android:summary="@string/ignoredFilesDescription"
+            android:title="@string/ignoredFilesTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/chooserMovies" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_action_lock_closed"
+            android:key="prefsIncludeAdultContent"
+            android:summary="@string/includeAdultContentDescription"
+            android:title="@string/includeAdultContent" />
+
+        <ListPreference
+            android:defaultValue="@string/ratings_option_2"
+            android:dialogTitle="@string/selectSourceForMovieRatings"
+            android:entries="@array/rating_options"
+            android:entryValues="@array/rating_options"
+            android:icon="@drawable/reviews"
+            android:key="prefsMovieRatingsSource"
+            android:summary="@string/dataSourceOfMovieRatings"
+            android:title="@string/sourceForMovieRatings" />
+    </PreferenceCategory>
+        <PreferenceCategory android:title="@string/chooserTVShows" >
+
+        <ListPreference
+            android:defaultValue="@string/ratings_option_2"
+            android:dialogTitle="@string/selectSourceForShowRatings"
+            android:entries="@array/rating_options_shows"
+            android:entryValues="@array/rating_options_shows"
+            android:icon="@drawable/reviews"
+            android:key="prefsShowsRatingsSource"
+            android:summary="@string/dataSourceOfShowRatings"
+            android:title="@string/sourceForShowRatings" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

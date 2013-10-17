@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="actionlist_collections">
+        <item>@string/choiceAllMovies</item>
+        <item>@string/choiceFavorites</item>
+        <item>@string/choiceAvailableFiles</item>
+        <item>@string/choiceWatchedMovies</item>
+        <item>@string/choiceUnwatchedMovies</item>
+    </string-array>
+    <string-array name="actionlist_episodes">
+        <item>@string/choiceAllEpisodes</item>
+        <item>@string/choiceAvailableFiles</item>
+        <item>@string/watchedEpisodes</item>
+        <item>@string/unwatchedEpisodes</item>
+    </string-array>
+    <string-array name="certifications">
+        <item>G</item>
+        <item>PG</item>
+        <item>PG-13</item>
+        <item>R</item>
+        <item>NC-17</item>
+        <item>X</item>
+        <item>@string/choiceUnknown</item>
+    </string-array>
+    <string-array name="startup_screen">
+        <item>@string/welcomeScreen</item>
+        <item>@string/chooserMovies</item>
+        <item>@string/chooserTVShows</item>
+        <item>@string/chooserWatchList</item>
+        <item>@string/moviesWeb</item>
+        <item>@string/chooserWebVideos</item>
+    </string-array>
+    <string-array name="startup_screen_codes">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="filesource_picker">
+        <item>@string/chooserMovies</item>
+        <item>@string/chooserTVShows</item>
+    </string-array>
+    <string-array name="subjects">
+        <item>@string/problem</item>
+        <item>@string/suggestion</item>
+        <item>@string/other</item>
+    </string-array>
+    <string-array name="bufferSizes">
+        <item>@string/_8kb</item>
+        <item>@string/_16kb</item>
+    </string-array>
+    <string-array name="smallFiles">
+        <item>@string/smallFilesOption_1</item>
+        <item>@string/smallFilesOption_2</item>
+        <item>@string/smallFilesOption_3</item>
+        <item>@string/smallFilesOption_4</item>
+        <item>@string/smallFilesOption_5</item>
+        <item>@string/smallFilesOption_6</item>
+        <item>@string/smallFilesOption_7</item>
+        <item>@string/smallFilesOption_8</item>
+        <item>@string/smallFilesOption_9</item>
+        <item>@string/smallFilesOption_10</item>
+        <item>@string/smallFilesOption_11</item>
+    </string-array>
+    <string-array name="seasonsLayout">
+        <item>@string/gridView</item>
+        <item>@string/listView</item>
+    </string-array>
+    <string-array name="episodesOrder">
+        <item>@string/newestFirst</item>
+        <item>@string/oldestFirst</item>
+    </string-array>
+    <string-array name="scheduledUpdates">
+        <item>@string/scheduledAtLaunch</item>
+        <item>@string/scheduledEvery6Hours</item>
+        <item>@string/scheduledEvery12Hours</item>
+        <item>@string/scheduledEveryDay</item>
+        <item>@string/scheduledEveryWeek</item>
+    </string-array>
+    <string-array name="rating_options">
+        <item>@string/ratings_option_1</item>
+        <item>@string/ratings_option_2</item>
+        <item>@string/ratings_option_3</item>
+    </string-array>
+    <string-array name="rating_options_shows">
+        <item>@string/ratings_option_4</item>
+        <item>@string/ratings_option_2</item>
+        <item>@string/ratings_option_3</item>
+    </string-array>
+    <string-array name="tv_shows_start_page">
+        <item>@string/showDetails</item>
+        <item>@string/episodeDetails</item>
+    </string-array>
+
+</resources>

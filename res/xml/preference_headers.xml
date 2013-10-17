@@ -1,0 +1,52 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <header
+        android:fragment="com.miz.mizuu.Prefs"
+        android:icon="@drawable/overview"
+        android:title="@string/prefsUIGeneral" >
+        <extra
+            android:name="resource"
+            android:value="general_prefs" />
+    </header>
+    <header
+        android:fragment="com.miz.mizuu.Prefs"
+        android:icon="@drawable/search"
+        android:title="@string/prefsIdentificationAndSearch" >
+        <extra
+            android:name="resource"
+            android:value="identification_search_prefs" />
+    </header>
+        <header
+        android:fragment="com.miz.mizuu.fragments.ScheduledUpdatesFragment"
+        android:icon="@drawable/refresh"
+        android:title="@string/scheduledUpdates" />
+    <header
+        android:fragment="com.miz.mizuu.Prefs"
+        android:icon="@drawable/localizedinfo"
+        android:title="@string/prefsUI" >
+        <extra
+            android:name="resource"
+            android:value="user_interface_prefs" />
+    </header>
+    <header
+        android:fragment="com.miz.mizuu.fragments.AccountsFragment"
+        android:icon="@drawable/photo"
+        android:title="@string/social" />
+    <header
+        android:fragment="com.miz.mizuu.Prefs"
+        android:icon="@drawable/ic_action_puzzle"
+        android:title="@string/advanced" >
+        <extra
+            android:name="resource"
+            android:value="advanced_prefs" />
+    </header>
+    <header
+        android:fragment="com.miz.mizuu.Prefs"
+        android:icon="@drawable/other"
+        android:title="@string/other" >
+        <extra
+            android:name="resource"
+            android:value="other_prefs" />
+    </header>
+
+</preference-headers>

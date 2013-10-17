@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.miz.mizuu"
+    android:versionCode="71"
+    android:versionName="2.4-beta1" >
+
+    <uses-sdk
+        android:minSdkVersion="13"
+        android:targetSdkVersion="18" />
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="false"
+        android:xlargeScreens="true" />
+
+    <!-- Application -->
+    <application
+        android:name="com.miz.mizuu.MizuuApplication"
+        android:allowBackup="false"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/menuicon"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:theme="@style/Theme.Example" >
+        <uses-library android:name="android.test.runner" />
+
+        <!-- Welcome activity -->
+        <activity
+            android:name="com.miz.mizuu.Welcome"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Show details activity -->
+        <activity
+            android:name="com.miz.mizuu.ShowDetails"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Episode details activity -->
+        <activity
+            android:name="com.miz.mizuu.EpisodeDetails"
+            android:exported="false"
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Cancel movie update -->
+        <activity
+            android:name="com.miz.mizuu.CancelUpdateDialog"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/stringCancelUpdate"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Holo.Dialog.MinWidth" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Splash activity -->
+        <activity
+            android:name="com.miz.mizuu.SplashScreen"
+            android:excludeFromRecents="true"
+            android:hardwareAccelerated="false"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ImageViewer activity -->
+        <activity
+            android:name="com.miz.mizuu.ImageViewer"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Main activity -->
+        <activity
+            android:name="com.miz.mizuu.MainMovies"
+            android:exported="false"
+            android:label="@string/chooserMovies" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+
+        <!-- Collection activity -->
+        <activity
+            android:name="com.miz.mizuu.MovieCollection"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Main Watchlist activity -->
+        <activity
+            android:name="com.miz.mizuu.MainWatchlist"
+            android:exported="false"
+            android:label="@string/chooserWatchList" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Main TV activity -->
+        <activity
+            android:name="com.miz.mizuu.MainTvShows"
+            android:exported="false"
+            android:label="@string/chooserTVShows" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.miz.mizuu.Calendar"
+            android:exported="false"
+            android:label="@string/calendar" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Main Web activity -->
+        <activity
+            android:name="com.miz.mizuu.MainWeb"
+            android:exported="false"
+            android:label="@string/chooserWebVideos" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.miz.mizuu.MovieCoverFanartBrowser"
+            android:exported="false"
+            android:label="@string/browseMedia" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.miz.mizuu.ShowCoverFanartBrowser"
+            android:exported="false"
+            android:label="@string/browseMedia" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Trailers overview -->
+        <activity
+            android:name="com.miz.mizuu.MovieDiscovery"
+            android:exported="false"
+            android:label="@string/chooserMovies" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Trailer details view -->
+        <activity
+            android:name="com.miz.mizuu.TMDbMovieDetails"
+            android:exported="false"
+            android:label="@string/trailersTitle" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Support activity -->
+        <activity
+            android:name="com.miz.mizuu.Support"
+            android:exported="false"
+            android:hardwareAccelerated="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Unidentified files activity -->
+        <activity
+            android:name="com.miz.mizuu.UnidentifiedFiles"
+            android:exported="false"
+            android:label="@string/unidentifiedFiles" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Directory browser activity -->
+        <activity
+            android:name="com.miz.mizuu.FileSources"
+            android:exported="false"
+            android:label="@string/fileSources" >
+            <intent-filter>
+                <action android:name="com.miz.mizuu.FileSources" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Add local file source activity -->
+        <activity
+            android:name="com.miz.mizuu.AddLocalFileSource"
+            android:exported="false"
+            android:label="@string/addFileSourceTitle" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Add network file source activity -->
+        <activity
+            android:name="com.miz.mizuu.AddNetworkFileSource"
+            android:configChanges="keyboard|keyboardHidden"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Add network file source dialog activity -->
+        <activity
+            android:name="com.miz.mizuu.AddNetworkFilesourceDialog"
+            android:exported="false"
+            android:hardwareAccelerated="false"
+            android:label="@string/networkLogin"
+            android:theme="@android:style/Theme.Holo.Dialog" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Search for network shares -->
+        <activity
+            android:name="com.miz.mizuu.SearchForNetworkShares"
+            android:exported="false"
+            android:hardwareAccelerated="false"
+            android:label="@string/lookingForNetworkSources"
+            android:theme="@android:style/Theme.Holo.Dialog" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Preferences activity -->
+        <activity
+            android:name="com.miz.mizuu.Preferences"
+            android:label="@string/settings_name" >
+        </activity>
+
+        <service android:name="com.miz.mizuu.UpdateShowsService" />
+        <service android:name="com.miz.mizuu.UpdateMovieService" />
+        <service android:name="com.miz.mizuu.TheMovieDB" />
+        <service android:name="com.miz.mizuu.TheTVDB" />
+        <service android:name="com.miz.functions.DeleteFile" />
+        <service android:name="com.miz.functions.MoveFilesService" />
+        <service android:name="com.miz.functions.TraktMoviesSyncService" />
+        <service android:name="com.miz.functions.TraktTvShowsSyncService" />
+
+        <!-- Update activity -->
+        <activity
+            android:name="com.miz.mizuu.Update"
+            android:exported="false"
+            android:hardwareAccelerated="false"
+            android:label="@string/updateMoviesTitle" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Movie Details activity -->
+        <activity
+            android:name="com.miz.mizuu.MovieDetails"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Edit Movie activity -->
+        <activity
+            android:name="com.miz.mizuu.EditMovie"
+            android:exported="false"
+            android:hardwareAccelerated="false"
+            android:label="@string/stringEditMovie" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Identify Movie activity -->
+        <activity
+            android:name="com.miz.mizuu.IdentifyMovie"
+            android:exported="false"
+            android:label="@string/identifyMovieTitle" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- SearchWebMovies -->
+        <activity
+            android:name="com.miz.mizuu.SearchWebMovies"
+            android:exported="false"
+            android:label="@string/stringSearch" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Identify Movie activity -->
+        <activity
+            android:name="com.miz.mizuu.IdentifyTvShow"
+            android:exported="false"
+            android:label="@string/identifyEpisodeTitle" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Actor activity -->
+        <activity
+            android:name="com.miz.mizuu.Actor"
+            android:exported="false"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Widgets -->
+        <receiver
+            android:name="com.miz.widgets.MovieStackWidgetProvider"
+            android:label="@string/widgetsMizuuMovies" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/movie_stack_widget_info" />
+        </receiver>
+
+        <service
+            android:name="com.miz.widgets.MovieStackWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver
+            android:name="com.miz.widgets.ShowStackWidgetProvider"
+            android:label="@string/widgetsMizuuShows" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/show_stack_widget_info" />
+        </receiver>
+
+        <service
+            android:name="com.miz.widgets.ShowStackWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver
+            android:name="com.miz.widgets.MovieBackdropWidgetProvider"
+            android:label="@string/widgetsMizuuMovies" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/movie_backdrop_widget_info" />
+        </receiver>
+
+        <service
+            android:name="com.miz.widgets.MovieCoverWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver
+            android:name="com.miz.widgets.MovieCoverWidgetProvider"
+            android:label="@string/widgetsMizuuMovies" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/movie_cover_widget_info" />
+        </receiver>
+
+        <service
+            android:name="com.miz.widgets.MovieBackdropWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver
+            android:name="com.miz.widgets.ShowBackdropWidgetProvider"
+            android:label="@string/widgetsMizuuShows" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/show_backdrop_widget_info" />
+        </receiver>
+
+        <service
+            android:name="com.miz.widgets.ShowBackdropWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service
+            android:name="com.miz.widgets.ShowCoverWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver
+            android:name="com.miz.widgets.ShowCoverWidgetProvider"
+            android:label="@string/widgetsMizuuShows" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/show_cover_widget_info" />
+        </receiver>
+
+        <!-- Dream service -->
+
+        <service
+            android:name="com.miz.mizuu.MizuuDream"
+            android:exported="false"
+            android:icon="@drawable/menuicon"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!--
+            Point to additional information for this dream (optional)
+            <meta-data
+                android:name="android.service.dream"
+                android:resource="@xml/my_dream" />
+            -->
+        </service>
+
+        <receiver android:name="com.miz.functions.StartScheduledUpdatesService" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="com.miz.contentprovider.MovieContentProvider"
+            android:authorities="com.miz.contentprovider.MovieContentProvider"
+            android:exported="true" />
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="f8acb38c12321dcd8a76c678a4cc3c85b4e71d87" />
+    </application>
+
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:label="Mizuu tests"
+        android:targetPackage="com.miz.mizuu" />
+
+</manifest>

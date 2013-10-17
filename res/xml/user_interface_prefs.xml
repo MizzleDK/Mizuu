@@ -1,0 +1,41 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/prefsUIGeneral" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/titles"
+            android:key="prefsShowGridTitles"
+            android:summary="@string/prefsShowGridTitles"
+            android:title="@string/prefsShowGridTitlesTitle" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/titles"
+            android:key="prefsIgnorePrefixesInTitles"
+            android:summary="@string/ignoreMoviePrefixesDescription"
+            android:title="@string/ignoreMoviePrefixes" />
+        <CheckBoxPreference android:title="@string/showMediaAppsNavDrawer" android:summary="@string/showMediaAppsNavDrawerDesc" android:key="showMediaApps" android:icon="@drawable/ic_action_emo_basic" android:defaultValue="true"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:enabled="@bool/isNotGoogleTV"
+        android:title="@string/chooserTVShows" >
+        <ListPreference
+            android:defaultValue="@string/listView"
+            android:entries="@array/seasonsLayout"
+            android:entryValues="@array/seasonsLayout"
+            android:icon="@drawable/startup"
+            android:key="prefsSeasonsLayout"
+            android:summary="@string/setSeasonsLayoutDescription"
+            android:title="@string/setSeasonsLayout" />
+        <ListPreference
+            android:defaultValue="@string/oldestFirst"
+            android:dialogTitle="@string/tvShowEpisodesOrderType"
+            android:entries="@array/episodesOrder"
+            android:entryValues="@array/episodesOrder"
+            android:icon="@drawable/sort"
+            android:key="prefsEpisodesOrder"
+            android:summary="@string/tvShowEpisodesOrderTypeDescription"
+            android:title="@string/tvShowEpisodesOrderType" />
+        <ListPreference android:entries="@array/tv_shows_start_page" android:entryValues="@array/tv_shows_start_page" android:title="@string/tv_shows_start_page_title" android:summary="@string/tv_shows_start_page_description" android:key="prefsTvShowsStartPage" android:icon="@drawable/ic_action_settings" android:dialogTitle="@string/tv_shows_start_page_title" android:defaultValue="@string/showDetails"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

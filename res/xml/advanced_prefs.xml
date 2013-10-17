@@ -1,0 +1,42 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/prefsUIGeneral" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/root"
+            android:key="prefsRootAccess"
+            android:summary="@string/enableRootAccessDescription"
+            android:title="@string/enableRootAccess" />
+        <CheckBoxPreference
+            android:icon="@drawable/overview"
+            android:key="prefsConfirmBackPress"
+            android:summary="@string/confirmBackPressDescription"
+            android:title="@string/confirmBackPressTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/network" >
+        <ListPreference
+            android:defaultValue="@string/_16kb"
+            android:entries="@array/bufferSizes"
+            android:entryValues="@array/bufferSizes"
+            android:icon="@drawable/ic_action_bargraph"
+            android:key="prefsBufferSize"
+            android:summary="@string/bufferSizeDescription"
+            android:title="@string/bufferSize" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_action_wifi"
+            android:key="prefsDisableEthernetWiFiCheck"
+            android:summary="@string/disableEthernetWiFiCheckDescription"
+            android:title="@string/disableEthernetWiFiCheck" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/video" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_action_movie"
+            android:key="prefsIgnoreFileType"
+            android:summary="@string/ignoreFileTypeDescription"
+            android:title="@string/ignoreFileType" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,157 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/other" >
+        <Preference
+            android:icon="@drawable/ic_action_google_play"
+            android:key="prefsFeedback"
+            android:summary="@string/prefsAppFeedbackDescription"
+            android:title="@string/prefsAppFeedback" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="market://details?id=com.miz.mizuu" />
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefsCredits" >
+        <Preference
+            android:icon="@drawable/ic_action_tv"
+            android:summary="@string/prefsCreditsTvDbDescription"
+            android:title="@string/prefsCreditsTvDb" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://thetvdb.com" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/reddit"
+            android:summary="www.reddit.com"
+            android:title="@string/choiceReddit" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://reddit.com/r/videos/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/tedtalks"
+            android:summary="www.ted.com"
+            android:title="@string/choiceTedTalks" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://youtube.com" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_movie"
+            android:summary="@string/prefsCreditsTmdbDescription"
+            android:title="@string/prefsCreditsTmdbTitle" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://themoviedb.org" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_tv"
+            android:summary="@string/prefsCreditsTraktDescription"
+            android:title="@string/prefsCreditsTraktTitle" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://trakt.tv" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_tv"
+            android:summary="@string/prefsCreditsTvRageDescription"
+            android:title="@string/prefsCreditsTvRage" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://tvrage.com" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_globe"
+            android:summary="@string/prefsCreditsWikipediaDescription"
+            android:title="@string/prefsCreditsWikipedia" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://wikipedia.org" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/youtube"
+            android:summary="www.youtube.com"
+            android:title="@string/choiceYouTube" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://youtube.com" />
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/openSourceLibraries" >
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="Creative Commons Attribution, Version 2.5"
+            android:title="Android Support library" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://developer.android.com/tools/extras/support-library.html" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
+            android:title="Done / Discard by Roman Nurik" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://code.google.com/p/romannurik-code/source/browse/misc/donediscard/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
+            android:title="CWAC LoaderEx by CommonsWare" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/commonsguy/cwac-loaderex" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="LGPL, Version 2.1"
+            android:title="jCIFS" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://jcifs.samba.org/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="@string/unknownLicense"
+            android:title="Stack Blur Algorithm by Mario Klingemann" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="mailto:mario@quasimondo.com" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
+            android:title="StickyGridHeaders by Tonic Artos" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/TonicArtos/StickyGridHeaders/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
+            android:title="Universal Image Loader by Sergey Tarasevich" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/nostra13/Android-Universal-Image-Loader" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="@string/unknownLicense"
+            android:title="YouTube Android Player API" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://developers.google.com/youtube/android/player/" />
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/translations" >
+        <Preference
+            android:icon="@drawable/ic_action_globe"
+            android:summary="Crowdin.net"
+            android:title="@string/translations" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://translate.mizuu.tv/" />
+        </Preference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

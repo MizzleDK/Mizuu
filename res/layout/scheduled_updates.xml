@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/movie_details_padding" >
+
+    <TextView
+        android:id="@+id/moviesTitle"
+        style="@style/MenuHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/chooserMovies" />
+
+    <CheckBox
+        android:id="@+id/moviesCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/movie_details_padding"
+        android:text="@string/enableScheduledLibraryUpdates" />
+
+    <Spinner
+        android:id="@+id/moviesSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/movie_details_padding"
+        android:entries="@array/scheduledUpdates" />
+
+    <TextView
+        android:id="@+id/nextMovieUpdate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/movie_details_padding"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textIsSelectable="false"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/showsTitle"
+        style="@style/MenuHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/movie_details_padding"
+        android:text="@string/chooserTVShows" />
+
+    <CheckBox
+        android:id="@+id/showsCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/movie_details_padding"
+        android:text="@string/enableScheduledLibraryUpdates" />
+
+    <Spinner
+        android:id="@+id/showsSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/movie_details_padding"
+        android:entries="@array/scheduledUpdates" />
+
+    <TextView
+        android:id="@+id/nextShowsUpdate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/movie_details_padding"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textIsSelectable="false"
+        android:visibility="gone" />
+
+</LinearLayout>

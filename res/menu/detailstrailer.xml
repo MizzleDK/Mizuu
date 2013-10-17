@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/trailer"
+        android:icon="@drawable/youtube"
+        android:onClick="watchTrailer"
+        android:showAsAction="ifRoom"
+        android:title="@string/detailsTrailer">
+    </item>
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/share"
+        android:showAsAction="always"
+        android:title="@string/menuShareTitle"/>
+    <item
+        android:id="@+id/openInBrowser"
+        android:icon="@drawable/ic_action_globe"
+        android:title="@string/openInBrowser">
+    </item>
+
+</menu>
