@@ -28,7 +28,7 @@ public class MizuuApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
-		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "false");
+		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "true");
 
 		if (!(0 != ( getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)))
 			Crashlytics.start(this);
@@ -54,7 +54,7 @@ public class MizuuApplication extends Application {
 
 	public static void initImageLoader(Context context) {
 
-		if (!(0 != ( context.getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)))
+		if (!(0 != (context.getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)))
 			L.disableLogging();
 
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
