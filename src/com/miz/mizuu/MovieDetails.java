@@ -235,7 +235,7 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -268,31 +268,38 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 					deleted = db.deleteMovie(Long.valueOf(thisMovie.getRowId()));
 
 				if (deleted) {
-					try {
-						// Delete cover art image
-						File coverArt = new File(thisMovie.getPoster());
-						if (coverArt.exists() && coverArt.getAbsolutePath().contains("com.miz.mizuu")) {
-							MizLib.deleteFile(coverArt);
-						}
+					if (cb.isChecked()) {
+						Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
+						deleteIntent.putExtra("filepath", thisMovie.getFilepath());
+						getApplicationContext().startService(deleteIntent);
+					}
 
-						// Delete thumbnail image
-						File thumbnail = new File(thisMovie.getThumbnail());
-						if (thumbnail.exists() && thumbnail.getAbsolutePath().contains("com.miz.mizuu")) {
-							MizLib.deleteFile(thumbnail);
-						}
+					boolean movieExists = db.movieExists(thisMovie.getTmdbId());
 
-						// Delete backdrop image
-						File backdrop = new File(thisMovie.getBackdrop());
-						if (backdrop.exists() && backdrop.getAbsolutePath().contains("com.miz.mizuu")) {
-							MizLib.deleteFile(backdrop);
-						}
+					// We only want to delete movie images, if there are no other versions of the same movie
+					if (!movieExists) {
+						try { // Delete cover art image
+							File coverArt = new File(thisMovie.getPoster());
+							if (coverArt.exists() && coverArt.getAbsolutePath().contains("com.miz.mizuu")) {
+								MizLib.deleteFile(coverArt);
+							}
+						} catch (NullPointerException e) {} // No file to delete
 
-						if (cb.isChecked()) {
-							Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
-							deleteIntent.putExtra("filepath", thisMovie.getFilepath());
-							getApplicationContext().startService(deleteIntent);
-						}
-					} catch (NullPointerException e) {} // No file to delete
+						try { // Delete thumbnail image
+							File thumbnail = new File(thisMovie.getThumbnail());
+							if (thumbnail.exists() && thumbnail.getAbsolutePath().contains("com.miz.mizuu")) {
+								MizLib.deleteFile(thumbnail);
+							}
+						} catch (NullPointerException e) {} // No file to delete
+
+						try { // Delete backdrop image
+							File backdrop = new File(thisMovie.getBackdrop());
+							if (backdrop.exists() && backdrop.getAbsolutePath().contains("com.miz.mizuu")) {
+								MizLib.deleteFile(backdrop);
+							}
+						} catch (NullPointerException e) {} // No file to delete
+					}
+
 					notifyDatasetChanges();
 					finish();
 				} else {
