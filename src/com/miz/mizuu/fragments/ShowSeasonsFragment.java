@@ -63,7 +63,6 @@ import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowEpisode;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapter;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 
@@ -272,7 +271,7 @@ public class ShowSeasonsFragment extends Fragment {
 				return true;
 			}
 		});
-		getCollectionView().setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		getCollectionView().setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		loadEpisodes(0, true);
 	}

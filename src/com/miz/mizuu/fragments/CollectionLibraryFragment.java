@@ -62,7 +62,6 @@ import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class CollectionLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
@@ -263,7 +262,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 				startActivityForResult(intent, 0);
 			}
 		});
-		mGridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		return v;
 	}

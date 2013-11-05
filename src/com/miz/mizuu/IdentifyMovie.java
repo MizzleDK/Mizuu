@@ -42,7 +42,6 @@ import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class IdentifyMovie extends FragmentActivity {
 
@@ -100,7 +99,7 @@ public class IdentifyMovie extends FragmentActivity {
 				updateMovie(arg2);
 			}
 		});
-		lv.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		lv.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		searchText = (EditText) findViewById(R.id.search);
 		searchText.setText(mMovie.getDecryptedFileName());

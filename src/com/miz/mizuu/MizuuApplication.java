@@ -4,8 +4,11 @@ import java.util.HashMap;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.miz.functions.CifsImageDownloader;
@@ -13,11 +16,14 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.utils.L;
 
-public class MizuuApplication extends Application {
+public class MizuuApplication extends Application implements OnSharedPreferenceChangeListener {
 
+	private static boolean mLoadWhileScrolling;
+	private static PauseOnScrollListener mPauseOnScrollListener;
 	private static DbAdapterTvShow dbTvShow;
 	private static DbAdapterTvShowEpisode dbTvShowEpisode;
 	private static DbAdapterSources dbSources;
@@ -40,6 +46,11 @@ public class MizuuApplication extends Application {
 		dbTvShowEpisode = new DbAdapterTvShowEpisode(this);
 		dbSources = new DbAdapterSources(this);
 		db = new DbAdapter(this);
+
+		// Set OnSharedPreferenceChange listener
+		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
+		mLoadWhileScrolling = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsLoadImagesWhileScrolling", false);
 	}
 
 	@Override
@@ -50,6 +61,8 @@ public class MizuuApplication extends Application {
 		dbTvShowEpisode.close();
 		dbSources.close();
 		db.close();
+
+		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	public static void initImageLoader(Context context) {
@@ -106,7 +119,7 @@ public class MizuuApplication extends Application {
 		.build();
 		return options;
 	}
-	
+
 	public static DisplayImageOptions getBackdropLoadingOptions() {
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
 		.showImageOnFail(R.drawable.bg)
@@ -141,5 +154,21 @@ public class MizuuApplication extends Application {
 	public static void putCifsFilesList(String parentPath, String[] list) {
 		if (!map.containsKey(parentPath))
 			map.put(parentPath, list);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals("prefsLoadImagesWhileScrolling")) {
+			mLoadWhileScrolling = sharedPreferences.getBoolean("prefsLoadImagesWhileScrolling", false);
+		}
+	}
+
+	public static PauseOnScrollListener getPauseOnScrollListener(ImageLoader imageLoader) {
+		if (mLoadWhileScrolling)
+			mPauseOnScrollListener = new PauseOnScrollListener(imageLoader, false, false);
+		else
+			mPauseOnScrollListener = new PauseOnScrollListener(imageLoader, true, true);
+
+		return mPauseOnScrollListener;
 	}
 }

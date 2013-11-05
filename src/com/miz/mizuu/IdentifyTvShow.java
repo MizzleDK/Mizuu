@@ -47,7 +47,6 @@ import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class IdentifyTvShow extends FragmentActivity {
 
@@ -110,7 +109,7 @@ public class IdentifyTvShow extends FragmentActivity {
 				update(arg2);
 			}
 		});
-		lv.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		lv.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		DecryptedShowEpisode result = MizLib.decryptEpisode(files[0], settings.getString("ignoredTags", ""));
 		

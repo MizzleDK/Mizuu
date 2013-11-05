@@ -14,7 +14,6 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 import android.content.Context;
 import android.content.Intent;
@@ -112,7 +111,7 @@ public class SearchWebMoviesFragment extends Fragment {
 				showMovie(arg2);
 			}
 		});
-		lv.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		lv.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		searchText = (EditText) v.findViewById(R.id.search);
 		searchText.setSelection(searchText.length());

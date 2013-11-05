@@ -39,7 +39,6 @@ import com.miz.mizuu.R;
 import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class FanartSearchFragment extends Fragment {
 
@@ -129,7 +128,7 @@ public class FanartSearchFragment extends Fragment {
 				new DownloadThread(pics_sources.get(arg2).replace(MizLib.getBackdropThumbUrlSize(getActivity()), MizLib.getBackdropUrlSize(getActivity()))).start();
 			}
 		});
-		mGridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 	}
 
 	@Override

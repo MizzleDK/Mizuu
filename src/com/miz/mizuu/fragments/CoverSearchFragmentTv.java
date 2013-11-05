@@ -41,7 +41,6 @@ import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class CoverSearchFragmentTv extends Fragment {
 
@@ -121,7 +120,7 @@ public class CoverSearchFragmentTv extends Fragment {
 				new DownloadThread(pics_sources.get(arg2).replace("/_cache/", "/")).start();
 			}
 		});
-		mGridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 	}
 
 	@Override

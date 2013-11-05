@@ -64,7 +64,6 @@ import com.miz.mizuu.UnidentifiedFiles;
 import com.miz.mizuu.Update;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class TvShowLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
@@ -255,7 +254,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				startActivityForResult(intent, 0);
 			}
 		});
-		mGridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		return v;
 	}

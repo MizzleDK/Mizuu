@@ -1,2 +1,15 @@
 bin/
 gen/
+.externalToolBuilders/org.eclipse.cdt.managedbuilder.core.genmakebuilder.launch
+.idea/ant.xml
+.idea/compiler.xml
+.idea/copyright/profiles_settings.xml
+.idea/encodings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/scopes/scope_settings.xml
+.idea/uiDesigner.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.settings/org.eclipse.jdt.core.prefs
+.settings/org.eclipse.ltk.core.refactoring.prefs

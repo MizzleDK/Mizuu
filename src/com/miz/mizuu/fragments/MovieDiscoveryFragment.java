@@ -45,7 +45,6 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferenceChangeListener {
 
@@ -148,7 +147,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				}
 			}
 		});
-		mGridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 	}
 
 	@Override

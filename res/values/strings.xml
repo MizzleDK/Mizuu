@@ -387,5 +387,7 @@
     <string name="showMediaAppsNavDrawer">Show media apps in navigation drawer</string>
     <string name="showMediaAppsNavDrawerDesc">Enable or disable the list of installed media apps in the navigation drawer.</string>
     <string name="searchMoviesFromMizuu">Search movies from Mizuu</string>
+    <string name="loadImagesWhileScrolling">Load images while scrolling</string>
+    <string name="loadImagesWhileScrollingDescription">May result in lag while scrolling.</string>
 
 </resources>
