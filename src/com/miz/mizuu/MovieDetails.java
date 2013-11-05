@@ -11,6 +11,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.app.SearchManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -54,7 +55,7 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 	private Movie thisMovie;
 	private DbAdapter db;
 	private boolean ignorePrefixes, prefsRemoveMoviesFromWatchlist, ignoreDeletedFiles, ignoreNfo;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,7 +74,11 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsIgnoredFilesEnabled", false);
 
 		// Fetch the database ID of the movie to view
-		movieId = getIntent().getExtras().getInt("rowId");
+		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+			movieId = Integer.valueOf(getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY));
+		} else {
+			movieId = getIntent().getExtras().getInt("rowId");
+		}
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
 		awesomePager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));

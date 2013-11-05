@@ -93,25 +93,6 @@ public class Movie extends MediumBaseMovie {
 		return "0.0/10";
 	}
 
-	public String getReleaseYear() {
-		if (RELEASEDATE != null) {
-			String YEAR = RELEASEDATE.trim();
-			try {
-				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
-					return "(" + YEAR.substring(0,4) + ")";
-				} else {
-					return CONTEXT.getString(R.string.unknownYear);
-				}
-			} catch (Exception e) {
-				if (YEAR.length() == 4)
-					return YEAR;
-				return CONTEXT.getString(R.string.unknownYear);
-			}
-		} else {
-			return CONTEXT.getString(R.string.unknownYear);
-		}
-	}
-
 	public String getRuntime() {
 		return RUNTIME.replace("min", "").trim();
 	}

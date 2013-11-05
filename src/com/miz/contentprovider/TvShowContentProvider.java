@@ -13,15 +13,15 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
-import com.miz.mizuu.DbAdapter;
+import com.miz.mizuu.DbAdapterTvShow;
 import com.miz.mizuu.MizuuApplication;
+import com.miz.mizuu.TvShow;
 
-public class MovieContentProvider extends SearchRecentSuggestionsProvider {
+public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 
-	static final String TAG = MovieContentProvider.class.getSimpleName();
-	public static final String AUTHORITY = MovieContentProvider.class.getName();
+	static final String TAG = TvShowContentProvider.class.getSimpleName();
+	public static final String AUTHORITY = TvShowContentProvider.class.getName();
 	public static final int MODE = DATABASE_MODE_QUERIES | DATABASE_MODE_2LINES;
 	private static final String[] COLUMNS = {
 		BaseColumns._ID, // must include this column
@@ -29,11 +29,11 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 		SearchManager.SUGGEST_COLUMN_TEXT_2, // Second line (smaller text)
 		SearchManager.SUGGEST_COLUMN_INTENT_DATA, // Icon
 		SearchManager.SUGGEST_COLUMN_ICON_1, // Icon
-		SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, // Movie ID
+		SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, // TV show ID
 		SearchManager.SUGGEST_COLUMN_INTENT_ACTION,
 		SearchManager.SUGGEST_COLUMN_SHORTCUT_ID };
 
-	public MovieContentProvider() {
+	public TvShowContentProvider() {
 		setupSuggestions(AUTHORITY, MODE);
 	}
 
@@ -49,10 +49,10 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 		MatrixCursor cursor = new MatrixCursor(COLUMNS);
 
 		try {
-			List<MediumMovie> list = getSearchResults(query);
+			List<TvShow> list = getSearchResults(query);
 			int n = 0;
-			for (MediumMovie movie : list) {
-				cursor.addRow(createRow(Integer.valueOf(n), movie.getTitle(), movie.getReleaseYear().replace("(", "").replace(")", ""), movie.getThumbnail(), movie.getRowId()));
+			for (TvShow show : list) {
+				cursor.addRow(createRow(Integer.valueOf(n), show.getTitle(), show.getFirstAirdateYear(), show.getThumbnail(), show.getId()));
 				n++;
 			}
 		} catch (Exception e) {
@@ -89,42 +89,37 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 				SearchManager.SUGGEST_NEVER_MAKE_SHORTCUT };
 	}
 
-	private List<MediumMovie> getSearchResults(String query) {
-		List<MediumMovie> movies = new ArrayList<MediumMovie>();
+	private List<TvShow> getSearchResults(String query) {
+		List<TvShow> shows = new ArrayList<TvShow>();
 		if (!MizLib.isEmpty(query)) {
 
-			DbAdapter db = MizuuApplication.getMovieAdapter();
+			DbAdapterTvShow db = MizuuApplication.getTvDbAdapter();
 
 			query = query.toLowerCase(Locale.ENGLISH);
 
-			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			Cursor c = db.getAllShows();
 			String title = "";
 			while (c.moveToNext()) {
-				title = c.getString(c.getColumnIndex(DbAdapter.KEY_TITLE));
+				title = c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE));
 
 				if (title.toLowerCase(Locale.ENGLISH).startsWith(query)) {
-					movies.add(new MediumMovie(getContext(),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_ROWID)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_TITLE)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_TMDBID)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_RATING)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_GENRES)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_CAST)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_COLLECTION)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_EXTRA_2)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
+					shows.add(new TvShow(
+							getContext(),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
 							false,
-							true
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
 							));
 				}
 			}
 		}
-		return movies;
+		return shows;
 	}
 }

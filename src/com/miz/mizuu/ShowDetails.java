@@ -6,6 +6,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -39,17 +40,17 @@ public class ShowDetails extends FragmentActivity implements ActionBar.TabListen
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		if (!MizLib.runsInPortraitMode(this))
 			setTheme(R.style.Theme_Example_NoBackGround);
 
 		if (!MizLib.runsInPortraitMode(this))
 			getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-		
+
 		setContentView(R.layout.viewpager);
 
 		actionBar = getActionBar();
-		
+
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(3); // Required in order to retain all fragments when swiping between them
 		awesomePager.setAdapter(new ShowDetailsAdapter(getSupportFragmentManager()));
@@ -86,7 +87,17 @@ public class ShowDetails extends FragmentActivity implements ActionBar.TabListen
 		// Create and open database
 		dbHelper = MizuuApplication.getTvDbAdapter();
 
-		Cursor cursor = dbHelper.getShow(getIntent().getExtras().getString("showId"));
+		System.out.println("HELLO!!!!!");
+		
+		String showId = "";
+		// Fetch the database ID of the TV show to view
+		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+			showId = getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY);
+		} else {
+			showId = getIntent().getExtras().getString("showId");
+		}
+
+		Cursor cursor = dbHelper.getShow(showId);
 		while (cursor.moveToNext()) {
 			thisShow = new TvShow(this,
 					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
@@ -114,7 +125,7 @@ public class ShowDetails extends FragmentActivity implements ActionBar.TabListen
 		} catch (Exception e) {
 			finish();
 		}
-		
+
 		// Set the current page item to 1 (episode page) if the TV show start page setting has been changed from TV show details
 		if (!PreferenceManager.getDefaultSharedPreferences(this).getString("prefsTvShowsStartPage", getString(R.string.showDetails)).equals(getString(R.string.showDetails)))
 			awesomePager.setCurrentItem(1);

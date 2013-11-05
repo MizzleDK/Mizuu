@@ -31,6 +31,8 @@
     </plurals>
 
     <string name="app_name">Mizuu</string>
+    <string name="app_name_movies">Mizuu - movies</string>
+    <string name="app_name_tvshows">Mizuu - TV shows</string>
     <string name="settings_name">Settings</string>
     <string name="newuser_btStartSearch">Start update</string>
     <string name="detailsReleaseDate">Release date</string>
@@ -387,6 +389,7 @@
     <string name="showMediaAppsNavDrawer">Show media apps in navigation drawer</string>
     <string name="showMediaAppsNavDrawerDesc">Enable or disable the list of installed media apps in the navigation drawer.</string>
     <string name="searchMoviesFromMizuu">Search movies from Mizuu</string>
+    <string name="searchTvShowsFromMizuu">Search TV shows from Mizuu</string>
     <string name="loadImagesWhileScrolling">Load images while scrolling</string>
     <string name="loadImagesWhileScrollingDescription">May result in lag while scrolling.</string>
 

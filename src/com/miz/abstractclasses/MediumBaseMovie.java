@@ -3,6 +3,7 @@ package com.miz.abstractclasses;
 import java.io.File;
 
 import com.miz.functions.MizLib;
+import com.miz.mizuu.R;
 
 
 public abstract class MediumBaseMovie extends BaseMovie {
@@ -66,6 +67,25 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	
 	public String getReleasedate() {
 		return RELEASEDATE;
+	}
+	
+	public String getReleaseYear() {
+		if (RELEASEDATE != null) {
+			String YEAR = RELEASEDATE.trim();
+			try {
+				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
+					return "(" + YEAR.substring(0,4) + ")";
+				} else {
+					return CONTEXT.getString(R.string.unknownYear);
+				}
+			} catch (Exception e) {
+				if (YEAR.length() == 4)
+					return YEAR;
+				return CONTEXT.getString(R.string.unknownYear);
+			}
+		} else {
+			return CONTEXT.getString(R.string.unknownYear);
+		}
 	}
 	
 	public String getDateAdded() {
