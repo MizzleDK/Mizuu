@@ -34,7 +34,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
 
@@ -194,18 +193,6 @@ public class MainMenuActivity extends FragmentActivity implements OnSharedPrefer
 				} catch (Exception e) {} // Problemer med at kontakte databasen
 			}
 		}.start();
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 
 	@Override

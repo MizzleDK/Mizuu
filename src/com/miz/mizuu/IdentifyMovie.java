@@ -34,7 +34,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.DecryptedMovie;
 import com.miz.functions.MizLib;
@@ -72,7 +71,7 @@ public class IdentifyMovie extends FragmentActivity {
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
-		
+
 		imageLoader = ImageLoader.getInstance();
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
 
@@ -123,7 +122,7 @@ public class IdentifyMovie extends FragmentActivity {
 			Toast.makeText(getApplicationContext(), getString(R.string.noInternet), Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -170,7 +169,7 @@ public class IdentifyMovie extends FragmentActivity {
 					movieResults = tmdb.searchForMovies(params[0], "", getLocaleShortcode());
 				else
 					movieResults = tmdb.searchForMovies(params[0], "", "en");
-				
+
 				int count = movieResults.size();
 				for (int i = 0; i < count; i++) {
 					results.add(new Result(
@@ -273,7 +272,7 @@ public class IdentifyMovie extends FragmentActivity {
 			holder.title.setText(results.get(position).getName());
 			holder.orig_title.setText(results.get(position).getOriginalTitle());
 			holder.release.setText(results.get(position).getRelease());
-			
+
 			imageLoader.displayImage(results.get(position).getPic(), holder.cover, options);
 
 			return convertView;
@@ -305,13 +304,6 @@ public class IdentifyMovie extends FragmentActivity {
 	public void onStart() {
 		super.onStart();
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 
 	@Override

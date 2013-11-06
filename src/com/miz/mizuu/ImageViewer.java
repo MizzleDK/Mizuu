@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.mizuu.fragments.ActorPhotoFragment;
 
 public class ImageViewer extends FragmentActivity {
@@ -99,12 +98,5 @@ public class ImageViewer extends FragmentActivity {
 	public void onStart() {
 		super.onStart();
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 }

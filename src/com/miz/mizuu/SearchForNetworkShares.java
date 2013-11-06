@@ -21,8 +21,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.analytics.tracking.android.EasyTracker;
-
 public class SearchForNetworkShares extends Activity {
 
 	private ListView list;
@@ -170,17 +168,5 @@ public class SearchForNetworkShares extends Activity {
 
 			return convertView;
 		}
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 }

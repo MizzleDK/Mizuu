@@ -11,6 +11,6 @@
 	<classpathentry kind="lib" path="libs/jcifs.jar"/>
 	<classpathentry kind="lib" path="libs/universal-image-loader-1.8.5-with-sources.jar"/>
 	<classpathentry kind="lib" path="libs/crashlytics.jar"/>
-	<classpathentry kind="lib" path="libs/libGoogleAnalyticsV2.jar"/>
+	<classpathentry kind="lib" path="libs/clink210.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

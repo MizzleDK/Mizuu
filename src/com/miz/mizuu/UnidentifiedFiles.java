@@ -27,8 +27,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.analytics.tracking.android.EasyTracker;
-
 public class UnidentifiedFiles extends Activity {
 
 	private ArrayList<TvShowEpisode> episodes = new ArrayList<TvShowEpisode>();
@@ -211,13 +209,6 @@ public class UnidentifiedFiles extends Activity {
 	public void onStart() {
 		super.onStart();
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 
 	static class ViewHolder {

@@ -16,7 +16,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.ViewParent;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.CollectionCoverSearchFragment;
 import com.miz.mizuu.fragments.CoverSearchFragment;
@@ -156,16 +155,4 @@ public class MovieCoverFanartBrowser extends FragmentActivity implements ActionB
 
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
-	}
 }

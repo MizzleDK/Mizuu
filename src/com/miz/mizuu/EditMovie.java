@@ -17,8 +17,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.analytics.tracking.android.EasyTracker;
-
 public class EditMovie extends Activity {
 
 	private DbAdapter dbHelper;
@@ -187,13 +185,6 @@ public class EditMovie extends Activity {
 	public void onStart() {
 		super.onStart();
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 
 	@Override

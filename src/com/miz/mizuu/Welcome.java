@@ -35,7 +35,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.functions.MizLib;
 
 public class Welcome extends Activity implements ViewFactory {
@@ -400,17 +399,5 @@ public class Welcome extends Activity implements ViewFactory {
 		imageView.setLayoutParams(new ImageSwitcher.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		return imageView;
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 }

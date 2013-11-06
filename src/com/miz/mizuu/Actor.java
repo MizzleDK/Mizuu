@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.ViewParent;
 import android.view.Window;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.ActorBiographyFragment;
 import com.miz.mizuu.fragments.ActorMoviesFragment;
@@ -80,13 +79,6 @@ public class Actor extends FragmentActivity implements ActionBar.TabListener {
 	public void onStart() {
 		super.onStart();
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 
 	private class ActorDetailsAdapter extends FragmentPagerAdapter {

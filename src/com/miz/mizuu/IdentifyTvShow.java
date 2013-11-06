@@ -36,7 +36,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.DecryptedShowEpisode;
 import com.miz.functions.MizLib;
@@ -77,7 +76,7 @@ public class IdentifyTvShow extends FragmentActivity {
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
-		
+
 		imageLoader = ImageLoader.getInstance();
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
 
@@ -112,7 +111,7 @@ public class IdentifyTvShow extends FragmentActivity {
 		lv.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		DecryptedShowEpisode result = MizLib.decryptEpisode(files[0], settings.getString("ignoredTags", ""));
-		
+
 		seasonText = (EditText) findViewById(R.id.seasonText);
 		seasonText.setText(String.valueOf(result.getSeason()));
 		episodeText = (EditText) findViewById(R.id.episodeText);
@@ -146,7 +145,7 @@ public class IdentifyTvShow extends FragmentActivity {
 			Toast.makeText(getApplicationContext(), getString(R.string.noInternet), Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -210,7 +209,7 @@ public class IdentifyTvShow extends FragmentActivity {
 				int count = shows.size();
 				for (int i = 0; i < count; i++)
 					results.add(new Result(shows.get(i).getTitle(), shows.get(i).getId(), shows.get(i).getCover_url(), shows.get(i).getDescription(), shows.get(i).getFirst_aired()));
-				
+
 			} catch (Exception e) {}
 			return null;
 		}
@@ -323,7 +322,7 @@ public class IdentifyTvShow extends FragmentActivity {
 			holder.title.setText(results.get(position).getName());
 			holder.description.setText(results.get(position).getOriginalTitle());
 			holder.release.setText(results.get(position).getRelease());
-			
+
 			imageLoader.displayImage(results.get(position).getPic().contains("null") ? "" : results.get(position).getPic(), holder.cover, options);
 
 			return convertView;
@@ -350,20 +349,13 @@ public class IdentifyTvShow extends FragmentActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		EasyTracker.getInstance().activityStart(this);
 	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
-	}
-
+	
 	@Override
 	public void onResume() {
 		super.onResume();

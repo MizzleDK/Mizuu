@@ -25,7 +25,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 
@@ -265,17 +264,5 @@ public class AddNetworkFilesourceDialog extends Activity {
 		intent.putExtra("isMovie", isMovie);
 		startActivity(intent);
 		finish();
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 }

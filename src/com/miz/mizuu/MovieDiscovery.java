@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.mizuu.fragments.MovieDiscoveryViewPagerFragment;
 
 public class MovieDiscovery extends MainMenuActivity {
@@ -25,17 +24,5 @@ public class MovieDiscovery extends MainMenuActivity {
 		}
 		
 		selectListIndex(WEB_MOVIES);
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
 	}
 }
