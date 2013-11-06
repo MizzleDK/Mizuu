@@ -137,6 +137,11 @@ public class DbAdapterTvShowEpisode {
 		c.close();
 		return s;
 	}
+	
+	public boolean hasUnwatchedEpisodes(String showId) {
+		Cursor c = database.query(DATABASE_TABLE, allRows, KEY_SHOW_ID + " = '" + showId + "' AND " + KEY_HAS_WATCHED + " = '0'", null, null, null, null);
+		return c.getCount() > 0;
+	}
 
 	private ContentValues createContentValues(String filepath, String season, String episode,
 			String showId, String episodeTitle, String episodePlot, String episodeAirdate, String episodeRating,

@@ -47,6 +47,7 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.ImageLoadingErrorListener;
 import com.miz.functions.MizLib;
@@ -138,6 +139,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		spinnerItems.clear();
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserTVShows), getString(R.string.choiceAllShows)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceFavorites), getString(R.string.choiceFavorites)));
+		spinnerItems.add(new SpinnerItem(getString(R.string.tvShowsWithUnwatchedEpisodes), getString(R.string.tvShowsWithUnwatchedEpisodes)));
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -451,6 +453,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		case 1:
 			showFavorites();
 			break;
+		case 2:
+			showUnwatchedShows();
+			break;
 		}
 	}
 
@@ -483,6 +488,32 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		notifyDataSetChanged();
 
 		hideProgressBar();
+	}
+	
+	private void showUnwatchedShows() {
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected void onPreExecute() {
+				showProgressBar();
+			}
+			
+			@Override
+			protected Void doInBackground(Void... params) {
+				shownShows.clear();
+				DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
+				for (int i = 0; i < shows.size(); i++)
+					if (db.hasUnwatchedEpisodes(shows.get(i).getId()))
+						shownShows.add(shows.get(i));
+				return null;
+			}
+		
+			@Override
+			protected void onPostExecute(Void result) {
+				sortShows();
+				notifyDataSetChanged();
+				hideProgressBar();
+			}
+		}.execute();
 	}
 
 	@Override
