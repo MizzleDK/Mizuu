@@ -66,6 +66,10 @@ public class UpdateShowsService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
 
+		// We don't want multiple instances of the TV show library service to run at the same time
+		if (MizLib.isTvShowLibraryBeingUpdated(this))
+			stopSelf();
+
 		if (!MizLib.isOnline(this))
 			stopSelf();
 
@@ -267,16 +271,16 @@ public class UpdateShowsService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		
+
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
 		AppWidgetManager awm = AppWidgetManager.getInstance(this);
 		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
 		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
 		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-		
+
 		MizLib.scheduleShowsUpdate(this);
-		
+
 		if (MizLib.hasTraktAccount(this) && syncLibraries) {
 			Intent shows = new Intent(getApplicationContext(), TraktTvShowsSyncService.class);
 			getApplicationContext().startService(shows);

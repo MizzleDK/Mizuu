@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.miz.functions.MizLib;
 
 public class Update extends Activity {
 
@@ -67,9 +68,9 @@ public class Update extends Activity {
 	}
 
 	public void startUpdate(View v) {
-		if (isMovie)
+		if (isMovie && !MizLib.isMovieLibraryBeingUpdated(this))
 			getApplicationContext().startService(new Intent(getApplicationContext(), UpdateMovieService.class));
-		else
+		else if (!isMovie && !MizLib.isTvShowLibraryBeingUpdated(this))
 			getApplicationContext().startService(new Intent(getApplicationContext(), UpdateShowsService.class));
 		setResult(1); // end activity and reload Main activity
 
