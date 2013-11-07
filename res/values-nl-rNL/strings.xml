@@ -334,6 +334,7 @@
   </plurals>
   <plurals name="day">
     <item quantity="one">dag</item>
+    <item quantity="other">dagen</item>
   </plurals>
   <plurals name="hour">
     <item quantity="one">uur</item>

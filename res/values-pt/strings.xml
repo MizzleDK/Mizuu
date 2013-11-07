@@ -288,4 +288,8 @@
     <item quantity="one">minuto</item>
     <item quantity="other">minutos</item>
   </plurals>
+  <plurals name="day">
+    <item quantity="one">dia</item>
+    <item quantity="other">dias</item>
+  </plurals>
 </resources>

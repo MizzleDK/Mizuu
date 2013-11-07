@@ -67,7 +67,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		
+
 		// Set up cancel dialog intent
 		Intent notificationIntent = new Intent(this, CancelUpdateDialog.class);
 		notificationIntent.putExtra("type", CancelUpdateDialog.MOVIE);
@@ -136,6 +136,9 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		@Override
 		public void run() {
 			setup();
+			
+			// Remove unavailable movies, so we can try to identify them again
+			removeUnidentifiedMovies();
 
 			if (clearLibrary) {
 				editor.putBoolean("prefsClearLibrary", false);
@@ -405,6 +408,32 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		}
 	}
 
+	private void removeUnidentifiedMovies() {
+		ArrayList<DbMovie> dbMovies = new ArrayList<DbMovie>();
+
+		// Fetch all the movies from the database
+		DbAdapter db = MizuuApplication.getMovieAdapter();
+
+		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles);
+		while (tempCursor.moveToNext()) {
+			try {
+				dbMovies.add(new DbMovie(tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
+						tempCursor.getLong(tempCursor.getColumnIndex(DbAdapter.KEY_ROWID)),
+						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TMDBID))));
+			} catch (NullPointerException e) {}
+		}
+
+		tempCursor.close();
+		
+		for (int i = 0; i < dbMovies.size(); i++) {
+			if (dbMovies.get(i).isUnidentified()) {
+				db.deleteMovie(dbMovies.get(i).getRowId());
+			}
+		}
+		
+		dbMovies.clear();
+	}
+
 	private void removeMoviesFromDatabase() {
 		// Delete all movies from the database
 		DbAdapter db = MizuuApplication.getMovieAdapter();
@@ -541,6 +570,14 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 
 		public String getBackdrop() {
 			return new File(MizLib.getMovieBackdropFolder(getApplicationContext()), tmdbId + "_bg.jpg").getAbsolutePath();
+		}
+		
+		public String getTmdbId() {
+			return tmdbId;
+		}
+		
+		public boolean isUnidentified() {
+			return MizLib.isEmpty(getTmdbId());
 		}
 
 		public boolean isNetworkFile() {
