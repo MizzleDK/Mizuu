@@ -419,19 +419,63 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 			try {
 				dbMovies.add(new DbMovie(tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
 						tempCursor.getLong(tempCursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TMDBID))));
+						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
+						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
+						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
+						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_GENRES)),
+						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TITLE))));
 			} catch (NullPointerException e) {}
 		}
-
+		
 		tempCursor.close();
+		ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
 		
 		for (int i = 0; i < dbMovies.size(); i++) {
-			if (dbMovies.get(i).isUnidentified()) {
-				db.deleteMovie(dbMovies.get(i).getRowId());
+			if (dbMovies.get(i).isNetworkFile()) {
+				if (MizLib.isWifiConnected(getApplicationContext(), prefsDisableEthernetWiFiCheck)) {
+					FileSource source = null;
+
+					for (int j = 0; j < filesources.size(); j++)
+						if (dbMovies.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
+							source = filesources.get(j);
+							continue;
+						}
+
+					if (source == null) {
+						if (dbMovies.get(i).isUnidentified()) {
+							db.deleteMovie(dbMovies.get(i).getRowId());
+						}
+						continue;
+					}
+
+					try {
+						final SmbFile file = new SmbFile(
+								MizLib.createSmbLoginString(
+										URLEncoder.encode(source.getDomain(), "utf-8"),
+										URLEncoder.encode(source.getUser(), "utf-8"),
+										URLEncoder.encode(source.getPassword(), "utf-8"),
+										dbMovies.get(i).getFilepath(),
+										false
+										));
+
+						if (file.exists()) {
+							if (dbMovies.get(i).isUnidentified()) {
+								db.deleteMovie(dbMovies.get(i).getRowId());
+							}
+						}
+					} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
+				}
+			} else {
+				if (new File(dbMovies.get(i).getFilepath()).exists()) {
+					if (dbMovies.get(i).isUnidentified()) {
+						db.deleteMovie(dbMovies.get(i).getRowId());
+					}
+				}
 			}
 		}
 		
 		dbMovies.clear();
+		filesources.clear();
 	}
 
 	private void removeMoviesFromDatabase() {
@@ -517,6 +561,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		// Clean up
 		dbMovies.clear();
 		deletedMovies.clear();
+		filesources.clear();
 	}
 
 	@Override
@@ -545,13 +590,23 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 	}
 
 	private class DbMovie {
-		private String filepath, tmdbId;
+		private String filepath, tmdbId, runtime, year, genres, title;
 		private long rowId;
 
 		public DbMovie(String filepath, long rowId, String tmdbId) {
 			this.filepath = filepath;
 			this.rowId = rowId;
 			this.tmdbId = tmdbId;
+		}
+		
+		public DbMovie(String filepath, long rowId, String tmdbId, String runtime, String year, String genres, String title) {
+			this.filepath = filepath;
+			this.rowId = rowId;
+			this.tmdbId = tmdbId;
+			this.runtime = runtime;
+			this.year = year;
+			this.genres = genres;
+			this.title = title;
 		}
 
 		public String getFilepath() {
@@ -572,12 +627,30 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 			return new File(MizLib.getMovieBackdropFolder(getApplicationContext()), tmdbId + "_bg.jpg").getAbsolutePath();
 		}
 		
-		public String getTmdbId() {
-			return tmdbId;
+		public String getRuntime() {
+			return runtime;
+		}
+		
+		public String getReleaseYear() {
+			return year;
+		}
+		
+		public String getGenres() {
+			return genres;
+		}
+		
+		public String getTitle() {
+			return title;
 		}
 		
 		public boolean isUnidentified() {
-			return MizLib.isEmpty(getTmdbId());
+			if (getRuntime().equals("0")
+					&& MizLib.isEmpty(getReleaseYear())
+					&& MizLib.isEmpty(getGenres())
+					&& MizLib.isEmpty(getTitle()))
+				return true;
+			
+			return false;
 		}
 
 		public boolean isNetworkFile() {

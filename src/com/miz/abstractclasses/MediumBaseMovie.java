@@ -74,7 +74,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getReleaseYear() {
-		if (RELEASEDATE != null) {
+		if (!MizLib.isEmpty(RELEASEDATE)) {
 			String YEAR = RELEASEDATE.trim();
 			try {
 				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
