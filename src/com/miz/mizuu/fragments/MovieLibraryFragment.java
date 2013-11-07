@@ -166,6 +166,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceCollections), getString(R.string.choiceCollections)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceWatchedMovies), getString(R.string.choiceWatchedMovies)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceUnwatchedMovies), getString(R.string.choiceUnwatchedMovies)));
+		spinnerItems.add(new SpinnerItem(getString(R.string.choiceUnidentifiedMovies), getString(R.string.choiceUnidentifiedMovies)));
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -561,6 +562,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		case 5:
 			showWatchedMovies(false);
 			break;
+		case 6:
+			showUnidentifiedMovies();
+			break;
 		}
 	}
 
@@ -569,7 +573,10 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		shownMovies.clear();
 
-		shownMovies.addAll(movies);
+		for (int i = 0; i < movies.size(); i++) {
+			if (!movies.get(i).isUnidentified())
+				shownMovies.add(movies.get(i));
+		}
 
 		sortMovies();
 
@@ -701,6 +708,23 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				if (!movies.get(i).hasWatched())
 					shownMovies.add(movies.get(i));
 			}
+		}
+
+		sortMovies();
+
+		notifyDataSetChanged();
+
+		hideProgressBar();
+	}
+	
+	private void showUnidentifiedMovies() {
+		showProgressBar();
+
+		shownMovies.clear();
+		
+		for (int i = 0; i < movies.size(); i++) {
+			if (movies.get(i).isUnidentified())
+				shownMovies.add(movies.get(i));
 		}
 
 		sortMovies();

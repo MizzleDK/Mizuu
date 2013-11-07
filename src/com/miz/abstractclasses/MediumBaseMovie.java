@@ -111,4 +111,14 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	public String getCertification() {
 		return CERTIFICATION;
 	}
+	
+	public boolean isUnidentified() {
+		if (getRuntime().equals("0")
+				&& getReleaseYear().equals(CONTEXT.getString(R.string.unknownYear))
+				&& MizLib.isEmpty(getGenres())
+				&& MizLib.isEmpty(TITLE))
+			return true;
+		
+		return false;
+	}
 }
