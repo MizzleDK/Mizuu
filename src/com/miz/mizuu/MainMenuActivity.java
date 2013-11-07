@@ -82,9 +82,10 @@ public class MainMenuActivity extends FragmentActivity implements OnSharedPrefer
 				if (menu.get(arg2).isThirdPartyApp()) {
 					final PackageManager pm = getPackageManager();
 					Intent i = pm.getLaunchIntentForPackage(menu.get(arg2).getPackageName());
-					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-					if (i != null)
+					if (i != null) {
+						i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 						startActivity(i);
+					}
 				} else {
 					Intent i = new Intent();
 					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
