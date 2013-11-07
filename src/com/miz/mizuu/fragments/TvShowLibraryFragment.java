@@ -387,24 +387,39 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		@Override
 		public void notifyDataSetChanged() {
-			sections = new Object[shownShows.size()];
+			ArrayList<TvShow> tempShows = new ArrayList<TvShow>(shownShows);
+			sections = new Object[tempShows.size()];
 
-			String SORT_TYPE = settings.getString("prefsSorting", "sortTitle");
+			String SORT_TYPE = settings.getString("prefsSortingTv", "sortTitle");
 			if (SORT_TYPE.equals("sortRating")) {
 				DecimalFormat df = new DecimalFormat("#.#");
 				for (int i = 0; i < sections.length; i++)
-					sections[i] = df.format(shownShows.get(i).getRawRating());
+					sections[i] = df.format(tempShows.get(i).getRawRating());
 			} else if (SORT_TYPE.equals("sortWeightedRating")) {
 				DecimalFormat df = new DecimalFormat("#.#");
 				for (int i = 0; i < sections.length; i++)
-					sections[i] = df.format(shownShows.get(i).getWeightedRating());
-			} else {
+					sections[i] = df.format(tempShows.get(i).getWeightedRating());
+			} else if (SORT_TYPE.equals("sortDuration")) {
+				String hour = getResources().getQuantityString(R.plurals.hour, 1, 1).substring(0,1);
+				String minute = getResources().getQuantityString(R.plurals.minute, 1, 1).substring(0,1);
+
 				for (int i = 0; i < sections.length; i++)
-					if (shownShows.get(i).getTitle().length() > 0)
-						sections[i] = shownShows.get(i).getTitle().substring(0,1);
-					else
+					sections[i] = MizLib.getRuntimeInMinutesOrHours(tempShows.get(i).getRuntime(), hour, minute);
+			} else {
+				String temp = "";
+				for (int i = 0; i < sections.length; i++)
+					if (!MizLib.isEmpty(tempShows.get(i).getTitle())) {
+						temp = tempShows.get(i).getTitle().substring(0,1);
+						if (Character.isLetter(temp.charAt(0)))
+							sections[i] = tempShows.get(i).getTitle().substring(0,1);
+						else
+							sections[i] = "#";
+					} else
 						sections[i] = "";
 			}
+			
+			tempShows.clear();
+			tempShows = null;
 
 			super.notifyDataSetChanged();
 		}
@@ -489,14 +504,14 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		hideProgressBar();
 	}
-	
+
 	private void showUnwatchedShows() {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected void onPreExecute() {
 				showProgressBar();
 			}
-			
+
 			@Override
 			protected Void doInBackground(Void... params) {
 				shownShows.clear();
@@ -506,7 +521,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 						shownShows.add(shows.get(i));
 				return null;
 			}
-		
+
 			@Override
 			protected void onPostExecute(Void result) {
 				sortShows();
@@ -559,6 +574,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		case R.id.menuSortNewestEpisode:
 			sortByNewestEpisode();
 			break;
+		case R.id.menuSortDuration:
+			sortByDuration();
+			break;
 		case R.id.genres:
 			showGenres();
 			break;
@@ -587,7 +605,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	}
 
 	private void sortShows() {
-		String SORT_TYPE = settings.getString("prefsSorting", "sortTitle");
+		String SORT_TYPE = settings.getString("prefsSortingTv", "sortTitle");
 		if (SORT_TYPE.equals("sortRelease")) {
 			sortByRelease();
 		} else if (SORT_TYPE.equals("sortRating")) {
@@ -596,6 +614,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			sortByWeightedRating();
 		} else if (SORT_TYPE.equals("sortNewestEpisode")) {
 			sortByNewestEpisode();
+		} else if (SORT_TYPE.equals("sortDuration")) {
+			sortByDuration();
 		} else {
 			sortByTitle();
 		}
@@ -603,7 +623,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByTitle() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortTitle");
+		editor.putString("prefsSortingTv", "sortTitle");
 		editor.apply();
 
 		sortBy(TITLE);
@@ -611,7 +631,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByRelease() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortRelease");
+		editor.putString("prefsSortingTv", "sortRelease");
 		editor.apply();
 
 		sortBy(RELEASE);
@@ -619,7 +639,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByNewestEpisode() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortNewestEpisode");
+		editor.putString("prefsSortingTv", "sortNewestEpisode");
 		editor.apply();
 
 		sortBy(NEWEST_EPISODE);
@@ -627,7 +647,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortRating");
+		editor.putString("prefsSortingTv", "sortRating");
 		editor.apply();
 
 		sortBy(RATING);
@@ -635,13 +655,21 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByWeightedRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortWeightedRating");
+		editor.putString("prefsSortingTv", "sortWeightedRating");
 		editor.apply();
 
 		sortBy(WEIGHTED_RATING);
 	}
 
-	private final int TITLE = 10, RELEASE = 11, RATING = 12, NEWEST_EPISODE = 13, WEIGHTED_RATING = 14;
+	public void sortByDuration() {
+		Editor editor = settings.edit();
+		editor.putString("prefsSortingTv", "sortDuration");
+		editor.apply();
+
+		sortBy(DURATION);
+	}
+
+	private final int TITLE = 10, RELEASE = 11, RATING = 12, NEWEST_EPISODE = 13, WEIGHTED_RATING = 14, DURATION = 15;
 
 	public void sortBy(final int sort) {
 
@@ -680,9 +708,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 						@Override
 						public int compare(TvShow o1, TvShow o2) {
 							try {
-								if (o1.getRawRating() < o2.getRawRating()) {
+								if (o1.getRawRating() < o2.getRawRating())
 									return 1;
-								} else if (o1.getRawRating() > o2.getRawRating())
+								else if (o1.getRawRating() > o2.getRawRating())
 									return -1;
 							} catch (Exception e) {}
 							return 0;
@@ -721,6 +749,24 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 					});
 
 					break;
+
+				case DURATION:
+
+					Collections.sort(tempShows, new Comparator<TvShow>() {
+						@Override
+						public int compare(TvShow o1, TvShow o2) {
+
+							int first = Integer.valueOf(o1.getRuntime());
+							int second = Integer.valueOf(o2.getRuntime());
+
+							if (first < second)
+								return 1;
+							else if (first > second)
+								return -1;
+
+							return 0;
+						}
+					});
 				}
 
 				shownShows = new ArrayList<TvShow>(tempShows);

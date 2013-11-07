@@ -2736,4 +2736,13 @@ public class MizLib {
 				return true;
 		return false;
 	}
+	
+	private static int mRuntimeInMinutes;
+	public static String getRuntimeInMinutesOrHours(String runtime, String hour, String minute) {
+		mRuntimeInMinutes = Integer.valueOf(runtime);
+		if (mRuntimeInMinutes >= 60) {
+			return (mRuntimeInMinutes / 60) + hour;
+		}
+		return mRuntimeInMinutes + minute;
+	}
 }

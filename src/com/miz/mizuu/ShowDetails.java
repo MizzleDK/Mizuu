@@ -85,8 +85,6 @@ public class ShowDetails extends FragmentActivity implements ActionBar.TabListen
 
 		// Create and open database
 		dbHelper = MizuuApplication.getTvDbAdapter();
-
-		System.out.println("HELLO!!!!!");
 		
 		String showId = "";
 		// Fetch the database ID of the TV show to view

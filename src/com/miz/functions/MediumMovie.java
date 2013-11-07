@@ -8,7 +8,7 @@ public class MediumMovie extends MediumBaseMovie {
 	
 	public MediumMovie(Context context, String rowId, String filepath, String title, String tmdbId, String rating, String releasedate,
 			String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
-			String date_added, String certification, boolean ignorePrefixes, boolean ignoreNfo) {
+			String date_added, String certification, String runtime, boolean ignorePrefixes, boolean ignoreNfo) {
 
 		// Set up movie fields based on constructor
 		CONTEXT = context;
@@ -27,6 +27,7 @@ public class MediumMovie extends MediumBaseMovie {
 		HAS_WATCHED = hasWatched;
 		DATE_ADDED = date_added;
 		CERTIFICATION = certification;
+		RUNTIME = runtime;
 		this.ignorePrefixes = ignorePrefixes;
 		this.ignoreNfo = ignoreNfo;
 	}

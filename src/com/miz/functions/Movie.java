@@ -10,7 +10,7 @@ import com.miz.mizuu.R;
 
 public class Movie extends MediumBaseMovie {
 
-	private String PLOT, TAGLINE, IMDB_ID, RUNTIME, TRAILER, COVER;
+	private String PLOT, TAGLINE, IMDB_ID, TRAILER, COVER;
 
 	public Movie(Context context, String rowId, String filepath, String title, String plot, String tagline, String tmdbId, String imdbId, String rating, String releasedate,
 			String certification, String runtime, String trailer, String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
@@ -91,10 +91,6 @@ public class Movie extends MediumBaseMovie {
 		if (!MizLib.isEmpty(RATING))
 			return RATING + "/10";
 		return "0.0/10";
-	}
-
-	public String getRuntime() {
-		return RUNTIME.replace("min", "").trim();
 	}
 
 	public String getTrailer() {

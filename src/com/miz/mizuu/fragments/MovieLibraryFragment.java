@@ -215,6 +215,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
 								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
 								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
+								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
 								ignorePrefixes,
 								ignoreNfo
 								));
@@ -474,11 +475,22 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				DecimalFormat df = new DecimalFormat("#.#");
 				for (int i = 0; i < sections.length; i++)
 					sections[i] = df.format(tempMovies.get(i).getWeightedRating());
-			} else {
+			} else if (SORT_TYPE.equals("sortDuration")) {
+				String hour = getResources().getQuantityString(R.plurals.hour, 1, 1).substring(0,1);
+				String minute = getResources().getQuantityString(R.plurals.minute, 1, 1).substring(0,1);
+				
 				for (int i = 0; i < sections.length; i++)
-					if (tempMovies.get(i).getTitle().length() > 0)
-						sections[i] = tempMovies.get(i).getTitle().substring(0,1);
-					else
+					sections[i] = MizLib.getRuntimeInMinutesOrHours(tempMovies.get(i).getRuntime(), hour, minute);
+			} else {
+				String temp = "";
+				for (int i = 0; i < sections.length; i++)
+					if (!MizLib.isEmpty(tempMovies.get(i).getTitle())) {
+						temp = tempMovies.get(i).getTitle().substring(0,1);
+						if (Character.isLetter(temp.charAt(0)))
+							sections[i] = tempMovies.get(i).getTitle().substring(0,1);
+						else
+							sections[i] = "#";
+					} else
 						sections[i] = "";
 			}
 
@@ -743,6 +755,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		case R.id.menuSortTitle:
 			sortByTitle();
 			break;
+		case R.id.menuSortDuration:
+			sortByDuration();
+			break;
 		case R.id.menuSettings:
 			startActivity(new Intent(getActivity(), Preferences.class));
 			break;
@@ -785,6 +800,10 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			sortByWeightedRating();
 		} else if (SORT_TYPE.equals("sortAdded")) {
 			sortByDateAdded();
+		} else if (SORT_TYPE.equals("sortDuration")) {
+			sortByDuration();
+		} else {
+			sortByTitle();
 		}
 	}
 
@@ -827,8 +846,16 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		sortBy(DATE);
 	}
+	
+	public void sortByDuration() {
+		Editor editor = settings.edit();
+		editor.putString("prefsSorting", "sortDuration");
+		editor.apply();
 
-	private final int TITLE = 10, RELEASE = 11, RATING = 12, DATE = 13, WEIGHTED_RATING = 14;
+		sortBy(DURATION);
+	}
+
+	private final int TITLE = 10, RELEASE = 11, RATING = 12, DATE = 13, WEIGHTED_RATING = 14, DURATION = 15;
 
 	public void sortBy(int sort) {
 
@@ -884,9 +911,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			Collections.sort(tempMovies, new Comparator<MediumMovie>() {
 				@Override
 				public int compare(MediumMovie o1, MediumMovie o2) {	
-					if (o1.getRawRating() < o2.getRawRating()) {
+					if (o1.getRawRating() < o2.getRawRating())
 						return 1;
-					} else if (o1.getRawRating() > o2.getRawRating())
+					else if (o1.getRawRating() > o2.getRawRating())
 						return -1;
 
 					return 0;
@@ -898,9 +925,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			Collections.sort(tempMovies, new Comparator<MediumMovie>() {
 				@Override
 				public int compare(MediumMovie o1, MediumMovie o2) {	
-					if (o1.getWeightedRating() < o2.getWeightedRating()) {
+					if (o1.getWeightedRating() < o2.getWeightedRating())
 						return 1;
-					} else if (o1.getWeightedRating() > o2.getWeightedRating())
+					else if (o1.getWeightedRating() > o2.getWeightedRating())
 						return -1;
 
 					return 0;
@@ -917,6 +944,23 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			});
 
 			break;
+		case DURATION:
+			
+			Collections.sort(tempMovies, new Comparator<MediumMovie>() {
+				@Override
+				public int compare(MediumMovie o1, MediumMovie o2) {
+					
+					int first = Integer.valueOf(o1.getRuntime());
+					int second = Integer.valueOf(o2.getRuntime());
+					
+					if (first < second)
+						return 1;
+					else if (first > second)
+						return -1;
+
+					return 0;
+				}
+			});
 		}
 
 		shownMovies = new ArrayList<MediumMovie>(tempMovies);

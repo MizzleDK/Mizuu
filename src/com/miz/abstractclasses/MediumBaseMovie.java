@@ -8,7 +8,7 @@ import com.miz.mizuu.R;
 
 public abstract class MediumBaseMovie extends BaseMovie {
 
-	protected String TO_WATCH, COLLECTION, COLLECTION_ID, RATING, FAVOURITE, HAS_WATCHED, RELEASEDATE, DATE_ADDED, GENRES, CAST, CERTIFICATION;
+	protected String TO_WATCH, COLLECTION, COLLECTION_ID, RATING, FAVOURITE, HAS_WATCHED, RELEASEDATE, DATE_ADDED, GENRES, CAST, CERTIFICATION, RUNTIME;
 
 	public boolean toWatch() {
 		return (TO_WATCH.equals("0")) ? false : true;
@@ -49,6 +49,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		if (FAVOURITE.equals("1"))
 			return true;
 		return false;
+	}
+	
+	public String getRuntime() {
+		return RUNTIME.replace("min", "").trim();
 	}
 
 	public boolean isNetworkFile() {

@@ -13,14 +13,17 @@
         android:title="@string/stringSort">
         <menu>
             <item
+                android:id="@+id/menuSortTitle"
+                android:title="@string/sortTitle"/>
+            <item
                 android:id="@+id/menuSortRelease"
                 android:title="@string/sortFirstAired"/>
             <item
                 android:id="@+id/menuSortNewestEpisode"
                 android:title="@string/sortNewestEpisode"/>
             <item
-                android:id="@+id/menuSortTitle"
-                android:title="@string/sortTitle"/>
+                android:id="@+id/menuSortDuration"
+                android:title="@string/sortDuration"/>
             <item
                 android:id="@+id/menuSortRating"
                 android:title="@string/sortRating"/>

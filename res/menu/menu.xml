@@ -19,6 +19,9 @@
                 android:id="@+id/menuSortRelease"
                 android:title="@string/sortRelease"/>
             <item
+                android:id="@+id/menuSortDuration"
+                android:title="@string/sortDuration"/>
+            <item
                 android:id="@+id/menuSortRating"
                 android:title="@string/sortRating"/>
             <item
@@ -53,7 +56,7 @@
                 android:title="@string/folders"/>
         </menu>
     </item>
-        <item
+    <item
         android:id="@+id/update"
         android:icon="@drawable/refresh"
         android:showAsAction="ifRoom"
