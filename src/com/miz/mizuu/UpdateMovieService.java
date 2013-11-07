@@ -67,10 +67,6 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-
-		// We don't want multiple instances of the movie library service to run at the same time
-		if (MizLib.isMovieLibraryBeingUpdated(this))
-			stopSelf();
 		
 		// Set up cancel dialog intent
 		Intent notificationIntent = new Intent(this, CancelUpdateDialog.class);

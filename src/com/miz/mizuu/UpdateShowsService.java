@@ -66,10 +66,6 @@ public class UpdateShowsService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
 
-		// We don't want multiple instances of the TV show library service to run at the same time
-		if (MizLib.isTvShowLibraryBeingUpdated(this))
-			stopSelf();
-
 		if (!MizLib.isOnline(this))
 			stopSelf();
 
