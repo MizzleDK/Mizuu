@@ -83,7 +83,8 @@ public class MainMenuActivity extends FragmentActivity implements OnSharedPrefer
 					final PackageManager pm = getPackageManager();
 					Intent i = pm.getLaunchIntentForPackage(menu.get(arg2).getPackageName());
 					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(i);
+					if (i != null)
+						startActivity(i);
 				} else {
 					Intent i = new Intent();
 					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -323,12 +324,12 @@ public class MainMenuActivity extends FragmentActivity implements OnSharedPrefer
 			super.onBackPressed();
 		}
 	}
-	
+
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals("showMediaApps")) {
 			showMediaApps = sharedPreferences.getBoolean("showMediaApps", true);
-			
+
 			setupMenuItems();
 			((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
 		}
