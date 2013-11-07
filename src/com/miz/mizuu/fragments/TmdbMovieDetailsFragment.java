@@ -127,7 +127,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	}
 
 	private void setupFields() {
-		if (isAdded()) {
+		if (isAdded() && thisMovie != null) {
 			getActivity().setTitle(thisMovie.getTitle());
 			if (thisMovie.getReleasedate().contains("-")) {
 				try {
