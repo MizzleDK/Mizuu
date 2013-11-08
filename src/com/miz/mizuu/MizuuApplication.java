@@ -4,13 +4,10 @@ import java.util.HashMap;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
@@ -36,9 +33,6 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" +
-			    Environment.getDataDirectory())));
 		
 		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "true");
 
