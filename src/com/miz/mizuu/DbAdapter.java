@@ -72,15 +72,14 @@ public class DbAdapter {
 			String collection, String collectionId, String toWatch, String hasWatched, String date) {
 		ContentValues updateValues = createContentValues(filepath, coverpath, title, plot, tmdbid, imdbid,
 				rating, tagline, release, certification, runtime, trailer, genres, favourite, watched, collection, collectionId, toWatch, hasWatched, date);
-		return database.update(DATABASE_TABLE, updateValues, KEY_ROWID + "="
-				+ rowId, null) > 0;
+		return database.update(DATABASE_TABLE, updateValues, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 
 	public boolean updateMovieSingleItem(long rowId, String table, String value) {
 		ContentValues values = new ContentValues();
 		values.put(table, value);
 
-		return database.update(DATABASE_TABLE, values, KEY_ROWID + "=" + rowId, null) > 0;
+		return database.update(DATABASE_TABLE, values, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 
 	/**
@@ -89,8 +88,7 @@ public class DbAdapter {
 	public boolean editUpdateMovie(long rowId, String title, String plot, String rating, String tagline, String release,
 			String certification, String runtime, String genres, String toWatch, String hasWatched, String date) {
 		ContentValues updateValues = createEditContentValues(title, plot, rating, tagline, release, certification, runtime, genres, toWatch, hasWatched, date);
-		return database.update(DATABASE_TABLE, updateValues, KEY_ROWID + "="
-				+ rowId, null) > 0;
+		return database.update(DATABASE_TABLE, updateValues, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 
 	/**
@@ -98,14 +96,14 @@ public class DbAdapter {
 	 */
 	public boolean ignoreMovie(long rowId) {
 		ContentValues updateValues = createEditContentValues("MIZ_REMOVED_MOVIE", "", "", "", "", "", "", "", "", "", "");
-		return database.update(DATABASE_TABLE, updateValues, KEY_ROWID + "=" + rowId, null) > 0;
+		return database.update(DATABASE_TABLE, updateValues, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 
 	/**
 	 * Deletes movie
 	 */
 	public boolean deleteMovie(long rowId) {
-		return database.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+		return database.delete(DATABASE_TABLE, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 
 	public boolean deleteAllMovies() {
@@ -151,7 +149,7 @@ public class DbAdapter {
 	 * Return a Cursor positioned at the defined movie
 	 */
 	public Cursor fetchMovie(long rowId) throws SQLException {
-		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_ROWID + "=" + rowId, null, null, null, null, null);
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_ROWID + "='" + rowId + "'", null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
@@ -159,7 +157,7 @@ public class DbAdapter {
 	}
 	
 	public Cursor fetchMovie(String movieId) throws SQLException {
-		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "=" + movieId, null, null, null, null, null);
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
@@ -167,7 +165,7 @@ public class DbAdapter {
 	}
 	
 	public boolean movieExists(String movieId) {
-		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "=" + movieId, null, null, null, null, null);
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
 		if (mCursor == null)
 			return false;
 		if (mCursor.getCount() == 0)
