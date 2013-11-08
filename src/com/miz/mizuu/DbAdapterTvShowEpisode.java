@@ -55,14 +55,14 @@ public class DbAdapterTvShowEpisode {
 	public boolean updateSingleItem(long rowId, String table, String value) {
 		ContentValues values = new ContentValues();
 		values.put(table, value);
-		return database.update(DATABASE_TABLE, values, KEY_ROWID + "=" + rowId, null) > 0;
+		return database.update(DATABASE_TABLE, values, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 
 	public boolean updateEpisode(long rowId, String filepath, String season, String episode, String showId, String episodeTitle, String episodePlot,
 			String episodeAirdate, String episodeRating, String episodeDirector, String episodeWriter, String episodeGuestStars, String hasWatched, String favorite) {
 		ContentValues initialValues = createContentValues(filepath, season,episode, showId, episodeTitle,
 				episodePlot, episodeAirdate, episodeRating, episodeDirector, episodeWriter, episodeGuestStars, hasWatched, favorite);
-		return database.update(DATABASE_TABLE, initialValues, KEY_ROWID + "=" + rowId, null) > 0;
+		return database.update(DATABASE_TABLE, initialValues, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 
 	public boolean updateEpisode(String showId, String season, String episode, String table, String value) {
@@ -72,7 +72,7 @@ public class DbAdapterTvShowEpisode {
 	}
 
 	public Cursor getEpisode(String rowId) {
-		return database.query(DATABASE_TABLE, allRows, KEY_ROWID + "=" + rowId, null, null, null, null);
+		return database.query(DATABASE_TABLE, allRows, KEY_ROWID + "='" + rowId + "'", null, null, null, null);
 	}
 
 	public static int OLDEST_FIRST = 0, NEWEST_FIRST = 1;
@@ -103,7 +103,7 @@ public class DbAdapterTvShowEpisode {
 	}
 
 	public boolean deleteEpisode(String rowId) {
-		return database.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+		return database.delete(DATABASE_TABLE, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 
 	public boolean deleteAllEpisodes(String showId) {

@@ -50,7 +50,7 @@ public class DbAdapterSources {
 	 * @return Boolean whether it was successful or not
 	 */
 	public boolean deleteSource(long rowId) {
-		return database.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+		return database.delete(DATABASE_TABLE, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
 	
 	/**
