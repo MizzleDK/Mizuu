@@ -57,7 +57,7 @@ public class AccountsFragment extends Fragment {
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
-		
+
 		traktUser = (TextView) v.findViewById(R.id.traktUsername);
 		traktPass = (TextView) v.findViewById(R.id.traktPassword);
 
@@ -75,7 +75,7 @@ public class AccountsFragment extends Fragment {
 				traktRemove();
 			}
 		});
-		
+
 		syncTrakt = (CheckBox) v.findViewById(R.id.syncTrakt);
 		syncTrakt.setChecked(settings.getBoolean("syncLibrariesWithTrakt", true));
 		syncTrakt.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -86,7 +86,7 @@ public class AccountsFragment extends Fragment {
 				editor.commit();
 			}
 		});
-		
+
 		traktUser.setText(settings.getString("traktUsername", ""));
 		if (settings.getString("traktPassword", "").isEmpty()) {
 			traktPass.setText("");
@@ -149,7 +149,7 @@ public class AccountsFragment extends Fragment {
 								traktUser.setEnabled(false);
 								traktPass.setEnabled(false);
 								syncTrakt.setEnabled(true);
-								
+
 								traktLogIn.setEnabled(false);
 								traktRemoveAccount.setEnabled(true);
 
@@ -157,12 +157,13 @@ public class AccountsFragment extends Fragment {
 							}
 						});
 					} else {
-						getActivity().runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								Toast.makeText(getActivity(), getString(R.string.failedToLogin), Toast.LENGTH_LONG).show();
-							}
-						});
+						if (isAdded())
+							getActivity().runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									Toast.makeText(getActivity(), getString(R.string.failedToLogin), Toast.LENGTH_LONG).show();
+								}
+							});
 					}
 				}
 			}
