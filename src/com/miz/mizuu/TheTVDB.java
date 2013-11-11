@@ -2,8 +2,8 @@ package com.miz.mizuu;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -34,7 +34,7 @@ public class TheTVDB extends Service {
 	private String[] files, rowsToDrop;
 	private TheTVDb tvdb;
 	private Tvshow thisShow;
-	private LinkedList<String> queue = new LinkedList<String>();
+	private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
 
 	public void onCreate() {
 		super.onCreate();
@@ -109,7 +109,7 @@ public class TheTVDB extends Service {
 				new Thread() {
 					@Override
 					public void run() {
-						String file = queue.pop();
+						String file = queue.poll();
 						if (season.isEmpty() && episode.isEmpty()) {
 							DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("ignoredTags", ""));
 							downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file);
