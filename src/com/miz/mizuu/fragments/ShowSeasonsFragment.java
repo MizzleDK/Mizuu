@@ -119,7 +119,7 @@ public class ShowSeasonsFragment extends Fragment {
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 0.75);
 		else
 			mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width);
-		
+
 		imageLoader = ImageLoader.getInstance();
 		options = MizuuApplication.getDefaultBackdropLoadingOptions();
 
@@ -146,9 +146,13 @@ public class ShowSeasonsFragment extends Fragment {
 					);
 		}
 		cursor.close();
-		
-		errorListener = new ImageLoadingErrorListener("", "file://" + thisShow.getBackdrop(), options);
-		
+
+		if (thisShow != null)
+			errorListener = new ImageLoadingErrorListener("", "file://" + thisShow.getBackdrop(), options);
+		else
+			if (isAdded())
+				getActivity().finish();
+
 		loadEpisodes();
 
 		addAllEpisodes();
@@ -178,7 +182,7 @@ public class ShowSeasonsFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
+
 		if (!MizLib.runsOnTablet(getActivity()) && !MizLib.runsInPortraitMode(getActivity()))
 			MizLib.addActionBarPadding(getActivity(), view.findViewById(R.id.container));
 
@@ -403,14 +407,14 @@ public class ShowSeasonsFragment extends Fragment {
 			if (holder.layout.getLayoutParams().height != mItemHeight) {
 				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
-			
+
 			if (selectedEpisodeIndex == position && !isPortrait) {
 				holder.selectedOverlay.setVisibility(View.VISIBLE);
 			} else
 				holder.selectedOverlay.setVisibility(View.GONE);
 
 			imageLoader.displayImage("file://" + shownEpisodes.get(position).getEpisodePhoto(), holder.cover, options, errorListener);
-			
+
 			return convertView;
 		}
 
@@ -542,7 +546,7 @@ public class ShowSeasonsFragment extends Fragment {
 				holder.watched.setVisibility(View.VISIBLE);
 			else
 				holder.watched.setVisibility(View.GONE);
-			
+
 			imageLoader.displayImage(shownEpisodes.get(position).getEpisodePhoto(), holder.cover, options, errorListener);
 
 			return convertView;
@@ -647,20 +651,20 @@ public class ShowSeasonsFragment extends Fragment {
 		}
 
 		cursor.close();
-		
+
 		Collections.sort(allEpisodes, new Comparator<TvShowEpisode>() {
 			@Override
 			public int compare(TvShowEpisode o1, TvShowEpisode o2) {
-				
+
 				int first = Integer.valueOf(o1.getSeason() + o1.getEpisode());
 				int second = Integer.valueOf(o2.getSeason() + o2.getEpisode());
 				int res = 0; // Let's start off assuming they're equal
-				
+
 				if (first < second)
 					res = -1;
 				else				
 					res = 1;
-				
+
 				return showOldestEpisodeFirst ? res : res * -1;
 			}
 		});
@@ -770,7 +774,7 @@ public class ShowSeasonsFragment extends Fragment {
 		int tempCount = 0;
 
 		ArrayList<TvShowEpisode> tempEpisodes = new ArrayList<TvShowEpisode>(allEpisodes);
-		
+
 		for (TvShowEpisode episode : tempEpisodes) {
 			if (seasonEpisodeCount.get(Integer.valueOf(episode.getSeason())) == 0) {
 				seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), 1);
@@ -781,7 +785,7 @@ public class ShowSeasonsFragment extends Fragment {
 			}
 			shownEpisodes.add(episode);
 		}
-		
+
 		tempEpisodes.clear();
 		tempEpisodes = null;
 	}
@@ -790,7 +794,7 @@ public class ShowSeasonsFragment extends Fragment {
 		ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_SHOWS, true);	
 
 		int tempCount = 0;
-		
+
 		ArrayList<TvShowEpisode> tempEpisodes = new ArrayList<TvShowEpisode>(allEpisodes);
 
 		for (TvShowEpisode episode : tempEpisodes) {
@@ -842,7 +846,7 @@ public class ShowSeasonsFragment extends Fragment {
 				}
 			}
 		}
-		
+
 		tempEpisodes.clear();
 		tempEpisodes = null;
 	}
@@ -864,7 +868,7 @@ public class ShowSeasonsFragment extends Fragment {
 				shownEpisodes.add(episode);
 			}
 		}
-		
+
 		tempEpisodes.clear();
 		tempEpisodes = null;
 	}
