@@ -30,4 +30,9 @@ public class Preferences extends PreferenceActivity {
 	public void onBuildHeaders(List<Header> target) {		
 		loadHeadersFromResource(R.xml.preference_headers, target);
 	}
+	
+	@Override
+	protected boolean isValidFragment(String fragmentName) {
+		return true;
+	}
 }
