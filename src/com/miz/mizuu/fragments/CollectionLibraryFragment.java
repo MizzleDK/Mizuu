@@ -388,7 +388,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 		@Override
 		public void notifyDataSetChanged() {
-			
+
 			ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>(shownMovies);
 			sections = new Object[tempMovies.size()];
 
@@ -404,7 +404,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			} else if (SORT_TYPE.equals("sortDuration")) {
 				String hour = getResources().getQuantityString(R.plurals.hour, 1, 1).substring(0,1);
 				String minute = getResources().getQuantityString(R.plurals.minute, 1, 1).substring(0,1);
-				
+
 				for (int i = 0; i < sections.length; i++)
 					sections[i] = MizLib.getRuntimeInMinutesOrHours(tempMovies.get(i).getRuntime(), hour, minute);
 			} else {
@@ -674,7 +674,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 		sortBy(RATING);
 	}
-	
+
 	public void sortByWeightedRating() {
 		Editor editor = settings.edit();
 		editor.putString("prefsSorting", "sortWeightedRating");
@@ -690,7 +690,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 		sortBy(DATE);
 	}
-	
+
 	public void sortByDuration() {
 		Editor editor = settings.edit();
 		editor.putString("prefsSorting", "sortDuration");
@@ -788,15 +788,15 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			});
 
 			break;
-case DURATION:
-			
+		case DURATION:
+
 			Collections.sort(tempMovies, new Comparator<MediumMovie>() {
 				@Override
 				public int compare(MediumMovie o1, MediumMovie o2) {
-					
+
 					int first = Integer.valueOf(o1.getRuntime());
 					int second = Integer.valueOf(o2.getRuntime());
-					
+
 					if (first < second)
 						return 1;
 					else if (first > second)
@@ -991,10 +991,11 @@ case DURATION:
 	}
 
 	private void forceLoaderLoad() {
-		if (getLoaderManager().getLoader(0) == null)
-			getLoaderManager().initLoader(0, null, loaderCallbacks);
-		else
-			getLoaderManager().restartLoader(0, null, loaderCallbacks);
+		if (isAdded())
+			if (getLoaderManager().getLoader(0) == null)
+				getLoaderManager().initLoader(0, null, loaderCallbacks);
+			else
+				getLoaderManager().restartLoader(0, null, loaderCallbacks);
 	}
 
 	private class ActionBarSpinner extends BaseAdapter {

@@ -417,7 +417,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 					} else
 						sections[i] = "";
 			}
-			
+
 			tempShows.clear();
 			tempShows = null;
 
@@ -963,10 +963,11 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	}
 
 	private void forceLoaderLoad() {
-		if (getLoaderManager().getLoader(0) == null)
-			getLoaderManager().initLoader(0, null, loaderCallbacks);
-		else
-			getLoaderManager().restartLoader(0, null, loaderCallbacks);
+		if (isAdded())
+			if (getLoaderManager().getLoader(0) == null)
+				getLoaderManager().initLoader(0, null, loaderCallbacks);
+			else
+				getLoaderManager().restartLoader(0, null, loaderCallbacks);
 	}
 
 	private class ActionBarSpinner extends BaseAdapter {
