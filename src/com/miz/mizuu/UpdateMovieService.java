@@ -35,7 +35,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
 
 import com.miz.functions.FileSource;
 import com.miz.functions.MizFile;
@@ -189,7 +188,6 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 
 					startService(tmdbIntent);
 				} else {
-					Toast.makeText(getApplicationContext(), getString(R.string.noInternet), Toast.LENGTH_LONG).show();
 					stopSelf();
 				}
 			} else {
@@ -237,7 +235,6 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 
 								startService(tmdbIntent);
 							} else {
-								Toast.makeText(getApplicationContext(), getString(R.string.noInternet), Toast.LENGTH_LONG).show();
 								stopSelf();
 							}
 						}

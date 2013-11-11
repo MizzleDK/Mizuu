@@ -29,7 +29,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
 
 import com.miz.functions.AsyncTask;
 import com.miz.functions.FileSource;
@@ -205,7 +204,6 @@ public class UpdateShowsService extends Service {
 
 				startService(tvdbIntent);
 			} else {
-				Toast.makeText(getApplicationContext(), getString(R.string.noInternet), Toast.LENGTH_LONG).show();
 				stopSelf();
 			}
 		} else {
