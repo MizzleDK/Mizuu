@@ -127,8 +127,6 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
 
 		mAdapter = new LoaderAdapter(getActivity());
-
-		getLoaderManager().initLoader(0, null, loaderCallbacks);
 	}
 
 	@Override

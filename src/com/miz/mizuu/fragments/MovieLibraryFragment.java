@@ -136,8 +136,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
 
 		mAdapter = new LoaderAdapter(getActivity());
-
-		forceLoaderLoad();
 	}
 
 	@Override

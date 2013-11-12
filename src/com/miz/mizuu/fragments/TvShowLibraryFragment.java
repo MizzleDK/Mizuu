@@ -117,8 +117,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
 
 		mAdapter = new LoaderAdapter(getActivity());
-
-		forceLoaderLoad();
 	}
 
 	@Override
