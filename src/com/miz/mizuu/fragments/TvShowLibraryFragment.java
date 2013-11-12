@@ -196,8 +196,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			shows.clear();
 			shownShows.clear();
 			notifyDataSetChanged();
-
-			forceLoaderLoad();
 		}
 	};
 
@@ -264,6 +262,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	@Override
 	public void onResume() {
 		super.onResume();
+		
+		if (shows.size() == 0)
+			forceLoaderLoad();
 
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();

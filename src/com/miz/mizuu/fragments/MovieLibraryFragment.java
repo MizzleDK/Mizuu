@@ -243,8 +243,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			movies.clear();
 			shownMovies.clear();
 			notifyDataSetChanged();
-
-			forceLoaderLoad();
 		}
 	};
 
@@ -320,6 +318,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		if (movies.size() == 0)
+			forceLoaderLoad();
 
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
@@ -1360,10 +1361,11 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private void forceLoaderLoad() {
 		if (isAdded())
-			if (getLoaderManager().getLoader(0) == null)
+			if (getLoaderManager().getLoader(0) == null) {
 				getLoaderManager().initLoader(0, null, loaderCallbacks);
-			else
+			} else {
 				getLoaderManager().restartLoader(0, null, loaderCallbacks);
+			}
 	}
 
 	private class ActionBarSpinner extends BaseAdapter {

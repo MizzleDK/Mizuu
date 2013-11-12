@@ -37,6 +37,11 @@ abstract public class AbstractCursorLoader extends AsyncTaskLoader<Cursor> {
 	public Cursor loadInBackground() {
 		Cursor cursor=buildCursor();
 
+		if (cursor!=null) {
+			// Ensure the cursor window is filled
+			cursor.getCount();
+		}
+
 		return(cursor);
 	}
 

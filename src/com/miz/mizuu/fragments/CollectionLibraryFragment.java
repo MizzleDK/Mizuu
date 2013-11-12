@@ -215,8 +215,6 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			movies.clear();
 			shownMovies.clear();
 			notifyDataSetChanged();
-
-			forceLoaderLoad();
 		}
 	};
 
@@ -272,8 +270,12 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	@Override
 	public void onResume() {
 		super.onResume();
+		
+		if (movies.size() == 0)
+			forceLoaderLoad();
 
-		if (mAdapter != null) mAdapter.notifyDataSetChanged();
+		if (mAdapter != null)
+			mAdapter.notifyDataSetChanged();
 	}
 	@Override
 	public void onDestroy() {
