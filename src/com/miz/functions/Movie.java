@@ -135,17 +135,7 @@ public class Movie extends MediumBaseMovie {
 	}
 
 	public boolean isSplitFile() {
-		return (getFilepath().contains("cd1.") || getFilepath().contains("part1."));
-	}
-
-	public String getSecondPart() {
-		if (getFilepath().contains("cd1."))
-			return getFilepath().replace("cd1.", "cd2.");
-
-		if (getFilepath().contains("part1."))
-			return getFilepath().replace("part1.", "part2.");
-
-		return "";
+		return getFilepath().matches(".*(cd1|part1).*");
 	}
 
 	public boolean isPartOfCollection() {
@@ -155,7 +145,7 @@ public class Movie extends MediumBaseMovie {
 	public String getLocalTrailer() {
 		try {
 			// Check if there's a custom cover art image
-			String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replace("cd1", "").replace("cd2", "").replace("part1", "").replace("part2", "").trim();
+			String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
 			File parentFolder = new File(FILEPATH).getParentFile();
 
 			if (parentFolder != null) {

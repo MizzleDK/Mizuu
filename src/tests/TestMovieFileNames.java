@@ -593,4 +593,13 @@ public class TestMovieFileNames extends AndroidTestCase {
 		mMovie = MizLib.decryptMovie(TEST_FILENAMES[0], "tar");
 		Assert.assertEquals("Ava", mMovie.getDecryptedFileName());
 	}
+	
+	public void testPartNumbers() {
+		Assert.assertEquals(1, MizLib.getPartNumberFromFilepath("Avatar part1.mkv"));
+		Assert.assertEquals(2, MizLib.getPartNumberFromFilepath("Avatar part2.mkv"));
+		Assert.assertEquals(1, MizLib.getPartNumberFromFilepath("Avatar cd1.mkv"));
+		Assert.assertEquals(2, MizLib.getPartNumberFromFilepath("Avatar cd2.mkv"));
+		Assert.assertEquals(5, MizLib.getPartNumberFromFilepath("Avatar.cd5.mkv"));
+		Assert.assertEquals(5, MizLib.getPartNumberFromFilepath("Avatar.part5.mkv"));
+	}
 }

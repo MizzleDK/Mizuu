@@ -51,7 +51,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		if (!ignoreNfo) {
 			try {
 				// Check if there's a custom cover art image
-				String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replace("cd1", "").replace("cd2", "").replace("part1", "").replace("part2", "").trim();
+				String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
 				File parentFolder = new File(FILEPATH).getParentFile();
 
 				if (parentFolder != null) {
@@ -91,7 +91,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		if (!ignoreNfo) {
 			try {
 				// Check if there's a custom cover art image
-				String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replace("cd1", "").replace("cd2", "").replace("part1", "").replace("part2", "").trim();
+				String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
 				File parentFolder = new File(FILEPATH).getParentFile();
 
 				if (parentFolder != null) {

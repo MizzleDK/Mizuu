@@ -7,17 +7,20 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miz.functions.AspectRatioImageViewCover;
+import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.mizuu.DbAdapter;
@@ -222,7 +226,7 @@ public class MovieDetailsFragment extends Fragment {
 				}
 			}
 		}
-		
+
 		// Set the movie release date
 		if (!MizLib.isEmpty(thisMovie.getReleasedate())) {
 			try {
@@ -273,26 +277,7 @@ public class MovieDetailsFragment extends Fragment {
 		playbutton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				videoPlaybackStarted = System.currentTimeMillis();
-				if (thisMovie.isSplitFile()) {
-					showSplitFileDialog();
-				} else {
-					if (thisMovie.isNetworkFile()) {
-						playNetworkFile(thisMovie.getFilepath());
-					} else {
-						try { // Attempt to launch intent based on the MIME type
-							getActivity().startActivity(MizLib.getVideoIntent(thisMovie.getFilepath(), useWildcard, thisMovie));
-							checkIn();
-						} catch (Exception e) {
-							try { // Attempt to launch intent based on wildcard MIME type
-								getActivity().startActivity(MizLib.getVideoIntent(thisMovie.getFilepath(), "video/*", thisMovie));
-								checkIn();
-							} catch (Exception e2) {
-								Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
-							}
-						}
-					}
-				}
+				playMovie();
 			}
 		});
 
@@ -319,36 +304,197 @@ public class MovieDetailsFragment extends Fragment {
 		}.start();
 	}
 
-	private void showSplitFileDialog() {
-		CharSequence[] items = new CharSequence[]{getString(R.string.part) + " 1", getString(R.string.part) + " 2"};
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(getString(R.string.playPart));
-		builder.setItems(items, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				String filepath;
-
-				if (which == 0) // First part
-					filepath = thisMovie.getFilepath();
-				else // Second part
-					filepath = thisMovie.getSecondPart();
-
-				if (thisMovie.isNetworkFile()) {
-					playNetworkFile(filepath);
-				} else {
-					try { // Attempt to launch intent based on the MIME type
-						getActivity().startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisMovie));
+	private void playMovie() {
+		videoPlaybackStarted = System.currentTimeMillis();
+		if (thisMovie.isSplitFile()) {
+			new GetSplitFiles().execute();
+		} else {
+			if (thisMovie.isNetworkFile()) {
+				playNetworkFile(thisMovie.getFilepath());
+			} else {
+				try { // Attempt to launch intent based on the MIME type
+					getActivity().startActivity(MizLib.getVideoIntent(thisMovie.getFilepath(), useWildcard, thisMovie));
+					checkIn();
+				} catch (Exception e) {
+					try { // Attempt to launch intent based on wildcard MIME type
+						getActivity().startActivity(MizLib.getVideoIntent(thisMovie.getFilepath(), "video/*", thisMovie));
 						checkIn();
-					} catch (Exception e) {
-						try { // Attempt to launch intent based on wildcard MIME type
-							getActivity().startActivity(MizLib.getVideoIntent(filepath, "video/*", thisMovie));
-							checkIn();
-						} catch (Exception e2) {
-							Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
-						}
+					} catch (Exception e2) {
+						Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 					}
 				}
-			}});
-		builder.show();
+			}
+		}
+	}
+
+	private class GetSplitFiles extends AsyncTask<String, Void, List<SplitFile>> {
+
+		private ProgressDialog progress;
+
+		@Override
+		protected void onPreExecute() {
+			if (isAdded()) {
+				progress = new ProgressDialog(getActivity());
+				progress.setIndeterminate(true);
+				progress.setTitle(getString(R.string.loading_movie_parts));
+				progress.setMessage(getString(R.string.few_moments));
+				progress.show();
+			}
+		}
+
+		@Override
+		protected List<SplitFile> doInBackground(String... params) {
+			List<SplitFile> parts = new ArrayList<SplitFile>();
+			List<String> temp;
+
+			try {				
+				if (thisMovie.isNetworkFile())
+					temp = MizLib.getSplitParts(thisMovie.getFilepath(), MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, thisMovie.getFilepath()));
+				else
+					temp = MizLib.getSplitParts(thisMovie.getFilepath(), null);
+
+				for (int i = 0; i < temp.size(); i++)
+					parts.add(new SplitFile(temp.get(i)));
+
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+
+			return parts;
+		}
+
+		@Override
+		protected void onPostExecute(final List<SplitFile> result) {
+			if (isAdded()) {
+				progress.dismiss();
+				if (result.size() > 1) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle(getString(R.string.playPart));
+					builder.setAdapter(new SplitAdapter(getActivity(), result), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							String filepath = result.get(which).getFilepath();
+
+							if (thisMovie.isNetworkFile())
+								playNetworkFile(filepath);
+							else
+								play(filepath);
+						}});
+					builder.show();
+				} else if (result.size() == 1) {
+					String filepath = result.get(0).getFilepath();
+
+					if (thisMovie.isNetworkFile())
+						playNetworkFile(filepath);
+					else
+						play(filepath);
+				} else {
+					Toast.makeText(getActivity(), getString(R.string.errorSomethingWentWrong), Toast.LENGTH_LONG).show();
+				}
+			}
+		}
+
+	}
+
+	private class SplitAdapter implements android.widget.ListAdapter {
+
+		private List<SplitFile> mFiles;
+		private Context mContext;
+		private LayoutInflater inflater;
+
+		public SplitAdapter(Context context, List<SplitFile> files) {
+			super();
+			mContext = context;
+			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mFiles = files;
+		}
+
+		@Override
+		public int getCount() {
+			return mFiles.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+
+			convertView = inflater.inflate(R.layout.split_file_item, parent, false);
+
+			TextView title = (TextView) convertView.findViewById(R.id.title);
+			TextView description = (TextView) convertView.findViewById(R.id.description);
+
+			title.setText(getString(R.string.part) + " " + mFiles.get(position).getPartNumber());
+			description.setText(mFiles.get(position).getUserFilepath());
+
+			return convertView;
+		}
+
+		@Override
+		public int getViewTypeCount() {
+			return 1;
+		}
+
+		@Override
+		public boolean hasStableIds() {
+			return true;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return mFiles.isEmpty();
+		}
+
+		@Override
+		public void registerDataSetObserver(DataSetObserver observer) {}
+
+		@Override
+		public void unregisterDataSetObserver(DataSetObserver observer) {}
+
+		@Override
+		public boolean areAllItemsEnabled() {
+			return true;
+		}
+
+		@Override
+		public boolean isEnabled(int position) {
+			return true;
+		}
+
+	}
+
+	private class SplitFile {
+
+		String filepath;
+
+		public SplitFile(String filepath) {
+			this.filepath = filepath;
+		}
+
+		public String getFilepath() {
+			return filepath;
+		}
+
+		public String getUserFilepath() {
+			return MizLib.transformSmbPath(filepath);
+		}
+
+		public int getPartNumber() {
+			return MizLib.getPartNumberFromFilepath(getUserFilepath());
+		}
+
 	}
 
 	private void playNetworkFile(final String networkFilepath) {
@@ -411,6 +557,20 @@ public class MovieDetailsFragment extends Fragment {
 				catch (UnsupportedEncodingException e1) {}
 			}
 		}.start();
+	}
+
+	private void play(String filepath) {
+		try { // Attempt to launch intent based on the MIME type
+			getActivity().startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisMovie));
+			checkIn();
+		} catch (Exception e) {
+			try { // Attempt to launch intent based on wildcard MIME type
+				getActivity().startActivity(MizLib.getVideoIntent(filepath, "video/*", thisMovie));
+				checkIn();
+			} catch (Exception e2) {
+				Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
+			}
+		}
 	}
 
 	private void loadImages() {

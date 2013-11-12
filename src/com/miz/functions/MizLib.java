@@ -1198,7 +1198,7 @@ public class MizLib {
 		if (!parentPath.endsWith("/"))
 			parentPath += "/";
 
-		String filename = filepath.substring(0, filepath.lastIndexOf(".")).replace("cd1", "").replace("cd2", "").replace("part1", "").replace("part2", "").trim();
+		String filename = filepath.substring(0, filepath.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
 
 		String[] list = MizuuApplication.getCifsFilesList(parentPath);
 		if (list == null) {
@@ -2724,19 +2724,19 @@ public class MizLib {
 		else
 			return statFs.getAvailableBlocks() * statFs.getBlockSize();
 	}
-	
+
 	private static String[] MEDIA_APPS = new String[]{"com.imdb.mobile", "com.google.android.youtube", "com.ted.android", "com.google.android.videos", "se.mtg.freetv.tv3_dk", "tv.twitch.android.viewer",
 		"com.netflix.mediaclient", "com.gotv.crackle.handset", "net.flixster.android", "com.google.tv.alf", "com.viki.android", "com.mobitv.client.mobitv", "com.hulu.plus.jp", "com.hulu.plus",
 		"com.mobitv.client.tv", "air.com.vudu.air.DownloaderTablet", "com.hbo.android.app", "com.HBO", "bbc.iplayer.android", "air.uk.co.bbc.android.mediaplayer", "com.rhythmnewmedia.tvdotcom",
 		"com.cnettv.app", "com.xfinity.playnow"};
-	
+
 	public static boolean isMediaApp(ApplicationInfo ai) {
 		for (String s : MEDIA_APPS)
 			if (s.equals(ai.packageName))
 				return true;
 		return false;
 	}
-	
+
 	private static int mRuntimeInMinutes;
 	public static String getRuntimeInMinutesOrHours(String runtime, String hour, String minute) {
 		mRuntimeInMinutes = Integer.valueOf(runtime);
@@ -2744,5 +2744,60 @@ public class MizLib {
 			return (mRuntimeInMinutes / 60) + hour;
 		}
 		return mRuntimeInMinutes + minute;
+	}
+
+	public static int getPartNumberFromFilepath(String filepath) {
+		if (filepath.matches(".*part[1-9].*"))
+			filepath = filepath.substring(filepath.lastIndexOf("part") + 4, filepath.length());
+		else if (filepath.matches(".*cd[1-9].*"))
+			filepath = filepath.substring(filepath.lastIndexOf("cd") + 2, filepath.length());
+
+		filepath = filepath.substring(0, 1);
+
+		try {
+			return Integer.valueOf(filepath);
+		} catch (NumberFormatException nfe) { return 0; }
+	}
+
+	public static List<String> getSplitParts(String filepath, NtlmPasswordAuthentication auth) throws MalformedURLException, UnsupportedEncodingException, SmbException {
+		ArrayList<String> parts = new ArrayList<String>();
+
+		String fileType = "";
+		if (filepath.contains(".")) {
+			fileType = filepath.substring(filepath.lastIndexOf("."));
+		}
+
+		if (filepath.matches(".*part[1-9].*"))
+			filepath = filepath.substring(0, filepath.lastIndexOf("part") + 4);
+		else if (filepath.matches(".*cd[1-9].*"))
+			filepath = filepath.substring(0, filepath.lastIndexOf("cd") + 2);
+
+		if (auth == null) { // Check if it's a local file
+			File temp;
+			for (int i = 1; i < 10; i++) {
+				temp = new File(filepath + i + fileType);
+				if (temp.exists())
+					parts.add(temp.getAbsolutePath());
+			}
+		} else { // It's a network file
+			SmbFile temp;
+			for (int i = 1; i < 10; i++) {
+				temp = new SmbFile(createSmbLoginString(URLEncoder.encode(auth.getDomain(), "utf-8"),
+						URLEncoder.encode(auth.getUsername(), "utf-8"),
+						URLEncoder.encode(auth.getPassword(), "utf-8"),
+						filepath + i + fileType,
+						false));
+				if (temp.exists())
+					parts.add(temp.getPath());
+			}
+		}
+
+		return parts;
+	}
+
+	public static String transformSmbPath(String smbPath) {
+		if (smbPath.contains("smb") && smbPath.contains("@"))
+			return "smb://" + smbPath.substring(smbPath.indexOf("@") + 1);
+		return smbPath.replace("/smb:/", "smb://");
 	}
 }

@@ -394,5 +394,7 @@
     <string name="loadImagesWhileScrolling">Load images while scrolling</string>
     <string name="loadImagesWhileScrollingDescription">May result in lag while scrolling.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Unwatched shows</string>
+    <string name="loading_movie_parts">Loading movie parts</string>
+    <string name="few_moments">This may take a few moments…</string>
 
 </resources>

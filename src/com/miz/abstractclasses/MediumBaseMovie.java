@@ -60,9 +60,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getFilepath() {
-		if (FILEPATH.contains("smb") && FILEPATH.contains("@"))
-			return "smb://" + FILEPATH.substring(FILEPATH.indexOf("@") + 1);
-		return FILEPATH.replace("/smb:/", "smb://");
+		return MizLib.transformSmbPath(FILEPATH);
 	}
 	
 	public boolean hasWatched() {

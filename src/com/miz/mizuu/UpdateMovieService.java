@@ -197,7 +197,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 
 						MizFile nfoFile = null;
 
-						String filename = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(".")).replace("cd1", "").replace("cd2", "").replace("part1", "").replace("part2", "").trim();
+						String filename = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
 						MizFile parent = null;
 
 						if (file.isSmb()) {
@@ -319,7 +319,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 				if (existingMovies.get(f.getAbsolutePath()) != null) return;
 
 			String tempFileName = f.getName().substring(0, f.getName().lastIndexOf("."));
-			if (tempFileName.toLowerCase(Locale.ENGLISH).matches(".*cd2") || tempFileName.toLowerCase(Locale.ENGLISH).matches(".*part2")) return;
+			if (tempFileName.toLowerCase(Locale.ENGLISH).matches(".*part[2-9]|cd[2-9]")) return;
 
 			//Add the file if it reaches this point
 			unique.put(f.getName(), f);
