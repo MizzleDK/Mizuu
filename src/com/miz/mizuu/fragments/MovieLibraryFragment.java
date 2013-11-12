@@ -907,13 +907,13 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					String first = "", second = "";
 
 					if (o1.getReleasedate() != null)
-						first = o1.getReleasedate().replace("-", "");
+						first = o1.getReleasedate().replace("-", "").replace("/", "");
 
 					if (!(first.equals("null") | first.isEmpty()))
 						firstDate = Integer.valueOf(first);
 
 					if (o2.getReleasedate() != null)
-						second = o2.getReleasedate().replace("-", "");
+						second = o2.getReleasedate().replace("-", "").replace("/", "");
 
 					if (!(second.equals("null") | second.isEmpty()))
 						secondDate = Integer.valueOf(second);
