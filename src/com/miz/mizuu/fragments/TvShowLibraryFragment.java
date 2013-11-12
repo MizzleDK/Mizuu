@@ -262,7 +262,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		if (shows.size() == 0)
 			forceLoaderLoad();
 
@@ -686,8 +686,11 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 					Collections.sort(tempShows, new Comparator<TvShow>() {
 						@Override
-						public int compare(TvShow o1, TvShow o2) {		
-							return o1.getTitle().compareToIgnoreCase(o2.getTitle());
+						public int compare(TvShow o1, TvShow o2) {
+							String s1 = o1.getTitle(), s2 = o2.getTitle();
+							if (s1 != null && s2 != null)
+								return s1.compareToIgnoreCase(s2);
+							return 0;
 						}
 					});
 
