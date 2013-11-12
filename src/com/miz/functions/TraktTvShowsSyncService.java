@@ -25,8 +25,8 @@ import com.miz.mizuu.TvShowEpisode;
 
 public class TraktTvShowsSyncService extends IntentService {
 
-	private ArrayList<TvShow> fullShows = new ArrayList<TvShow>();
-	private HashSet<String> shows = new HashSet<String>();
+	private ArrayList<TvShow> fullShows;
+	private HashSet<String> shows;
 
 	public TraktTvShowsSyncService() {
 		super("TraktTvShowsSyncService");
@@ -35,6 +35,9 @@ public class TraktTvShowsSyncService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
+		fullShows = new ArrayList<TvShow>();
+		shows = new HashSet<String>();
+		
 		// Setup up notification
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
 		builder.setSmallIcon(R.drawable.ic_action_tv);
