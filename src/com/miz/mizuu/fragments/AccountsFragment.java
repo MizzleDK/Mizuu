@@ -141,21 +141,22 @@ public class AccountsFragment extends Fragment {
 						editor.putString("traktPassword", MizLib.SHA1(password));
 						editor.commit();
 
-						getActivity().runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								Toast.makeText(getActivity(), getString(R.string.loginSucceeded), Toast.LENGTH_LONG).show();
+						if (isAdded())
+							getActivity().runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									Toast.makeText(getActivity(), getString(R.string.loginSucceeded), Toast.LENGTH_LONG).show();
 
-								traktUser.setEnabled(false);
-								traktPass.setEnabled(false);
-								syncTrakt.setEnabled(true);
+									traktUser.setEnabled(false);
+									traktPass.setEnabled(false);
+									syncTrakt.setEnabled(true);
 
-								traktLogIn.setEnabled(false);
-								traktRemoveAccount.setEnabled(true);
+									traktLogIn.setEnabled(false);
+									traktRemoveAccount.setEnabled(true);
 
-								startServices();
-							}
-						});
+									startServices();
+								}
+							});
 					} else {
 						if (isAdded())
 							getActivity().runOnUiThread(new Runnable() {
