@@ -91,7 +91,7 @@ public class ShowDetails extends FragmentActivity implements ActionBar.TabListen
 		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
 			showId = getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY);
 		} else {
-			showId = getIntent().getExtras().getString("showId");
+			showId = getIntent().getStringExtra("showId");
 		}
 
 		Cursor cursor = dbHelper.getShow(showId);
