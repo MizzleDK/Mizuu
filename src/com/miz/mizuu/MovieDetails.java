@@ -145,17 +145,20 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 		} finally {
 			cursor.close();
 		}
-
-		if (thisMovie == null)
-			finish(); // Finish the activity if the movie doesn't load
-
-		// The the row ID again, if the MovieDetails activity was launched based on a TMDB ID
-		movieId = Integer.parseInt(thisMovie.getRowId());
-
-		try {
-			setTitle(thisMovie.getTitle());
-			getActionBar().setSubtitle(thisMovie.getReleaseYear().replace("(", "").replace(")", ""));
-		} catch (Exception e) {
+		
+		if (thisMovie != null) {
+			// The the row ID again, if the MovieDetails activity was launched based on a TMDB ID
+			movieId = Integer.parseInt(thisMovie.getRowId());
+			
+			try {
+				setTitle(thisMovie.getTitle());
+				getActionBar().setSubtitle(thisMovie.getReleaseYear().replace("(", "").replace(")", ""));
+			} catch (Exception e) {
+				Toast.makeText(this, getString(R.string.errorSomethingWentWrong) + " (movie ID: " + movieId + ")", Toast.LENGTH_SHORT).show();
+				finish();
+			}
+		} else {
+			Toast.makeText(this, getString(R.string.errorSomethingWentWrong) + " (movie ID: " + movieId + ")", Toast.LENGTH_SHORT).show();
 			finish();
 		}
 	}
