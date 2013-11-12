@@ -175,10 +175,8 @@ public class ShowDetails extends FragmentActivity implements ActionBar.TabListen
 				i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 				i.setClass(getApplicationContext(), MainTvShows.class);
 				startActivity(i);
-
-				finish();
-			} else			
-				onBackPressed();
+			}
+			finish();
 
 			return true;
 		case R.id.menuDeleteShow:
