@@ -39,6 +39,7 @@ import com.miz.functions.AspectRatioImageViewCover;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
+import com.miz.functions.MovieVersion;
 import com.miz.mizuu.DbAdapter;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -125,6 +126,10 @@ public class MovieDetailsFragment extends Fragment {
 		} finally {
 			cursor.close();
 		}
+		
+		if (db.hasMultipleVersions(thisMovie.getTmdbId())) {
+			thisMovie.setMultipleVersions(db.getRowIdsForMovie(thisMovie.getTmdbId()));
+		}
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-backdrop-change"));
@@ -178,7 +183,15 @@ public class MovieDetailsFragment extends Fragment {
 		textPlot.setText(thisMovie.getPlot());
 
 		// Set the movie file source
-		textSrc.setText(thisMovie.getFilepath());
+		if (thisMovie.hasMultipleVersions()) {
+			String sources = "";
+			MovieVersion[] versions = thisMovie.getMultipleVersions();
+			for (MovieVersion version : versions)
+				sources = sources + MizLib.transformSmbPath(version.getFilepath()) + "\n\n";
+			textSrc.setText(sources.trim());
+		} else {
+			textSrc.setText(thisMovie.getFilepath());
+		}
 
 		// Set movie tag line
 		if (thisMovie.getTagline().equals("NOTAGLINE") || thisMovie.getTagline().isEmpty())

@@ -907,7 +907,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					String first = "", second = "";
 
 					if (o1.getReleasedate() != null)
-						first = o1.getReleasedate().replace("-", "").replace("/", "");
+						first = o1.getReleasedate().replace("-", "").replace("/", ""); // TODO FIX THIS. It shouldn't be possible to have dates with '/'
 
 					if (!(first.equals("null") | first.isEmpty()))
 						firstDate = Integer.valueOf(first);

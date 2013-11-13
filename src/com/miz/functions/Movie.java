@@ -10,6 +10,7 @@ import com.miz.mizuu.R;
 
 public class Movie extends MediumBaseMovie {
 
+	private MovieVersion[] mVersions = new MovieVersion[0];
 	private String PLOT, TAGLINE, IMDB_ID, TRAILER, COVER;
 
 	public Movie(Context context, String rowId, String filepath, String title, String plot, String tagline, String tmdbId, String imdbId, String rating, String releasedate,
@@ -168,5 +169,17 @@ public class Movie extends MediumBaseMovie {
 			}
 		} catch (Exception e) {}
 		return "";
+	}
+	
+	public void setMultipleVersions(MovieVersion[] rowIds) {
+		mVersions = rowIds;
+	}
+	
+	public MovieVersion[] getMultipleVersions() {
+		return mVersions;
+	}
+	
+	public boolean hasMultipleVersions() {
+		return mVersions.length > 1;
 	}
 }

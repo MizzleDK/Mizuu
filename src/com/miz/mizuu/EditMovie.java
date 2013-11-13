@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.miz.functions.MovieVersion;
+
 public class EditMovie extends Activity {
 
 	private DbAdapter dbHelper;
@@ -25,6 +27,7 @@ public class EditMovie extends Activity {
 	private TextView release;
 	private EditText title, tagline, plot, runtime, rating, genres;
 	private Spinner certification;
+	private String tmdbId;
 	private String[] certifications = new String[]{"G", "PG", "PG-13", "R", "NC-17", "X", "Unknown"};
 
 	@Override
@@ -47,6 +50,7 @@ public class EditMovie extends Activity {
 		certification = (Spinner) findViewById(R.id.certificationSpinner);
 
 		rowID = getIntent().getExtras().getInt("rowId");
+		tmdbId = getIntent().getExtras().getString("tmdbId");
 
 		// Create and open database
 		dbHelper = MizuuApplication.getMovieAdapter();
@@ -135,8 +139,16 @@ public class EditMovie extends Activity {
 		if (rating.getText().toString().isEmpty())
 			rating.setText("0.0");
 
-		dbHelper.editUpdateMovie(rowID, title.getText().toString(), plot.getText().toString(), rating.getText().toString(), tagline.getText().toString(),
-				release.getText().toString(), certifications[certification.getSelectedItemPosition()], runtime.getText().toString(), genres.getText().toString(), "0", "0", String.valueOf(System.currentTimeMillis()));
+		if (dbHelper.hasMultipleVersions(tmdbId)) {
+			MovieVersion[] versions = dbHelper.getRowIdsForMovie(tmdbId);
+			for (MovieVersion version : versions) {
+				dbHelper.editUpdateMovie(version.getRowId(), title.getText().toString(), plot.getText().toString(), rating.getText().toString(), tagline.getText().toString(),
+						release.getText().toString(), certifications[certification.getSelectedItemPosition()], runtime.getText().toString(), genres.getText().toString(), "0", "0", String.valueOf(System.currentTimeMillis()));
+			}
+		} else {
+			dbHelper.editUpdateMovie(rowID, title.getText().toString(), plot.getText().toString(), rating.getText().toString(), tagline.getText().toString(),
+					release.getText().toString(), certifications[certification.getSelectedItemPosition()], runtime.getText().toString(), genres.getText().toString(), "0", "0", String.valueOf(System.currentTimeMillis()));
+		}		
 
 		setResult(4);
 		finish();

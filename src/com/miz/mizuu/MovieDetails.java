@@ -41,6 +41,7 @@ import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.miz.functions.DeleteFile;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
+import com.miz.functions.MovieVersion;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
 import com.miz.widgets.MovieBackdropWidgetProvider;
@@ -54,7 +55,7 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 	private Movie thisMovie;
 	private DbAdapter db;
 	private boolean ignorePrefixes, prefsRemoveMoviesFromWatchlist, ignoreDeletedFiles, ignoreNfo;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -145,11 +146,15 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 		} finally {
 			cursor.close();
 		}
-		
+
 		if (thisMovie != null) {
 			// The the row ID again, if the MovieDetails activity was launched based on a TMDB ID
 			movieId = Integer.parseInt(thisMovie.getRowId());
-			
+
+			if (db.hasMultipleVersions(thisMovie.getTmdbId())) {
+				thisMovie.setMultipleVersions(db.getRowIdsForMovie(thisMovie.getTmdbId()));
+			}
+
 			try {
 				setTitle(thisMovie.getTitle());
 				getActionBar().setSubtitle(thisMovie.getReleaseYear().replace("(", "").replace(")", ""));
@@ -221,10 +226,9 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 				i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 				i.setClass(getApplicationContext(), MainMovies.class);
 				startActivity(i);
+			}
 
-				finish();
-			} else			
-				onBackPressed();
+			finish();
 
 			return true;
 		case R.id.share:
@@ -260,18 +264,37 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 		.setCancelable(false)
 		.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				boolean deleted = false;
 
-				if (ignoreDeletedFiles)
-					deleted = db.ignoreMovie(Long.valueOf(thisMovie.getRowId()));
-				else
-					deleted = db.deleteMovie(Long.valueOf(thisMovie.getRowId()));
+				boolean deleted = true;
+				if (thisMovie.hasMultipleVersions()) {
+					MovieVersion[] versions = thisMovie.getMultipleVersions();
+					for (MovieVersion version : versions) {
+						if (ignoreDeletedFiles)
+							deleted = deleted && db.ignoreMovie(Long.valueOf(version.getRowId()));
+						else
+							deleted = deleted && db.deleteMovie(Long.valueOf(version.getRowId()));
+					}
+				} else {
+					if (ignoreDeletedFiles)
+						deleted = db.ignoreMovie(Long.valueOf(thisMovie.getRowId()));
+					else
+						deleted = db.deleteMovie(Long.valueOf(thisMovie.getRowId()));
+				}
 
 				if (deleted) {
 					if (cb.isChecked()) {
-						Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
-						deleteIntent.putExtra("filepath", thisMovie.getFilepath());
-						getApplicationContext().startService(deleteIntent);
+						if (thisMovie.hasMultipleVersions()) {
+							MovieVersion[] versions = thisMovie.getMultipleVersions();
+							for (MovieVersion version : versions) {
+								Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
+								deleteIntent.putExtra("filepath", version.getFilepath());
+								getApplicationContext().startService(deleteIntent);
+							}
+						} else {						
+							Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
+							deleteIntent.putExtra("filepath", thisMovie.getFilepath());
+							getApplicationContext().startService(deleteIntent);
+						}
 					}
 
 					boolean movieExists = db.movieExists(thisMovie.getTmdbId());
@@ -333,7 +356,16 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 	public void favAction(MenuItem item) {
 		thisMovie.setFavourite(!thisMovie.isFavourite()); // Reverse the favourite boolean
 
-		if (db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_FAVOURITE, thisMovie.getFavourite())) {
+		boolean success = true;
+		if (thisMovie.hasMultipleVersions()) {
+			MovieVersion[] versions = thisMovie.getMultipleVersions();
+			for (MovieVersion version : versions)
+				success = success && db.updateMovieSingleItem(Long.valueOf(version.getRowId()), DbAdapter.KEY_FAVOURITE, thisMovie.getFavourite());
+		} else {
+			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_FAVOURITE, thisMovie.getFavourite());
+		}
+
+		if (success) {
 			invalidateOptionsMenu();
 
 			if (thisMovie.isFavourite()) {
@@ -360,7 +392,16 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 	public void watched(MenuItem item) {
 		thisMovie.setHasWatched(!thisMovie.hasWatched()); // Reverse the hasWatched boolean
 
-		if (db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_HAS_WATCHED, thisMovie.getHasWatched())) {
+		boolean success = true;
+		if (thisMovie.hasMultipleVersions()) {
+			MovieVersion[] versions = thisMovie.getMultipleVersions();
+			for (MovieVersion version : versions)
+				success = success && db.updateMovieSingleItem(Long.valueOf(version.getRowId()), DbAdapter.KEY_HAS_WATCHED, thisMovie.getHasWatched());
+		} else {
+			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_HAS_WATCHED, thisMovie.getHasWatched());
+		}
+
+		if (success) {
 			invalidateOptionsMenu();
 
 			if (thisMovie.hasWatched()) {
@@ -389,7 +430,16 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 	public void watchList(MenuItem item) {
 		thisMovie.setToWatch(!thisMovie.toWatch()); // Reverse the toWatch boolean
 
-		if (db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch())) {
+		boolean success = true;
+		if (thisMovie.hasMultipleVersions()) {
+			MovieVersion[] versions = thisMovie.getMultipleVersions();
+			for (MovieVersion version : versions)
+				success = success && db.updateMovieSingleItem(Long.valueOf(version.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+		} else {
+			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+		}
+
+		if (success) {
 			invalidateOptionsMenu();
 
 			if (thisMovie.toWatch()) {
@@ -415,7 +465,16 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 	public void removeFromWatchlist() {
 		thisMovie.setToWatch(false); // Remove it
 
-		if (db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch())) {
+		boolean success = true;
+		if (thisMovie.hasMultipleVersions()) {
+			MovieVersion[] versions = thisMovie.getMultipleVersions();
+			for (MovieVersion version : versions)
+				success = success && db.updateMovieSingleItem(Long.valueOf(version.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+		} else {
+			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+		}
+
+		if (success) {
 			invalidateOptionsMenu();
 			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-library-change"));
 		}
@@ -625,6 +684,7 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 	public void showEditMenu(MenuItem mi) {
 		Intent intent = new Intent(this, EditMovie.class);
 		intent.putExtra("rowId", Integer.valueOf(thisMovie.getRowId()));
+		intent.putExtra("tmdbId", thisMovie.getTmdbId());
 		startActivityForResult(intent, 1);
 	}
 

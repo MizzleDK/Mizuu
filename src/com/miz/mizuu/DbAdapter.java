@@ -1,5 +1,7 @@
 package com.miz.mizuu;
 
+import com.miz.functions.MovieVersion;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -171,6 +173,29 @@ public class DbAdapter {
 		if (mCursor.getCount() == 0)
 			return false;
 		return true;
+	}
+	
+	public boolean hasMultipleVersions(String movieId) {
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
+		if (mCursor == null)
+			return false;
+		return mCursor.getCount() > 1;
+	}
+	
+	public MovieVersion[] getRowIdsForMovie(String movieId) {
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
+		if (mCursor == null)
+			return null;
+		
+		MovieVersion[] results = new MovieVersion[mCursor.getCount()];
+		int count = 0;
+		while (mCursor.moveToNext()) {
+			results[count] = new MovieVersion(Integer.valueOf(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_ROWID))),
+					mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)));
+			count++;
+		}
+		
+		return results;
 	}
 
 	public Cursor fetchRowId(String movieUrl) {
