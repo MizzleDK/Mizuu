@@ -3,11 +3,11 @@ package com.miz.mizuu.fragments;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import com.miz.db.DbAdapter;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
-import com.miz.mizuu.DbAdapter;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;

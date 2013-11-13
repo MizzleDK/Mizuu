@@ -87,17 +87,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.miz.mizuu.DbAdapterSources;
-import com.miz.mizuu.DbAdapterTvShow;
-import com.miz.mizuu.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterSources;
+import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.Support;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowEpisode;
-import com.miz.mizuu.UpdateMovieService;
-import com.miz.mizuu.UpdateShowsService;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
+import com.miz.service.UpdateMovieService;
+import com.miz.service.UpdateShowsService;
 
 @SuppressLint("NewApi")
 public class MizLib {
@@ -385,6 +385,16 @@ public class MizLib {
 		params.setMargins(0, mActionBarHeight, 0, 0);
 		v.setLayoutParams(params);
 	}
+	
+	public static void addNavigationBarPadding(Context c, View v) {
+		v.setPadding(0, 0, 0, getNavigationBarHeight(c));
+	}
+	
+	public static void addNavigationBarMargin(Context c, View v) {
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		params.setMargins(0, 0, 0, getNavigationBarHeight(c));
+		v.setLayoutParams(params);
+	}
 
 	public static boolean isGoogleTV(Context context) {
 		return context.getPackageManager().hasSystemFeature("com.google.android.tv");
@@ -432,6 +442,10 @@ public class MizLib {
 
 	public static boolean hasJellyBeanMR2() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+	}
+	
+	public static boolean hasKitKat() {
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 	}
 
 	public static int getThumbnailNotificationSize(Context c) {
@@ -2799,5 +2813,14 @@ public class MizLib {
 		if (smbPath.contains("smb") && smbPath.contains("@"))
 			return "smb://" + smbPath.substring(smbPath.indexOf("@") + 1);
 		return smbPath.replace("/smb:/", "smb://");
+	}
+	
+	public static int getNavigationBarHeight(Context context) {
+	    Resources resources = context.getResources();
+	    int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+	    if (resourceId > 0) {
+	        return resources.getDimensionPixelSize(resourceId);
+	    }
+	    return 0;
 	}
 }

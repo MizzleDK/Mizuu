@@ -1,4 +1,4 @@
-package com.miz.mizuu;
+package com.miz.functions;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,9 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.miz.functions.MizFile;
-import com.miz.functions.Movie;
-import com.miz.functions.TMDbMovie;
+import com.miz.db.DbAdapter;
+import com.miz.mizuu.MizuuApplication;
 
 public class NfoMovie {
 

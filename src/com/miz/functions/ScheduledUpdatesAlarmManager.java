@@ -8,8 +8,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
-import com.miz.mizuu.UpdateMovieService;
-import com.miz.mizuu.UpdateShowsService;
+import com.miz.service.UpdateMovieService;
+import com.miz.service.UpdateShowsService;
 
 public class ScheduledUpdatesAlarmManager {
 

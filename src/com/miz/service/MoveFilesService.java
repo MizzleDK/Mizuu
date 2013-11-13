@@ -1,8 +1,9 @@
-package com.miz.functions;
+package com.miz.service;
 
 import java.io.File;
 import java.io.IOException;
 
+import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 import com.miz.mizuu.SplashScreen;
 

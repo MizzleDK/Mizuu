@@ -3,10 +3,12 @@ package com.miz.mizuu;
 import java.util.Calendar;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.os.Bundle;
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapter;
+
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +21,7 @@ import android.widget.TextView;
 
 import com.miz.functions.MovieVersion;
 
-public class EditMovie extends Activity {
+public class EditMovie extends MizActivity {
 
 	private DbAdapter dbHelper;
 	private Cursor cursor;

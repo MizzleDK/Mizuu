@@ -392,9 +392,11 @@
     <string name="searchMoviesFromMizuu">Search movies from Mizuu</string>
     <string name="searchTvShowsFromMizuu">Search TV shows from Mizuu</string>
     <string name="loadImagesWhileScrolling">Load images while scrolling</string>
-    <string name="loadImagesWhileScrollingDescription">May result in lag while scrolling.</string>
+    <string name="loadImagesWhileScrollingDescription">May result in lag while scrolling. Requires application restart.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Unwatched shows</string>
     <string name="loading_movie_parts">Loading movie parts</string>
     <string name="few_moments">This may take a few moments…</string>
+    <string name="fullscreenMode">Fullscreen mode</string>
+    <string name="fullscreenModeDescription">Force the application to be in fullscreen mode. Requires application restart.</string>
 
 </resources>

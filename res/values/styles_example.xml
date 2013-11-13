@@ -24,6 +24,11 @@
         <item name="android:windowBackground">@null</item>
     </style>
 
+    <style name="Theme.Example.NoBackGround.FullScreen" parent="@style/Theme.Example">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
     <style name="Theme.Example" parent="@android:style/Theme.Holo">
         <item name="android:listSelector">@drawable/list_selector</item>
         <item name="android:windowBackground">@drawable/bg</item>
@@ -36,6 +41,21 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_example</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_example</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Example</item>
+    </style>
+
+    <style name="Theme.Example.FullScreen" parent="@android:style/Theme.Holo">
+        <item name="android:listSelector">@drawable/list_selector</item>
+        <item name="android:windowBackground">@drawable/bg</item>
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_example</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Example</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Example</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Example</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Example</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_example</item>
+        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_example</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Example</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="ActionBar.Solid.Example" parent="@android:style/Widget.Holo.ActionBar.Solid">

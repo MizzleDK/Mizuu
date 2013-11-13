@@ -2,7 +2,7 @@ package com.miz.functions;
 
 import java.io.File;
 
-import com.miz.mizuu.DbAdapterSources;
+import com.miz.db.DbAdapterSources;
 
 public class FileSource {
 	private long rowId;

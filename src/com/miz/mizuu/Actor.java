@@ -5,7 +5,7 @@ import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -19,7 +19,7 @@ import com.miz.mizuu.fragments.ActorMoviesFragment;
 import com.miz.mizuu.fragments.ActorPhotosFragment;
 import com.miz.mizuu.R;
 
-public class Actor extends FragmentActivity implements ActionBar.TabListener {
+public class Actor extends MizActivity implements ActionBar.TabListener {
 
 	private ViewPager awesomePager;
 	private String actorId, actorName;

@@ -1,4 +1,4 @@
-package com.miz.functions;
+package com.miz.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +15,9 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.miz.mizuu.DbAdapter;
+import com.miz.db.DbAdapter;
+import com.miz.functions.MizLib;
+import com.miz.functions.Movie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 

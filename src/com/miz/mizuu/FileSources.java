@@ -2,7 +2,6 @@ package com.miz.mizuu;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,6 +10,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapterSources;
+
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,7 +28,7 @@ import android.widget.TextView;
 
 import com.miz.functions.FileSource;
 
-public class FileSources extends Activity {
+public class FileSources extends MizActivity {
 
 	private ArrayList<FileSource> sources = new ArrayList<FileSource>();
 	private ListView list;

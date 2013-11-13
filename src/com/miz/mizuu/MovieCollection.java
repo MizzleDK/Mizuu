@@ -3,13 +3,13 @@ package com.miz.mizuu;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 
 import com.miz.mizuu.fragments.CollectionLibraryFragment;
 
-public class MovieCollection extends FragmentActivity {
+public class MovieCollection extends MizActivity {
 	
 	private static String TAG = "CollectionLibraryFragment";
 	

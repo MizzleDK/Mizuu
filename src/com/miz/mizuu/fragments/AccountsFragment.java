@@ -31,9 +31,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miz.functions.MizLib;
-import com.miz.functions.TraktMoviesSyncService;
-import com.miz.functions.TraktTvShowsSyncService;
 import com.miz.mizuu.R;
+import com.miz.service.TraktMoviesSyncService;
+import com.miz.service.TraktTvShowsSyncService;
 
 public class AccountsFragment extends Fragment {
 

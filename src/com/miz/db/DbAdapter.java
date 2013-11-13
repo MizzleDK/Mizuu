@@ -1,4 +1,4 @@
-package com.miz.mizuu;
+package com.miz.db;
 
 import com.miz.functions.MovieVersion;
 

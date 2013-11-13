@@ -1,4 +1,4 @@
-package com.miz.mizuu;
+package com.miz.service;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -30,11 +30,16 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterSources;
+import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizFile;
 import com.miz.functions.MizLib;
-import com.miz.functions.TraktTvShowsSyncService;
+import com.miz.mizuu.CancelUpdateDialog;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;

@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -15,7 +15,7 @@ import android.view.Window;
 
 import com.miz.mizuu.fragments.ActorPhotoFragment;
 
-public class ImageViewer extends FragmentActivity {
+public class ImageViewer extends MizActivity {
 
 	private ViewPager awesomePager;
 	private String[] photos;

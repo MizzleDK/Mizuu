@@ -15,6 +15,7 @@
             android:title="@string/ignoreMoviePrefixes" />
         <CheckBoxPreference android:title="@string/showMediaAppsNavDrawer" android:summary="@string/showMediaAppsNavDrawerDesc" android:key="showMediaApps" android:icon="@drawable/ic_action_emo_basic" android:defaultValue="true"/>
         <CheckBoxPreference android:summary="@string/loadImagesWhileScrollingDescription" android:title="@string/loadImagesWhileScrolling" android:key="prefsLoadImagesWhileScrolling" android:defaultValue="false" android:icon="@drawable/backdrops"/>
+        <CheckBoxPreference android:summary="@string/fullscreenModeDescription" android:defaultValue="false" android:title="@string/fullscreenMode" android:icon="@drawable/ic_action_expand" android:key="prefsFullscreen"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:enabled="@bool/isNotGoogleTV"

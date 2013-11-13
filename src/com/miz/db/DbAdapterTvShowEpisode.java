@@ -1,4 +1,4 @@
-package com.miz.mizuu;
+package com.miz.db;
 
 import android.content.ContentValues;
 import android.content.Context;

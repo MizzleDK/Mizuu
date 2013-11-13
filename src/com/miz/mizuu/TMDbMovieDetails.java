@@ -12,7 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -30,7 +30,7 @@ import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.RelatedMoviesFragment;
 import com.miz.mizuu.fragments.TmdbMovieDetailsFragment;
 
-public class TMDbMovieDetails extends FragmentActivity implements ActionBar.TabListener {
+public class TMDbMovieDetails extends MizActivity implements ActionBar.TabListener {
 
 	private ViewPager awesomePager;
 	private String movieId;
@@ -40,7 +40,10 @@ public class TMDbMovieDetails extends FragmentActivity implements ActionBar.TabL
 		super.onCreate(savedInstanceState);
 		
 		if (!MizLib.runsInPortraitMode(this))
-			setTheme(R.style.Theme_Example_NoBackGround);
+			if (isFullscreen())
+				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
+			else
+				setTheme(R.style.Theme_Example_NoBackGround);
 		
 		if (!MizLib.runsInPortraitMode(this))
 			getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);

@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapterTvShowEpisode;
+
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -16,7 +18,7 @@ import android.view.MenuItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.ShowEpisodeDetailsFragment;
 
-public class EpisodeDetails extends FragmentActivity {
+public class EpisodeDetails extends MizActivity {
 
 	private ViewPager awesomePager;
 	private ArrayList<TvShowEpisode> episodes = new ArrayList<TvShowEpisode>();

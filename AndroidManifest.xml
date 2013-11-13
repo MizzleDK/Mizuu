@@ -281,14 +281,14 @@
             android:label="@string/settings_name" >
         </activity>
 
-        <service android:name="com.miz.mizuu.UpdateShowsService" />
-        <service android:name="com.miz.mizuu.UpdateMovieService" />
-        <service android:name="com.miz.mizuu.TheMovieDB" />
-        <service android:name="com.miz.mizuu.TheTVDB" />
-        <service android:name="com.miz.functions.DeleteFile" />
-        <service android:name="com.miz.functions.MoveFilesService" />
-        <service android:name="com.miz.functions.TraktMoviesSyncService" />
-        <service android:name="com.miz.functions.TraktTvShowsSyncService" />
+        <service android:name="com.miz.service.UpdateShowsService" />
+        <service android:name="com.miz.service.UpdateMovieService" />
+        <service android:name="com.miz.service.TheMovieDB" />
+        <service android:name="com.miz.service.TheTVDBDB" />
+        <service android:name="com.miz.service.DeleteFile" />
+        <service android:name="com.miz.service.MoveFilesService" />
+        <service android:name="com.miz.service.TraktMoviesSyncService" />
+        <service android:name="com.miz.service.TraktTvShowsSyncService" />
 
         <!-- Update activity -->
         <activity

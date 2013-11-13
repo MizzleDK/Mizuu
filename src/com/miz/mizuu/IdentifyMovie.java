@@ -10,7 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,10 +39,11 @@ import com.miz.functions.DecryptedMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
+import com.miz.service.TheMovieDB;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class IdentifyMovie extends FragmentActivity {
+public class IdentifyMovie extends MizActivity {
 
 	public String filename;
 	private ArrayList<Result> results = new ArrayList<Result>();

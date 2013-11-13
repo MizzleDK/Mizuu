@@ -35,12 +35,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.db.DbAdapter;
 import com.miz.functions.AspectRatioImageViewCover;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.functions.MovieVersion;
-import com.miz.mizuu.DbAdapter;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -172,7 +172,7 @@ public class MovieDetailsFragment extends Fragment {
 		textTagline = (TextView) view.findViewById(R.id.textView6);
 		textCertification = (TextView) view.findViewById(R.id.textView11);
 		cover = (AspectRatioImageViewCover) view.findViewById(R.id.traktIcon);
-
+		
 		// Set the movie title
 		textTitle.setVisibility(View.VISIBLE);
 		textTitle.setText(thisMovie.getTitle());

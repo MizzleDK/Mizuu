@@ -22,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
@@ -38,17 +37,19 @@ import android.widget.Toast;
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
-import com.miz.functions.DeleteFile;
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapter;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.functions.MovieVersion;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
+import com.miz.service.DeleteFile;
 import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
 
-public class MovieDetails extends FragmentActivity implements ActionBar.TabListener {
+public class MovieDetails extends MizActivity implements ActionBar.TabListener {
 
 	private ViewPager awesomePager;
 	private int movieId;
@@ -61,7 +62,10 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 		super.onCreate(savedInstanceState);
 
 		if (!MizLib.runsInPortraitMode(this))
-			setTheme(R.style.Theme_Example_NoBackGround);
+			if (isFullscreen())
+				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
+			else
+				setTheme(R.style.Theme_Example_NoBackGround);
 
 		if (!MizLib.runsInPortraitMode(this))
 			getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
@@ -108,7 +112,6 @@ public class MovieDetails extends FragmentActivity implements ActionBar.TabListe
 
 		// Set up database and open it
 		db = MizuuApplication.getMovieAdapter();
-
 
 		Cursor cursor = null;
 		try {

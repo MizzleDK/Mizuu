@@ -14,7 +14,7 @@ import android.widget.RemoteViewsService;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.miz.mizuu.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;

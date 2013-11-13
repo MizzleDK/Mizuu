@@ -33,16 +33,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.miz.functions.DeleteFile;
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.ImageLoad;
 import com.miz.functions.MizLib;
-import com.miz.mizuu.DbAdapter;
-import com.miz.mizuu.DbAdapterTvShow;
-import com.miz.mizuu.DbAdapterTvShowEpisode;
 import com.miz.mizuu.IdentifyTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.R;
+import com.miz.service.DeleteFile;
 import com.test.smbstreamer.variant1.Streamer;
 
 public class ShowEpisodeDetailsFragment extends Fragment {

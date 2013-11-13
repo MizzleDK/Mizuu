@@ -29,9 +29,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.db.DbAdapterSources;
 import com.miz.functions.MizLib;
 import com.miz.functions.NetworkFile;
-import com.miz.mizuu.DbAdapterSources;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 

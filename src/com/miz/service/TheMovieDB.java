@@ -1,4 +1,4 @@
-package com.miz.mizuu;
+package com.miz.service;
 
 import java.io.File;
 import java.util.Locale;
@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.miz.db.DbAdapter;
 import com.miz.functions.DecryptedMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;

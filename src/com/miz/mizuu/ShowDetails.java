@@ -13,7 +13,10 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShowEpisode;
+
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
@@ -29,7 +32,7 @@ import com.miz.mizuu.fragments.ActorBrowserFragmentTv;
 import com.miz.mizuu.fragments.ShowDetailsFragment;
 import com.miz.mizuu.fragments.ShowEpisodesFragment;
 
-public class ShowDetails extends FragmentActivity implements ActionBar.TabListener {
+public class ShowDetails extends MizActivity implements ActionBar.TabListener {
 
 	private ViewPager awesomePager;
 	private TvShow thisShow;
@@ -41,7 +44,10 @@ public class ShowDetails extends FragmentActivity implements ActionBar.TabListen
 		super.onCreate(savedInstanceState);
 
 		if (!MizLib.runsInPortraitMode(this))
-			setTheme(R.style.Theme_Example_NoBackGround);
+			if (isFullscreen())
+				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
+			else
+				setTheme(R.style.Theme_Example_NoBackGround);
 
 		if (!MizLib.runsInPortraitMode(this))
 			getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);

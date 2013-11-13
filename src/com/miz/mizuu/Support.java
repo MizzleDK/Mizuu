@@ -5,13 +5,13 @@ import java.util.Locale;
 
 import android.animation.ObjectAnimator;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
+import com.miz.base.MizActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Support extends Activity {
+public class Support extends MizActivity {
 
 	private Spinner subject;
 	private EditText message;

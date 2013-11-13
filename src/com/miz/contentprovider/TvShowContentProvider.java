@@ -13,8 +13,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.miz.db.DbAdapterTvShow;
 import com.miz.functions.MizLib;
-import com.miz.mizuu.DbAdapterTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 

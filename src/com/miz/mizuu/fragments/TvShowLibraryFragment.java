@@ -47,15 +47,15 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbHelperTvShow;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.ImageLoadingErrorListener;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
-import com.miz.mizuu.DbAdapterTvShow;
-import com.miz.mizuu.DbAdapterTvShowEpisode;
-import com.miz.mizuu.DbHelperTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;

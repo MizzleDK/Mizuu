@@ -3,6 +3,9 @@ package com.miz.mizuu;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import com.miz.service.UpdateMovieService;
+import com.miz.service.UpdateShowsService;
+
 import android.view.View;
 import android.widget.Toast;
 

@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
@@ -21,7 +21,7 @@ import com.miz.mizuu.fragments.CollectionCoverSearchFragment;
 import com.miz.mizuu.fragments.CoverSearchFragment;
 import com.miz.mizuu.fragments.FanartSearchFragment;
 
-public class MovieCoverFanartBrowser extends FragmentActivity implements ActionBar.TabListener  {
+public class MovieCoverFanartBrowser extends MizActivity implements ActionBar.TabListener  {
 
 	private int coverCount, backdropCount, collectionCount, startPosition;
 	private String tmdbId, collectionId;

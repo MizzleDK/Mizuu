@@ -15,9 +15,9 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.miz.db.DbAdapter;
 import com.miz.functions.MizLib;
 import com.miz.functions.SmallMovie;
-import com.miz.mizuu.DbAdapter;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 

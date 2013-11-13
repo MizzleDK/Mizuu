@@ -13,9 +13,9 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.miz.db.DbAdapter;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
-import com.miz.mizuu.DbAdapter;
 import com.miz.mizuu.MizuuApplication;
 
 public class MovieContentProvider extends SearchRecentSuggestionsProvider {

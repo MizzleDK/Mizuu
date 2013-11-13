@@ -1,4 +1,4 @@
-package com.miz.mizuu;
+package com.miz.service;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -36,10 +36,15 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterSources;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizFile;
 import com.miz.functions.MizLib;
-import com.miz.functions.TraktMoviesSyncService;
+import com.miz.functions.NfoMovie;
+import com.miz.mizuu.CancelUpdateDialog;
+import com.miz.mizuu.MizuuApplication;
+import com.miz.mizuu.R;
 import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
@@ -135,7 +140,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		@Override
 		public void run() {
 			setup();
-			
+
 			// Remove unavailable movies, so we can try to identify them again
 			removeUnidentifiedMovies();
 
@@ -423,10 +428,10 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TITLE))));
 			} catch (NullPointerException e) {}
 		}
-		
+
 		tempCursor.close();
 		ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
-		
+
 		for (int i = 0; i < dbMovies.size(); i++) {
 			if (dbMovies.get(i).isNetworkFile()) {
 				if (MizLib.isWifiConnected(getApplicationContext(), prefsDisableEthernetWiFiCheck)) {
@@ -470,7 +475,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 				}
 			}
 		}
-		
+
 		dbMovies.clear();
 		filesources.clear();
 	}
@@ -551,8 +556,10 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 
 		int count = deletedMovies.size();
 		for (int i = 0; i < count; i++) {
-			MizLib.deleteFile(new File(deletedMovies.get(i).getThumbnail()));
-			MizLib.deleteFile(new File(deletedMovies.get(i).getBackdrop()));
+			if (!db.movieExists(deletedMovies.get(i).getTmdbId())) {
+				MizLib.deleteFile(new File(deletedMovies.get(i).getThumbnail()));
+				MizLib.deleteFile(new File(deletedMovies.get(i).getBackdrop()));
+			}
 		}
 
 		// Clean up
@@ -595,7 +602,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 			this.rowId = rowId;
 			this.tmdbId = tmdbId;
 		}
-		
+
 		public DbMovie(String filepath, long rowId, String tmdbId, String runtime, String year, String genres, String title) {
 			this.filepath = filepath;
 			this.rowId = rowId;
@@ -623,35 +630,39 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		public String getBackdrop() {
 			return new File(MizLib.getMovieBackdropFolder(getApplicationContext()), tmdbId + "_bg.jpg").getAbsolutePath();
 		}
-		
+
 		public String getRuntime() {
 			return runtime;
 		}
-		
+
 		public String getReleaseYear() {
 			return year;
 		}
-		
+
 		public String getGenres() {
 			return genres;
 		}
-		
+
 		public String getTitle() {
 			return title;
 		}
-		
+
 		public boolean isUnidentified() {
 			if (getRuntime().equals("0")
 					&& MizLib.isEmpty(getReleaseYear())
 					&& MizLib.isEmpty(getGenres())
 					&& MizLib.isEmpty(getTitle()))
 				return true;
-			
+
 			return false;
 		}
 
 		public boolean isNetworkFile() {
 			return getFilepath().contains("smb:/");
+		}
+		
+		public String getTmdbId() {
+			return tmdbId;
 		}
 	}
 }

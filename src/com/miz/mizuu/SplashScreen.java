@@ -4,20 +4,22 @@ import java.io.IOException;
 import java.util.Locale;
 
 import com.miz.functions.MizLib;
-import com.miz.functions.MoveFilesService;
 import com.miz.mizuu.R;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
+import com.miz.service.MoveFilesService;
+import com.miz.service.UpdateMovieService;
+import com.miz.service.UpdateShowsService;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import com.miz.base.MizActivity;
 import android.widget.Toast;
 
-public class SplashScreen extends Activity {
+public class SplashScreen extends MizActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

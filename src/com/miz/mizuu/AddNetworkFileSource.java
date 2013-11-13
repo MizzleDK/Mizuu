@@ -2,13 +2,13 @@ package com.miz.mizuu;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 
 import com.miz.mizuu.fragments.NetworkBrowserFragment;
 
-public class AddNetworkFileSource extends FragmentActivity {
+public class AddNetworkFileSource extends MizActivity {
 
 	private static String TAG = "NetworkBrowserFragment";
 	

@@ -24,8 +24,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.miz.db.DbAdapterSources;
 import com.miz.functions.MizLib;
-import com.miz.mizuu.DbAdapterSources;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 

@@ -14,8 +14,8 @@ import android.widget.RemoteViewsService;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.miz.db.DbAdapter;
 import com.miz.functions.SmallMovie;
-import com.miz.mizuu.DbAdapter;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 

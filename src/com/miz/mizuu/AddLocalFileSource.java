@@ -3,13 +3,13 @@ package com.miz.mizuu;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 
 import com.miz.mizuu.fragments.FileBrowserFragment;
 
-public class AddLocalFileSource extends FragmentActivity {
+public class AddLocalFileSource extends MizActivity {
 
 	private static String TAG = "FileBrowserFragment";
 	

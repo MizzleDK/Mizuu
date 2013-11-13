@@ -19,7 +19,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.FragmentActivity;
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterTvShow;
+
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -38,7 +41,7 @@ import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
 
 @SuppressLint("NewApi")
-public class MainMenuActivity extends FragmentActivity implements OnSharedPreferenceChangeListener {
+public class MainMenuActivity extends MizActivity implements OnSharedPreferenceChangeListener {
 
 	public static final int MOVIES = 1, SHOWS = 2, WATCHLIST = 3, WEB_MOVIES = 5, WEB_VIDEOS = 6;
 	private int mNumMovies, mNumShows, mNumWatchlist;

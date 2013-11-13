@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterTvShow;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 

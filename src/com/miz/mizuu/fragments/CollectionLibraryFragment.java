@@ -48,6 +48,8 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import com.miz.db.DbAdapter;
+import com.miz.db.DbHelper;
 import com.miz.functions.CoverItem;
 import com.miz.functions.FileSource;
 import com.miz.functions.ImageLoadingErrorListener;
@@ -55,8 +57,6 @@ import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
-import com.miz.mizuu.DbAdapter;
-import com.miz.mizuu.DbHelper;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.Preferences;

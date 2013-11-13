@@ -2,7 +2,6 @@ package com.miz.mizuu;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,6 +10,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShowEpisode;
+
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -27,7 +30,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class UnidentifiedFiles extends Activity {
+public class UnidentifiedFiles extends MizActivity {
 
 	private ArrayList<TvShowEpisode> episodes = new ArrayList<TvShowEpisode>();
 	private ListView mList;

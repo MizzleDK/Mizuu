@@ -4,6 +4,8 @@
     <style name="MizuuTheme" parent="android:Theme.Holo">
         <item name="android:windowBackground">@drawable/bg</item>
         <item name="android:actionBarStyle">@style/MizuuActionBar</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="MizuuActionBar" parent="@android:style/Widget.Holo.ActionBar">

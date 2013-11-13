@@ -1,8 +1,11 @@
-package com.miz.functions;
+package com.miz.service;
 
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
+import com.miz.functions.FileSource;
+import com.miz.functions.MizLib;
 
 import jcifs.smb.SmbFile;
 

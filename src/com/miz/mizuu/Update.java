@@ -1,11 +1,11 @@
 package com.miz.mizuu;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import com.miz.base.MizActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
@@ -13,8 +13,10 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.miz.functions.MizLib;
+import com.miz.service.UpdateMovieService;
+import com.miz.service.UpdateShowsService;
 
-public class Update extends Activity {
+public class Update extends MizActivity {
 
 	private CheckBox checkBox, checkBox2;
 	private Editor editor;

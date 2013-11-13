@@ -1,4 +1,4 @@
-package com.miz.mizuu;
+package com.miz.service;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,12 +15,16 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.DecryptedShowEpisode;
 import com.miz.functions.Episode;
 import com.miz.functions.MizLib;
 import com.miz.functions.TheTVDb;
 import com.miz.functions.Tvshow;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.mizuu.TvShow;
 import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;

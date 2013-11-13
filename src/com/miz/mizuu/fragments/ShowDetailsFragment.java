@@ -20,10 +20,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.miz.db.DbAdapterTvShow;
 import com.miz.functions.AspectRatioImageViewCover;
 import com.miz.functions.ImageLoad;
 import com.miz.functions.MizLib;
-import com.miz.mizuu.DbAdapterTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;

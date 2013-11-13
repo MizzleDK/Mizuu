@@ -17,9 +17,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.Movie;
-import com.miz.mizuu.DbAdapter;
-import com.miz.mizuu.DbAdapterTvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.R;

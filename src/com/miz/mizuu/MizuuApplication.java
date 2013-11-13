@@ -11,6 +11,10 @@ import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterSources;
+import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.CifsImageDownloader;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;

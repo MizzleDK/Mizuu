@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Random;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -15,6 +14,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterTvShow;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,7 +40,7 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 import com.miz.functions.MizLib;
 
-public class Welcome extends Activity implements ViewFactory {
+public class Welcome extends MizActivity implements ViewFactory {
 
 	private long interval = 10000;
 	private int mNumMovies, mNumShows, mNumWatchlist, index = -1;
@@ -58,7 +61,7 @@ public class Welcome extends Activity implements ViewFactory {
 
 		confirmExit = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsConfirmBackPress", false);
 
-		requestWindowFeature(Window.FEATURE_NO_TITLE); 
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE); // This works on API level 13 as well

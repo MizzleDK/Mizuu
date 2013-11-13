@@ -11,11 +11,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.miz.db.DbAdapter;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.functions.WebMovie;
-import com.miz.mizuu.DbAdapter;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.TMDbMovieDetails;
