@@ -505,24 +505,34 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	}
 
 	private void showUnwatchedShows() {
+		
+		shownShows.clear();
+		
 		new AsyncTask<Void, Void, Void>() {
+			ArrayList<TvShow> tempShows = new ArrayList<TvShow>();
+			
 			@Override
 			protected void onPreExecute() {
 				showProgressBar();
 			}
 
 			@Override
-			protected Void doInBackground(Void... params) {
-				shownShows.clear();
+			protected Void doInBackground(Void... params) {				
 				DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
 				for (int i = 0; i < shows.size(); i++)
 					if (db.hasUnwatchedEpisodes(shows.get(i).getId()))
-						shownShows.add(shows.get(i));
+						tempShows.add(shows.get(i));
 				return null;
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
+				shownShows.addAll(tempShows);
+				
+				// Clean up...
+				tempShows.clear();
+				tempShows = null;
+				
 				sortShows();
 				notifyDataSetChanged();
 				hideProgressBar();
