@@ -232,7 +232,7 @@ public class MainMenuActivity extends MizActivity {
 
 		menu.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, false, MainMovies.class));
 		menu.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, false, MainTvShows.class));
-		menu.add(new MenuItem(getString(R.string.drawerMyWatchlist), mNumWatchlist, false, MainWatchlist.class));
+		menu.add(new MenuItem(getString(R.string.chooserWatchList), mNumWatchlist, false, MainWatchlist.class));
 		menu.add(new MenuItem(getString(R.string.drawerOnlineMovies), 0, false, MovieDiscovery.class));
 		menu.add(new MenuItem(getString(R.string.drawerWebVideos), 0, false, MainWeb.class));
 
@@ -357,7 +357,7 @@ public class MainMenuActivity extends MizActivity {
 			convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.menu_drawer_item, null);
 			TextView title = (TextView) convertView.findViewById(R.id.title);
 			if (MizLib.runsOnTablet(getApplicationContext()))
-				title.setTextSize(24f);
+				title.setTextSize(22f);
 			TextView description = (TextView) convertView.findViewById(R.id.count);
 
 			description.setTypeface(tfLight);
@@ -388,7 +388,7 @@ public class MainMenuActivity extends MizActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (startup.equals("0") && !mDrawerLayout.isDrawerOpen(mDrawerList) && MizLib.runsOnTablet(this)) { // Welcome screen
+		if (startup.equals("0") && !mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && MizLib.runsOnTablet(this)) { // Welcome screen
 			Intent i = new Intent(Intent.ACTION_VIEW);
 			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			i.setClass(getApplicationContext(), Welcome.class);

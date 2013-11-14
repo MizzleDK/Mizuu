@@ -80,6 +80,7 @@ public class SplashScreen extends MizActivity {
 		}
 
 		startActivity(i);
+		
 		finish();
 	}
 

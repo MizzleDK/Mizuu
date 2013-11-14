@@ -2865,6 +2865,10 @@ public class MizLib {
 			if (latestMovie.lastModified() > latestShow.lastModified())
 				return latestMovie.getAbsolutePath();
 			return latestShow.getAbsolutePath();
+		} else if (latestMovie != null) {
+			return latestMovie.getAbsolutePath();
+		} else if (latestShow != null) {
+			return latestShow.getAbsolutePath();
 		}
 		return "";
 	}
