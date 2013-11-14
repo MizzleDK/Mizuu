@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="75"
-    android:versionName="2.4.3" >
+    android:versionCode="76"
+    android:versionName="2.5-beta1" >
 
     <uses-sdk
         android:minSdkVersion="13"

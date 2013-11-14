@@ -3,6 +3,7 @@ package com.miz.functions;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,7 +59,12 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -385,11 +391,11 @@ public class MizLib {
 		params.setMargins(0, mActionBarHeight, 0, 0);
 		v.setLayoutParams(params);
 	}
-	
+
 	public static void addNavigationBarPadding(Context c, View v) {
 		v.setPadding(0, 0, 0, getNavigationBarHeight(c));
 	}
-	
+
 	public static void addNavigationBarMargin(Context c, View v) {
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		params.setMargins(0, 0, 0, getNavigationBarHeight(c));
@@ -443,7 +449,7 @@ public class MizLib {
 	public static boolean hasJellyBeanMR2() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
 	}
-	
+
 	public static boolean hasKitKat() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 	}
@@ -2024,6 +2030,12 @@ public class MizLib {
 		return f;
 	}
 
+	public static File getCacheFolder(Context c) {
+		File f = new File(c.getExternalFilesDir(null) + "/app_cache");
+		f.mkdirs();
+		return f;
+	}
+
 	public static void copyFile(File src, File dst) throws IOException {
 		InputStream in = new FileInputStream(src);
 		OutputStream out = new FileOutputStream(dst);
@@ -2814,13 +2826,67 @@ public class MizLib {
 			return "smb://" + smbPath.substring(smbPath.indexOf("@") + 1);
 		return smbPath.replace("/smb:/", "smb://");
 	}
-	
+
 	public static int getNavigationBarHeight(Context context) {
-	    Resources resources = context.getResources();
-	    int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-	    if (resourceId > 0) {
-	        return resources.getDimensionPixelSize(resourceId);
-	    }
-	    return 0;
+		Resources resources = context.getResources();
+		int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+		if (resourceId > 0) {
+			return resources.getDimensionPixelSize(resourceId);
+		}
+		return 0;
+	}
+
+	public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
+		Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
+				.getHeight(), Config.ARGB_8888);
+		Canvas canvas = new Canvas(output);
+
+		final int color = 0xff424242;
+		final Paint paint = new Paint();
+		final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+		final RectF rectF = new RectF(rect);
+		final float roundPx = pixels;
+
+		paint.setAntiAlias(true);
+		canvas.drawARGB(0, 0, 0, 0);
+		paint.setColor(color);
+		canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+		canvas.drawBitmap(bitmap, rect, rect, paint);
+
+		return output;
+	}
+
+	public static String getLatestBackdropPath(Context c) {
+		File latestMovie = lastFileModified(getMovieBackdropFolder(c));
+		File latestShow = lastFileModified(getTvShowBackdropFolder(c));
+		if (latestMovie != null && latestShow != null) {
+			if (latestMovie.lastModified() > latestShow.lastModified())
+				return latestMovie.getAbsolutePath();
+			return latestShow.getAbsolutePath();
+		}
+		return "";
+	}
+
+	public static File lastFileModified(File dir) {
+		File[] files = dir.listFiles(new FileFilter() {			
+			public boolean accept(File file) {
+				return file.isFile();
+			}
+		});
+
+		if (files != null) {
+			long lastMod = Long.MIN_VALUE;
+			File choice = null;
+			for (File file : files) {
+				if (file.lastModified() > lastMod) {
+					choice = file;
+					lastMod = file.lastModified();
+				}
+			}
+			return choice;
+		}
+		return null;
 	}
 }

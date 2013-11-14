@@ -398,5 +398,12 @@
     <string name="few_moments">This may take a few moments…</string>
     <string name="fullscreenMode">Fullscreen mode</string>
     <string name="fullscreenModeDescription">Force the application to be in fullscreen mode. Requires application restart.</string>
+    <string name="drawerMyMovies">My Movies</string>
+    <string name="drawerMyTvShows">My TV Shows</string>
+    <string name="drawerMyWatchlist">My Watchlist</string>
+    <string name="drawerOnlineMovies">Online Movies</string>
+    <string name="drawerWebVideos">Web Videos</string>
+    <string name="myLibraries">My Libraries</string>
+    <string name="greeting">Greetings</string>
 
 </resources>

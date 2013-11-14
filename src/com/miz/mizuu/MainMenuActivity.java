@@ -1,5 +1,6 @@
 package com.miz.mizuu;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,10 +12,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -37,21 +38,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.functions.AsyncTask;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
 
 @SuppressLint("NewApi")
-public class MainMenuActivity extends MizActivity implements OnSharedPreferenceChangeListener {
+public class MainMenuActivity extends MizActivity {
 
-	public static final int MOVIES = 1, SHOWS = 2, WATCHLIST = 3, WEB_MOVIES = 5, WEB_VIDEOS = 6;
-	private int mNumMovies, mNumShows, mNumWatchlist;
-	private Typeface tf;
+	public static final int MOVIES = 0, SHOWS = 1, WATCHLIST = 2, WEB_MOVIES = 3, WEB_VIDEOS = 4;
+	private int mNumMovies, mNumShows, mNumWatchlist, selectedIndex;
+	private Typeface tf, tfLight;
 	private DrawerLayout mDrawerLayout;
 	protected ListView mDrawerList;
+	private TextView tab1, tab2;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private DbAdapter dbHelper;
 	private DbAdapterTvShow dbHelperTv;
-	private boolean confirmExit, hasTriedOnce = false, showMediaApps;
+	private boolean confirmExit, hasTriedOnce = false;
 	private String startup;
 	private ArrayList<MenuItem> menu = new ArrayList<MenuItem>(), thirdPartyApps = new ArrayList<MenuItem>();
 
@@ -59,42 +62,52 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.drawer_test);
+		setContentView(R.layout.menu_drawer);
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		confirmExit = settings.getBoolean("prefsConfirmBackPress", false);
 		startup = settings.getString("prefsStartup", "1");
-		showMediaApps = settings.getBoolean("showMediaApps", true);
-		settings.registerOnSharedPreferenceChangeListener(this);
 
 		dbHelper = MizuuApplication.getMovieAdapter();
 		dbHelperTv = MizuuApplication.getTvDbAdapter();
 
 		tf = Typeface.createFromAsset(getAssets(), "Roboto-Thin.ttf");
+		tfLight = Typeface.createFromAsset(getAssets(), "Roboto-Light.ttf");
 
 		setupMenuItems();
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_list_shadow, GravityCompat.START);
 
-		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		setupUserDetails();
+
+		((TextView) findViewById(R.id.username)).setTextSize(26f);
+		((TextView) findViewById(R.id.username)).setTypeface(tf);
+
+		tab1 = (TextView) findViewById(R.id.tab1);
+		tab2 = (TextView) findViewById(R.id.tab2);
+
+		tab1.setSelected(true);
+
+		mDrawerList = (ListView) findViewById(R.id.listView1);
 		mDrawerList.setAdapter(new MenuAdapter());
 		mDrawerList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (menu.get(arg2).isThirdPartyApp()) {
-					final PackageManager pm = getPackageManager();
-					Intent i = pm.getLaunchIntentForPackage(menu.get(arg2).getPackageName());
-					if (i != null) {
-						i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-						startActivity(i);
-					}
-				} else {
+				if (tab1.isSelected()) {
 					Intent i = new Intent();
 					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 					i.setClass(getApplicationContext(), menu.get(arg2).getClassName());
 					startActivity(i);
 					overridePendingTransition(R.anim.mainfadein, R.anim.splashfadeout);
+				} else {
+					final PackageManager pm = getPackageManager();
+					Intent i = pm.getLaunchIntentForPackage(thirdPartyApps.get(arg2).getPackageName());
+					if (i != null) {
+						i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(i);
+					}
+					mDrawerList.setItemChecked(arg2, false);
 				}
 			}
 		});
@@ -121,6 +134,79 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
 	}
 
+	private AsyncTask<Void, Void, Void> asyncLoader;
+
+	private void setupUserDetails() {
+
+		if (asyncLoader != null)
+			asyncLoader.cancel(true);
+		asyncLoader = new AsyncTask<Void, Void, Void>() {
+			private Bitmap cover = null, profile = null;
+			private String full_name;
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				String filepath = MizLib.getLatestBackdropPath(getApplicationContext());
+
+				int width = MizLib.convertDpToPixels(getApplicationContext(), 320),
+						height = MizLib.convertDpToPixels(getApplicationContext(), 170);
+
+				if (!isCancelled()) {
+					if (!MizLib.isEmpty(filepath)) {
+						cover = MizLib.decodeSampledBitmapFromFile(filepath, width, height);
+					} else {
+						cover = MizLib.decodeSampledBitmapFromResource(getResources(), R.drawable.cover_image, width, height);
+					}
+				}
+
+				full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("traktFullName", "");
+
+				if (!isCancelled()) {
+					if (!MizLib.isEmpty(full_name)) {
+						int size = MizLib.convertDpToPixels(getApplicationContext(), 50);
+						if (new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").exists())
+							profile = MizLib.getRoundedCornerBitmap(
+									MizLib.decodeSampledBitmapFromFile(new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath(), size, size),
+									size);
+					}
+				}
+
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				if (!isCancelled()) {
+					if (cover != null)
+						((ImageView) findViewById(R.id.userCover)).setImageBitmap(cover);
+
+					if (profile != null) {
+						((ImageView) findViewById(R.id.userPhoto)).setImageBitmap(profile);
+						((TextView) findViewById(R.id.username)).setText(full_name);
+					}
+				}
+
+				cover = null;
+				profile = null;
+			}
+		}.execute();
+	}
+
+	public void myLibraries(View v) {
+		tab1.setSelected(true);
+		tab2.setSelected(false);
+		((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
+		mDrawerList.setItemChecked(selectedIndex, true);
+	}
+
+	public void mediaApps(View v) {
+		tab1.setSelected(false);
+		tab2.setSelected(true);
+		((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
+		selectedIndex = mDrawerList.getCheckedItemPosition();
+		mDrawerList.setItemChecked(mDrawerList.getCheckedItemPosition(), false);
+	}
+
 	private void setupThirdPartyApps() {
 		thirdPartyApps.clear();
 
@@ -129,35 +215,28 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 
 		for (ApplicationInfo ai : packages) {
 			if (MizLib.isMediaApp(ai)) {
-				thirdPartyApps.add(new MenuItem(pm.getApplicationLabel(ai).toString(), pm.getApplicationIcon(ai), 0, false, ai.packageName));
+				thirdPartyApps.add(new MenuItem(pm.getApplicationLabel(ai).toString(), 0, false, ai.packageName));
 			}
 		}
 
 		Collections.sort(thirdPartyApps, new Comparator<MenuItem>() {
 			@Override
 			public int compare(MenuItem o1, MenuItem o2) {
-				return o1.getStringTitle().compareToIgnoreCase(o2.getStringTitle());
+				return o1.getTitle().compareToIgnoreCase(o2.getTitle());
 			}
 		});
 	}
 
 	private void setupMenuItems() {
 		menu.clear();
-		menu.add(new MenuItem(R.string.stringLocal, 0, 0, true, null));
-		menu.add(new MenuItem(R.string.chooserMovies, R.drawable.ic_action_movie, mNumMovies, false, MainMovies.class));
-		menu.add(new MenuItem(R.string.chooserTVShows, R.drawable.ic_action_tv, mNumShows, false, MainTvShows.class));
-		menu.add(new MenuItem(R.string.chooserWatchList, R.drawable.ic_action_list_2, mNumWatchlist, false, MainWatchlist.class));
-		menu.add(new MenuItem(R.string.stringDiscover, 0, 0, true, null));
-		menu.add(new MenuItem(R.string.chooserMovies, R.drawable.ic_action_movie, 0, false, MovieDiscovery.class));
-		menu.add(new MenuItem(R.string.chooserWebVideos, R.drawable.ic_action_globe, 0, false, MainWeb.class));
 
-		if (showMediaApps) {
-			setupThirdPartyApps();
-			if (thirdPartyApps.size() > 0) {
-				menu.add(new MenuItem(R.string.installed_media_apps, 0, 0, true, null));
-				menu.addAll(thirdPartyApps);
-			}
-		}
+		menu.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, false, MainMovies.class));
+		menu.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, false, MainTvShows.class));
+		menu.add(new MenuItem(getString(R.string.drawerMyWatchlist), mNumWatchlist, false, MainWatchlist.class));
+		menu.add(new MenuItem(getString(R.string.drawerOnlineMovies), 0, false, MovieDiscovery.class));
+		menu.add(new MenuItem(getString(R.string.drawerWebVideos), 0, false, MainWeb.class));
+
+		setupThirdPartyApps();
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -168,8 +247,10 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 	};
 
 	protected void selectListIndex(int index) {
-		if (!menu.get(index).isThirdPartyApp())
+		if (!menu.get(index).isThirdPartyApp()) {
+			selectedIndex = index;
 			mDrawerList.setItemChecked(index, true);
+		}
 	}
 
 	@Override
@@ -204,7 +285,6 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 	public void onDestroy() {
 		// Unregister since the activity is about to be closed.
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 
 		super.onDestroy();
 	}
@@ -244,7 +324,7 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 
 		@Override
 		public int getCount() {
-			return menu.size();
+			return tab1.isSelected() ? menu.size() : thirdPartyApps.size();
 		}
 
 		@Override
@@ -259,52 +339,51 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 
 		@Override
 		public int getViewTypeCount() {
-			return 2;
+			return 1;
 		}
 
 		@Override
 		public int getItemViewType(int position) {
-			return menu.get(position).isHeader() ? 0 : 1;
+			return 0;
 		}
 
 		@Override
 		public boolean isEnabled(int position) {
-			return menu.get(position).isHeader() ? false : true;
+			return true;
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			if (menu.get(position).isHeader()) {
-				convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row_header, null);
-				((TextView) convertView.findViewById(R.id.options)).setText(getString(menu.get(position).getTitle()));
-				return convertView;
+			convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.menu_drawer_item, null);
+			TextView title = (TextView) convertView.findViewById(R.id.title);
+			if (MizLib.runsOnTablet(getApplicationContext()))
+				title.setTextSize(24f);
+			TextView description = (TextView) convertView.findViewById(R.id.count);
+
+			description.setTypeface(tfLight);
+			description.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
+			title.setTypeface(tfLight);
+			title.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
+			if (getMenuItem(position).isThirdPartyApp()) {
+				title.setText(getMenuItem(position).getTitle());
 			} else {
-				convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row, null);
-				ImageView icon = (ImageView) convertView.findViewById(R.id.row_icon);
-				TextView title = (TextView) convertView.findViewById(R.id.row_title);
-				if (MizLib.runsOnTablet(getApplicationContext()))
-					title.setTextSize(26f);
-				TextView description = (TextView) convertView.findViewById(R.id.local_movie_count);
-
-				title.setTypeface(tf);
-				title.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
-				if (menu.get(position).isThirdPartyApp()) {
-					icon.setImageDrawable(menu.get(position).getDrawable());
-					icon.setPadding(8, 8, 8, 8);
-					title.setText(menu.get(position).getStringTitle());
-				} else {
-					icon.setImageResource(menu.get(position).getIcon());
-					title.setText(getString(menu.get(position).getTitle()));
-				}
-				if (menu.get(position).getCount() > 0)
-					description.setText(String.valueOf(menu.get(position).getCount()));
-				else
-					description.setVisibility(View.GONE);
-
-				return convertView;
+				title.setText(getMenuItem(position).getTitle());
 			}
-		}	
+			if (getMenuItem(position).getCount() > 0)
+				description.setText(String.valueOf(getMenuItem(position).getCount()));
+			else
+				description.setVisibility(View.GONE);
+
+			return convertView;
+		}
+
+		private MenuItem getMenuItem(int position) {
+			if (tab1.isSelected())
+				return menu.get(position);
+			return thirdPartyApps.get(position);
+		}
 	}
 
 	@Override
@@ -317,7 +396,7 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 			finish();
 		}
 
-		if (!mDrawerLayout.isDrawerOpen(mDrawerList) && confirmExit) {
+		if (!mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && confirmExit) {
 			if (hasTriedOnce) {
 				super.onBackPressed();
 			} else {
@@ -326,16 +405,6 @@ public class MainMenuActivity extends MizActivity implements OnSharedPreferenceC
 			}
 		} else {
 			super.onBackPressed();
-		}
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals("showMediaApps")) {
-			showMediaApps = sharedPreferences.getBoolean("showMediaApps", true);
-
-			setupMenuItems();
-			((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
 		}
 	}
 }

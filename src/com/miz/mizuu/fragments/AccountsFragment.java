@@ -1,5 +1,6 @@
 package com.miz.mizuu.fragments;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 import com.miz.service.TraktMoviesSyncService;
@@ -65,7 +67,7 @@ public class AccountsFragment extends Fragment {
 		traktLogIn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				traktLogin();
+				new TraktLogin().execute();
 			}
 		});
 		traktRemoveAccount = (Button) v.findViewById(R.id.traktRemoveAccount);
@@ -106,15 +108,48 @@ public class AccountsFragment extends Fragment {
 		}
 	}
 
-	public void traktLogin() {	
-		new Thread() {
-			@Override
-			public void run() {
-				String username = traktUser.getText().toString().trim(), password = traktPass.getText().toString().trim();
-				boolean success = false;
+	private class TraktLogin extends AsyncTask<Void, Void, Boolean> {
 
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost("http://api.trakt.tv/account/test/" + MizLib.TRAKT_API);
+		private String username, password;
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			username = traktUser.getText().toString().trim();
+			password = traktPass.getText().toString().trim();
+
+			boolean success = false;
+
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost("http://api.trakt.tv/account/test/" + MizLib.TRAKT_API);
+
+			try {
+				// Add your data
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+				nameValuePairs.add(new BasicNameValuePair("username", username));
+				nameValuePairs.add(new BasicNameValuePair("password", MizLib.SHA1(password)));
+				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+				ResponseHandler<String> responseHandler = new BasicResponseHandler();
+				String html = httpclient.execute(httppost, responseHandler);
+
+				JSONObject jObject = new JSONObject(html);
+
+				String status = jObject.getString("status");
+				success = status.equals("success");
+
+			} catch (Exception e) {
+				success = false;
+			}
+
+			if (success) {
+
+				Editor editor = settings.edit();
+				editor.putString("traktUsername", username);
+				editor.putString("traktPassword", MizLib.SHA1(password));
+				editor.commit();
+
+				httpclient = new DefaultHttpClient();
+				httppost = new HttpPost("http://api.trakt.tv/user/profile.json/" + MizLib.TRAKT_API + "/" + username);
 
 				try {
 					// Add your data
@@ -128,47 +163,44 @@ public class AccountsFragment extends Fragment {
 
 					JSONObject jObject = new JSONObject(html);
 
-					String status = jObject.getString("status");
-					success = status.equals("success");
+					String name = jObject.getString("full_name");
+					String avatar = jObject.getString("avatar");
+
+					editor.putString("traktFullName", name);
+					editor.commit();
+
+					if (isAdded() && !avatar.contains("avatar-large.jpg"))
+						MizLib.downloadFile(avatar, new File(MizLib.getCacheFolder(getActivity()), "avatar.jpg").getAbsolutePath());
 
 				} catch (Exception e) {
 					success = false;
-				} finally {
-					if (success) {
-						Editor editor = settings.edit();
-
-						editor.putString("traktUsername", username);
-						editor.putString("traktPassword", MizLib.SHA1(password));
-						editor.commit();
-
-						if (isAdded())
-							getActivity().runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									Toast.makeText(getActivity(), getString(R.string.loginSucceeded), Toast.LENGTH_LONG).show();
-
-									traktUser.setEnabled(false);
-									traktPass.setEnabled(false);
-									syncTrakt.setEnabled(true);
-
-									traktLogIn.setEnabled(false);
-									traktRemoveAccount.setEnabled(true);
-
-									startServices();
-								}
-							});
-					} else {
-						if (isAdded())
-							getActivity().runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									Toast.makeText(getActivity(), getString(R.string.failedToLogin), Toast.LENGTH_LONG).show();
-								}
-							});
-					}
 				}
 			}
-		}.start();
+
+			return success;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean success) {
+			if (success) {
+				if (isAdded()) {
+					Toast.makeText(getActivity(), getString(R.string.loginSucceeded), Toast.LENGTH_LONG).show();
+
+					traktUser.setEnabled(false);
+					traktPass.setEnabled(false);
+					syncTrakt.setEnabled(true);
+
+					traktLogIn.setEnabled(false);
+					traktRemoveAccount.setEnabled(true);
+
+					startServices();
+				}
+			} else {
+				if (isAdded())
+					Toast.makeText(getActivity(), getString(R.string.failedToLogin), Toast.LENGTH_LONG).show();
+			}
+		}
+
 	}
 
 	public void traktRemove() {
