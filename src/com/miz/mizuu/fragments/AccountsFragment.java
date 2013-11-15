@@ -169,7 +169,7 @@ public class AccountsFragment extends Fragment {
 					editor.putString("traktFullName", name);
 					editor.commit();
 
-					if (isAdded() && !avatar.contains("avatar-large.jpg"))
+					if (isAdded() && (avatar.contains("gravatar") || (avatar.contains("trakt") && !avatar.contains("avatar-large.jpg"))))
 						MizLib.downloadFile(avatar, new File(MizLib.getCacheFolder(getActivity()), "avatar.jpg").getAbsolutePath());
 
 				} catch (Exception e) {

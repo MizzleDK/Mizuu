@@ -112,7 +112,7 @@ public class MainMenuActivity extends MizActivity {
 				}
 			}
 		});
-		
+
 		if (savedInstanceState != null && savedInstanceState.containsKey("tabIndex")) {
 			selectedIndex = savedInstanceState.getInt("selectedIndex");
 			changeTabSelection(savedInstanceState.getInt("tabIndex"));
@@ -184,6 +184,11 @@ public class MainMenuActivity extends MizActivity {
 							profile = MizLib.getRoundedCornerBitmap(
 									MizLib.decodeSampledBitmapFromFile(new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath(), size, size),
 									size);
+					} else {
+						int size = MizLib.convertDpToPixels(getApplicationContext(), 50);
+						profile = MizLib.getRoundedCornerBitmap(
+								MizLib.decodeSampledBitmapFromResource(getResources(), R.drawable.unknown_user, size, size),
+								size);
 					}
 				}
 
@@ -196,10 +201,11 @@ public class MainMenuActivity extends MizActivity {
 					if (cover != null)
 						((ImageView) findViewById(R.id.userCover)).setImageBitmap(cover);
 
-					if (profile != null) {
+					if (profile != null)
 						((ImageView) findViewById(R.id.userPhoto)).setImageBitmap(profile);
+
+					if (!MizLib.isEmpty(full_name))
 						((TextView) findViewById(R.id.username)).setText(full_name);
-					}
 				}
 
 				cover = null;

@@ -41,7 +41,7 @@
                 android:layout_height="60dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
-                android:background="#80000000"
+                android:background="@drawable/gradient_black_to_transparent"
                 android:gravity="center_vertical" >
 
                 <ImageView
@@ -49,7 +49,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginLeft="12dp"
-                    android:src="@drawable/photo" />
+                    android:src="@drawable/unknown_user" />
 
                 <TextView
                     android:id="@+id/username"
