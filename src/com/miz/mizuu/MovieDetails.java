@@ -505,8 +505,14 @@ public class MovieDetails extends MizActivity implements ActionBar.TabListener {
 			}
 		} else {
 			if (!MizLib.isEmpty(thisMovie.getTrailer())) {
-				Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, MizLib.YOUTUBE_API, MizLib.getYouTubeId(thisMovie.getTrailer()), 0, false, true);
-				startActivity(intent);
+				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getApplicationContext()).equals(YouTubeInitializationResult.SUCCESS)) {
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, MizLib.YOUTUBE_API, MizLib.getYouTubeId(thisMovie.getTrailer()), 0, false, true);
+					startActivity(intent);
+				} else {
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse(thisMovie.getTrailer()));
+					startActivity(intent);
+				}
 			} else {
 				Toast.makeText(this, getString(R.string.searching), Toast.LENGTH_SHORT).show();
 				new TmdbTrailerSearch().execute(thisMovie.getTmdbId());
