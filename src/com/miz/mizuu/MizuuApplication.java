@@ -38,7 +38,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 	public void onCreate() {
 		super.onCreate();
 		
-		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "true");
+		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "false");
 
 		if (!(0 != ( getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)))
 			Crashlytics.start(this);

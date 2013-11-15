@@ -79,15 +79,16 @@ public class MainMenuActivity extends MizActivity {
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_list_shadow, GravityCompat.START);
 
-		setupUserDetails();
+		if (!MizLib.runsOnTablet(this) && !MizLib.runsInPortraitMode(this)) {
+			findViewById(R.id.personalizedArea).setVisibility(View.GONE);
+		} else
+			setupUserDetails();
 
 		((TextView) findViewById(R.id.username)).setTextSize(26f);
 		((TextView) findViewById(R.id.username)).setTypeface(tf);
 
 		tab1 = (TextView) findViewById(R.id.tab1);
 		tab2 = (TextView) findViewById(R.id.tab2);
-
-		tab1.setSelected(true);
 
 		mDrawerList = (ListView) findViewById(R.id.listView1);
 		mDrawerList.setAdapter(new MenuAdapter());
@@ -111,6 +112,13 @@ public class MainMenuActivity extends MizActivity {
 				}
 			}
 		});
+		
+		if (savedInstanceState != null && savedInstanceState.containsKey("tabIndex")) {
+			selectedIndex = savedInstanceState.getInt("selectedIndex");
+			changeTabSelection(savedInstanceState.getInt("tabIndex"));
+		} else {
+			tab1.setSelected(true);
+		}
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		if (MizLib.hasICS())
@@ -132,6 +140,14 @@ public class MainMenuActivity extends MizActivity {
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		outState.putInt("tabIndex", tab1.isSelected() ? 0 : 1);
+		outState.putInt("selectedIndex", selectedIndex);
 	}
 
 	private AsyncTask<Void, Void, Void> asyncLoader;
@@ -192,19 +208,27 @@ public class MainMenuActivity extends MizActivity {
 		}.execute();
 	}
 
+	private void changeTabSelection(int index) {
+		if (index == 0) {
+			tab1.setSelected(true);
+			tab2.setSelected(false);
+			((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
+			mDrawerList.setItemChecked(selectedIndex, true);
+		} else {
+			tab1.setSelected(false);
+			tab2.setSelected(true);
+			((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
+			selectedIndex = mDrawerList.getCheckedItemPosition();
+			mDrawerList.setItemChecked(mDrawerList.getCheckedItemPosition(), false);
+		}
+	}
+
 	public void myLibraries(View v) {
-		tab1.setSelected(true);
-		tab2.setSelected(false);
-		((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
-		mDrawerList.setItemChecked(selectedIndex, true);
+		changeTabSelection(0);
 	}
 
 	public void mediaApps(View v) {
-		tab1.setSelected(false);
-		tab2.setSelected(true);
-		((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
-		selectedIndex = mDrawerList.getCheckedItemPosition();
-		mDrawerList.setItemChecked(mDrawerList.getCheckedItemPosition(), false);
+		changeTabSelection(1);
 	}
 
 	private void setupThirdPartyApps() {
