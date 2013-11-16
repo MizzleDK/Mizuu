@@ -153,7 +153,8 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (mAdapter != null) mAdapter.notifyDataSetChanged();
+		if (mAdapter != null)
+			mAdapter.notifyDataSetChanged();
 	}
 	
 	@Override

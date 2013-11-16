@@ -26,5 +26,4 @@ public class MainMovies extends MainMenuActivity {
 		
 		selectListIndex(MOVIES);
 	}
-	
 }

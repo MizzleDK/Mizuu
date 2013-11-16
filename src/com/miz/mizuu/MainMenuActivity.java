@@ -20,14 +20,12 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
-import com.miz.base.MizActivity;
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterTvShow;
-
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -38,12 +36,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.base.MizActivity;
+import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterTvShow;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
 
 @SuppressLint("NewApi")
-public class MainMenuActivity extends MizActivity {
+public abstract class MainMenuActivity extends MizActivity {
 
 	public static final int MOVIES = 0, SHOWS = 1, WATCHLIST = 2, WEB_MOVIES = 3, WEB_VIDEOS = 4;
 	private int mNumMovies, mNumShows, mNumWatchlist, selectedIndex;
@@ -131,9 +132,13 @@ public class MainMenuActivity extends MizActivity {
 				R.string.drawer_open,  /* "open drawer" description for accessibility */
 				R.string.drawer_close  /* "close drawer" description for accessibility */
 				) {
-			public void onDrawerClosed(View view) {}
+			public void onDrawerClosed(View view) {
+				invalidateOptionsMenu();
+			}
 
-			public void onDrawerOpened(View drawerView) {}
+			public void onDrawerOpened(View drawerView) {
+				invalidateOptionsMenu();
+			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
@@ -436,5 +441,16 @@ public class MainMenuActivity extends MizActivity {
 		} else {
 			super.onBackPressed();
 		}
+	}
+
+	public void showDrawerOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.drawer, menu);
+	}
+
+	public boolean isDrawerOpen() {
+		View v = findViewById(R.id.left_drawer);
+		if (v == null)
+			return false;
+		return mDrawerLayout.isDrawerOpen(v);
 	}
 }

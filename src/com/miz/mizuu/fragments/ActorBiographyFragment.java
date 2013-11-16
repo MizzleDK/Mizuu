@@ -198,7 +198,7 @@ public class ActorBiographyFragment extends Fragment {
 		@Override
 		protected Bitmap doInBackground(String... params) {
 			if (image != null)
-				return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(image, image.getWidth() / 3, image.getHeight() / 3, true), 4);
+				return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(image, image.getWidth() / 3, image.getHeight() / 3, false), 4);
 			return null;
 		}
 

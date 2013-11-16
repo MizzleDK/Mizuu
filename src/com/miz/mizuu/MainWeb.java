@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 import com.miz.mizuu.fragments.WebVideosViewPagerFragment;
-import com.miz.mizuu.R;
 
 public class MainWeb extends MainMenuActivity {
 

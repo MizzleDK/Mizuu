@@ -1,5 +1,6 @@
 package com.miz.contentprovider;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -52,7 +53,7 @@ public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 			List<TvShow> list = getSearchResults(query);
 			int n = 0;
 			for (TvShow show : list) {
-				cursor.addRow(createRow(Integer.valueOf(n), show.getTitle(), show.getFirstAirdateYear(), show.getThumbnail(), show.getId()));
+				cursor.addRow(createRow(Integer.valueOf(n), show.getTitle(), show.getFirstAirdateYear(), "'" + Uri.fromFile(new File(show.getThumbnail())) + "' AS " + SearchManager.SUGGEST_COLUMN_ICON_1, show.getId()));
 				n++;
 			}
 		} catch (Exception e) {

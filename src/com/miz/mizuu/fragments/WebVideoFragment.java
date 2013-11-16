@@ -78,7 +78,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 		
 		imageLoader = ImageLoader.getInstance();
 		options = MizuuApplication.getDefaultBackdropLoadingOptions();
-
+		
 		type = getArguments().getString("type");
 		if (type.equals(getString(R.string.choiceYouTube))) {
 			new GetYouTubeVideos().execute();
@@ -212,6 +212,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
+				holder.cover.setImageBitmap(null);
 			}
 
 			// Check the height matches our calculated column width
@@ -220,9 +221,9 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 			}
 
 			holder.text.setText(videos.get(position).getTitle());
-
+			
 			imageLoader.displayImage(videos.get(position).getUrl(), holder.cover, options);
-
+			
 			return convertView;
 		}
 
@@ -233,9 +234,6 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 		 * @param height
 		 */
 		public void setItemHeight(int height) {
-			if (height == mItemHeight) {
-				return;
-			}
 			mItemHeight = height;
 			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 0.45));
 			notifyDataSetChanged();
@@ -256,7 +254,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 			videos.clear();
 
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://gdata.youtube.com/feeds/api/standardfeeds/most_popular?time=today&alt=json&start-index=1&max-results=50");
+				JSONObject jObject = MizLib.getJSONObject("http://gdata.youtube.com/feeds/api/standardfeeds/most_popular?time=today&alt=json&start-index=1&max-results=50");
 				JSONObject jdata = jObject.getJSONObject("feed");
 				JSONArray aitems = jdata.getJSONArray("entry");
 
@@ -325,7 +323,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 			videos.clear();
 
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://gdata.youtube.com/feeds/api/users/TEDtalksDirector/uploads?alt=json&start-index=1&max-results=50");
+				JSONObject jObject = MizLib.getJSONObject("http://gdata.youtube.com/feeds/api/users/TEDtalksDirector/uploads?alt=json&start-index=1&max-results=50");
 				JSONObject jdata = jObject.getJSONObject("feed");
 				JSONArray aitems = jdata.getJSONArray("entry");
 

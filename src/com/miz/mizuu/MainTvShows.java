@@ -26,5 +26,4 @@ public class MainTvShows extends MainMenuActivity {
 		
 		selectListIndex(SHOWS);
 	}
-
 }

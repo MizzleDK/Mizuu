@@ -1,5 +1,6 @@
 package com.miz.contentprovider;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -52,7 +53,7 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 			List<MediumMovie> list = getSearchResults(query);
 			int n = 0;
 			for (MediumMovie movie : list) {
-				cursor.addRow(createRow(Integer.valueOf(n), movie.getTitle(), movie.getReleaseYear().replace("(", "").replace(")", ""), movie.getThumbnail(), movie.getRowId()));
+				cursor.addRow(createRow(Integer.valueOf(n), movie.getTitle(), movie.getReleaseYear().replace("(", "").replace(")", ""), "'" + Uri.fromFile(new File(movie.getThumbnail())) + "' AS " + SearchManager.SUGGEST_COLUMN_ICON_1, movie.getRowId()));
 				n++;
 			}
 		} catch (Exception e) {

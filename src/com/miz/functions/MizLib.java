@@ -27,12 +27,14 @@ import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -70,10 +72,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
@@ -769,29 +767,13 @@ public class MizLib {
 	}
 
 	/**
-	 * Returns a blurred bitmap. It uses RenderScript on API >16 and a fast blur algorithm on older devices.
+	 * Returns a blurred bitmap. It uses a fast blur algorithm.
 	 * @param context
 	 * @param sentBitmap
 	 * @param radius
 	 * @return
 	 */
 	public static Bitmap fastblur(Context context, Bitmap sentBitmap, int radius) {
-
-		if (hasJellyBeanMR1()) {
-			Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
-
-			final RenderScript rs = RenderScript.create(context);
-			final Allocation input = Allocation.createFromBitmap(rs, sentBitmap, Allocation.MipmapControl.MIPMAP_NONE,
-					Allocation.USAGE_SCRIPT);
-			final Allocation output = Allocation.createTyped(rs, input.getType());
-			final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-			script.setRadius(radius);
-			script.setInput(input);
-			script.forEach(output);
-			output.copyTo(bitmap);
-			return bitmap;
-		}
-
 		// Stack Blur v1.0 from
 		// http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
 		//
@@ -1066,13 +1048,24 @@ public class MizLib {
 
 	public static JSONObject getJSONObject(String url) {
 		try {
-			OkApacheClient httpclient = new OkApacheClient();
-			HttpGet httppost = new HttpGet(url);
-			httppost.setHeader("Accept", "application/json");
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			String html = httpclient.execute(httppost, responseHandler);
+			// Hack to work around bug with secure HTTP connections: https://github.com/square/okhttp/issues/184
+			if (url.startsWith("https")) {
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpGet httppost = new HttpGet(url);
+				httppost.setHeader("Accept", "application/json");
+				ResponseHandler<String> responseHandler = new BasicResponseHandler();
+				String html = httpclient.execute(httppost, responseHandler);
 
-			return new JSONObject(html);
+				return new JSONObject(html);
+			} else {
+				OkApacheClient httpclient = new OkApacheClient();
+				HttpGet httppost = new HttpGet(url);
+				httppost.setHeader("Accept", "application/json");
+				ResponseHandler<String> responseHandler = new BasicResponseHandler();
+				String html = httpclient.execute(httppost, responseHandler);
+				
+				return new JSONObject(html);
+			}
 		} catch (Exception e) {
 			return new JSONObject();
 		}

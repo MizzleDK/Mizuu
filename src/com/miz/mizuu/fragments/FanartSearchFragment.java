@@ -114,8 +114,7 @@ public class FanartSearchFragment extends Fragment {
 				new ViewTreeObserver.OnGlobalLayoutListener() {
 					@Override
 					public void onGlobalLayout() {
-						final int numColumns = (int) Math.floor(
-								mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+						final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 						if (numColumns > 0) {
 							final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 							mAdapter.setItemHeight(columnWidth);

@@ -22,15 +22,16 @@ import android.widget.TextView;
 
 import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
+import com.miz.mizuu.MainMenuActivity;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 
 public class WebVideosViewPagerFragment extends Fragment implements OnNavigationListener {
-	
+
 	private ActionBar actionBar;
 	private ViewPager awesomePager;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
-	
+
 	public WebVideosViewPagerFragment() {}
 
 	public static WebVideosViewPagerFragment newInstance() {		
@@ -40,13 +41,13 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-		
+
 		setHasOptionsMenu(true);
 		setRetainInstance(true);
-		
+
 		setupSpinnerItems();
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -56,14 +57,14 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setListNavigationCallbacks(new ActionBarSpinner(), this);
 	}
-	
+
 	private void setupSpinnerItems() {
 		spinnerItems.clear();
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserWebVideos), getString(R.string.choiceYouTube)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserWebVideos), getString(R.string.choiceReddit)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserWebVideos), getString(R.string.choiceTedTalks)));
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		return inflater.inflate(R.layout.viewpager, container, false);
@@ -72,7 +73,7 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
-		
+
 		awesomePager = (ViewPager) v.findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(3);
 		awesomePager.setAdapter(new WebVideosAdapter(getChildFragmentManager()));
@@ -88,17 +89,21 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 				actionBar.setSelectedNavigationItem(arg0);
 			}
 		});
-	
+
 		if (savedInstanceState != null) {
 			awesomePager.setCurrentItem(savedInstanceState.getInt("selectedIndex", 0));
 		}
 	}
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
+		} else
 		inflater.inflate(R.menu.menuweb, menu);
+		super.onCreateOptionsMenu(menu, inflater);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -109,23 +114,23 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 			MizLib.contactDev(getActivity());
 			break;
 		}
-		
+
 		return super.onOptionsItemSelected(item);	
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("selectedIndex", awesomePager.getCurrentItem());
 	}
-	
+
 	private class WebVideosAdapter extends FragmentPagerAdapter {
 
 		public WebVideosAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
-		@Override  
+		@Override
 		public Fragment getItem(int index) {
 			return WebVideoFragment.newInstance(spinnerItems.get(index).getSubtitle());
 		}  
@@ -135,21 +140,21 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 			return spinnerItems.size();
 		}
 	}
-	
+
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
-	
+
 	private class ActionBarSpinner extends BaseAdapter {
 
 		private LayoutInflater inflater;
-		
+
 		public ActionBarSpinner() {
 			inflater = LayoutInflater.from(getActivity());
 		}
-		
+
 		@Override
 		public int getCount() {
 			return spinnerItems.size();
@@ -197,7 +202,7 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 		public View getDropDownView(int position, View convertView, ViewGroup parent) {
 			convertView = inflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
 			((TextView) convertView.findViewById(android.R.id.text1)).setText(spinnerItems.get(position).getSubtitle());
-			
+
 			return convertView;
 		}
 	}

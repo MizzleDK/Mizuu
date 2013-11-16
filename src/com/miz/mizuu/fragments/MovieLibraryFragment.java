@@ -64,6 +64,7 @@ import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
+import com.miz.mizuu.MainMenuActivity;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieCollection;
 import com.miz.mizuu.MovieDetails;
@@ -735,23 +736,27 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu, menu);
-		if (type == OTHER) // Don't show the Update icon if this is the Watchlist
-			menu.removeItem(R.id.update);
-		SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
-		searchView.setOnQueryTextListener(new OnQueryTextListener() {
-			@Override
-			public boolean onQueryTextChange(String newText) {
-				if (newText.length() > 0) {
-					search(newText);
-				} else {
-					showAllMovies();
+		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
+		} else {
+			inflater.inflate(R.menu.menu, menu);
+			if (type == OTHER) // Don't show the Update icon if this is the Watchlist
+				menu.removeItem(R.id.update);
+			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
+			searchView.setOnQueryTextListener(new OnQueryTextListener() {
+				@Override
+				public boolean onQueryTextChange(String newText) {
+					if (newText.length() > 0) {
+						search(newText);
+					} else {
+						showAllMovies();
+					}
+					return true;
 				}
-				return true;
-			}
-			@Override
-			public boolean onQueryTextSubmit(String query) { return false; }
-		});
+				@Override
+				public boolean onQueryTextSubmit(String query) { return false; }
+			});
+		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 

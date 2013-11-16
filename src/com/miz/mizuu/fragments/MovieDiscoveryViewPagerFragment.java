@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
+import com.miz.mizuu.MainMenuActivity;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.miz.mizuu.SearchWebMovies;
@@ -31,7 +32,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	private ActionBar actionBar;
 	private ViewPager awesomePager;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
-	
+
 	public MovieDiscoveryViewPagerFragment() {}
 
 	public static MovieDiscoveryViewPagerFragment newInstance() {		
@@ -41,13 +42,13 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-		
+
 		setHasOptionsMenu(true);
 		setRetainInstance(true);
-		
+
 		setupSpinnerItems();
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -57,7 +58,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setListNavigationCallbacks(new ActionBarSpinner(), this);
 	}
-	
+
 	private void setupSpinnerItems() {
 		spinnerItems.clear();
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserMovies), getString(R.string.stringUpcoming)));
@@ -65,7 +66,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserMovies), getString(R.string.stringPopular)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserMovies), getString(R.string.stringTopRated)));
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		return inflater.inflate(R.layout.viewpager, container, false);
@@ -74,7 +75,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
-		
+
 		awesomePager = (ViewPager) v.findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(3);
 		awesomePager.setPageMargin(MizLib.convertDpToPixels(getActivity(), 16));
@@ -91,17 +92,21 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 				actionBar.setSelectedNavigationItem(arg0);
 			}
 		});
-	
+
 		if (savedInstanceState != null) {
 			awesomePager.setCurrentItem(savedInstanceState.getInt("selectedIndex", 0));
 		}
 	}
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_web_movies, menu);
+		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
+		} else
+			inflater.inflate(R.menu.menu_web_movies, menu);
+		super.onCreateOptionsMenu(menu, inflater);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -116,16 +121,16 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 			startActivity(i);
 			break;
 		}
-		
+
 		return super.onOptionsItemSelected(item);	
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("selectedIndex", awesomePager.getCurrentItem());
 	}
-	
+
 	private class WebVideosAdapter extends FragmentPagerAdapter {
 
 		public WebVideosAdapter(FragmentManager fm) {
@@ -153,15 +158,15 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
-	
+
 	private class ActionBarSpinner extends BaseAdapter {
 
 		private LayoutInflater inflater;
-		
+
 		public ActionBarSpinner() {
 			inflater = LayoutInflater.from(getActivity());
 		}
-		
+
 		@Override
 		public int getCount() {
 			return spinnerItems.size();
@@ -209,7 +214,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		public View getDropDownView(int position, View convertView, ViewGroup parent) {
 			convertView = inflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
 			((TextView) convertView.findViewById(android.R.id.text1)).setText(spinnerItems.get(position).getSubtitle());
-			
+
 			return convertView;
 		}
 	}

@@ -56,6 +56,7 @@ import com.miz.functions.ImageLoadingErrorListener;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
+import com.miz.mizuu.MainMenuActivity;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
@@ -505,12 +506,12 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	}
 
 	private void showUnwatchedShows() {
-		
+
 		shownShows.clear();
-		
+
 		new AsyncTask<Void, Void, Void>() {
 			ArrayList<TvShow> tempShows = new ArrayList<TvShow>();
-			
+
 			@Override
 			protected void onPreExecute() {
 				showProgressBar();
@@ -528,11 +529,11 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			@Override
 			protected void onPostExecute(Void result) {
 				shownShows.addAll(tempShows);
-				
+
 				// Clean up...
 				tempShows.clear();
 				tempShows = null;
-				
+
 				sortShows();
 				notifyDataSetChanged();
 				hideProgressBar();
@@ -542,21 +543,25 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menutv, menu);
-		SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
-		searchView.setOnQueryTextListener(new OnQueryTextListener() {
-			@Override
-			public boolean onQueryTextChange(String newText) {
-				if (newText.length() > 0) {
-					search(newText);
-				} else {
-					showAllShows();
+		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
+		} else {
+			inflater.inflate(R.menu.menutv, menu);
+			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
+			searchView.setOnQueryTextListener(new OnQueryTextListener() {
+				@Override
+				public boolean onQueryTextChange(String newText) {
+					if (newText.length() > 0) {
+						search(newText);
+					} else {
+						showAllShows();
+					}
+					return true;
 				}
-				return true;
-			}
-			@Override
-			public boolean onQueryTextSubmit(String query) { return false; }
-		});
+				@Override
+				public boolean onQueryTextSubmit(String query) { return false; }
+			});
+		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
