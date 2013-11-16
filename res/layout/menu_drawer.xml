@@ -15,7 +15,6 @@
     </FrameLayout>
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/left_drawer"
         android:layout_width="@dimen/menu_width"
         android:layout_height="match_parent"

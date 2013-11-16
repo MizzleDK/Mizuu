@@ -31,6 +31,7 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 	private ActionBar actionBar;
 	private ViewPager awesomePager;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner spinnerAdapter;
 
 	public WebVideosViewPagerFragment() {}
 
@@ -53,9 +54,16 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 		super.onActivityCreated(savedInstanceState);
 
 		// Setup ActionBar with the action list
+		setupActionBar();
+		if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
+			actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+	}
+
+	private void setupActionBar() {
 		actionBar = getActivity().getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		actionBar.setListNavigationCallbacks(new ActionBarSpinner(), this);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner();
 	}
 
 	private void setupSpinnerItems() {
@@ -98,9 +106,12 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
 			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
-		} else
-		inflater.inflate(R.menu.menuweb, menu);
+		} else {
+			setupActionBar();
+			inflater.inflate(R.menu.menuweb, menu);
+		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 

@@ -32,6 +32,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	private ActionBar actionBar;
 	private ViewPager awesomePager;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner spinnerAdapter;
 
 	public MovieDiscoveryViewPagerFragment() {}
 
@@ -54,9 +55,16 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		super.onActivityCreated(savedInstanceState);
 
 		// Setup ActionBar with the action list
+		setupActionBar();
+		if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
+			actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+	}
+
+	private void setupActionBar() {
 		actionBar = getActivity().getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		actionBar.setListNavigationCallbacks(new ActionBarSpinner(), this);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner();
 	}
 
 	private void setupSpinnerItems() {
@@ -101,9 +109,12 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
 			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
-		} else
+		} else {
+			setupActionBar();
 			inflater.inflate(R.menu.menu_web_movies, menu);
+		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 

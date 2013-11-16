@@ -144,14 +144,20 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		super.onActivityCreated(savedInstanceState);
 
 		// Setup ActionBar with the action list
-		actionBar = getActivity().getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		spinnerAdapter = new ActionBarSpinner();
-		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		setupActionBar();
+		if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
+			actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
+	}
+
+	private void setupActionBar() {
+		actionBar = getActivity().getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner();
 	}
 
 	private void setupSpinnerItems() {
@@ -262,6 +268,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		super.onViewCreated(v, savedInstanceState);
 
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
+		if (shownMovies.size() > 0)
+			pbar.setVisibility(View.GONE);
 
 		overviewMessage = (TextView) v.findViewById(R.id.overviewMessage);
 
@@ -737,8 +745,10 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
 			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
 		} else {
+			setupActionBar();
 			inflater.inflate(R.menu.menu, menu);
 			if (type == OTHER) // Don't show the Update icon if this is the Watchlist
 				menu.removeItem(R.id.update);

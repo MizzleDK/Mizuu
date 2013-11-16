@@ -89,7 +89,9 @@ public abstract class MainMenuActivity extends MizActivity {
 		((TextView) findViewById(R.id.username)).setTypeface(tf);
 
 		tab1 = (TextView) findViewById(R.id.tab1);
+		tab1.setTextSize(12f);
 		tab2 = (TextView) findViewById(R.id.tab2);
+		tab2.setTextSize(12f);
 
 		mDrawerList = (ListView) findViewById(R.id.listView1);
 		mDrawerList.setAdapter(new MenuAdapter());
@@ -133,6 +135,7 @@ public abstract class MainMenuActivity extends MizActivity {
 				R.string.drawer_close  /* "close drawer" description for accessibility */
 				) {
 			public void onDrawerClosed(View view) {
+				getActionBar().setTitle(null);
 				invalidateOptionsMenu();
 			}
 
@@ -444,6 +447,7 @@ public abstract class MainMenuActivity extends MizActivity {
 	}
 
 	public void showDrawerOptionsMenu(Menu menu, MenuInflater inflater) {
+		getActionBar().setTitle(R.string.app_name);
 		inflater.inflate(R.menu.drawer, menu);
 	}
 

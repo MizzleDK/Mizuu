@@ -125,13 +125,19 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		super.onActivityCreated(savedInstanceState);
 
 		// Setup ActionBar with the action list
-		actionBar = getActivity().getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		spinnerAdapter = new ActionBarSpinner();
-		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		setupActionBar();
+		if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
+			actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-cover-change"));
+	}
+
+	private void setupActionBar() {
+		actionBar = getActivity().getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner();
 	}
 
 	private void setupSpinnerItems() {
@@ -544,8 +550,10 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
 			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
 		} else {
+			setupActionBar();
 			inflater.inflate(R.menu.menutv, menu);
 			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
