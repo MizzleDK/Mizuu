@@ -365,7 +365,7 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-
+        
         <!-- Widgets -->
         <receiver
             android:name="com.miz.widgets.MovieStackWidgetProvider"

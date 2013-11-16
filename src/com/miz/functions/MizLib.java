@@ -27,19 +27,14 @@ import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -104,6 +99,8 @@ import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.UpdateMovieService;
 import com.miz.service.UpdateShowsService;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.apache.OkApacheClient;
 
 @SuppressLint("NewApi")
 public class MizLib {
@@ -1031,10 +1028,11 @@ public class MizLib {
 		byte[] retVal = null;
 		InputStream in = null;
 		OutputStream fileos = null;
+		OkHttpClient client = new OkHttpClient();
 		HttpURLConnection urlConnection = null;
 
 		try {
-			urlConnection = (HttpURLConnection) new URL(url).openConnection();
+			urlConnection = client.open(new URL(url));
 			fileos = new BufferedOutputStream(new FileOutputStream(savePath));
 
 			in = new BufferedInputStream(urlConnection.getInputStream(), bufferSize);
@@ -1068,11 +1066,7 @@ public class MizLib {
 
 	public static JSONObject getJSONObject(String url) {
 		try {
-			HttpParams httpParameters = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
-			HttpConnectionParams.setSoTimeout(httpParameters, 30000);
-
-			HttpClient httpclient = new DefaultHttpClient(httpParameters);
+			OkApacheClient httpclient = new OkApacheClient();
 			HttpGet httppost = new HttpGet(url);
 			httppost.setHeader("Accept", "application/json");
 			ResponseHandler<String> responseHandler = new BasicResponseHandler();
@@ -1493,7 +1487,7 @@ public class MizLib {
 			return false;
 
 		// Cancel the current check in to allow this one
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/cancelcheckin/" + MizLib.TRAKT_API);
 		httppost.setHeader("Content-type", "application/json");
 
@@ -1513,7 +1507,7 @@ public class MizLib {
 		} catch (Exception e) {}
 
 		// Check in with the movie
-		httpclient = new DefaultHttpClient();
+		httpclient = new OkApacheClient();
 		httppost = new HttpPost("http://api.trakt.tv/movie/checkin/" + MizLib.TRAKT_API);
 
 		try {
@@ -1546,7 +1540,7 @@ public class MizLib {
 			return false;
 
 		// Cancel the current check in to allow this one
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/cancelcheckin/" + MizLib.TRAKT_API);
 		httppost.setHeader("Content-type", "application/json");
 
@@ -1566,7 +1560,7 @@ public class MizLib {
 		} catch (Exception e) {}
 
 		// Check in with the movie
-		httpclient = new DefaultHttpClient();
+		httpclient = new OkApacheClient();
 		httppost = new HttpPost("http://api.trakt.tv/show/checkin/" + MizLib.TRAKT_API);
 
 		try {
@@ -1603,7 +1597,7 @@ public class MizLib {
 			return false;
 
 		// Mark as seen / unseen
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 		if (movies.get(0).hasWatched())
 			httppost = new HttpPost("http://api.trakt.tv/movie/seen/" + MizLib.TRAKT_API);
@@ -1653,7 +1647,7 @@ public class MizLib {
 			return false;
 
 		// Mark episode as seen / unseen
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 
 		if (episodes.get(0).hasWatched())
@@ -1702,7 +1696,7 @@ public class MizLib {
 			return false;
 
 		// Mark as seen / unseen
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 		if (movies.get(0).toWatch())
 			httppost = new HttpPost("http://api.trakt.tv/movie/watchlist/" + MizLib.TRAKT_API);
@@ -1748,7 +1742,7 @@ public class MizLib {
 			return false;
 
 		// Mark as seen / unseen
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = new HttpPost("http://api.trakt.tv/rate/movies/" + MizLib.TRAKT_API);
 
 		try {
@@ -1802,7 +1796,7 @@ public class MizLib {
 			return false;
 
 		// Mark as seen / unseen
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = new HttpPost("http://api.trakt.tv/rate/shows/" + MizLib.TRAKT_API);
 
 		try {
@@ -1842,7 +1836,7 @@ public class MizLib {
 			return new JSONArray();
 
 		// Mark as seen / unseen
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 		if (type == WATCHED) {
 			httppost = new HttpPost("http://api.trakt.tv/user/library/movies/watched.json/" + MizLib.TRAKT_API + "/" + username);
@@ -1876,7 +1870,7 @@ public class MizLib {
 			return new JSONArray();
 
 		// Mark as seen / unseen
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 		if (type == WATCHED) {
 			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/watched.json/" + MizLib.TRAKT_API + "/" + username);
@@ -2083,7 +2077,7 @@ public class MizLib {
 			return new JSONArray();
 
 		// Cancel the current check in to allow this one
-		HttpClient httpclient = new DefaultHttpClient();
+		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = new HttpPost("http://api.trakt.tv/user/calendar/shows.json/" + MizLib.TRAKT_API + "/" + username);
 		httppost.setHeader("Content-type", "application/json");
 

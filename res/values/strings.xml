@@ -403,6 +403,7 @@
     <string name="drawerOnlineMovies">Online Movies</string>
     <string name="drawerWebVideos">Web Videos</string>
     <string name="myLibraries">My Libraries</string>
-    <string name="greeting">Greetings</string>
+    <string name="greeting">Welcome</string>
+    <string name="thirdPartyLibraries">Third party libraries</string>
 
 </resources>

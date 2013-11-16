@@ -77,7 +77,7 @@
                 android:data="http://youtube.com" />
         </Preference>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/openSourceLibraries" >
+    <PreferenceCategory android:title="@string/thirdPartyLibraries" >
         <Preference
             android:icon="@drawable/ic_action_puzzle"
             android:summary="Creative Commons Attribution, Version 2.5"
@@ -88,11 +88,10 @@
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"
-            android:summary="Apache License, Version 2.0"
-            android:title="Done / Discard by Roman Nurik" >
+            android:title="Crashlytics" >
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://code.google.com/p/romannurik-code/source/browse/misc/donediscard/" />
+                android:data="https://crashlytics.com/" />
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"
@@ -104,11 +103,27 @@
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
+            android:title="Done / Discard by Roman Nurik" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://code.google.com/p/romannurik-code/source/browse/misc/donediscard/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
             android:summary="LGPL, Version 2.1"
             android:title="jCIFS" >
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="http://jcifs.samba.org/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
+            android:title="OkHttp by Square, Inc." >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://square.github.io/okhttp/" />
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"

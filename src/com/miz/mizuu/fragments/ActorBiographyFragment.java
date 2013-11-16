@@ -77,6 +77,10 @@ public class ActorBiographyFragment extends Fragment {
 		mActorBio = (TextView) v.findViewById(R.id.textView4);
 		mActorImage = (ImageView) v.findViewById(R.id.traktIcon);
 		mActorImageBackground = (ImageView) v.findViewById(R.id.imageView2);
+		
+		if (!MizLib.runsInPortraitMode(getActivity())) {
+			mActorImageBackground.setImageResource(R.drawable.bg);
+		}
 
 		if (image == null) // Check if the image has been retained
 			new GetActorDetails().execute(getArguments().getString("actorId"));

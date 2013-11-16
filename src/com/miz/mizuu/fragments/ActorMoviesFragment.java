@@ -54,7 +54,7 @@ public class ActorMoviesFragment extends Fragment {
 	private SparseBooleanArray movieMap = new SparseBooleanArray();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
-	private boolean showGridTitles;
+	private boolean showGridTitles, setBackground;
 	private SharedPreferences settings;
 	private DbAdapter db;
 	private DisplayImageOptions options;
@@ -64,10 +64,11 @@ public class ActorMoviesFragment extends Fragment {
 	 */
 	public ActorMoviesFragment() {}
 
-	public static ActorMoviesFragment newInstance(String actorId) { 
+	public static ActorMoviesFragment newInstance(String actorId, boolean setBackground) { 
 		ActorMoviesFragment pageFragment = new ActorMoviesFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("actorId", actorId);
+		bundle.putBoolean("setBackground", setBackground);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
@@ -79,7 +80,8 @@ public class ActorMoviesFragment extends Fragment {
 		setRetainInstance(true);
 
 		db = MizuuApplication.getMovieAdapter();
-
+		setBackground = getArguments().getBoolean("setBackground");
+		
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -101,6 +103,9 @@ public class ActorMoviesFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
+		if (setBackground && !MizLib.runsInPortraitMode(getActivity()))
+			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
+		
 		if (!MizLib.runsInPortraitMode(getActivity()))
 			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 

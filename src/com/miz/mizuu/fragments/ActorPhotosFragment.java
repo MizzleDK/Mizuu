@@ -46,17 +46,19 @@ public class ActorPhotosFragment extends Fragment {
 	private ProgressBar pbar;
 	private DisplayImageOptions options;
 	private ImageLoader imageLoader;
-
+	private boolean setBackground;
+	
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public ActorPhotosFragment() {}
 
-	public static ActorPhotosFragment newInstance(String actorId, String actorName) { 
+	public static ActorPhotosFragment newInstance(String actorId, String actorName, boolean setBackground) { 
 		ActorPhotosFragment pageFragment = new ActorPhotosFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("actorId", actorId);
 		bundle.putString("actorName", actorName);
+		bundle.putBoolean("setBackground", setBackground);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
@@ -67,6 +69,8 @@ public class ActorPhotosFragment extends Fragment {
 
 		setRetainInstance(true);
 
+		setBackground = getArguments().getBoolean("setBackground");
+		
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
@@ -84,6 +88,9 @@ public class ActorPhotosFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
+		if (setBackground && !MizLib.runsInPortraitMode(getActivity()))
+			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
+		
 		if (!MizLib.runsInPortraitMode(getActivity()))
 			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 

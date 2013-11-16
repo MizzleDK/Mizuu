@@ -225,7 +225,7 @@ public abstract class StreamServer {
 
 				// Create a BufferedReader for parsing the header.
 				ByteArrayInputStream hbis = new ByteArrayInputStream(buf, 0, rlen);
-				BufferedReader hin = new BufferedReader( new InputStreamReader( hbis , "utf-8"));
+				BufferedReader hin = new BufferedReader( new InputStreamReader( hbis , "utf-8"), bufsize);
 				Properties pre = new Properties();
 				Properties parms = new Properties();
 				Properties header = new Properties();

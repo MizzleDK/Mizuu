@@ -27,6 +27,12 @@ public class Actor extends MizActivity implements ActionBar.TabListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		if (!MizLib.runsInPortraitMode(this))
+			if (isFullscreen())
+				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
+			else
+				setTheme(R.style.Theme_Example_NoBackGround);
 
 		if (!MizLib.runsInPortraitMode(this))
 			getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
@@ -91,8 +97,8 @@ public class Actor extends MizActivity implements ActionBar.TabListener {
 		public Fragment getItem(int index) {
 			switch (index) {
 			case 0: return ActorBiographyFragment.newInstance(actorId);
-			case 1: return ActorMoviesFragment.newInstance(actorId);
-			case 2: return ActorPhotosFragment.newInstance(actorId, actorName);
+			case 1: return ActorMoviesFragment.newInstance(actorId, true);
+			case 2: return ActorPhotosFragment.newInstance(actorId, actorName, true);
 			default: return null;
 			}
 		}  
