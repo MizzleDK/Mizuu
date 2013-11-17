@@ -21,12 +21,14 @@
             android:id="@+id/watch_list"
             android:icon="@drawable/fav"
             android:onClick="watchList"
+            android:showAsAction="ifRoom"
             android:title="@string/menuFavouriteTitleRemove">
         </item>
         <item
             android:id="@+id/trailer"
             android:icon="@drawable/youtube"
             android:onClick="watchTrailer"
+            android:showAsAction="ifRoom"
             android:title="@string/detailsTrailer">
         </item>
         <item

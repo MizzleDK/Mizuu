@@ -3,9 +3,8 @@ package com.miz.mizuu;
 import java.util.ArrayList;
 
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
+import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,21 +22,24 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewParent;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
+import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragmentTv;
 import com.miz.mizuu.fragments.ShowDetailsFragment;
 import com.miz.mizuu.fragments.ShowEpisodesFragment;
 
-public class ShowDetails extends MizActivity implements ActionBar.TabListener {
+public class ShowDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
 	private TvShow thisShow;
 	private DbAdapterTvShow dbHelper;
 	private boolean ignorePrefixes;
+	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,44 +51,28 @@ public class ShowDetails extends MizActivity implements ActionBar.TabListener {
 			else
 				setTheme(R.style.Theme_Example_NoBackGround);
 
-		if (!MizLib.runsInPortraitMode(this))
-			getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
 
 		actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
+		
+		setTitle(null);
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(3); // Required in order to retain all fragments when swiping between them
 		awesomePager.setAdapter(new ShowDetailsAdapter(getSupportFragmentManager()));
-
-		final ActionBar bar = getActionBar();
-		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.overview))
-				.setTabListener(this));
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.episodes))
-				.setTabListener(this));
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.detailsActors))
-				.setTabListener(this));
-
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				bar.getTabAt(position).select();
-				ViewParent root = findViewById(android.R.id.content).getParent();
-				MizLib.findAndUpdateSpinner(root, position);
+				actionBar.setSelectedNavigationItem(position);
 				invalidateOptionsMenu();
 			}
 		});
-
-		if (savedInstanceState != null) {
-			bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
-		}
-
+		
 		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsIgnorePrefixesInTitles", false);
 
 		// Create and open database
@@ -122,16 +108,30 @@ public class ShowDetails extends MizActivity implements ActionBar.TabListener {
 		if (thisShow == null)
 			finish(); // Finish the activity if the movie doesn't load
 
-		try {
-			setTitle(thisShow.getTitle());
-			actionBar.setSubtitle(thisShow.getFirstAirdateYear());
-		} catch (Exception e) {
-			finish();
+		setupSpinnerItems();
+		
+		if (savedInstanceState != null) {
+			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		}
 
 		// Set the current page item to 1 (episode page) if the TV show start page setting has been changed from TV show details
 		if (!PreferenceManager.getDefaultSharedPreferences(this).getString("prefsTvShowsStartPage", getString(R.string.showDetails)).equals(getString(R.string.showDetails)))
 			awesomePager.setCurrentItem(1);
+	}
+	
+	private void setupSpinnerItems() {
+		spinnerItems.clear();
+		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.overview)));
+		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.episodes)));
+		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.detailsActors)));
+		
+		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("tab", awesomePager.getCurrentItem());
 	}
 
 	@Override
@@ -320,13 +320,8 @@ public class ShowDetails extends MizActivity implements ActionBar.TabListener {
 	}
 
 	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {}
-
-	@Override
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		awesomePager.setCurrentItem(getActionBar().getSelectedTab().getPosition(), true);
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		awesomePager.setCurrentItem(itemPosition);
+		return true;
 	}
-
-	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
 }

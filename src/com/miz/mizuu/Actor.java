@@ -1,8 +1,9 @@
 package com.miz.mizuu;
 
+import java.util.ArrayList;
+
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.FragmentTransaction;
+import android.app.ActionBar.OnNavigationListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import com.miz.base.MizActivity;
@@ -10,19 +11,23 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
-import android.view.ViewParent;
 import android.view.Window;
 
+import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
+import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBiographyFragment;
 import com.miz.mizuu.fragments.ActorMoviesFragment;
 import com.miz.mizuu.fragments.ActorPhotosFragment;
 import com.miz.mizuu.R;
 
-public class Actor extends MizActivity implements ActionBar.TabListener {
+public class Actor extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
 	private String actorId, actorName;
+	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner spinnerAdapter;
+	private ActionBar actionBar;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,18 +39,19 @@ public class Actor extends MizActivity implements ActionBar.TabListener {
 			else
 				setTheme(R.style.Theme_Example_NoBackGround);
 
-		if (!MizLib.runsInPortraitMode(this))
-			getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
+		
+		actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
+		
+		setTitle(null);
 
 		actorId = getIntent().getExtras().getString("actorID");
 		actorName = getIntent().getExtras().getString("actorName");
-
-		setTitle(actorName);
-
-		final ActionBar bar = getActionBar();
-		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(2);
@@ -53,21 +59,30 @@ public class Actor extends MizActivity implements ActionBar.TabListener {
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				bar.getTabAt(position).select();
-				ViewParent root = findViewById(android.R.id.content).getParent();
-				MizLib.findAndUpdateSpinner(root, position);
+				actionBar.setSelectedNavigationItem(position);
 			}
 		});
+		
+		setupSpinnerItems();
+		
+		if (savedInstanceState != null) {
+			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+		}
+	}
+	
+	private void setupSpinnerItems() {
+		spinnerItems.clear();
+		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorBiography)));
+		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.chooserMovies)));
+		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorsShowAllPhotos)));
+		
+		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+	}
 
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.actorBiography))
-				.setTabListener(this));
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.chooserMovies))
-				.setTabListener(this));
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.actorsShowAllPhotos))
-				.setTabListener(this));
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("tab", awesomePager.getCurrentItem());
 	}
 
 	@Override
@@ -110,13 +125,8 @@ public class Actor extends MizActivity implements ActionBar.TabListener {
 	}
 
 	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {}
-
-	@Override
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		awesomePager.setCurrentItem(getActionBar().getSelectedTab().getPosition(), true);
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		awesomePager.setCurrentItem(itemPosition);
+		return true;
 	}
-
-	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
 }

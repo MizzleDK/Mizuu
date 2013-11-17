@@ -9,6 +9,8 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/spinner_title_size" />
 
@@ -17,6 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/action_bar_subtitle_top_margin"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="@dimen/spinner_subtitle_size" />
 

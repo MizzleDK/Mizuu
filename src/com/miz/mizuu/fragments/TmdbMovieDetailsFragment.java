@@ -128,15 +128,6 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 	private void setupFields() {
 		if (isAdded() && thisMovie != null) {
-			getActivity().setTitle(thisMovie.getTitle());
-			if (thisMovie.getReleasedate().contains("-")) {
-				try {
-					getActivity().getActionBar().setSubtitle(thisMovie.getReleasedate().substring(0,4));
-				} catch (Exception e) {
-					getActivity().getActionBar().setSubtitle(getString(R.string.stringNA));
-				}
-			}
-
 			// Set the movie title
 			textTitle.setVisibility(View.VISIBLE);
 			textTitle.setText(thisMovie.getTitle());

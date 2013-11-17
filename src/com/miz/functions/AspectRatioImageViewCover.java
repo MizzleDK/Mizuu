@@ -18,7 +18,7 @@ public class AspectRatioImageViewCover extends ImageView {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     	int height = MeasureSpec.getSize(heightMeasureSpec);
     	int width = (int) (height * 0.667);
         setMeasuredDimension(width, height);

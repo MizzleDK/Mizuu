@@ -17,9 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 
+import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.MainMenuActivity;
@@ -63,7 +62,7 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 		actionBar = getActivity().getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		if (spinnerAdapter == null)
-			spinnerAdapter = new ActionBarSpinner();
+			spinnerAdapter = new ActionBarSpinner(getActivity(), spinnerItems);
 	}
 
 	private void setupSpinnerItems() {
@@ -156,65 +155,5 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
-	}
-
-	private class ActionBarSpinner extends BaseAdapter {
-
-		private LayoutInflater inflater;
-
-		public ActionBarSpinner() {
-			inflater = LayoutInflater.from(getActivity());
-		}
-
-		@Override
-		public int getCount() {
-			return spinnerItems.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return 0;
-		}
-
-		@Override
-		public int getItemViewType(int position) {
-			return 0;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = inflater.inflate(R.layout.spinner_header, parent, false);
-			((TextView) convertView.findViewById(R.id.title)).setText(spinnerItems.get(position).getTitle());
-			((TextView) convertView.findViewById(R.id.subtitle)).setText(spinnerItems.get(position).getSubtitle());
-			return convertView;
-		}
-
-		@Override
-		public int getViewTypeCount() {
-			return 0;
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			return true;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return spinnerItems.size() == 0;
-		}
-
-		@Override
-		public View getDropDownView(int position, View convertView, ViewGroup parent) {
-			convertView = inflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
-			((TextView) convertView.findViewById(android.R.id.text1)).setText(spinnerItems.get(position).getSubtitle());
-
-			return convertView;
-		}
 	}
 }

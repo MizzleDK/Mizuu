@@ -63,8 +63,7 @@ public class ActorBiographyFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 		
-		if (!MizLib.runsInPortraitMode(getActivity()))
-			MizLib.addActionBarMargin(getActivity(), v.findViewById(R.id.linearLayout1));
+		MizLib.addActionBarMargin(getActivity(), v.findViewById(R.id.linearLayout1));
 		
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
 		mActorBirthday = (TextView) v.findViewById(R.id.overviewMessage);

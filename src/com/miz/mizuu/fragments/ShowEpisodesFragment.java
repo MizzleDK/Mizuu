@@ -69,8 +69,7 @@ public class ShowEpisodesFragment extends Fragment {
 
 		mDualPane = v.findViewById(R.id.episode) == null ? false : true;
 
-		if (mDualPane)
-			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
 		fm = getChildFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();

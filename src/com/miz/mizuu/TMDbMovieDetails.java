@@ -1,12 +1,13 @@
 package com.miz.mizuu;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.FragmentTransaction;
+import android.app.ActionBar.OnNavigationListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,45 +19,50 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewParent;
 import android.view.Window;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
+import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
+import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.RelatedMoviesFragment;
 import com.miz.mizuu.fragments.TmdbMovieDetailsFragment;
 
-public class TMDbMovieDetails extends MizActivity implements ActionBar.TabListener {
+public class TMDbMovieDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
 	private String movieId;
+	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner spinnerAdapter;
+	private ActionBar actionBar;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		if (!MizLib.runsInPortraitMode(this))
 			if (isFullscreen())
 				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
 			else
 				setTheme(R.style.Theme_Example_NoBackGround);
-		
-		if (!MizLib.runsInPortraitMode(this))
-			getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
 
+		actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
+
+		setTitle(null);
+
 		// Fetch the database ID of the movie to view
 		movieId = getIntent().getExtras().getString("tmdbid");
-
-		setTitle(getIntent().getExtras().getString("title"));
-
-		final ActionBar bar = getActionBar();
-		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
 		awesomePager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
@@ -64,21 +70,31 @@ public class TMDbMovieDetails extends MizActivity implements ActionBar.TabListen
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				bar.getTabAt(position).select();
-				ViewParent root = findViewById(android.R.id.content).getParent();
-				MizLib.findAndUpdateSpinner(root, position);
+				actionBar.setSelectedNavigationItem(position);
 			}
 		});
 
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.overview))
-				.setTabListener(this));
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.detailsActors))
-				.setTabListener(this));
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.relatedMovies))
-				.setTabListener(this));
+		setupSpinnerItems();
+
+		if (savedInstanceState != null) {
+			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+		}
+	}
+
+	private void setupSpinnerItems() {
+		String movieName = getIntent().getExtras().getString("title");
+		spinnerItems.clear();
+		spinnerItems.add(new SpinnerItem(movieName, getString(R.string.overview)));
+		spinnerItems.add(new SpinnerItem(movieName, getString(R.string.detailsActors)));
+		spinnerItems.add(new SpinnerItem(movieName, getString(R.string.relatedMovies)));
+
+		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("tab", awesomePager.getCurrentItem());
 	}
 
 	@SuppressLint("NewApi")
@@ -203,7 +219,7 @@ public class TMDbMovieDetails extends MizActivity implements ActionBar.TabListen
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -236,13 +252,8 @@ public class TMDbMovieDetails extends MizActivity implements ActionBar.TabListen
 	}
 
 	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {}
-
-	@Override
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		awesomePager.setCurrentItem(getActionBar().getSelectedTab().getPosition(), true);
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		awesomePager.setCurrentItem(itemPosition);
+		return true;
 	}
-
-	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
 }

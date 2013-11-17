@@ -106,8 +106,7 @@ public class ActorMoviesFragment extends Fragment {
 		if (setBackground && !MizLib.runsInPortraitMode(getActivity()))
 			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
 		
-		if (!MizLib.runsInPortraitMode(getActivity()))
-			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
 		if (pics_sources.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change

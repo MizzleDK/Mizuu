@@ -23,7 +23,7 @@
     <dimen name="image_thumbnail_spacing">1dp</dimen>
     <dimen name="actor_details_width">340dp</dimen>
     <dimen name="actor_details_height">500dp</dimen>
-    <dimen name="details_text_size">20sp</dimen>
+    <dimen name="details_text_size">22sp</dimen>
     <dimen name="large_text_headline_details">48sp</dimen>
     <dimen name="large_text_headline_details_tv">@dimen/large_text_headline_details</dimen>
     <dimen name="movie_details_padding">16dp</dimen>

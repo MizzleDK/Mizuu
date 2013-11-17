@@ -3,62 +3,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <LinearLayout
-        android:id="@+id/movieDetailsLayout"
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_height="match_parent" >
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <com.miz.functions.AspectRatioImageViewBackdrop
-                android:id="@+id/imageBackground"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="false"
-                android:background="@drawable/buttonstyle"
-                android:baselineAlignBottom="false"
-                android:clickable="true"
-                android:cropToPadding="false"
-                android:focusable="true"
-                android:scaleType="center"
-                android:src="@drawable/ic_video_play" />
-
-            <TextView
-                android:id="@+id/movieTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="#aa000000"
-                android:ellipsize="end"
-                android:padding="8dp"
-                android:shadowColor="#000000"
-                android:shadowDx="1.0"
-                android:shadowDy="1.0"
-                android:shadowRadius="1.0"
-                android:singleLine="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textIsSelectable="false"
-                android:textSize="@dimen/large_text_headline_details" />
-        </FrameLayout>
-
-        <ScrollView
-            android:id="@+id/scrollView1"
+        <LinearLayout android:id="@+id/movieDetailsLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/movie_details_padding" >
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <com.miz.functions.AspectRatioImageViewBackdropLarge
+                    android:id="@+id/imageBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="false"
+                    android:background="@drawable/buttonstyle"
+                    android:baselineAlignBottom="false"
+                    android:clickable="true"
+                    android:cropToPadding="false"
+                    android:focusable="true"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_video_play" />
+
+                <TextView
+                    android:id="@+id/movieTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:background="#aa000000"
+                    android:ellipsize="end"
+                    android:padding="8dp"
+                    android:shadowColor="#000000"
+                    android:shadowDx="1.0"
+                    android:shadowDy="1.0"
+                    android:shadowRadius="1.0"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textIsSelectable="false"
+                    android:textSize="@dimen/large_text_headline_details" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/movie_details_padding"
                 android:orientation="vertical" >
 
                 <TextView
@@ -255,8 +254,8 @@
                     </TableRow>
                 </TableLayout>
             </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <ProgressBar
         android:id="@+id/progressBar1"

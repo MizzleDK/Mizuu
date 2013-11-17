@@ -26,7 +26,7 @@
     <dimen name="actionbar_home_width">60dp</dimen>
     <dimen name="list_padding">10dp</dimen>
     <dimen name="shadow_width">15dp</dimen>
-    <dimen name="details_text_size">14sp</dimen>
+    <dimen name="details_text_size">16sp</dimen>
     <dimen name="large_text_size">18sp</dimen>
     <dimen name="large_text_headline_details">24sp</dimen>
     <dimen name="large_text_headline_details_tv">@dimen/large_text_headline_details</dimen>

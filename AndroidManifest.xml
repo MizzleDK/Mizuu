@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="78"
-    android:versionName="2.5-beta2" >
+    android:versionCode="79"
+    android:versionName="2.5-beta3" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -284,7 +284,7 @@
         <service android:name="com.miz.service.UpdateShowsService" />
         <service android:name="com.miz.service.UpdateMovieService" />
         <service android:name="com.miz.service.TheMovieDB" />
-        <service android:name="com.miz.service.TheTVDBDB" />
+        <service android:name="com.miz.service.TheTVDB" />
         <service android:name="com.miz.service.DeleteFile" />
         <service android:name="com.miz.service.MoveFilesService" />
         <service android:name="com.miz.service.TraktMoviesSyncService" />
