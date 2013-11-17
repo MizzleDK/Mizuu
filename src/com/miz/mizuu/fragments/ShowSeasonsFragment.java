@@ -183,9 +183,6 @@ public class ShowSeasonsFragment extends Fragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (!MizLib.runsOnTablet(getActivity()) && !MizLib.runsInPortraitMode(getActivity()))
-			MizLib.addActionBarPadding(getActivity(), view.findViewById(R.id.container));
-
 		if (setBackground && !MizLib.runsInPortraitMode(getActivity()))
 			view.findViewById(R.id.container).setBackgroundColor(Color.parseColor("#101010"));
 
