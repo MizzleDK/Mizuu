@@ -156,7 +156,7 @@ public class DbAdapter {
 	}
 	
 	public Cursor fetchMovie(String movieId) throws SQLException {
-		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, KEY_TMDBID, null, null);
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, KEY_TMDBID, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
@@ -164,7 +164,7 @@ public class DbAdapter {
 	}
 	
 	public boolean movieExists(String movieId) {
-		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, KEY_TMDBID, null, null);
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, KEY_TMDBID, null, null, null);
 		if (mCursor == null)
 			return false;
 		if (mCursor.getCount() == 0)
