@@ -14,6 +14,7 @@ import android.app.SearchManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -73,12 +74,12 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
-		
+
 		actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		if (spinnerAdapter == null)
 			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
-		
+
 		setTitle(null);
 
 		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsIgnorePrefixesInTitles", false);
@@ -153,7 +154,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			if (db.hasMultipleVersions(thisMovie.getTmdbId())) {
 				thisMovie.setMultipleVersions(db.getRowIdsForMovie(thisMovie.getTmdbId()));
 			}
-			
+
 			setupSpinnerItems();
 		} else {
 			Toast.makeText(this, getString(R.string.errorSomethingWentWrong) + " (movie ID: " + movieId + ")", Toast.LENGTH_SHORT).show();
@@ -165,7 +166,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		spinnerItems.clear();
 		spinnerItems.add(new SpinnerItem(thisMovie.getTitle(), getString(R.string.overview)));
 		spinnerItems.add(new SpinnerItem(thisMovie.getTitle(), getString(R.string.detailsActors)));
-		
+
 		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 	}
 
@@ -340,11 +341,32 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	}
 
 	public void identifyMovie(MenuItem item) {
-		Intent intent = new Intent();
-		intent.putExtra("fileName", thisMovie.getFullFilepath());
-		intent.putExtra("rowId", thisMovie.getRowId());
-		intent.setClass(this, IdentifyMovie.class);
-		startActivityForResult(intent, 0);
+		if (thisMovie.hasMultipleVersions()) {
+			final MovieVersion[] versions = thisMovie.getMultipleVersions();
+			CharSequence[] items = new CharSequence[versions.length];
+			for (int i = 0; i < versions.length; i++)
+				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(getString(R.string.fileToIdentify));
+			builder.setItems(items, new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent();
+					intent.putExtra("fileName", versions[which].getFilepath());
+					intent.putExtra("rowId", String.valueOf(versions[which].getRowId()));
+					intent.setClass(MovieDetails.this, IdentifyMovie.class);
+					startActivityForResult(intent, 0);
+				};
+			});
+			builder.show();
+		} else {
+			Intent intent = new Intent();
+			intent.putExtra("fileName", thisMovie.getFullFilepath());
+			intent.putExtra("rowId", thisMovie.getRowId());
+			intent.setClass(this, IdentifyMovie.class);
+			startActivityForResult(intent, 0);
+		}
 	}
 
 	public void shareMovie(MenuItem item) {

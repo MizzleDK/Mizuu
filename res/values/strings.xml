@@ -405,5 +405,6 @@
     <string name="myLibraries">My Libraries</string>
     <string name="greeting">Welcome</string>
     <string name="thirdPartyLibraries">Third party libraries</string>
+    <string name="fileToIdentify">Select file to identify</string>
 
 </resources>

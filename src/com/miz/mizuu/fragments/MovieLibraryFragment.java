@@ -752,6 +752,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			inflater.inflate(R.menu.menu, menu);
 			if (type == OTHER) // Don't show the Update icon if this is the Watchlist
 				menu.removeItem(R.id.update);
+
 			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				@Override
