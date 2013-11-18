@@ -169,7 +169,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-			return new SQLiteCursorLoader(getActivity(), DbHelper.getHelper(getActivity()), DbAdapter.DATABASE_TABLE, DbAdapter.SELECT_ALL, DbAdapter.KEY_EXTRA_2 + " = '" + collectionId + "'", null, null, null, DbAdapter.KEY_TITLE + " ASC");
+			return new SQLiteCursorLoader(getActivity(), DbHelper.getHelper(getActivity()), DbAdapter.DATABASE_TABLE, DbAdapter.SELECT_ALL, DbAdapter.KEY_EXTRA_2 + " = '" + collectionId + "'", null, DbAdapter.KEY_TITLE, null, DbAdapter.KEY_TITLE + " ASC");
 		}
 
 		@Override

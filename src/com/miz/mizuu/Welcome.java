@@ -73,7 +73,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 		dbHelper = MizuuApplication.getMovieAdapter();
 		dbHelperTv = MizuuApplication.getTvDbAdapter();
 
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
 		while (cursor.moveToNext()) {
 			try {
 				backdrops.add(new Backdrop(

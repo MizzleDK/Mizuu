@@ -98,7 +98,7 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 
 			query = query.toLowerCase(Locale.ENGLISH);
 
-			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
 			String title = "";
 			while (c.moveToNext()) {
 				title = c.getString(c.getColumnIndex(DbAdapter.KEY_TITLE));

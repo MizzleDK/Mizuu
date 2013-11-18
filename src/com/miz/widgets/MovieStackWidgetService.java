@@ -84,7 +84,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 		// Create and open database
 		dbHelper = MizuuApplication.getMovieAdapter();
 
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
 
 		while (cursor.moveToNext()) {
 			try {

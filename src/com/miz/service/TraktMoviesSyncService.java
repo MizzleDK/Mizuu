@@ -59,7 +59,7 @@ public class TraktMoviesSyncService extends IntentService {
 
 		// Get movies
 		DbAdapter movieDb = MizuuApplication.getMovieAdapter();
-		Cursor cursor = movieDb.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+		Cursor cursor = movieDb.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
 
 		try {
 			while (cursor.moveToNext()) {

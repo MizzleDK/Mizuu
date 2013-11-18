@@ -115,23 +115,20 @@ public class DbAdapter {
 	/**
 	 * Return a Cursor over the list of all movies in the database
 	 */
-	public Cursor fetchAllMovies(String sort, boolean includeRemoved) {
-		if (includeRemoved)
-			return database.query(DATABASE_TABLE, SELECT_ALL, null, null, null, null, sort);
-		else
-			return database.query(DATABASE_TABLE, SELECT_ALL, "NOT(" + KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, null, null, sort);
+	public Cursor fetchAllMovies(String sort, boolean includeRemoved, boolean includeDuplicates) {
+		return database.query(DATABASE_TABLE, SELECT_ALL, includeRemoved ? null : "NOT(" + KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, includeDuplicates ? null : KEY_TMDBID, null, sort);
 	}
 
 	public Cursor fetchAllMoviesByActor(String actor) {
 		String newQuery = actor.replace("'", "''");
 		return database.query(DATABASE_TABLE, SELECT_ALL,
-				KEY_CAST + " like '%" + newQuery + "%'", null, null, null, KEY_TITLE + " ASC");
+				KEY_CAST + " like '%" + newQuery + "%'", null, KEY_TMDBID, null, KEY_TITLE + " ASC");
 	}
 	
 	public int getMovieCountByActor(String actor) {
 		String newQuery = actor.replace("'", "''");
 		Cursor cursor = database.query(DATABASE_TABLE, SELECT_ALL,
-				KEY_CAST + " like '%" + newQuery + "%'", null, null, null, KEY_TITLE + " ASC");
+				KEY_CAST + " like '%" + newQuery + "%'", null, KEY_TMDBID, null, KEY_TITLE + " ASC");
 		return cursor.getCount();
 	}
 
@@ -159,7 +156,7 @@ public class DbAdapter {
 	}
 	
 	public Cursor fetchMovie(String movieId) throws SQLException {
-		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, KEY_TMDBID, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
@@ -167,7 +164,7 @@ public class DbAdapter {
 	}
 	
 	public boolean movieExists(String movieId) {
-		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, KEY_TMDBID, null, null);
 		if (mCursor == null)
 			return false;
 		if (mCursor.getCount() == 0)
@@ -254,14 +251,14 @@ public class DbAdapter {
 	}
 
 	public int count() {
-		Cursor c = database.query(DATABASE_TABLE, new String[] {KEY_TITLE}, "NOT(" + KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, null, null, null);
+		Cursor c = database.query(DATABASE_TABLE, new String[] {KEY_TITLE}, "NOT(" + KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, KEY_TMDBID, null, null);
 		int count = c.getCount();
 		c.close();
 		return count;
 	}
 
 	public int countWatchlist() {
-		Cursor c = database.query(DATABASE_TABLE, new String[] {KEY_TO_WATCH}, KEY_TO_WATCH + " = '1' AND NOT(" + KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, null, null, null);
+		Cursor c = database.query(DATABASE_TABLE, new String[] {KEY_TO_WATCH}, KEY_TO_WATCH + " = '1' AND NOT(" + KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, KEY_TMDBID, null, null);
 		int count = c.getCount();
 		c.close();
 		return count;

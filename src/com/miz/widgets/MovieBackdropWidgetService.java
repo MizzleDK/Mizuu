@@ -103,7 +103,7 @@ public class MovieBackdropWidgetService extends RemoteViewsService {
 			// Create and open database
 			DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
 
-			Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
 
 			while (cursor.moveToNext()) {
 				try {

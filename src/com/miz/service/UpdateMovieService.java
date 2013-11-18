@@ -360,7 +360,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 
 	private void goThroughFiles() {
 		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles); // Query database to return all movies to a cursor
+		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles, true); // Query database to return all movies to a cursor
 
 		while (cursor.moveToNext()) {// Add all movies in cursor to ArrayList of all existing movies
 			existingMovies.put(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)), "");
@@ -416,7 +416,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		// Fetch all the movies from the database
 		DbAdapter db = MizuuApplication.getMovieAdapter();
 
-		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles);
+		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles, true);
 		while (tempCursor.moveToNext()) {
 			try {
 				dbMovies.add(new DbMovie(tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
@@ -497,7 +497,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		// Fetch all the movies from the database
 		DbAdapter db = MizuuApplication.getMovieAdapter();
 
-		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles);
+		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles, true);
 		while (tempCursor.moveToNext()) {
 			try {
 				dbMovies.add(new DbMovie(tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),

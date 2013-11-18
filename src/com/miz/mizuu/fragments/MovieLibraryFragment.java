@@ -188,7 +188,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-			return new SQLiteCursorLoader(getActivity(), DbHelper.getHelper(getActivity()), DbAdapter.DATABASE_TABLE, DbAdapter.SELECT_ALL, "NOT(" + DbAdapter.KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, null, null, DbAdapter.KEY_TITLE + " ASC");
+			return new SQLiteCursorLoader(getActivity(), DbHelper.getHelper(getActivity()), DbAdapter.DATABASE_TABLE, DbAdapter.SELECT_ALL, "NOT(" + DbAdapter.KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, DbAdapter.KEY_TMDBID, null, DbAdapter.KEY_TITLE + " ASC");
 		}
 
 		@Override
