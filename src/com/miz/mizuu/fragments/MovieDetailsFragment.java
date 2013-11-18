@@ -318,19 +318,40 @@ public class MovieDetailsFragment extends Fragment {
 	}
 
 	private void playMovie() {
-		videoPlaybackStarted = System.currentTimeMillis();
-		if (thisMovie.isSplitFile()) {
-			new GetSplitFiles().execute();
+		if (thisMovie.hasMultipleVersions()) {
+			final MovieVersion[] versions = thisMovie.getMultipleVersions();
+			CharSequence[] items = new CharSequence[versions.length];
+			for (int i = 0; i < versions.length; i++)
+				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle(getString(R.string.fileToPlay));
+			builder.setItems(items, new AlertDialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					playMovie(versions[which].getFilepath(), versions[which].getFilepath().contains("smb:/"));
+				};
+			});
+			builder.show();
 		} else {
-			if (thisMovie.isNetworkFile()) {
-				playNetworkFile(thisMovie.getFilepath());
+			playMovie(thisMovie.getFilepath(), thisMovie.isNetworkFile());
+		}
+	}
+	
+	private void playMovie(String filepath, boolean isNetworkFile) {
+		videoPlaybackStarted = System.currentTimeMillis();
+		if (filepath.matches(".*(cd1|part1).*")) {
+			new GetSplitFiles(filepath, isNetworkFile).execute();
+		} else {
+			if (isNetworkFile) {
+				playNetworkFile(filepath);
 			} else {
 				try { // Attempt to launch intent based on the MIME type
-					getActivity().startActivity(MizLib.getVideoIntent(thisMovie.getFilepath(), useWildcard, thisMovie));
+					getActivity().startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisMovie));
 					checkIn();
 				} catch (Exception e) {
 					try { // Attempt to launch intent based on wildcard MIME type
-						getActivity().startActivity(MizLib.getVideoIntent(thisMovie.getFilepath(), "video/*", thisMovie));
+						getActivity().startActivity(MizLib.getVideoIntent(filepath, "video/*", thisMovie));
 						checkIn();
 					} catch (Exception e2) {
 						Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
@@ -343,6 +364,13 @@ public class MovieDetailsFragment extends Fragment {
 	private class GetSplitFiles extends AsyncTask<String, Void, List<SplitFile>> {
 
 		private ProgressDialog progress;
+		private String orig_filepath;
+		private boolean isNetworkFile;
+		
+		public GetSplitFiles(String filepath, boolean isNetworkFile) {
+			this.orig_filepath = filepath;
+			this.isNetworkFile = isNetworkFile;
+		}
 
 		@Override
 		protected void onPreExecute() {
@@ -361,10 +389,10 @@ public class MovieDetailsFragment extends Fragment {
 			List<String> temp;
 
 			try {				
-				if (thisMovie.isNetworkFile())
-					temp = MizLib.getSplitParts(thisMovie.getFilepath(), MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, thisMovie.getFilepath()));
+				if (isNetworkFile)
+					temp = MizLib.getSplitParts(orig_filepath, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, orig_filepath));
 				else
-					temp = MizLib.getSplitParts(thisMovie.getFilepath(), null);
+					temp = MizLib.getSplitParts(orig_filepath, null);
 
 				for (int i = 0; i < temp.size(); i++)
 					parts.add(new SplitFile(temp.get(i)));
@@ -387,7 +415,7 @@ public class MovieDetailsFragment extends Fragment {
 						public void onClick(DialogInterface dialog, int which) {
 							String filepath = result.get(which).getFilepath();
 
-							if (thisMovie.isNetworkFile())
+							if (isNetworkFile)
 								playNetworkFile(filepath);
 							else
 								play(filepath);
@@ -396,7 +424,7 @@ public class MovieDetailsFragment extends Fragment {
 				} else if (result.size() == 1) {
 					String filepath = result.get(0).getFilepath();
 
-					if (thisMovie.isNetworkFile())
+					if (isNetworkFile)
 						playNetworkFile(filepath);
 					else
 						play(filepath);
