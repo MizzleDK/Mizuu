@@ -906,7 +906,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			Collections.sort(tempMovies, new Comparator<MediumMovie>() {
 				@Override
 				public int compare(MediumMovie o1, MediumMovie o2) {
-					return o1.getTitle().compareToIgnoreCase(o2.getTitle());
+					if (o1 != null && o2 != null)
+						return o1.getTitle().compareToIgnoreCase(o2.getTitle());
+					return 0;
 				}
 			});
 
