@@ -938,11 +938,10 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 					}
 				}
 
-				sortShows();
-
 				getActivity().runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
+						sortShows();
 						notifyDataSetChanged();
 						hideProgressBar();
 					}
