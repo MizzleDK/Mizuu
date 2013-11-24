@@ -114,6 +114,9 @@ public class TheTVDB extends Service {
 					@Override
 					public void run() {
 						String file = queue.poll();
+						if (file == null)
+							stopSelf();
+						
 						if (season.isEmpty() && episode.isEmpty()) {
 							DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("ignoredTags", ""));
 							downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file);
