@@ -96,7 +96,8 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 
 			@Override
 			public void onPageSelected(int arg0) {
-				actionBar.setSelectedNavigationItem(arg0);
+				if (isAdded())
+					actionBar.setSelectedNavigationItem(arg0);
 			}
 		});
 
