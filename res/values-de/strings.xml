@@ -325,6 +325,7 @@
   </plurals>
   <plurals name="day">
     <item quantity="one">Tag</item>
+    <item quantity="other">Tage</item>
   </plurals>
   <plurals name="hour">
     <item quantity="one">Stunde</item>
