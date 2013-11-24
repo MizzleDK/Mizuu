@@ -26,11 +26,10 @@
             android:summary="@string/fullscreenModeDescription"
             android:title="@string/fullscreenMode" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:enabled="@bool/isNotGoogleTV"
-        android:title="@string/chooserTVShows" >
+    <PreferenceCategory android:title="@string/chooserTVShows" >
         <ListPreference
             android:defaultValue="@string/listView"
+            android:enabled="@bool/isNotGoogleTV"
             android:entries="@array/seasonsLayout"
             android:entryValues="@array/seasonsLayout"
             android:icon="@drawable/startup"
