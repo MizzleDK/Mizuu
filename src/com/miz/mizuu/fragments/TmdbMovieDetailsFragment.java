@@ -266,19 +266,21 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		}
 
 		private void setupNullImages() {
-			mCover = BitmapFactory.decodeResource(getResources(), R.drawable.loading_image);
+			if (isAdded())
+				mCover = BitmapFactory.decodeResource(getResources(), R.drawable.loading_image);
 		}
 
 		@Override
 		protected void onPostExecute(Object result) {
-			if (type == COVER)
-				cover.setImageBitmap(mCover);
-			else {
-				if (mBackdrop != null)
-					background.setImageBitmap(mBackdrop);
-				else
-					background.setImageResource(R.drawable.bg);
-			}
+			if (isAdded())
+				if (type == COVER)
+					cover.setImageBitmap(mCover);
+				else {
+					if (mBackdrop != null)
+						background.setImageBitmap(mBackdrop);
+					else
+						background.setImageResource(R.drawable.bg);
+				}
 		}
 	}
 
