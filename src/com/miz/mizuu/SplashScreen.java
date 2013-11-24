@@ -27,12 +27,13 @@ public class SplashScreen extends MizActivity {
 		if (!isDeviceCompatible()) {
 			Toast.makeText(this, getString(R.string.deviceNotSupported), Toast.LENGTH_LONG).show();
 			finish();
+			return;
 		}
 
 		if (MizLib.oldDataFolderExists()) {	
 			Intent moveFiles = new Intent(this, MoveFilesService.class);
 			startService(moveFiles);
-
+			finish();
 			return;
 		}
 
@@ -81,6 +82,7 @@ public class SplashScreen extends MizActivity {
 		startActivity(i);
 		
 		finish();
+		return;
 	}
 
 	private boolean isDeviceCompatible() {

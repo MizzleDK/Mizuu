@@ -316,6 +316,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 
 					notifyDatasetChanges();
 					getActivity().finish();
+					return;
 				} else {
 					Toast.makeText(getActivity(), getString(R.string.failedToRemoveEpisode), Toast.LENGTH_SHORT).show();
 				}

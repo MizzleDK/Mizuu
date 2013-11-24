@@ -82,6 +82,7 @@ public class SearchForNetworkShares extends Activity {
 		LocalBroadcastManager.getInstance(this).sendBroadcast(i);
 		running = false;
 		finish();
+		return;
 	}
 
 	private Runnable pingRunnable(final String host) {

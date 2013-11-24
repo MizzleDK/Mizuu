@@ -82,6 +82,7 @@ public class FileBrowserFragment extends Fragment {
 					getActivity().setResult(1); // Show
 				}
 				getActivity().finish();
+				return;
 			}
 		});
 		parent = (ListView) v.findViewById(R.id.parent);

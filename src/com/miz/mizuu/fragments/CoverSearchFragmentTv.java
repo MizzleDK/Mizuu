@@ -287,8 +287,10 @@ public class CoverSearchFragmentTv extends Fragment {
 				updateWidgets();
 			}
 
-			if (isAdded())
+			if (isAdded()) {
 				getActivity().finish();
+				return;
+			}
 		}
 	}
 

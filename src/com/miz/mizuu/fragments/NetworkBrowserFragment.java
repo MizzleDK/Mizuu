@@ -100,6 +100,7 @@ public class NetworkBrowserFragment extends Fragment {
 				}
 				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-filesource-change"));
 				getActivity().finish();
+				return;
 			}
 		});
 		parent = (ListView) v.findViewById(R.id.parent);

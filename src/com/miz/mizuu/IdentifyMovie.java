@@ -136,6 +136,7 @@ public class IdentifyMovie extends MizActivity {
 		public void onReceive(Context context, Intent intent) {
 			IdentifyMovie.this.setResult(2);
 			finish();
+			return;
 		}
 	};
 

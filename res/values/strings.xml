@@ -178,8 +178,8 @@
     <string name="watchedEpisodes">Watched episodes</string>
     <string name="unwatchedEpisodes">Unwatched episodes</string>
     <string name="stringJustAdded">Added</string>
-    <string name="stringCancelUpdate">Cancel update</string>
-    <string name="stringUpdateCancelled">Update cancelled!</string>
+    <string name="stringCancelUpdate">Stop update</string>
+    <string name="stringUpdateCancelled">Update stopped!</string>
     <string name="areYouSure">Are you sure?</string>
     <string name="detailsFile">File</string>
     <string name="stringShowAllLanguages">Show all languages</string>

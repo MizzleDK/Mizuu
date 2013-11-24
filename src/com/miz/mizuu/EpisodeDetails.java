@@ -87,6 +87,7 @@ public class EpisodeDetails extends MizActivity {
 		// This gets called on screen rotation as well
 		if (!MizLib.runsInPortraitMode(this) && MizLib.runsOnTablet(this)) {
 			finish();
+			return;
 		}
 	}
 

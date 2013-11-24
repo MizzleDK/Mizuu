@@ -86,6 +86,7 @@ public class Support extends MizActivity {
 				startActivity(emailIntent);
 				Toast.makeText(this, getString(R.string.launchingGmail), Toast.LENGTH_SHORT).show();
 				finish();
+				return;
 			} catch (Exception e) {
 				Toast.makeText(this, getString(R.string.failedGmailLaunch), Toast.LENGTH_SHORT).show();
 			}
@@ -117,6 +118,7 @@ public class Support extends MizActivity {
 					@Override
 					public void onClick(View v) {
 						finish();
+						return;
 					}
 				});
 

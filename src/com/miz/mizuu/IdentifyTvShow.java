@@ -163,6 +163,7 @@ public class IdentifyTvShow extends MizActivity {
 			updateWidgets();
 
 			finish();
+			return;
 		}
 	};
 

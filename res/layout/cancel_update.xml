@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="cancel"
-            android:text="@android:string/cancel" />
+            android:text="@android:string/no" />
 
         <Button
             android:id="@+id/ok"
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="ok"
-            android:text="@android:string/ok" />
+            android:text="@android:string/yes" />
     </LinearLayout>
 
 </LinearLayout>

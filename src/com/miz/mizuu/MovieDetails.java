@@ -143,6 +143,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					);
 		} catch (Exception e) {
 			finish();
+			return;
 		} finally {
 			cursor.close();
 		}
@@ -159,6 +160,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		} else {
 			Toast.makeText(this, getString(R.string.errorSomethingWentWrong) + " (movie ID: " + movieId + ")", Toast.LENGTH_SHORT).show();
 			finish();
+			return;
 		}
 	}
 
@@ -231,7 +233,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			}
 
 			finish();
-
 			return true;
 		case R.id.share:
 			Intent intent = new Intent(Intent.ACTION_SEND);
@@ -327,6 +328,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 					notifyDatasetChanges();
 					finish();
+					return;
 				} else {
 					Toast.makeText(getApplicationContext(), getString(R.string.failedToRemoveMovie), Toast.LENGTH_SHORT).show();
 				}
@@ -678,6 +680,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			startActivity(intent);
 
 			finish();
+			return;
 		}
 	}
 

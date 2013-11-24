@@ -101,8 +101,10 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		super.onCreate(savedInstanceState);
 
 		collectionId = getArguments().getString("collectionId", "");
-		if (MizLib.isEmpty(collectionId))
+		if (MizLib.isEmpty(collectionId)) {
 			getActivity().finish();
+			return;
+		}
 
 		setRetainInstance(true);
 		setHasOptionsMenu(true);

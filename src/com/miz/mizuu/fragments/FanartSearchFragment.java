@@ -294,8 +294,10 @@ public class FanartSearchFragment extends Fragment {
 				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-movie-backdrop-change"));
 			}
 
-			if (isAdded())
+			if (isAdded()) {
 				getActivity().finish();
+				return;
+			}
 		}
 	}
 

@@ -292,6 +292,7 @@ public class CollectionCoverSearchFragment extends Fragment {
 			LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-movie-cover-change"));
 
 			getActivity().finish();
+			return;
 		}
 	}
 

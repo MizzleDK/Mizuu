@@ -123,6 +123,7 @@ public class MovieDetailsFragment extends Fragment {
 					);
 		} catch (Exception e) {
 			getActivity().finish();
+			return;
 		} finally {
 			cursor.close();
 		}
@@ -138,8 +139,10 @@ public class MovieDetailsFragment extends Fragment {
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (isAdded())
+			if (isAdded()) {
 				getActivity().finish();
+				return;
+			}
 		}
 	};
 

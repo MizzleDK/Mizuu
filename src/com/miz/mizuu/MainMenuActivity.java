@@ -432,6 +432,7 @@ public abstract class MainMenuActivity extends MizActivity {
 			i.setClass(getApplicationContext(), Welcome.class);
 			startActivity(i);
 			finish();
+			return;
 		}
 
 		if (!mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && confirmExit) {

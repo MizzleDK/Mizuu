@@ -150,8 +150,10 @@ public class ShowSeasonsFragment extends Fragment {
 		if (thisShow != null)
 			errorListener = new ImageLoadingErrorListener("", "file://" + thisShow.getBackdrop(), options);
 		else
-			if (isAdded())
+			if (isAdded()) {
 				getActivity().finish();
+				return;
+			}
 
 		loadEpisodes();
 
@@ -666,8 +668,10 @@ public class ShowSeasonsFragment extends Fragment {
 			}
 		});
 
-		if (allEpisodes.size() == 0)
+		if (allEpisodes.size() == 0) {
 			getActivity().finish();
+			return;
+		}
 	}
 
 	private void loadEpisodes(final int type, final boolean resetSelection) {
@@ -984,6 +988,7 @@ public class ShowSeasonsFragment extends Fragment {
 
 					notifyDatasetChanges();
 					getActivity().finish();
+					return;
 				} else {
 					Toast.makeText(getActivity(), getString(R.string.failedToRemoveEpisode), Toast.LENGTH_SHORT).show();
 				}

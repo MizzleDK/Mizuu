@@ -59,7 +59,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		if (spinnerAdapter == null)
 			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
-		
+
 		setTitle(null);
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
@@ -72,12 +72,12 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 				invalidateOptionsMenu();
 			}
 		});
-		
+
 		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsIgnorePrefixesInTitles", false);
 
 		// Create and open database
 		dbHelper = MizuuApplication.getTvDbAdapter();
-		
+
 		String showId = "";
 		// Fetch the database ID of the TV show to view
 		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
@@ -87,29 +87,36 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 		}
 
 		Cursor cursor = dbHelper.getShow(showId);
-		while (cursor.moveToNext()) {
-			thisShow = new TvShow(this,
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
-					ignorePrefixes,
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
-					);
+		try {
+			while (cursor.moveToNext()) {
+				thisShow = new TvShow(this,
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+						ignorePrefixes,
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
+						);
+			}
+		} catch (Exception e) {
+			finish();
+			return;
+		} finally {
+			cursor.close();
 		}
 
-		cursor.close();
-
-		if (thisShow == null)
+		if (thisShow == null) {
 			finish(); // Finish the activity if the movie doesn't load
+			return;
+		}
 
 		setupSpinnerItems();
-		
+
 		if (savedInstanceState != null) {
 			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		}
@@ -118,13 +125,13 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 		if (!PreferenceManager.getDefaultSharedPreferences(this).getString("prefsTvShowsStartPage", getString(R.string.showDetails)).equals(getString(R.string.showDetails)))
 			awesomePager.setCurrentItem(1);
 	}
-	
+
 	private void setupSpinnerItems() {
 		spinnerItems.clear();
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.overview)));
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.episodes)));
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.detailsActors)));
-		
+
 		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 	}
 
@@ -276,6 +283,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 				MizLib.deleteShow(getApplicationContext(), thisShow, true);
 				LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("mizuu-shows-update"));
 				finish();
+				return;
 			}
 		})
 		.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {

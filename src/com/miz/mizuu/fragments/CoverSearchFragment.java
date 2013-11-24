@@ -300,8 +300,10 @@ public class CoverSearchFragment extends Fragment {
 				updateWidgets();
 			}
 
-			if (isAdded())
+			if (isAdded()) {
 				getActivity().finish();
+				return;
+			}
 		}
 	}
 
