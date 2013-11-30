@@ -353,8 +353,8 @@ public class ShowSeasonsFragment extends Fragment {
 		public int getCount() {
 			int count = 0;
 
-			for (String season : seasons)
-				count += seasonEpisodeCount.get(Integer.valueOf(season));
+			for (int i = 0; i < seasons.size(); i++)
+				count += seasonEpisodeCount.get(Integer.valueOf(seasons.get(i)));
 
 			return count;
 		}
@@ -776,15 +776,15 @@ public class ShowSeasonsFragment extends Fragment {
 
 		ArrayList<TvShowEpisode> tempEpisodes = new ArrayList<TvShowEpisode>(allEpisodes);
 
-		for (TvShowEpisode episode : tempEpisodes) {
-			if (seasonEpisodeCount.get(Integer.valueOf(episode.getSeason())) == 0) {
-				seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), 1);
-				seasons.add(episode.getSeason());
+		for (int i = 0; i< tempEpisodes.size(); i++) {
+			if (seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason())) == 0) {
+				seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), 1);
+				seasons.add(tempEpisodes.get(i).getSeason());
 			} else {
-				tempCount = seasonEpisodeCount.get(Integer.valueOf(episode.getSeason()));
-				seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), tempCount + 1);
+				tempCount = seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason()));
+				seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), tempCount + 1);
 			}
-			shownEpisodes.add(episode);
+			shownEpisodes.add(tempEpisodes.get(i));
 		}
 
 		tempEpisodes.clear();
@@ -798,14 +798,14 @@ public class ShowSeasonsFragment extends Fragment {
 
 		ArrayList<TvShowEpisode> tempEpisodes = new ArrayList<TvShowEpisode>(allEpisodes);
 
-		for (TvShowEpisode episode : tempEpisodes) {
-			if (episode.isNetworkFile()) {
+		for (int i = 0; i< tempEpisodes.size(); i++) {
+			if (tempEpisodes.get(i).isNetworkFile()) {
 				if (isAdded())
 					if (MizLib.isWifiConnected(getActivity(), prefsDisableEthernetWiFiCheck)) {
 						FileSource source = null;
 
 						for (int j = 0; j < filesources.size(); j++)
-							if (episode.getFilepath().contains(filesources.get(j).getFilepath())) {
+							if (tempEpisodes.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
 								source = filesources.get(j);
 								continue;
 							}
@@ -819,31 +819,31 @@ public class ShowSeasonsFragment extends Fragment {
 											URLEncoder.encode(source.getDomain(), "utf-8"),
 											URLEncoder.encode(source.getUser(), "utf-8"),
 											URLEncoder.encode(source.getPassword(), "utf-8"),
-											episode.getFilepath(),
+											tempEpisodes.get(i).getFilepath(),
 											false
 											));
 							if (file.exists()) {
-								if (seasonEpisodeCount.get(Integer.valueOf(episode.getSeason())) == 0) {
-									seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), 1);
-									seasons.add(episode.getSeason());
+								if (seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason())) == 0) {
+									seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), 1);
+									seasons.add(tempEpisodes.get(i).getSeason());
 								} else {
-									tempCount = seasonEpisodeCount.get(Integer.valueOf(episode.getSeason()));
-									seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), tempCount + 1);
+									tempCount = seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason()));
+									seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), tempCount + 1);
 								}
-								shownEpisodes.add(episode);
+								shownEpisodes.add(tempEpisodes.get(i));
 							}
 						} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
 					}
 			} else {	
-				if (new File(episode.getFilepath()).exists()) {
-					if (seasonEpisodeCount.get(Integer.valueOf(episode.getSeason())) == 0) {
-						seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), 1);
-						seasons.add(episode.getSeason());
+				if (new File(tempEpisodes.get(i).getFilepath()).exists()) {
+					if (seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason())) == 0) {
+						seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), 1);
+						seasons.add(tempEpisodes.get(i).getSeason());
 					} else {
-						tempCount = seasonEpisodeCount.get(Integer.valueOf(episode.getSeason()));
-						seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), tempCount + 1);
+						tempCount = seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason()));
+						seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), tempCount + 1);
 					}
-					shownEpisodes.add(episode);
+					shownEpisodes.add(tempEpisodes.get(i));
 				}
 			}
 		}
@@ -857,16 +857,16 @@ public class ShowSeasonsFragment extends Fragment {
 
 		ArrayList<TvShowEpisode> tempEpisodes = new ArrayList<TvShowEpisode>(allEpisodes);
 
-		for (TvShowEpisode episode : tempEpisodes) {
-			if (episode.hasWatched() == hasWatched) {
-				if (seasonEpisodeCount.get(Integer.valueOf(episode.getSeason())) == 0) {
-					seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), 1);
-					seasons.add(episode.getSeason());
+		for (int i = 0; i< tempEpisodes.size(); i++) {
+			if (tempEpisodes.get(i).hasWatched() == hasWatched) {
+				if (seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason())) == 0) {
+					seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), 1);
+					seasons.add(tempEpisodes.get(i).getSeason());
 				} else {
-					tempCount = seasonEpisodeCount.get(Integer.valueOf(episode.getSeason()));
-					seasonEpisodeCount.append(Integer.valueOf(episode.getSeason()), tempCount + 1);
+					tempCount = seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason()));
+					seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), tempCount + 1);
 				}
-				shownEpisodes.add(episode);
+				shownEpisodes.add(tempEpisodes.get(i));
 			}
 		}
 

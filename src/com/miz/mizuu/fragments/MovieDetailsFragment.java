@@ -189,8 +189,8 @@ public class MovieDetailsFragment extends Fragment {
 		if (thisMovie.hasMultipleVersions()) {
 			String sources = "";
 			MovieVersion[] versions = thisMovie.getMultipleVersions();
-			for (MovieVersion version : versions)
-				sources = sources + MizLib.transformSmbPath(version.getFilepath()) + "\n\n";
+			for (int i = 0; i < versions.length; i++)
+				sources = sources + MizLib.transformSmbPath(versions[i].getFilepath()) + "\n\n";
 			textSrc.setText(sources.trim());
 		} else {
 			textSrc.setText(thisMovie.getFilepath());

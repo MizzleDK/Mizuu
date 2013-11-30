@@ -2,8 +2,10 @@ package com.miz.contentprovider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import android.app.SearchManager;
 import android.content.ContentValues;
@@ -51,10 +53,8 @@ public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 
 		try {
 			List<TvShow> list = getSearchResults(query);
-			int n = 0;
-			for (TvShow show : list) {
-				cursor.addRow(createRow(Integer.valueOf(n), show.getTitle(), show.getFirstAirdateYear(), "'" + Uri.fromFile(new File(show.getThumbnail())) + "' AS " + SearchManager.SUGGEST_COLUMN_ICON_1, show.getId()));
-				n++;
+			for (int i = 0; i < list.size(); i++) {
+				cursor.addRow(createRow(Integer.valueOf(i), list.get(i).getTitle(), list.get(i).getFirstAirdateYear(), "'" + Uri.fromFile(new File(list.get(i).getThumbnail())) + "' AS " + SearchManager.SUGGEST_COLUMN_ICON_1, list.get(i).getId()));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to lookup " + query, e);
@@ -99,11 +99,13 @@ public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 			query = query.toLowerCase(Locale.ENGLISH);
 
 			Cursor c = db.getAllShows();
-			String title = "";
+			String title = ""; // Reuse String variable
+			Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
+			
 			while (c.moveToNext()) {
-				title = c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE));
+				title = c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)).toLowerCase(Locale.ENGLISH);
 
-				if (title.toLowerCase(Locale.ENGLISH).startsWith(query)) {
+				if (title.indexOf(query) != -1 ||  p.matcher(title).replaceAll("").indexOf(query) != -1) {
 					shows.add(new TvShow(
 							getContext(),
 							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
@@ -120,6 +122,8 @@ public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 							));
 				}
 			}
+			
+			Collections.sort(shows);
 		}
 		return shows;
 	}

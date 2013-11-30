@@ -104,13 +104,14 @@ import com.squareup.okhttp.apache.OkApacheClient;
 public class MizLib {
 
 	public static final String tvdbLanguages = "en,sv,no,da,fi,nl,de,it,es,fr,pl,hu,el,tr,ru,he,ja,pt,zh,cs,sl,hr,ko";
-	public static final String allFileTypes = ".3gp.aaf.mp4.ts.webm.m4v.mkv.divx.xvid.rec.avi.flv.f4v.moi.mpeg.mpg.mts.m2ts.ogv.rm.rmvb.mov.wmv.iso.vob.ifo.wtv";
+	public static final String allFileTypes = ".3gp.aaf.mp4.ts.webm.m4v.mkv.divx.xvid.rec.avi.flv.f4v.moi.mpeg.mpg.mts.m2ts.ogv.rm.rmvb.mov.wmv.iso.vob.ifo.wtv.pyv";
 	public static final String IMAGE_CACHE_DIR = "thumbs";
 	public static final String TMDB_BASE_URL = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
 	public static final String TMDB_API = "8f5f9f44983b8af692aae5f9974500f8";
 	public static final String TVDBAPI = "1CB9725D261FAF38";
 	public static final String YOUTUBE_API = "AIzaSyACKcfmngguy_PhREycetiispyMZ4fLPDY";
 	public static final String TRAKT_API = "4f1093165b7b59c887526ce7abe365e8550c258d";
+	public static final String CHARACTER_REGEX = "[^\\w\\s]";
 	public static final String[] prefixes = new String[]{"the ", "a ", "an "};
 
 	public static final int SECOND = 1000;
@@ -136,7 +137,7 @@ public class MizLib {
 	}
 
 	public static boolean isVideoFile(String s) {
-		String[] fileTypes = new String[]{".3gp",".aaf.","mp4",".ts",".webm",".m4v",".mkv",".divx",".xvid",".rec",".avi",".flv",".f4v",".moi",".mpeg",".mpg",".mts",".m2ts",".ogv",".rm",".rmvb",".mov",".wmv",".iso",".vob",".ifo",".wtv"};
+		String[] fileTypes = new String[]{".3gp",".aaf.","mp4",".ts",".webm",".m4v",".mkv",".divx",".xvid",".rec",".avi",".flv",".f4v",".moi",".mpeg",".mpg",".mts",".m2ts",".ogv",".rm",".rmvb",".mov",".wmv",".iso",".vob",".ifo",".wtv",".pyv"};
 		int count = fileTypes.length;
 		for (int i = 0; i < count; i++)
 			if (s.endsWith(fileTypes[i]))
@@ -2193,8 +2194,9 @@ public class MizLib {
 
 	public static int countOccurrences(String haystack, char needle) {
 		int count = 0;
-		for (char c : haystack.toCharArray()) {
-			if (c == needle) {
+		char[] array = haystack.toCharArray();
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == needle) {
 				++count;
 			}
 		}
@@ -2744,8 +2746,8 @@ public class MizLib {
 		"com.cnettv.app", "com.xfinity.playnow"};
 
 	public static boolean isMediaApp(ApplicationInfo ai) {
-		for (String s : MEDIA_APPS)
-			if (s.equals(ai.packageName))
+		for (int i = 0; i < MEDIA_APPS.length; i++)
+			if (MEDIA_APPS[i].equals(ai.packageName))
 				return true;
 		return false;
 	}
@@ -2870,10 +2872,10 @@ public class MizLib {
 		if (files != null) {
 			long lastMod = Long.MIN_VALUE;
 			File choice = null;
-			for (File file : files) {
-				if (file.lastModified() > lastMod) {
-					choice = file;
-					lastMod = file.lastModified();
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].lastModified() > lastMod) {
+					choice = files[i];
+					lastMod = files[i].lastModified();
 				}
 			}
 			return choice;

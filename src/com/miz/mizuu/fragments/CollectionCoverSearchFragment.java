@@ -248,9 +248,9 @@ public class CollectionCoverSearchFragment extends Fragment {
 				mAdapter.notifyDataSetChanged();
 
 				TreeSet<String> languages = new TreeSet<String>();
-				for (Cover c : covers) {
-					if (!c.getLanguage().equals("Null"))
-						languages.add(c.getLanguage());
+				for (int i = 0; i < covers.size(); i++) {
+					if (!covers.get(i).getLanguage().equals("Null"))
+						languages.add(covers.get(i).getLanguage());
 				}
 
 				items = new String[languages.size() + 1];
@@ -307,15 +307,15 @@ public class CollectionCoverSearchFragment extends Fragment {
 
 		if (item.getItemId() == 0) {
 			pics_sources.clear();
-			for (Cover c : covers)
-				pics_sources.add(c.getUrl());
+			for (int i = 0; i < covers.size(); i++)
+				pics_sources.add(covers.get(i).getUrl());
 			if (mAdapter != null)
 				((BaseAdapter) mGridView.getAdapter()).notifyDataSetChanged();
 		} else {
 			pics_sources.clear();
-			for (Cover c : covers) {
-				if (c.getLanguage().equals(items[item.getItemId()])) {
-					pics_sources.add(c.getUrl());
+			for (int i = 0; i < covers.size(); i++) {
+				if (covers.get(i).getLanguage().equals(items[item.getItemId()])) {
+					pics_sources.add(covers.get(i).getUrl());
 				}
 			}
 			if (mAdapter != null)

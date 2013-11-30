@@ -2,8 +2,10 @@ package com.miz.contentprovider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import android.app.SearchManager;
 import android.content.ContentValues;
@@ -51,10 +53,8 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 
 		try {
 			List<MediumMovie> list = getSearchResults(query);
-			int n = 0;
-			for (MediumMovie movie : list) {
-				cursor.addRow(createRow(Integer.valueOf(n), movie.getTitle(), movie.getReleaseYear().replace("(", "").replace(")", ""), Uri.fromFile(new File(movie.getThumbnail())).toString(), movie.getRowId()));
-				n++;
+			for (int i = 0; i < list.size(); i++) {
+				cursor.addRow(createRow(Integer.valueOf(i), list.get(i).getTitle(), list.get(i).getReleaseYear().replace("(", "").replace(")", ""), Uri.fromFile(new File(list.get(i).getThumbnail())).toString(), list.get(i).getRowId()));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to lookup " + query, e);
@@ -99,11 +99,13 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 			query = query.toLowerCase(Locale.ENGLISH);
 
 			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
-			String title = "";
+			String title = ""; // Reuse String variable
+			Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
+			
 			while (c.moveToNext()) {
-				title = c.getString(c.getColumnIndex(DbAdapter.KEY_TITLE));
+				title = c.getString(c.getColumnIndex(DbAdapter.KEY_TITLE)).toLowerCase(Locale.ENGLISH);
 
-				if (title.toLowerCase(Locale.ENGLISH).startsWith(query)) {
+				if (title.indexOf(query) != -1 ||  p.matcher(title).replaceAll("").indexOf(query) != -1) {
 					movies.add(new MediumMovie(getContext(),
 							c.getString(c.getColumnIndex(DbAdapter.KEY_ROWID)),
 							c.getString(c.getColumnIndex(DbAdapter.KEY_FILEPATH)),
@@ -126,6 +128,8 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 							));
 				}
 			}
+			
+			Collections.sort(movies);
 		}
 		return movies;
 	}

@@ -251,9 +251,9 @@ public abstract class MainMenuActivity extends MizActivity {
 		final PackageManager pm = getPackageManager();
 		List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
 
-		for (ApplicationInfo ai : packages) {
-			if (MizLib.isMediaApp(ai)) {
-				thirdPartyApps.add(new MenuItem(pm.getApplicationLabel(ai).toString(), 0, false, ai.packageName));
+		for (int i = 0; i < packages.size(); i++) {
+			if (MizLib.isMediaApp(packages.get(i))) {
+				thirdPartyApps.add(new MenuItem(pm.getApplicationLabel(packages.get(i)).toString(), 0, false, packages.get(i).packageName));
 			}
 		}
 

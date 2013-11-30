@@ -144,10 +144,10 @@ public class FileBrowserFragment extends Fragment {
 					}});
 
 				final ArrayList<File> currentFiles = new ArrayList<File>();	
-				if (folder.listFiles() != null) {
-					for (File f : folder.listFiles())
-						currentFiles.add(f);
-				}
+				File[] listFiles = folder.listFiles();
+				if (listFiles != null)
+					for (int i = 0; i < listFiles.length; i++)
+						currentFiles.add(listFiles[i]);
 
 				sort(currentFiles);
 
@@ -157,11 +157,11 @@ public class FileBrowserFragment extends Fragment {
 				final ArrayList<File> parentFolders = new ArrayList<File>();
 				File parentFile = folder.getParentFile();
 				if (parentFile != null) {
-					if (parentFile.listFiles() != null) {
-						for (File f : parentFile.listFiles())
-							if (f.isDirectory())
-								parentFolders.add(f);
-					}
+					File[] parentList = parentFile.listFiles();
+					if (parentList != null)
+						for (int i = 0; i < parentList.length; i++)
+							if (parentList[i].isDirectory())
+								parentFolders.add(parentList[i]);
 				}
 
 				sort(parentFolders);

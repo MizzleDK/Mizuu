@@ -271,11 +271,11 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				boolean deleted = true;
 				if (thisMovie.hasMultipleVersions()) {
 					MovieVersion[] versions = thisMovie.getMultipleVersions();
-					for (MovieVersion version : versions) {
+					for (int i = 0; i < versions.length; i++) {
 						if (ignoreDeletedFiles)
-							deleted = deleted && db.ignoreMovie(Long.valueOf(version.getRowId()));
+							deleted = deleted && db.ignoreMovie(Long.valueOf(versions[i].getRowId()));
 						else
-							deleted = deleted && db.deleteMovie(Long.valueOf(version.getRowId()));
+							deleted = deleted && db.deleteMovie(Long.valueOf(versions[i].getRowId()));
 					}
 				} else {
 					if (ignoreDeletedFiles)
@@ -288,9 +288,9 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					if (cb.isChecked()) {
 						if (thisMovie.hasMultipleVersions()) {
 							MovieVersion[] versions = thisMovie.getMultipleVersions();
-							for (MovieVersion version : versions) {
+							for (int i = 0; i < versions.length; i++) {
 								Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
-								deleteIntent.putExtra("filepath", version.getFilepath());
+								deleteIntent.putExtra("filepath", versions[i].getFilepath());
 								getApplicationContext().startService(deleteIntent);
 							}
 						} else {						
@@ -384,8 +384,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		boolean success = true;
 		if (thisMovie.hasMultipleVersions()) {
 			MovieVersion[] versions = thisMovie.getMultipleVersions();
-			for (MovieVersion version : versions)
-				success = success && db.updateMovieSingleItem(Long.valueOf(version.getRowId()), DbAdapter.KEY_FAVOURITE, thisMovie.getFavourite());
+			for (int i = 0; i < versions.length; i++)
+				success = success && db.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_FAVOURITE, thisMovie.getFavourite());
 		} else {
 			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_FAVOURITE, thisMovie.getFavourite());
 		}
@@ -420,8 +420,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		boolean success = true;
 		if (thisMovie.hasMultipleVersions()) {
 			MovieVersion[] versions = thisMovie.getMultipleVersions();
-			for (MovieVersion version : versions)
-				success = success && db.updateMovieSingleItem(Long.valueOf(version.getRowId()), DbAdapter.KEY_HAS_WATCHED, thisMovie.getHasWatched());
+			for (int i = 0; i < versions.length; i++)
+				success = success && db.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_HAS_WATCHED, thisMovie.getHasWatched());
 		} else {
 			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_HAS_WATCHED, thisMovie.getHasWatched());
 		}
@@ -458,8 +458,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		boolean success = true;
 		if (thisMovie.hasMultipleVersions()) {
 			MovieVersion[] versions = thisMovie.getMultipleVersions();
-			for (MovieVersion version : versions)
-				success = success && db.updateMovieSingleItem(Long.valueOf(version.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+			for (int i = 0; i < versions.length; i++)
+				success = success && db.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
 		} else {
 			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
 		}
@@ -493,8 +493,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		boolean success = true;
 		if (thisMovie.hasMultipleVersions()) {
 			MovieVersion[] versions = thisMovie.getMultipleVersions();
-			for (MovieVersion version : versions)
-				success = success && db.updateMovieSingleItem(Long.valueOf(version.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+			for (int i = 0; i < versions.length; i++)
+				success = success && db.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
 		} else {
 			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
 		}

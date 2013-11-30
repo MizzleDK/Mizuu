@@ -27,7 +27,7 @@ public class CustomTagsFragment extends Fragment {
 	private ListView lv;
 	private Button addItem;
 	private TextView tagText;
-	
+
 	private SharedPreferences settings;
 
 	public CustomTagsFragment() {}
@@ -45,9 +45,11 @@ public class CustomTagsFragment extends Fragment {
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		items_string = settings.getString("ignoredTags", "");
 
-		if (!items_string.isEmpty())
-			for (String s : items_string.split("<MiZ>"))
-				items.add(s);
+		if (!items_string.isEmpty()) {
+			String[] split = items_string.split("<MiZ>");
+			for (int i = 0; i < split.length; i++)
+				items.add(split[i]);
+		}
 	}
 
 	@Override
@@ -66,16 +68,17 @@ public class CustomTagsFragment extends Fragment {
 				items_string += "<MiZ>" + tagText.getText();
 				if (items_string.startsWith("<MiZ>"))
 					items_string = items_string.substring(5);
-				
+
 				Editor editor = settings.edit();
 				editor.putString("ignoredTags", items_string);
 				editor.commit();
-				
+
 				items.clear();
-				for (String s : items_string.split("<MiZ>"))
-					items.add(s);
+				String[] split = items_string.split("<MiZ>");
+				for (int i = 0; i < split.length; i++)
+					items.add(split[i]);
 				((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
-				
+
 				tagText.setText("");
 			}
 		});
@@ -145,23 +148,23 @@ public class CustomTagsFragment extends Fragment {
 
 	private void removeSelectedTag(int position) {
 		items.remove(position);
-		
+
 		StringBuilder sb = new StringBuilder();
-		for (String item : items) {
-			sb.append("<MiZ>" + item);
-		}
-		
+		for (int i = 0; i < items.size(); i++)
+			sb.append("<MiZ>" + items.get(i));
+
+
 		String result = sb.toString();
 		if (result.startsWith("<MiZ>")) {
 			result = result.substring(5);
 		}
-		
+
 		items_string = result;
-		
+
 		Editor editor = settings.edit();
 		editor.putString("ignoredTags", items_string);
 		editor.commit();
-		
+
 		((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
 	}
 }

@@ -333,8 +333,8 @@ public class ActorMoviesFragment extends Fragment {
 	}
 
 	private boolean isInArray(String id) {
-		for (WebMovie m : pics_sources)
-			if (id.equals(m.getId()))
+		for (int i = 0; i < pics_sources.size(); i++)
+			if (id.equals(pics_sources.get(i).getId()))
 				return true;
 		return false;
 	}
@@ -350,8 +350,8 @@ public class ActorMoviesFragment extends Fragment {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			for (WebMovie m : movies)
-				movieMap.put(Integer.valueOf(m.getId()), db.movieExists(m.getId()));
+			for (int i = 0; i < movies.size(); i++)
+				movieMap.put(Integer.valueOf(movies.get(i).getId()), db.movieExists(movies.get(i).getId()));
 
 			return null;
 		}

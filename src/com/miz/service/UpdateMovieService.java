@@ -394,7 +394,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 			}
 		}
 
-		for (Map.Entry<String, MizFile> entry : unique.entrySet())
+		for (Map.Entry<String, MizFile> entry : unique.entrySet()) // Needs to be an iterator
 			queue.add(entry.getValue());
 
 		total = queue.size();

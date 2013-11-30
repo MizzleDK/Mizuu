@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
@@ -83,6 +84,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	private ImageLoader imageLoader;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
+	private SearchTask mSearch;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -815,15 +817,18 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
 
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
+		String[] split;
 		for (int i = 0; i < shownShows.size(); i++) {
-			if (!shownShows.get(i).getGenres().isEmpty())
-				for (String genre : shownShows.get(i).getGenres().split(",")) {	
-					if (map.containsKey(genre.trim())) {
-						map.put(genre.trim(), map.get(genre.trim()) + 1);
+			if (!shownShows.get(i).getGenres().isEmpty()) {
+				split = shownShows.get(i).getGenres().split(",");
+				for (int j = 0; j < split.length; j++) {
+					if (map.containsKey(split[j].trim())) {
+						map.put(split[j].trim(), map.get(split[j].trim()) + 1);
 					} else {
-						map.put(genre.trim(), 1);
+						map.put(split[j].trim(), 1);
 					}
 				}
+			}
 		}
 
 		final CharSequence[] tempArray = map.keySet().toArray(new CharSequence[map.keySet().size()]);	
@@ -919,35 +924,59 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	private void search(String query) {
 		showProgressBar();
+		
+		if (mSearch != null)
+			mSearch.cancel(true);
 
-		final String searchQuery = query.toLowerCase(Locale.ENGLISH);
-		shownShows.clear();
+		mSearch = new SearchTask(query);
+		mSearch.execute();
+	}
+	
+	private class SearchTask extends AsyncTask<String, String, String> {
 
-		new Thread() {
-			@Override
-			public void run() {
-				if (searchQuery.startsWith("actor:")) {
-					for (int i = 0; i < shows.size(); i++) {
-						if (shows.get(i).getActors().toLowerCase(Locale.ENGLISH).contains(searchQuery.replace("actor:", "").trim()))
-							shownShows.add(shows.get(i));
-					}
-				} else {
-					for (int i = 0; i < shows.size(); i++) {
-						if (shows.get(i).getTitle().toLowerCase(Locale.ENGLISH).contains(searchQuery))
-							shownShows.add(shows.get(i));
-					}
+		private String searchQuery = "";
+
+		public SearchTask(String query) {
+			searchQuery = query.toLowerCase(Locale.ENGLISH);
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			shownShows.clear();
+
+			if (searchQuery.startsWith("actor:")) {
+				for (int i = 0; i < shows.size(); i++) {
+					if (isCancelled())
+						return null;
+
+					if (shows.get(i).getActors().toLowerCase(Locale.ENGLISH).contains(searchQuery.replace("actor:", "").trim()))
+						shownShows.add(shows.get(i));
 				}
+			} else {
+				String lowerCase = ""; // Reuse String variable
+				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
+				
+				for (int i = 0; i < shows.size(); i++) {
+					if (isCancelled())
+						return null;
 
-				getActivity().runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						sortShows();
-						notifyDataSetChanged();
-						hideProgressBar();
-					}
-				});
+					lowerCase = shows.get(i).getTitle().toLowerCase(Locale.ENGLISH);
+					
+					if (lowerCase.indexOf(searchQuery) != -1 ||  p.matcher(lowerCase).replaceAll("").indexOf(searchQuery) != -1)
+						shownShows.add(shows.get(i));
+				}
 			}
-		}.start();
+
+			sortShows();
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			notifyDataSetChanged();
+			hideProgressBar();
+		}
 	}
 
 	private void showProgressBar() {

@@ -171,9 +171,9 @@ public class NetworkBrowserFragment extends Fragment {
 						SmbFile[] list = currentPath.listFiles();
 						currentPathContent.clear();
 						final ArrayList<NetworkFile> currentList = new ArrayList<NetworkFile>();
-						for (SmbFile s : list) {
-							currentList.add(new NetworkFile(s));
-							currentPathContent.add(s.getCanonicalPath());
+						for (int i = 0; i < list.length; i++) {
+							currentList.add(new NetworkFile(list[i]));
+							currentPathContent.add(list[i].getCanonicalPath());
 						}
 
 						if (isAdded())
@@ -195,10 +195,10 @@ public class NetworkBrowserFragment extends Fragment {
 							SmbFile[] pList = new SmbFile(parentPath).listFiles();
 							parentPathContent.clear();
 							final ArrayList<NetworkFile> parentList = new ArrayList<NetworkFile>();
-							for (SmbFile s : pList) {
-								if (s.isDirectory()) {
-									parentList.add(new NetworkFile(s));
-									parentPathContent.add(s.getCanonicalPath());
+							for (int i = 0; i < pList.length; i++) {
+								if (pList[i].isDirectory()) {
+									parentList.add(new NetworkFile(pList[i]));
+									parentPathContent.add(pList[i].getCanonicalPath());
 								}
 							}
 

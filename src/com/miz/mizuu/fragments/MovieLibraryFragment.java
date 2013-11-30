@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import jcifs.smb.SmbFile;
 import android.app.ActionBar;
@@ -411,6 +410,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			} else {
 				holder.text.setVisibility(TextView.GONE);
 			}
+			
+			//Picasso.with(mContext).load("file://" + shownMovies.get(position).getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(holder.cover);
 
 			if (actionBar.getSelectedNavigationIndex() == 3) {
 				if (showGridTitles)
@@ -686,11 +687,11 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		shownMovies.clear();
 		HashMap<String, MediumMovie> map = new HashMap<String, MediumMovie>();
-		for (MediumMovie m : movies) {
-			if (!MizLib.isEmpty(m.getCollection()) && !m.getCollection().equals("null")) {
-				if (!map.containsKey(m.getCollection())) {
-					map.put(m.getCollection(), m);
-					shownMovies.add(m);
+		for (int i = 0; i < movies.size(); i++) {
+			if (!MizLib.isEmpty(movies.get(i).getCollection()) && !movies.get(i).getCollection().equals("null")) {
+				if (!map.containsKey(movies.get(i).getCollection())) {
+					map.put(movies.get(i).getCollection(), movies.get(i));
+					shownMovies.add(movies.get(i));
 				}
 			}
 		}
@@ -1015,15 +1016,18 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
 
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
+		String[] splitGenres;
 		for (int i = 0; i < shownMovies.size(); i++) {
-			if (!shownMovies.get(i).getGenres().isEmpty())
-				for (String genre : shownMovies.get(i).getGenres().split(",")) {	
-					if (map.containsKey(genre.trim())) {
-						map.put(genre.trim(), map.get(genre.trim()) + 1);
+			if (!shownMovies.get(i).getGenres().isEmpty()) {
+				splitGenres = shownMovies.get(i).getGenres().split(",");
+				for (int j = 0; j < splitGenres.length; j++) {
+					if (map.containsKey(splitGenres[j].trim())) {
+						map.put(splitGenres[j].trim(), map.get(splitGenres[j].trim()) + 1);
 					} else {
-						map.put(genre.trim(), 1);
+						map.put(splitGenres[j].trim(), 1);
 					}
 				}
+			}
 		}
 
 		final CharSequence[] tempArray = map.keySet().toArray(new CharSequence[map.keySet().size()]);	
@@ -1283,29 +1287,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (movies.get(i).getCast().toLowerCase(Locale.ENGLISH).contains(searchQuery.replace("actor:", "").trim()))
 						shownMovies.add(movies.get(i));
 				}
-			} else if (searchQuery.equalsIgnoreCase("show_duplicates")) {
-				Set<String> f = new HashSet<String>(), dupes = new HashSet<String>();
-				for (int i = 0; i < movies.size(); i++) {
-					if (isCancelled())
-						return null;
-
-					if (!f.add(movies.get(i).getTmdbId()))
-						dupes.add(movies.get(i).getTmdbId());
-				}
-
-				for (int i = 0; i < movies.size(); i++) {
-					if (isCancelled())
-						return null;
-
-					for (String s : dupes)
-						if (s.equals(movies.get(i).getTmdbId()))
-							shownMovies.add(movies.get(i));
-				}
-
-				f.clear();
-				f = null;
-				dupes.clear();
-				dupes = null;
 			} else if (searchQuery.equalsIgnoreCase("missing_genres")) {
 				for (int i = 0; i < movies.size(); i++) {
 					if (isCancelled())
@@ -1314,12 +1295,18 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (MizLib.isEmpty(movies.get(i).getGenres()))
 						shownMovies.add(movies.get(i));
 				}
-			} else {					
+			} else {
+				String lowerCase = "", filepath; // Reuse String variables
+				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
+				
 				for (int i = 0; i < movies.size(); i++) {
 					if (isCancelled())
 						return null;
 
-					if (movies.get(i).getTitle().toLowerCase(Locale.ENGLISH).indexOf(searchQuery) != -1 || movies.get(i).getFilepath().toLowerCase(Locale.ENGLISH).indexOf(searchQuery) != -1)
+					lowerCase = movies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
+					filepath = movies.get(i).getFilepath().toLowerCase(Locale.ENGLISH);
+					
+					if (lowerCase.indexOf(searchQuery) != -1 || filepath.indexOf(searchQuery) != -1 || p.matcher(lowerCase).replaceAll("").indexOf(searchQuery) != -1)
 						shownMovies.add(movies.get(i));
 				}
 			}
@@ -1334,7 +1321,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			notifyDataSetChanged();
 			hideProgressBar();
 		}
-
 	}
 
 	private void showProgressBar() {

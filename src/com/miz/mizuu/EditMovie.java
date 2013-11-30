@@ -143,8 +143,8 @@ public class EditMovie extends MizActivity {
 
 		if (dbHelper.hasMultipleVersions(tmdbId)) {
 			MovieVersion[] versions = dbHelper.getRowIdsForMovie(tmdbId);
-			for (MovieVersion version : versions) {
-				dbHelper.editUpdateMovie(version.getRowId(), title.getText().toString(), plot.getText().toString(), rating.getText().toString(), tagline.getText().toString(),
+			for (int i = 0; i < versions.length; i++) {
+				dbHelper.editUpdateMovie(versions[i].getRowId(), title.getText().toString(), plot.getText().toString(), rating.getText().toString(), tagline.getText().toString(),
 						release.getText().toString(), certifications[certification.getSelectedItemPosition()], runtime.getText().toString(), genres.getText().toString(), "0", "0", String.valueOf(System.currentTimeMillis()));
 			}
 		} else {

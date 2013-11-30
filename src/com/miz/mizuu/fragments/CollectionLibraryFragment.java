@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import jcifs.smb.SmbFile;
 import android.app.ActionBar;
@@ -50,6 +51,7 @@ import android.widget.TextView;
 
 import com.miz.db.DbAdapter;
 import com.miz.db.DbHelper;
+import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.FileSource;
 import com.miz.functions.ImageLoadingErrorListener;
@@ -81,6 +83,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	private String collectionId;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
+	private SearchTask mSearch;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -819,12 +822,14 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
 
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
+		String[] splitGenres;
 		for (int i = 0; i < shownMovies.size(); i++) {
-			for (String genre : shownMovies.get(i).getGenres().split(",")) {	
-				if (map.containsKey(genre.trim())) {
-					map.put(genre.trim(), map.get(genre.trim()) + 1);
+			splitGenres = shownMovies.get(i).getGenres().split(",");
+			for (int j = 0; j < splitGenres.length; j++) {
+				if (map.containsKey(splitGenres[j].trim())) {
+					map.put(splitGenres[j].trim(), map.get(splitGenres[j].trim()) + 1);
 				} else {
-					map.put(genre.trim(), 1);
+					map.put(splitGenres[j].trim(), 1);
 				}
 			}
 		}
@@ -922,37 +927,68 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	private void search(String query) {
 		showProgressBar();
+		
+		if (mSearch != null)
+			mSearch.cancel(true);
 
-		final String searchQuery = query.toLowerCase(Locale.ENGLISH);
-		shownMovies.clear();
+		mSearch = new SearchTask(query);
+		mSearch.execute();
+	}
+	
+	private class SearchTask extends AsyncTask<String, String, String> {
 
-		new Thread() {
-			@Override
-			public void run() {
-				if (searchQuery.startsWith("actor:")) {
-					for (int i = 0; i < movies.size(); i++) {
-						if (movies.get(i).getCast().toLowerCase(Locale.ENGLISH).contains(searchQuery.replace("actor:", "").trim()))
-							shownMovies.add(movies.get(i));
-					}
-				} else {
-					for (int i = 0; i < movies.size(); i++) {
-						if (movies.get(i).getTitle().toLowerCase(Locale.ENGLISH).contains(searchQuery) ||
-								movies.get(i).getFilepath().toLowerCase(Locale.ENGLISH).contains(searchQuery))
-							shownMovies.add(movies.get(i));
-					}
+		private String searchQuery = "";
+
+		public SearchTask(String query) {
+			searchQuery = query.toLowerCase(Locale.ENGLISH);
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			shownMovies.clear();
+
+			if (searchQuery.startsWith("actor:")) {
+				for (int i = 0; i < movies.size(); i++) {
+					if (isCancelled())
+						return null;
+
+					if (movies.get(i).getCast().toLowerCase(Locale.ENGLISH).contains(searchQuery.replace("actor:", "").trim()))
+						shownMovies.add(movies.get(i));
 				}
+			} else if (searchQuery.equalsIgnoreCase("missing_genres")) {
+				for (int i = 0; i < movies.size(); i++) {
+					if (isCancelled())
+						return null;
 
-				sortMovies();
+					if (MizLib.isEmpty(movies.get(i).getGenres()))
+						shownMovies.add(movies.get(i));
+				}
+			} else {
+				String lowerCase = "", filepath; // Reuse String variables
+				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
+				
+				for (int i = 0; i < movies.size(); i++) {
+					if (isCancelled())
+						return null;
 
-				getActivity().runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						notifyDataSetChanged();
-						hideProgressBar();
-					}
-				});
+					lowerCase = movies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
+					filepath = movies.get(i).getFilepath().toLowerCase(Locale.ENGLISH);
+					
+					if (lowerCase.indexOf(searchQuery) != -1 || filepath.indexOf(searchQuery) != -1 || p.matcher(lowerCase).replaceAll("").indexOf(searchQuery) != -1)
+						shownMovies.add(movies.get(i));
+				}
 			}
-		}.start();
+
+			sortMovies();
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			notifyDataSetChanged();
+			hideProgressBar();
+		}
 	}
 
 	private void showProgressBar() {
