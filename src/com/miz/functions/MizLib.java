@@ -104,7 +104,7 @@ import com.squareup.okhttp.apache.OkApacheClient;
 public class MizLib {
 
 	public static final String tvdbLanguages = "en,sv,no,da,fi,nl,de,it,es,fr,pl,hu,el,tr,ru,he,ja,pt,zh,cs,sl,hr,ko";
-	public static final String allFileTypes = ".3gp.aaf.mp4.ts.webm.m4v.mkv.divx.xvid.rec.avi.flv.f4v.moi.mpeg.mpg.mts.m2ts.ogv.rm.rmvb.mov.wmv.iso.vob.ifo.wtv.pyv";
+	public static final String allFileTypes = ".3gp.aaf.mp4.ts.webm.m4v.mkv.divx.xvid.rec.avi.flv.f4v.moi.mpeg.mpg.mts.m2ts.ogv.rm.rmvb.mov.wmv.iso.vob.ifo.wtv.pyv.ogm";
 	public static final String IMAGE_CACHE_DIR = "thumbs";
 	public static final String TMDB_BASE_URL = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
 	public static final String TMDB_API = "8f5f9f44983b8af692aae5f9974500f8";
@@ -137,7 +137,7 @@ public class MizLib {
 	}
 
 	public static boolean isVideoFile(String s) {
-		String[] fileTypes = new String[]{".3gp",".aaf.","mp4",".ts",".webm",".m4v",".mkv",".divx",".xvid",".rec",".avi",".flv",".f4v",".moi",".mpeg",".mpg",".mts",".m2ts",".ogv",".rm",".rmvb",".mov",".wmv",".iso",".vob",".ifo",".wtv",".pyv"};
+		String[] fileTypes = new String[]{".3gp",".aaf.","mp4",".ts",".webm",".m4v",".mkv",".divx",".xvid",".rec",".avi",".flv",".f4v",".moi",".mpeg",".mpg",".mts",".m2ts",".ogv",".rm",".rmvb",".mov",".wmv",".iso",".vob",".ifo",".wtv",".pyv",".ogm"};
 		int count = fileTypes.length;
 		for (int i = 0; i < count; i++)
 			if (s.endsWith(fileTypes[i]))
