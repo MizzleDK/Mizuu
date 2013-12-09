@@ -59,7 +59,7 @@ public class TestShowFileNames extends AndroidTestCase {
 			"/Skins.S01.COMPLETE.ENGLISH.HDTVRip.720p.x264-TvR/Skins.S01E01.Tony.ENGLISH.HDTVRip.720p.x264-TvR/tvr-skins-s01e01-720p.mkv", // 46
 			"/Talespin V1-2 DVDRip x264-panos/1/1e16-Her Chance to Dream.mkv", // 47
 			"/Secret Files of the Spy dogs/Secret Files of the Spy Dogs - 1x06 - Small - Water (DVDRip) (s-mouche) [toonslive].mkv", // 48
-			"/Serier/The Fresh Prince of Bel-Air/S01/The Fresh Prince of Bel-Air - 101 - The Fresh Prince Project.avi"
+			"/Serier/The Fresh Prince of Bel-Air/S01/The Fresh Prince of Bel-Air - 101 - The Fresh Prince Project.avi" // 49
 	};
 	
 	private DecryptedShowEpisode[] d;
