@@ -407,5 +407,6 @@
     <string name="thirdPartyLibraries">Third party libraries</string>
     <string name="fileToIdentify">Select file to identify</string>
     <string name="fileToPlay">Select file to play</string>
+    <string name="actor">Actor</string>
 
 </resources>

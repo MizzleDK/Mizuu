@@ -15,6 +15,7 @@ import jcifs.smb.SmbFile;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -150,6 +151,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-actor-search"));
 	}
 
 	private void setupActionBar() {
@@ -176,11 +178,15 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.filterEquals(new Intent("mizuu-library-change")) || intent.filterEquals(new Intent("mizuu-movie-cover-change"))) {
-				clearCaches();
-			}
+			if (intent.filterEquals(new Intent("mizuu-movie-actor-search"))) {
+				search("actor: " + intent.getStringExtra("intent_extra_data_key"));
+			} else {
+				if (intent.filterEquals(new Intent("mizuu-library-change")) || intent.filterEquals(new Intent("mizuu-movie-cover-change"))) {
+					clearCaches();
+				}
 
-			forceLoaderLoad();
+				forceLoaderLoad();
+			}
 		}
 	};
 
@@ -410,7 +416,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			} else {
 				holder.text.setVisibility(TextView.GONE);
 			}
-			
+
 			//Picasso.with(mContext).load("file://" + shownMovies.get(position).getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(holder.cover);
 
 			if (actionBar.getSelectedNavigationIndex() == 3) {
@@ -754,7 +760,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			if (type == OTHER) // Don't show the Update icon if this is the Watchlist
 				menu.removeItem(R.id.update);
 
+			SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
+			searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				@Override
 				public boolean onQueryTextChange(String newText) {
@@ -904,11 +912,15 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		switch (sort) {	
 		case TITLE:
 
+			final boolean isCollection = (getActivity().getActionBar().getSelectedNavigationIndex() == 3);
 			Collections.sort(tempMovies, new Comparator<MediumMovie>() {
 				@Override
 				public int compare(MediumMovie o1, MediumMovie o2) {
-					if (o1 != null && o2 != null)
+					if (o1 != null && o2 != null) {
+						if (isCollection)
+							return o1.getCollection().compareToIgnoreCase(o2.getCollection());
 						return o1.getTitle().compareToIgnoreCase(o2.getTitle());
+					}
 					return 0;
 				}
 			});
@@ -1298,14 +1310,14 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			} else {
 				String lowerCase = "", filepath; // Reuse String variables
 				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
-				
+
 				for (int i = 0; i < movies.size(); i++) {
 					if (isCancelled())
 						return null;
 
 					lowerCase = movies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
 					filepath = movies.get(i).getFilepath().toLowerCase(Locale.ENGLISH);
-					
+
 					if (lowerCase.indexOf(searchQuery) != -1 || filepath.indexOf(searchQuery) != -1 || p.matcher(lowerCase).replaceAll("").indexOf(searchQuery) != -1)
 						shownMovies.add(movies.get(i));
 				}

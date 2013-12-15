@@ -109,10 +109,19 @@
         <activity
             android:name="com.miz.mizuu.MainMovies"
             android:exported="false"
-            android:label="@string/chooserMovies" >
+            android:label="@string/chooserMovies"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable_actor_movies" />
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="com.miz.mizuu.MainMovies" />
         </activity>
 
         <!-- Collection activity -->
@@ -138,10 +147,19 @@
         <activity
             android:name="com.miz.mizuu.MainTvShows"
             android:exported="false"
-            android:label="@string/chooserTVShows" >
+            android:label="@string/chooserTVShows"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable_actors_tv" />
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="com.miz.mizuu.MainTVShows" />
         </activity>
         <activity
             android:name="com.miz.mizuu.Calendar"
@@ -365,7 +383,7 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-        
+
         <!-- Widgets -->
         <receiver
             android:name="com.miz.widgets.MovieStackWidgetProvider"
@@ -485,7 +503,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 
@@ -500,9 +518,17 @@
             android:authorities="com.miz.contentprovider.MovieContentProvider"
             android:exported="true" />
         <provider
+            android:name="com.miz.contentprovider.MovieActorContentProvider"
+            android:authorities="com.miz.contentprovider.MovieActorContentProvider"
+            android:exported="false" />
+        <provider
             android:name="com.miz.contentprovider.TvShowContentProvider"
             android:authorities="com.miz.contentprovider.TvShowContentProvider"
             android:exported="true" />
+        <provider
+            android:name="com.miz.contentprovider.TvShowActorContentProvider"
+            android:authorities="com.miz.contentprovider.TvShowActorContentProvider"
+            android:exported="false" />
 
         <meta-data
             android:name="com.crashlytics.ApiKey"

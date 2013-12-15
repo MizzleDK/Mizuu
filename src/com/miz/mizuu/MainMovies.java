@@ -1,11 +1,12 @@
 package com.miz.mizuu;
 
-import com.miz.mizuu.fragments.MovieLibraryFragment;
-import com.miz.mizuu.R;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
+
+import com.miz.mizuu.fragments.MovieLibraryFragment;
 
 public class MainMovies extends MainMenuActivity {
 
@@ -25,5 +26,14 @@ public class MainMovies extends MainMenuActivity {
 		}
 		
 		selectListIndex(MOVIES);
+	}
+	
+	@Override
+	public void onNewIntent(Intent newIntent) {
+	    super.onNewIntent(newIntent);
+	    
+	    Intent i = new Intent("mizuu-movie-actor-search");
+	    i.putExtras(newIntent.getExtras());
+	    LocalBroadcastManager.getInstance(this).sendBroadcast(i);
 	}
 }

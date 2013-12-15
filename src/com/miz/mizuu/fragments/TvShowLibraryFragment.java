@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import android.app.ActionBar;
+import android.app.SearchManager;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -133,6 +134,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-cover-change"));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-actor-search"));
 	}
 
 	private void setupActionBar() {
@@ -152,11 +154,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.filterEquals(new Intent("mizuu-show-cover-change"))) {
-				clearCaches();
-			}	
+			if (intent.filterEquals(new Intent("mizuu-shows-actor-search"))) {
+				search("actor: " + intent.getStringExtra("intent_extra_data_key"));
+			} else {
+				if (intent.filterEquals(new Intent("mizuu-show-cover-change"))) {
+					clearCaches();
+				}	
 
-			forceLoaderLoad();
+				forceLoaderLoad();
+			}
 		}
 	};
 
@@ -557,7 +563,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		} else {
 			setupActionBar();
 			inflater.inflate(R.menu.menutv, menu);
+			SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
+			searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				@Override
 				public boolean onQueryTextChange(String newText) {
@@ -924,14 +932,14 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	private void search(String query) {
 		showProgressBar();
-		
+
 		if (mSearch != null)
 			mSearch.cancel(true);
 
 		mSearch = new SearchTask(query);
 		mSearch.execute();
 	}
-	
+
 	private class SearchTask extends AsyncTask<String, String, String> {
 
 		private String searchQuery = "";
@@ -955,13 +963,13 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			} else {
 				String lowerCase = ""; // Reuse String variable
 				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
-				
+
 				for (int i = 0; i < shows.size(); i++) {
 					if (isCancelled())
 						return null;
 
 					lowerCase = shows.get(i).getTitle().toLowerCase(Locale.ENGLISH);
-					
+
 					if (lowerCase.indexOf(searchQuery) != -1 ||  p.matcher(lowerCase).replaceAll("").indexOf(searchQuery) != -1)
 						shownShows.add(shows.get(i));
 				}

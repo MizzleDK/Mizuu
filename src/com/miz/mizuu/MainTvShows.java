@@ -1,8 +1,10 @@
 package com.miz.mizuu;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.miz.mizuu.fragments.TvShowLibraryFragment;
 import com.miz.mizuu.R;
@@ -25,5 +27,14 @@ public class MainTvShows extends MainMenuActivity {
 		}
 		
 		selectListIndex(SHOWS);
+	}
+	
+	@Override
+	public void onNewIntent(Intent newIntent) {
+	    super.onNewIntent(newIntent);
+	    
+	    Intent i = new Intent("mizuu-shows-actor-search");
+	    i.putExtras(newIntent.getExtras());
+	    LocalBroadcastManager.getInstance(this).sendBroadcast(i);
 	}
 }
