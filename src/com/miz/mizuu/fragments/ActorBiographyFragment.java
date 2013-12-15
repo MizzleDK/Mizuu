@@ -59,12 +59,15 @@ public class ActorBiographyFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.actor_bio, container, false);
 	}
-	
+
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
-		
-		MizLib.addActionBarMargin(getActivity(), v.findViewById(R.id.linearLayout1));
-		
+
+		if (MizLib.runsInPortraitMode(getActivity()))
+			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
+		else
+			MizLib.addActionBarMargin(getActivity(), v.findViewById(R.id.linearLayout1));
+
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
 		mActorBirthday = (TextView) v.findViewById(R.id.overviewMessage);
 		mActorBirth = (TextView) v.findViewById(R.id.textView2);
@@ -76,7 +79,7 @@ public class ActorBiographyFragment extends Fragment {
 		mActorBio = (TextView) v.findViewById(R.id.textView4);
 		mActorImage = (ImageView) v.findViewById(R.id.traktIcon);
 		mActorImageBackground = (ImageView) v.findViewById(R.id.imageView2);
-		
+
 		if (!MizLib.runsInPortraitMode(getActivity())) {
 			mActorImageBackground.setImageResource(R.drawable.bg);
 		}
@@ -128,7 +131,7 @@ public class ActorBiographyFragment extends Fragment {
 				}
 
 				if (mBio.equals("null")) mBio = "";
-				
+
 				mBio = MizLib.removeWikipediaNotes(mBio);
 
 				try {
