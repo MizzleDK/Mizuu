@@ -164,6 +164,8 @@ public class AccountsFragment extends Fragment {
 					JSONObject jObject = new JSONObject(html);
 
 					String name = jObject.getString("full_name");
+					if (name.equals("null") || name.isEmpty())
+						name = jObject.getString("username");
 					String avatar = jObject.getString("avatar");
 
 					editor.putString("traktFullName", name);
