@@ -127,8 +127,8 @@ public class MovieDetailsFragment extends Fragment {
 		} finally {
 			cursor.close();
 		}
-		
-		if (db.hasMultipleVersions(thisMovie.getTmdbId())) {
+
+		if (db.hasMultipleVersions(thisMovie.getTmdbId()) && !thisMovie.isUnidentified()) {
 			thisMovie.setMultipleVersions(db.getRowIdsForMovie(thisMovie.getTmdbId()));
 		}
 
@@ -175,7 +175,7 @@ public class MovieDetailsFragment extends Fragment {
 		textTagline = (TextView) view.findViewById(R.id.textView6);
 		textCertification = (TextView) view.findViewById(R.id.textView11);
 		cover = (AspectRatioImageViewCover) view.findViewById(R.id.traktIcon);
-		
+
 		// Set the movie title
 		textTitle.setVisibility(View.VISIBLE);
 		textTitle.setText(thisMovie.getTitle());
@@ -186,7 +186,7 @@ public class MovieDetailsFragment extends Fragment {
 		textPlot.setText(thisMovie.getPlot());
 
 		// Set the movie file source
-		if (thisMovie.hasMultipleVersions()) {
+		if (thisMovie.hasMultipleVersions() && !thisMovie.isUnidentified()) {
 			String sources = "";
 			MovieVersion[] versions = thisMovie.getMultipleVersions();
 			for (int i = 0; i < versions.length; i++)
@@ -321,7 +321,7 @@ public class MovieDetailsFragment extends Fragment {
 	}
 
 	private void playMovie() {
-		if (thisMovie.hasMultipleVersions()) {
+		if (thisMovie.hasMultipleVersions() && !thisMovie.isUnidentified()) {
 			final MovieVersion[] versions = thisMovie.getMultipleVersions();
 			CharSequence[] items = new CharSequence[versions.length];
 			for (int i = 0; i < versions.length; i++)
@@ -340,7 +340,7 @@ public class MovieDetailsFragment extends Fragment {
 			playMovie(thisMovie.getFilepath(), thisMovie.isNetworkFile());
 		}
 	}
-	
+
 	private void playMovie(String filepath, boolean isNetworkFile) {
 		videoPlaybackStarted = System.currentTimeMillis();
 		if (filepath.matches(".*(cd1|part1).*")) {
@@ -369,7 +369,7 @@ public class MovieDetailsFragment extends Fragment {
 		private ProgressDialog progress;
 		private String orig_filepath;
 		private boolean isNetworkFile;
-		
+
 		public GetSplitFiles(String filepath, boolean isNetworkFile) {
 			this.orig_filepath = filepath;
 			this.isNetworkFile = isNetworkFile;

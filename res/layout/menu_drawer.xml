@@ -44,7 +44,7 @@
                 android:background="@drawable/gradient_black_to_transparent"
                 android:gravity="center_vertical" >
 
-                <ImageView
+                <com.miz.functions.CircleImageView
                     android:id="@+id/userPhoto"
                     android:layout_width="50dp"
                     android:layout_height="50dp"

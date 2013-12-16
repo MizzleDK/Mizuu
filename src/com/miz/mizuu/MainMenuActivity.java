@@ -189,14 +189,10 @@ public abstract class MainMenuActivity extends MizActivity {
 					if (!MizLib.isEmpty(full_name)) {
 						int size = MizLib.convertDpToPixels(getApplicationContext(), 50);
 						if (new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").exists())
-							profile = MizLib.getRoundedCornerBitmap(
-									MizLib.decodeSampledBitmapFromFile(new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath(), size, size),
-									size);
+							profile = MizLib.decodeSampledBitmapFromFile(new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath(), size, size);
 					} else {
 						int size = MizLib.convertDpToPixels(getApplicationContext(), 50);
-						profile = MizLib.getRoundedCornerBitmap(
-								MizLib.decodeSampledBitmapFromResource(getResources(), R.drawable.unknown_user, size, size),
-								size);
+						profile = MizLib.decodeSampledBitmapFromResource(getResources(), R.drawable.unknown_user, size, size);
 					}
 				}
 
