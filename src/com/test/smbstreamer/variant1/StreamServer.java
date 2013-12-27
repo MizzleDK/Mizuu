@@ -139,6 +139,7 @@ public abstract class StreamServer {
 		{
 			public void run()
 			{
+				HTTPSession ss;
 				try
 				{
 					while( true ){
@@ -151,7 +152,7 @@ public abstract class StreamServer {
 						//                                                              }
 						//                                                      }
 						Socket accept = myServerSocket.accept();
-						new HTTPSession(accept);
+						ss = new HTTPSession(accept);
 					}
 				}
 				catch ( IOException ioe )
@@ -159,6 +160,7 @@ public abstract class StreamServer {
 			}
 		});
 		myThread.setDaemon( true );
+		myThread.setPriority(Thread.MAX_PRIORITY);
 		myThread.start();
 	}
 
@@ -191,6 +193,7 @@ public abstract class StreamServer {
 			//mySocket = s;
 			Thread t = new Thread( this );
 			t.setDaemon( true );
+			t.setPriority(Thread.MAX_PRIORITY);
 			t.start();
 		}
 
@@ -322,7 +325,7 @@ public abstract class StreamServer {
 					{
 						// Handle application/x-www-form-urlencoded
 						String postLine = "";
-						char pbuf[] = new char[512];
+						char pbuf[] = new char[bufsize];
 						int read = in.read(pbuf);
 						while ( read >= 0 && !postLine.endsWith("\r\n") )
 						{

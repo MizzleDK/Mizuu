@@ -75,6 +75,9 @@
     </string-array>
     <string-array name="scheduledUpdates">
         <item>@string/scheduledAtLaunch</item>
+        <item>@string/scheduledEveryHour</item>
+        <item>@string/scheduledEvery2Hours</item>
+        <item>@string/scheduledEvery4Hours</item>
         <item>@string/scheduledEvery6Hours</item>
         <item>@string/scheduledEvery12Hours</item>
         <item>@string/scheduledEveryDay</item>

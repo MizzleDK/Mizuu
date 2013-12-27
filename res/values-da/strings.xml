@@ -289,6 +289,9 @@
     <string name="scheduledUpdates">Planlagte opdateringer</string>
     <string name="enableScheduledLibraryUpdates">Aktiver planlagte opdateringer af biblioteket</string>
     <string name="scheduledAtLaunch">Ved programstart</string>
+    <string name="scheduledEveryHour">Hver time</string>
+    <string name="scheduledEvery2Hours">Hver 2. time</string>
+    <string name="scheduledEvery4Hours">Hver 4. time</string>
     <string name="scheduledEvery6Hours">Hver 6. time</string>
     <string name="scheduledEvery12Hours">Hver 12. time</string>
     <string name="scheduledEveryDay">Hver dag</string>

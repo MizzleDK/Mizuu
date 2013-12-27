@@ -23,7 +23,7 @@ import com.miz.mizuu.R;
 public class ScheduledUpdatesFragment extends Fragment {
 
 	public static final String MOVIE_UPDATE_PREF = "scheduleUpdatesMovies", SHOWS_UPDATE_PREF = "scheduleUpdatesShows";
-	public static final int NOT_ENABLED = 0, AT_LAUNCH = 1, EVERY_6_HOURS = 2, EVERY_12_HOURS = 3, EVERY_DAY = 4, EVERY_WEEK = 5;
+	public static final int NOT_ENABLED = 0, AT_LAUNCH = 1, EVERY_HOUR = 2, EVERY_2_HOURS = 3, EVERY_4_HOURS = 4, EVERY_6_HOURS = 5, EVERY_12_HOURS = 6, EVERY_DAY = 7, EVERY_WEEK = 8;
 	private int movieUpdateType = NOT_ENABLED, showsUpdateType = NOT_ENABLED;
 	private SharedPreferences settings;
 	private Editor editor;

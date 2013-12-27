@@ -1064,7 +1064,7 @@ public class MizLib {
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				String html = httpclient.execute(httppost, responseHandler);
-				
+
 				return new JSONObject(html);
 			}
 		} catch (Exception e) {
@@ -2119,8 +2119,17 @@ public class MizLib {
 		// Check if scheduled updates are enabled, and schedule the next update if this is the case
 		if (settings.getInt(ScheduledUpdatesFragment.MOVIE_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED) > ScheduledUpdatesFragment.AT_LAUNCH) {
 			ScheduledUpdatesAlarmManager.cancelUpdate(ScheduledUpdatesAlarmManager.MOVIES, context);
-			long duration = MizLib.HOUR * 6;
+			long duration = MizLib.HOUR;
 			switch (settings.getInt(ScheduledUpdatesFragment.MOVIE_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED)) {
+			case ScheduledUpdatesFragment.EVERY_2_HOURS:
+				duration = MizLib.HOUR * 2;
+				break;
+			case ScheduledUpdatesFragment.EVERY_4_HOURS:
+				duration = MizLib.HOUR * 4;
+				break;
+			case ScheduledUpdatesFragment.EVERY_6_HOURS:
+				duration = MizLib.HOUR * 6;
+				break;
 			case ScheduledUpdatesFragment.EVERY_12_HOURS:
 				duration = MizLib.HOUR * 12;
 				break;
@@ -2141,8 +2150,17 @@ public class MizLib {
 		// Check if scheduled updates are enabled, and schedule the next update if this is the case
 		if (settings.getInt(ScheduledUpdatesFragment.SHOWS_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED) > ScheduledUpdatesFragment.AT_LAUNCH) {
 			ScheduledUpdatesAlarmManager.cancelUpdate(ScheduledUpdatesAlarmManager.SHOWS, context);
-			long duration = MizLib.HOUR * 6;
+			long duration = MizLib.HOUR;
 			switch (settings.getInt(ScheduledUpdatesFragment.SHOWS_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED)) {
+			case ScheduledUpdatesFragment.EVERY_2_HOURS:
+				duration = MizLib.HOUR * 2;
+				break;
+			case ScheduledUpdatesFragment.EVERY_4_HOURS:
+				duration = MizLib.HOUR * 4;
+				break;
+			case ScheduledUpdatesFragment.EVERY_6_HOURS:
+				duration = MizLib.HOUR * 6;
+				break;
 			case ScheduledUpdatesFragment.EVERY_12_HOURS:
 				duration = MizLib.HOUR * 12;
 				break;

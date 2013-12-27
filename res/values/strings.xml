@@ -346,6 +346,9 @@
     <string name="scheduledUpdates">Scheduled updates</string>
     <string name="enableScheduledLibraryUpdates">Enable scheduled library updates</string>
     <string name="scheduledAtLaunch">At application launch</string>
+    <string name="scheduledEveryHour">Every hour</string>
+    <string name="scheduledEvery2Hours">Every 2 hours</string>
+    <string name="scheduledEvery4Hours">Every 4 hours</string>
     <string name="scheduledEvery6Hours">Every 6 hours</string>
     <string name="scheduledEvery12Hours">Every 12 hours</string>
     <string name="scheduledEveryDay">Every day</string>
