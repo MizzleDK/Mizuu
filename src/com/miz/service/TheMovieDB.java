@@ -92,7 +92,7 @@ public class TheMovieDB extends IntentService {
 			MizLib.downloadFile(movie.getCover(), thumb_filepath);
 		
 		// Download the backdrop file and try again if it fails
-		if (!movie.getBackdrop().equals("NOmovie.getCover()IMG")) {
+		if (!movie.getBackdrop().equals("NOIMG")) {
 			String backdropFile = new File(MizLib.getMovieBackdropFolder(this), movie.getId() + "_bg.jpg").getAbsolutePath();
 			
 			if (!MizLib.downloadFile(movie.getBackdrop(), backdropFile))
