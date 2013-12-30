@@ -411,5 +411,10 @@
     <string name="fileToIdentify">Select file to identify</string>
     <string name="fileToPlay">Select file to play</string>
     <string name="actor">Actor</string>
+    <string name="overviewGridItemSizeTitle">Set overview cover size</string>
+    <string name="overviewGridItemSizeDescription">Change the size of movie and TV show covers in the overviews.</string>
+    <string name="large">Large</string>
+    <string name="normal">Normal</string>
+    <string name="small">Small</string>
 
 </resources>

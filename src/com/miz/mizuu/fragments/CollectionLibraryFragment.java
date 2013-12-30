@@ -125,7 +125,13 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		ignoreNfo = settings.getBoolean("prefsIgnoreNfoFiles", true);
 		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
 
-		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
+		if (thumbnailSize.equals(getString(R.string.large)))
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.25);
+		else if (thumbnailSize.equals(getString(R.string.normal))) 
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+		else
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		imageLoader = ImageLoader.getInstance();
@@ -239,6 +245,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		mGridView = (GridView) v.findViewById(R.id.gridView);
 		mGridView.setFastScrollEnabled(true);
 		mGridView.setAdapter(mAdapter);
+		mGridView.setColumnWidth(mImageThumbSize);
 
 		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -246,8 +253,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 					@Override
 					public void onGlobalLayout() {
 						if (mAdapter.getNumColumns() == 0) {
-							final int numColumns = (int) Math.floor(
-									mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
 								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
@@ -365,7 +371,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		 */
 		public void setItemHeight(int height) {
 			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 1.5));
+			mImageViewLayoutParams = new GridView.LayoutParams(mItemHeight, (int) (mItemHeight * 1.5));
 		}
 
 		public void setNumColumns(int numColumns) {
@@ -1020,7 +1026,25 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		if (key.equals("prefsIgnorePrefixesInTitles")) {
 			ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
 			forceLoaderLoad();
+		} else if (key.equals("prefsGridItemSize")) {
+			String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
+			if (thumbnailSize.equals(getString(R.string.large)))
+				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.25);
+			else if (thumbnailSize.equals(getString(R.string.normal))) 
+				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+			else
+				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
+			
+			mGridView.setColumnWidth(mImageThumbSize);
+			
+			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+			if (numColumns > 0) {
+				final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
+				mAdapter.setNumColumns(numColumns);
+				mAdapter.setItemHeight(columnWidth);
+			}
 		}
+
 
 		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
 

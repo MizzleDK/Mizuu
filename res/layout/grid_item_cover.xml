@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="#80000000"
+        android:background="#aa000000"
         android:ellipsize="end"
         android:gravity="center_horizontal"
         android:maxLines="1"
@@ -38,7 +38,7 @@
         android:layout_alignParentBottom="false"
         android:layout_alignWithParentIfMissing="true"
         android:layout_centerHorizontal="true"
-        android:background="#80000000"
+        android:background="#aa000000"
         android:ellipsize="end"
         android:gravity="center_horizontal"
         android:maxLines="1"
@@ -50,7 +50,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#fff"
         android:textIsSelectable="false"
-        android:textSize="@dimen/details_text_size"
+        android:textSize="16sp"
         android:visibility="gone" />
 
 </RelativeLayout>

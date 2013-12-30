@@ -71,7 +71,7 @@
     </string-array>
     <string-array name="episodesOrder">
         <item>@string/newestFirst</item>
-        <item>@string/oldestFirst</item>
+        <item>@string/oldestFirst</item>grid_item_size
     </string-array>
     <string-array name="scheduledUpdates">
         <item>@string/scheduledAtLaunch</item>
@@ -96,6 +96,11 @@
     <string-array name="tv_shows_start_page">
         <item>@string/showDetails</item>
         <item>@string/episodeDetails</item>
+    </string-array>
+    <string-array name="grid_item_size">
+        <item>@string/large</item>
+        <item>@string/normal</item>
+        <item>@string/small</item>
     </string-array>
 
 </resources>

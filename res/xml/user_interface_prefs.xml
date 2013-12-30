@@ -25,6 +25,14 @@
             android:key="prefsFullscreen"
             android:summary="@string/fullscreenModeDescription"
             android:title="@string/fullscreenMode" />
+
+        <ListPreference
+            android:defaultValue="@string/normal"
+            android:entries="@array/grid_item_size"
+            android:entryValues="@array/grid_item_size"
+            android:key="prefsGridItemSize"
+            android:summary="@string/overviewGridItemSizeDescription"
+            android:title="@string/overviewGridItemSizeTitle" android:icon="@drawable/ic_action_tiles_large"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/chooserTVShows" >
         <ListPreference
