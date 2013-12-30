@@ -80,7 +80,7 @@ public abstract class MainMenuActivity extends MizActivity {
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_list_shadow, GravityCompat.START);
 
-		if (!MizLib.runsOnTablet(this) && !MizLib.runsInPortraitMode(this)) {
+		if ((!MizLib.runsOnTablet(this) && !MizLib.runsInPortraitMode(this)) || MizLib.isGoogleTV(this)) {
 			findViewById(R.id.personalizedArea).setVisibility(View.GONE);
 		} else
 			setupUserDetails();
@@ -141,6 +141,8 @@ public abstract class MainMenuActivity extends MizActivity {
 
 			public void onDrawerOpened(View drawerView) {
 				invalidateOptionsMenu();
+				if (MizLib.isGoogleTV(getApplicationContext()))
+					mDrawerList.requestFocus();
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -439,7 +441,10 @@ public abstract class MainMenuActivity extends MizActivity {
 				hasTriedOnce = true;
 			}
 		} else {
-			super.onBackPressed();
+			if (MizLib.isGoogleTV(this))
+				mDrawerLayout.closeDrawers();
+			else
+				super.onBackPressed();
 		}
 	}
 
