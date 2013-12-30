@@ -403,7 +403,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>(shownMovies);
 			sections = new Object[tempMovies.size()];
 
-			String SORT_TYPE = settings.getString("prefsSorting", "sortTitle");
+			String SORT_TYPE = settings.getString("prefsSortingCollections", "sortTitle");
 			if (SORT_TYPE.equals("sortRating")) {
 				DecimalFormat df = new DecimalFormat("#.#");
 				for (int i = 0; i < sections.length; i++)
@@ -644,7 +644,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	}
 
 	private void sortMovies() {
-		String SORT_TYPE = settings.getString("prefsSorting", "sortTitle");
+		String SORT_TYPE = settings.getString("prefsSortingCollections", "sortTitle");
 		if (SORT_TYPE.equals("sortTitle")) {
 			sortByTitle();
 		} else if (SORT_TYPE.equals("sortRelease")) {
@@ -664,7 +664,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByTitle() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortTitle");
+		editor.putString("prefsSortingCollections", "sortTitle");
 		editor.apply();
 
 		sortBy(TITLE);
@@ -672,7 +672,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByRelease() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortRelease");
+		editor.putString("prefsSortingCollections", "sortRelease");
 		editor.apply();
 
 		sortBy(RELEASE);
@@ -680,7 +680,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortRating");
+		editor.putString("prefsSortingCollections", "sortRating");
 		editor.apply();
 
 		sortBy(RATING);
@@ -688,7 +688,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByWeightedRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortWeightedRating");
+		editor.putString("prefsSortingCollections", "sortWeightedRating");
 		editor.apply();
 
 		sortBy(WEIGHTED_RATING);
@@ -696,7 +696,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByDateAdded() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortAdded");
+		editor.putString("prefsSortingCollections", "sortAdded");
 		editor.apply();
 
 		sortBy(DATE);
@@ -704,7 +704,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByDuration() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortDuration");
+		editor.putString("prefsSortingCollections", "sortDuration");
 		editor.apply();
 
 		sortBy(DURATION);

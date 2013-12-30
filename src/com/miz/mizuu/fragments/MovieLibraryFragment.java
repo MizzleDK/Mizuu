@@ -488,7 +488,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>(shownMovies);
 			sections = new Object[tempMovies.size()];
 
-			String SORT_TYPE = settings.getString("prefsSorting", "sortTitle");
+			String SORT_TYPE = settings.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortTitle");
 			if (SORT_TYPE.equals("sortRating")) {
 				DecimalFormat df = new DecimalFormat("#.#");
 				for (int i = 0; i < sections.length; i++)
@@ -843,7 +843,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	private void sortMovies() {
-		String SORT_TYPE = settings.getString("prefsSorting", "sortTitle");
+		String SORT_TYPE = settings.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortTitle");
+		
 		if (SORT_TYPE.equals("sortTitle")) {
 			sortByTitle();
 		} else if (SORT_TYPE.equals("sortRelease")) {
@@ -863,7 +864,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByTitle() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortTitle");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortTitle");
 		editor.apply();
 
 		sortBy(TITLE);
@@ -871,7 +872,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByRelease() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortRelease");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortRelease");
 		editor.apply();
 
 		sortBy(RELEASE);
@@ -879,7 +880,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortRating");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortRating");
 		editor.apply();
 
 		sortBy(RATING);
@@ -887,7 +888,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByWeightedRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortWeightedRating");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortWeightedRating");
 		editor.apply();
 
 		sortBy(WEIGHTED_RATING);
@@ -895,7 +896,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByDateAdded() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortAdded");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortAdded");
 		editor.apply();
 
 		sortBy(DATE);
@@ -903,7 +904,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByDuration() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSorting", "sortDuration");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortDuration");
 		editor.apply();
 
 		sortBy(DURATION);
