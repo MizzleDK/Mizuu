@@ -1340,6 +1340,11 @@ public class MizLib {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("smb://");
+		
+		user = user.replace("+", "%20");
+		password = password.replace("+", "%20");
+		domain = domain.replace("+", "%20");
+		server = server.replace("+", "%20");
 
 		// Only add domain, username and password details if the username isn't empty
 		if (!user.isEmpty()) {
