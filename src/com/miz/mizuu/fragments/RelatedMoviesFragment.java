@@ -227,7 +227,7 @@ public class RelatedMoviesFragment extends Fragment {
 
 			if (showGridTitles || pics_sources.get(position).getUrl().contains("null") || pics_sources.get(position).getUrl().isEmpty()) {
 				holder.text.setVisibility(TextView.VISIBLE);
-				holder.subtext.setVisibility(TextView.VISIBLE);
+				holder.subtext.setVisibility(TextView.GONE);
 				holder.subtext.setText("");
 				holder.text.setText(pics_sources.get(position).getTitle());
 			} else {

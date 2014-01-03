@@ -2023,6 +2023,12 @@ public class MizLib {
 		f.mkdirs();
 		return f;
 	}
+	
+	public static File getAvailableOfflineFolder(Context c) {
+		File f = new File(c.getExternalFilesDir(null) + "/offline_storage");
+		f.mkdirs();
+		return f;
+	}
 
 	public static void copyFile(File src, File dst) throws IOException {
 		InputStream in = new FileInputStream(src);
@@ -2353,7 +2359,7 @@ public class MizLib {
 			return true;
 
 		// ##
-		searchPattern = Pattern.compile("(\\d){1,2}");
+		searchPattern = Pattern.compile("(\\d){1,2}(?!\\S)");
 		searchMatcher = searchPattern.matcher(folderName);
 
 		if (searchMatcher.find())
@@ -2750,12 +2756,12 @@ public class MizLib {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static int getFreeMemory() {
-		StatFs statFs = new StatFs(Environment.getRootDirectory().getAbsolutePath());
+	public static long getFreeMemory() {
+		StatFs stat = new StatFs(Environment.getDataDirectory().getPath());
 		if (hasJellyBeanMR2())
-			return (int) (statFs.getAvailableBlocksLong() * statFs.getBlockSizeLong());
+			return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
 		else
-			return statFs.getAvailableBlocks() * statFs.getBlockSize();
+			return stat.getAvailableBlocks() * stat.getBlockSize();
 	}
 
 	private static String[] MEDIA_APPS = new String[]{"com.imdb.mobile", "com.google.android.youtube", "com.ted.android", "com.google.android.videos", "se.mtg.freetv.tv3_dk", "tv.twitch.android.viewer",

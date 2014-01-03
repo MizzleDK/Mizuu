@@ -307,6 +307,7 @@
         <service android:name="com.miz.service.MoveFilesService" />
         <service android:name="com.miz.service.TraktMoviesSyncService" />
         <service android:name="com.miz.service.TraktTvShowsSyncService" />
+        <service android:name="com.miz.service.MakeAvailableOffline" />
 
         <!-- Update activity -->
         <activity

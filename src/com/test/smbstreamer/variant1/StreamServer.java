@@ -130,36 +130,22 @@ public abstract class StreamServer {
 	 * Throws an IOException if the socket is already in use
 	 */
 
-	//private HTTPSession session;
-	public StreamServer( int port, File wwwroot ) throws IOException
-	{
+	private HTTPSession ss;
+	public StreamServer( int port, File wwwroot ) throws IOException {
 		myTcpPort = port;
 		myServerSocket = new ServerSocket( myTcpPort );
-		myThread = new Thread( new Runnable()
-		{
-			public void run()
-			{
-				HTTPSession ss;
-				try
-				{
-					while( true ){
-						//                                                      if(session!=null){
-						//                                                              session.interrupt();
-						//                                                              try {
-						//                                                                      session.join();
-						//                                                              } catch (InterruptedException e) {
-						//                                                                      e.printStackTrace();
-						//                                                              }
-						//                                                      }
+		myThread = new Thread( new Runnable() {
+			public void run() {
+				try {
+					while(true) {
 						Socket accept = myServerSocket.accept();
-						ss = new HTTPSession(accept);
+						new HTTPSession(accept);
 					}
 				}
-				catch ( IOException ioe )
-				{}
+				catch (IOException ioe) {}
 			}
 		});
-		myThread.setDaemon( true );
+		myThread.setDaemon(true);
 		myThread.setPriority(Thread.MAX_PRIORITY);
 		myThread.start();
 	}
@@ -167,8 +153,7 @@ public abstract class StreamServer {
 	/**
 	 * Stops the server.
 	 */
-	public void stop()
-	{
+	public void stop() {
 		try
 		{
 			myServerSocket.close();
@@ -187,20 +172,16 @@ public abstract class StreamServer {
 		private InputStream is;
 		private final Socket socket;
 
-		public HTTPSession( Socket s )
-		{
+		public HTTPSession(Socket s) {
 			socket = s;
-			//mySocket = s;
 			Thread t = new Thread( this );
 			t.setDaemon( true );
 			t.setPriority(Thread.MAX_PRIORITY);
 			t.start();
 		}
 
-		public void run()
-		{
+		public void run() {
 			try{
-				//openInputStream();
 				handleResponse(socket);
 			}finally {
 				if(is!=null) {
