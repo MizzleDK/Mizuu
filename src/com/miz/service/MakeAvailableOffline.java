@@ -72,27 +72,20 @@ public class MakeAvailableOffline extends IntentService {
 		builder.setContentText(getContentText());
 		builder.setLargeIcon(MizLib.getNotificationImageThumbnail(mContext, intent.getExtras().getString("thumb")));
 
-		/*
-		 * builder.setTicker(getString(R.string.updateLookingForFiles));
-		builder.setContentTitle(getString(R.string.updatingMovies) + " (0%)");
-		builder.setContentText(getString(R.string.updateLookingForFiles));
-		builder.setContentIntent(contentIntent);
-		builder.setOngoing(true);
-		builder.setOnlyAlertOnce(true);
-		 */
-
 		boolean exists = checkIfFileExists();
 
 		if (!exists) {
 			// TODO EXIT AND ALERT THE USER!
 			stopSelf();
+			return;
 		}
 
 		boolean sizeOK = checkFilesize();
-
+		
 		if (!sizeOK) {
 			// TODO EXIT AND ALERT THE USER!
 			stopSelf();
+			return;
 		}
 
 		long time = System.currentTimeMillis();
@@ -126,6 +119,8 @@ public class MakeAvailableOffline extends IntentService {
 		try {
 			long freeMemory = (long) (MizLib.getFreeMemory() * 0.975);
 			smbSize = smb.length();
+			
+			System.out.println("FREE: " + freeMemory + ". SMB: " + smbSize);
 
 			return freeMemory > smbSize;
 		} catch (SmbException e) {
@@ -179,8 +174,8 @@ public class MakeAvailableOffline extends IntentService {
 			long elapsed = (currentTime - lastTime);
 			long data_sent = (currentLength - lastLength);
 			double percentage = (100.0 / (double) totalLength) * (double) currentLength;
-
 			long data_per_sec = (data_sent / elapsed) * 1000;
+			
 			return Double.valueOf(oneDecimal.format(percentage)) + "% - " + (currentLength / 1024 / 1024) + " of " + (totalLength / 1024 / 1024) + " MB (" + (data_per_sec / 1000) + " KB/s)";
 		} catch (Exception e) {
 			return "Starting...";

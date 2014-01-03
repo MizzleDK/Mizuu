@@ -83,6 +83,8 @@ public class DecryptedShowEpisode {
 	}
 	
 	public String getDecryptedFileName() {
+		if (mDecryptedFileName.isEmpty())
+			return getDecryptedParentName();
 		return mDecryptedFileName;
 	}
 	

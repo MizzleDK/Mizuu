@@ -33,7 +33,7 @@ public class TheTVDb {
 		Tvshow show = new Tvshow();
 
 		checkSearchQuery(show, episode.getDecryptedFileName() + " " + episode.getFileNameYear());
-
+		
 		// Try to search again without year
 		if (show.getId().equals("invalid")) {
 			checkSearchQuery(show, episode.getDecryptedFileName());
