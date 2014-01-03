@@ -529,7 +529,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		if (spinnerAdapter != null)
 			spinnerAdapter.notifyDataSetChanged();
-
+		
 		try {
 			if (movies.size() == 0) {
 				overviewMessage.setVisibility(View.VISIBLE);
@@ -560,10 +560,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	private void showCollectionBasedOnNavigationIndex(int itemPosition) {
-
+		if (movies.size() == 0)
+			return;
+		
 		if (spinnerAdapter != null)
 			spinnerAdapter.notifyDataSetChanged(); // To show "0 movies" when loading
-
+		
 		switch (itemPosition) {
 		case 0:
 			showAllMovies();

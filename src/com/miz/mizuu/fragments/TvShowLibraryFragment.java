@@ -477,7 +477,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	}
 
 	private void showCollectionBasedOnNavigationIndex(int itemPosition) {
-
 		if (spinnerAdapter != null)
 			spinnerAdapter.notifyDataSetChanged(); // To show "0 shows" when loading
 
