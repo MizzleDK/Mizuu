@@ -52,6 +52,15 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
+	
+	public static TmdbMovieDetailsFragment newInstance(String movieId, String json) { 
+		TmdbMovieDetailsFragment pageFragment = new TmdbMovieDetailsFragment();
+		Bundle bundle = new Bundle();
+		bundle.putString("movieId", movieId);
+		bundle.putString("json", json);
+		pageFragment.setArguments(bundle);
+		return pageFragment;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
@@ -104,7 +113,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 		if (!isRetained) { // Nothing has been retained - load the data
 			setLoading(true);
-			new MovieLoader().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, "");
+			new MovieLoader().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, getArguments().getString("json"));
 			isRetained = true;
 		} else {
 			setupFields();
@@ -113,10 +122,10 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		return v;
 	}
 
-	private class MovieLoader extends AsyncTask<Object, Object, Object> {
+	private class MovieLoader extends AsyncTask<String, Object, Object> {
 		@Override
-		protected Object doInBackground(Object... params) {
-			thisMovie = tmdb.getMovie(movieId, "en");
+		protected Object doInBackground(String... params) {
+			thisMovie = tmdb.getMovie(movieId, params[0], "en");
 			return null;
 		}
 

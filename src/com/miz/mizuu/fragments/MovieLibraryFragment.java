@@ -73,6 +73,7 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.Update;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class MovieLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
@@ -413,33 +414,28 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
 
-			if (showGridTitles) {
-				holder.text.setVisibility(TextView.VISIBLE);
-				if (actionBar.getSelectedNavigationIndex() == 3)
-					holder.text.setText(shownMovies.get(position).getCollection());
-				else
-					holder.text.setText(shownMovies.get(position).getTitle());
-			} else {
-				holder.text.setVisibility(TextView.GONE);
-			}
-
-			//Picasso.with(mContext).load("file://" + shownMovies.get(position).getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(holder.cover);
-
 			if (actionBar.getSelectedNavigationIndex() == 3) {
-				if (showGridTitles)
+				if (showGridTitles) {
+					holder.text.setVisibility(TextView.VISIBLE);
+					holder.text.setText(shownMovies.get(position).getCollection());
 					imageLoader.displayImage("file://" + shownMovies.get(position).getCollectionPoster(), holder.cover, options);
-				else
+				} else
 					imageLoader.displayImage("file://" + shownMovies.get(position).getCollectionPoster(), holder.cover, options,
 							new ImageLoadingErrorListener(shownMovies.get(position).getCollection(), null, null));
 			} else {
-
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
+					if (showGridTitles) {
+						holder.text.setVisibility(TextView.VISIBLE);
+						holder.text.setText(shownMovies.get(position).getTitle());
+					}
 					imageLoader.displayImage(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail(), holder.cover, options,
 							new ImageLoadingErrorListener(shownMovies.get(position).getTitle(), null, null));
 				} else {
-					if (showGridTitles)
+					if (showGridTitles) {
+						holder.text.setVisibility(TextView.VISIBLE);
+						holder.text.setText(shownMovies.get(position).getTitle());
 						imageLoader.displayImage("file://" + shownMovies.get(position).getThumbnail(), holder.cover, options);
-					else
+					} else
 						imageLoader.displayImage("file://" + shownMovies.get(position).getThumbnail(), holder.cover, options,
 								new ImageLoadingErrorListener(shownMovies.get(position).getTitle(), null, null));
 				}
@@ -529,7 +525,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		if (spinnerAdapter != null)
 			spinnerAdapter.notifyDataSetChanged();
-		
+
 		try {
 			if (movies.size() == 0) {
 				overviewMessage.setVisibility(View.VISIBLE);
@@ -562,10 +558,10 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	private void showCollectionBasedOnNavigationIndex(int itemPosition) {
 		if (movies.size() == 0)
 			return;
-		
+
 		if (spinnerAdapter != null)
 			spinnerAdapter.notifyDataSetChanged(); // To show "0 movies" when loading
-		
+
 		switch (itemPosition) {
 		case 0:
 			showAllMovies();
@@ -846,7 +842,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private void sortMovies() {
 		String SORT_TYPE = settings.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortTitle");
-		
+
 		if (SORT_TYPE.equals("sortTitle")) {
 			sortByTitle();
 		} else if (SORT_TYPE.equals("sortRelease")) {
@@ -1382,9 +1378,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
-			
+
 			mGridView.setColumnWidth(mImageThumbSize);
-			
+
 			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 			if (numColumns > 0) {
 				final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;

@@ -57,6 +57,7 @@ public class RelatedMoviesFragment extends Fragment {
 	private DisplayImageOptions options;
 	private ImageLoader imageLoader;
 	private DbAdapter db;
+	private String json;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -72,12 +73,23 @@ public class RelatedMoviesFragment extends Fragment {
 		return pageFragment;
 	}
 
+	public static RelatedMoviesFragment newInstance(String tmdbId, boolean setBackground, String json, String baseUrl) { 
+		RelatedMoviesFragment pageFragment = new RelatedMoviesFragment();
+		Bundle bundle = new Bundle();
+		bundle.putString("tmdbId", tmdbId);
+		bundle.putBoolean("setBackground", setBackground);
+		bundle.putString("json", json);
+		bundle.putString("baseUrl", baseUrl);
+		pageFragment.setArguments(bundle);
+		return pageFragment;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-		
+
 		db = MizuuApplication.getMovieAdapter();
 
 		setBackground = getArguments().getBoolean("setBackground");
@@ -88,11 +100,9 @@ public class RelatedMoviesFragment extends Fragment {
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-		
+
 		imageLoader = ImageLoader.getInstance();
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
-
-		new GetMovies().execute(getArguments().getString("tmdbId"));
 	}
 
 	@Override
@@ -152,6 +162,13 @@ public class RelatedMoviesFragment extends Fragment {
 			}
 		});
 		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
+		
+		if (getArguments().containsKey("json")) {
+			json = getArguments().getString("json");
+			loadJson(getArguments().getString("baseUrl"));
+		} else {
+			new GetMovies().execute(getArguments().getString("tmdbId"));
+		}
 	}
 
 	@Override
@@ -166,7 +183,7 @@ public class RelatedMoviesFragment extends Fragment {
 
 		imageLoader.stop();
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -234,7 +251,7 @@ public class RelatedMoviesFragment extends Fragment {
 				holder.text.setVisibility(TextView.GONE);
 				holder.subtext.setVisibility(TextView.GONE);
 			}
-			
+
 			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {
 				holder.subtext.setVisibility(TextView.VISIBLE);
 				holder.subtext.setText(getString(R.string.inLibrary).toUpperCase(Locale.getDefault()));
@@ -279,7 +296,7 @@ public class RelatedMoviesFragment extends Fragment {
 
 				JSONObject jObject = new JSONObject(baseUrl);
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = "http://cf2.imgobject.com/t/p/"; }
+				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
 				httpclient = new DefaultHttpClient();
 				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/similar_movies?api_key=" + MizLib.TMDB_API);
@@ -291,6 +308,7 @@ public class RelatedMoviesFragment extends Fragment {
 
 				JSONArray jArray = jObject.getJSONArray("results");
 
+				pics_sources.clear();
 				for (int i = 0; i < jArray.length(); i++) {
 					pics_sources.add(new WebMovie(
 							jArray.getJSONObject(i).getString("original_title"),
@@ -309,24 +327,45 @@ public class RelatedMoviesFragment extends Fragment {
 			}
 		}
 	}
-	
+
+	private void loadJson(String baseUrl) {
+		try {
+			JSONObject jObject = new JSONObject(json);
+
+			JSONArray jArray = jObject.getJSONObject("similar_movies").getJSONArray("results");
+
+			pics_sources.clear();
+			
+			for (int i = 0; i < jArray.length(); i++) {
+				pics_sources.add(new WebMovie(
+						jArray.getJSONObject(i).getString("original_title"),
+						jArray.getJSONObject(i).getString("id"),
+						baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path")));
+			}
+		} catch (Exception e) {}
+
+		if (isAdded()) {
+			new MoviesInLibraryCheck(pics_sources).execute();
+		}
+	}
+
 	private class MoviesInLibraryCheck extends AsyncTask<Void, Void, Void> {
 
 		private ArrayList<WebMovie> movies = new ArrayList<WebMovie>();
-		
+
 		public MoviesInLibraryCheck(ArrayList<WebMovie> movies) {
 			this.movies = movies;
 			movieMap.clear();
 		}
-		
+
 		@Override
 		protected Void doInBackground(Void... params) {
 			for (int i = 0; i < movies.size(); i++)
 				movieMap.put(Integer.valueOf(movies.get(i).getId()), db.movieExists(movies.get(i).getId()));
-			
+
 			return null;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void result) {
 			if (isAdded()) {

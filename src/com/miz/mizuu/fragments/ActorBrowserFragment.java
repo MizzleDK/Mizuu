@@ -38,7 +38,8 @@ public class ActorBrowserFragment extends Fragment {
 	private ProgressBar pbar;
 	private boolean setBackground;
 	private DisplayImageOptions options;
-	
+	private String json;
+
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
@@ -53,6 +54,17 @@ public class ActorBrowserFragment extends Fragment {
 		return pageFragment;
 	}
 
+	public static ActorBrowserFragment newInstance(String movieId, boolean setBackground, String json, String baseUrl) { 
+		ActorBrowserFragment pageFragment = new ActorBrowserFragment();
+		Bundle bundle = new Bundle();
+		bundle.putString("movieId", movieId);
+		bundle.putBoolean("setBackground", setBackground);
+		bundle.putString("json", json);
+		bundle.putString("baseUrl", baseUrl);
+		pageFragment.setArguments(bundle);
+		return pageFragment;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
@@ -63,13 +75,15 @@ public class ActorBrowserFragment extends Fragment {
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);	
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-		
-		options = MizuuApplication.getDefaultActorLoadingOptions();
 
-		if (getArguments().getString("movieId") == null) {
-			new GetActorDetails().execute(getActivity().getIntent().getExtras().getString("movieId"));
-		} else {
-			new GetActorDetails().execute(getArguments().getString("movieId"));
+		options = MizuuApplication.getDefaultActorLoadingOptions();
+		
+		if (!getArguments().containsKey("json")) {		
+			if (getArguments().getString("movieId") == null) {
+				new GetActorDetails().execute(getActivity().getIntent().getExtras().getString("movieId"));
+			} else {
+				new GetActorDetails().execute(getArguments().getString("movieId"));
+			}
 		}
 	}
 
@@ -128,6 +142,11 @@ public class ActorBrowserFragment extends Fragment {
 				startActivity(intent);
 			}
 		});
+		
+		if (getArguments().containsKey("json")) {
+			json = getArguments().getString("json");
+			loadJson(getArguments().getString("baseUrl"));
+		}
 	}
 
 	@Override
@@ -239,7 +258,7 @@ public class ActorBrowserFragment extends Fragment {
 
 				JSONObject jObject = new JSONObject(baseUrl);
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = "http://cf2.imgobject.com/t/p/"; }
+				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
 				httpclient = new DefaultHttpClient();
 				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/casts?api_key=" + MizLib.TMDB_API);
@@ -251,6 +270,7 @@ public class ActorBrowserFragment extends Fragment {
 
 				JSONArray jArray = jObject.getJSONArray("cast");
 
+				actors.clear();
 				for (int i = 0; i < jArray.length(); i++) {
 					actors.add(new Actor(
 							jArray.getJSONObject(i).getString("name"),
@@ -270,6 +290,30 @@ public class ActorBrowserFragment extends Fragment {
 				pbar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
 			}
+		}
+	}
+
+	private void loadJson(String baseUrl) {
+		try {
+			JSONObject jObject = new JSONObject(json);
+
+			JSONArray jArray = jObject.getJSONObject("casts").getJSONArray("cast");
+
+			actors.clear();
+			
+			for (int i = 0; i < jArray.length(); i++) {
+				actors.add(new Actor(
+						jArray.getJSONObject(i).getString("name"),
+						jArray.getJSONObject(i).getString("character"),
+						jArray.getJSONObject(i).getString("id"),
+						baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
+			}
+			
+		} catch (Exception e) {}
+		
+		if (isAdded()) {
+			pbar.setVisibility(View.GONE);
+			mAdapter.notifyDataSetChanged();
 		}
 	}
 }

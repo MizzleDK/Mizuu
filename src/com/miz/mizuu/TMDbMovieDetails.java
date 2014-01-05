@@ -2,6 +2,11 @@ package com.miz.mizuu;
 
 import java.util.ArrayList;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,7 +24,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
@@ -35,7 +42,10 @@ import com.miz.mizuu.fragments.TmdbMovieDetailsFragment;
 public class TMDbMovieDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
+	private ProgressBar pbar;
 	private String movieId;
+	private String baseUrl = "";
+	private String json = "";
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
@@ -54,18 +64,18 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 		setContentView(R.layout.viewpager);
 
-		actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		if (spinnerAdapter == null)
-			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
-
-		setTitle(null);
+		setTitle(getIntent().getExtras().getString("title"));
 
 		// Fetch the database ID of the movie to view
 		movieId = getIntent().getExtras().getString("tmdbid");
 
+		if (!MizLib.runsInPortraitMode(getApplicationContext()))
+			findViewById(R.id.layout).setBackgroundResource(R.drawable.bg);
+
+		pbar = (ProgressBar) findViewById(R.id.progressbar);
+		pbar.setVisibility(View.VISIBLE);
+
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
-		awesomePager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
 		awesomePager.setOffscreenPageLimit(2);
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
@@ -74,10 +84,15 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 			}
 		});
 
-		setupSpinnerItems();
-
 		if (savedInstanceState != null) {
+			
+			json = savedInstanceState.getString("json", "");
+			baseUrl = savedInstanceState.getString("baseUrl");
+			setupActionBarStuff();
+
 			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+		} else {
+			new MovieLoader().execute(movieId);
 		}
 	}
 
@@ -95,6 +110,8 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("tab", awesomePager.getCurrentItem());
+		outState.putString("json", json);
+		outState.putString("baseUrl", baseUrl);
 	}
 
 	@SuppressLint("NewApi")
@@ -228,19 +245,22 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 	private class MovieDetailsAdapter extends FragmentPagerAdapter {
 
-		public MovieDetailsAdapter(FragmentManager fm) {
+		private String jsonString;
+
+		public MovieDetailsAdapter(FragmentManager fm, String json) {
 			super(fm);
+			jsonString = json;
 		}
 
 		@Override  
-		public Fragment getItem(int index) {
+		public Fragment getItem(int index) {			
 			switch (index) {
 			case 0:
-				return TmdbMovieDetailsFragment.newInstance(movieId);
+				return TmdbMovieDetailsFragment.newInstance(movieId, jsonString);
 			case 1:
-				return ActorBrowserFragment.newInstance(movieId, true);
+				return ActorBrowserFragment.newInstance(movieId, true, jsonString, baseUrl);
 			case 2:
-				return RelatedMoviesFragment.newInstance(movieId, true);
+				return RelatedMoviesFragment.newInstance(movieId, true, jsonString, baseUrl);
 			}
 			return null;
 		}  
@@ -255,5 +275,58 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
+	}
+
+	private class MovieLoader extends AsyncTask<Object, Object, String> {
+		@Override
+		protected String doInBackground(Object... params) {
+			try {
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				httppost.setHeader("Accept", "application/json");
+				ResponseHandler<String> responseHandler = new BasicResponseHandler();
+				baseUrl = httpclient.execute(httppost, responseHandler);
+
+				JSONObject jObject = new JSONObject(baseUrl);
+				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
+				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
+
+				httpclient = new DefaultHttpClient();
+				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + MizLib.TMDB_API + "&append_to_response=releases,trailers,images,casts,similar_movies");
+				httppost.setHeader("Accept", "application/json");
+				responseHandler = new BasicResponseHandler();
+
+				json = httpclient.execute(httppost, responseHandler);
+				
+				return json;
+			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result != null) {
+				setupActionBarStuff();
+			} else {
+				Toast.makeText(getApplicationContext(), R.string.errorSomethingWentWrong, Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
+	
+	private void setupActionBarStuff() {
+		actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner(getApplicationContext(), spinnerItems);
+
+		setTitle(null);
+
+		if (!MizLib.runsInPortraitMode(getApplicationContext()))
+			findViewById(R.id.layout).setBackgroundResource(0);
+		pbar.setVisibility(View.GONE);
+
+		awesomePager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager(), json));
+		setupSpinnerItems();
 	}
 }

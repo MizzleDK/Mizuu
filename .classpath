@@ -9,7 +9,7 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="libs/jcifs.jar"/>
-	<classpathentry kind="lib" path="libs/universal-image-loader-1.8.5-with-sources.jar"/>
+	<classpathentry kind="lib" path="libs/universal-image-loader-1.9.1-with-sources.jar"/>
 	<classpathentry kind="lib" path="libs/crashlytics.jar"/>
 	<classpathentry kind="lib" path="libs/okhttp-1.2.1-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>

@@ -75,9 +75,10 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 			L.disableLogging();
 
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-		.threadPoolSize(2)
-		.threadPriority(Thread.NORM_PRIORITY - 1)
+		.threadPoolSize(4)
+		.threadPriority(Thread.NORM_PRIORITY)
 		.denyCacheImageMultipleSizesInMemory()
+		.memoryCacheSizePercentage(15)
 		.discCacheSize(100 * 1024 * 1024)
 		.discCacheFileCount(200)
 		.imageDownloader(new CifsImageDownloader(context))
@@ -90,7 +91,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 
 	public static DisplayImageOptions getDefaultCoverLoadingOptions() {
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.loading_image)
+		.showImageOnLoading(R.drawable.gray)
 		.showImageOnFail(R.drawable.loading_image)
 		.cacheInMemory(true)
 		.showImageForEmptyUri(R.drawable.loading_image)
@@ -102,7 +103,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 
 	public static DisplayImageOptions getDefaultActorLoadingOptions() {
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.noactor)
+		.showImageOnLoading(R.drawable.gray)
 		.showImageOnFail(R.drawable.noactor)
 		.showImageForEmptyUri(R.drawable.noactor)
 		.cacheInMemory(true)
@@ -114,7 +115,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 
 	public static DisplayImageOptions getDefaultBackdropLoadingOptions() {
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.nobackdrop)
+		.showImageOnLoading(R.drawable.gray)
 		.showImageOnFail(R.drawable.nobackdrop)
 		.showImageForEmptyUri(R.drawable.nobackdrop)
 		.cacheInMemory(true)
