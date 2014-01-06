@@ -2,9 +2,18 @@ package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
+
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +26,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
@@ -28,6 +39,9 @@ import com.miz.mizuu.SearchWebMovies;
 
 public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavigationListener {
 
+	private ProgressBar pbar;
+	private String baseUrl = "";
+	private String json = "";
 	private ActionBar actionBar;
 	private ViewPager awesomePager;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
@@ -71,7 +85,6 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserMovies), getString(R.string.stringUpcoming)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserMovies), getString(R.string.stringNowPlaying)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.chooserMovies), getString(R.string.stringPopular)));
-		spinnerItems.add(new SpinnerItem(getString(R.string.chooserMovies), getString(R.string.stringTopRated)));
 	}
 
 	@Override
@@ -82,11 +95,14 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
+		
+		pbar = (ProgressBar) v.findViewById(R.id.progressbar);
+		pbar.setVisibility(View.VISIBLE);
 
 		awesomePager = (ViewPager) v.findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(3);
 		awesomePager.setPageMargin(MizLib.convertDpToPixels(getActivity(), 16));
-		awesomePager.setAdapter(new WebVideosAdapter(getChildFragmentManager()));
+		//awesomePager.setAdapter(new WebVideosAdapter(getChildFragmentManager())); TODO FIX
 		awesomePager.setOnPageChangeListener(new OnPageChangeListener() {
 			@Override
 			public void onPageScrollStateChanged(int arg0) {}
@@ -103,6 +119,13 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 
 		if (savedInstanceState != null) {
 			awesomePager.setCurrentItem(savedInstanceState.getInt("selectedIndex", 0));
+		}
+		
+		if (json.isEmpty()) {
+			new MovieLoader().execute();
+		} else {
+			awesomePager.setAdapter(new WebVideosAdapter(getChildFragmentManager()));
+			pbar.setVisibility(View.GONE);
 		}
 	}
 
@@ -151,10 +174,9 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		@Override  
 		public Fragment getItem(int index) {		
 			switch (index) {
-			case 0: return MovieDiscoveryFragment.newInstance("upcoming");
-			case 1: return MovieDiscoveryFragment.newInstance("now_playing");
-			case 2: return MovieDiscoveryFragment.newInstance("popular");
-			default: return MovieDiscoveryFragment.newInstance("top_rated");
+			case 0: return MovieDiscoveryFragment.newInstance("upcoming", json, baseUrl);
+			case 1: return MovieDiscoveryFragment.newInstance("now_playing", json, baseUrl);
+			default: return MovieDiscoveryFragment.newInstance("popular", json, baseUrl);
 			}
 		}  
 
@@ -168,5 +190,44 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
+	}
+	
+	private class MovieLoader extends AsyncTask<Object, Object, String> {
+		@Override
+		protected String doInBackground(Object... params) {
+			try {
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				httppost.setHeader("Accept", "application/json");
+				ResponseHandler<String> responseHandler = new BasicResponseHandler();
+				baseUrl = httpclient.execute(httppost, responseHandler);
+
+				JSONObject jObject = new JSONObject(baseUrl);
+				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
+				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
+
+				httpclient = new DefaultHttpClient();
+				httppost = new HttpGet("https://api.themoviedb.org/3/movie?api_key=" + MizLib.TMDB_API + "&append_to_response=upcoming,now_playing,popular,top_rated");
+				httppost.setHeader("Accept", "application/json");
+				responseHandler = new BasicResponseHandler();
+
+				json = EntityUtils.toString(httpclient.execute(httppost).getEntity());
+				
+				return json;
+			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result != null) {
+				awesomePager.setAdapter(new WebVideosAdapter(getChildFragmentManager()));
+				
+				pbar.setVisibility(View.GONE);
+			} else {
+				Toast.makeText(getActivity(), R.string.errorSomethingWentWrong, Toast.LENGTH_SHORT).show();
+			}
+		}
 	}
 }

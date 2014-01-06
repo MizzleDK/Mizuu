@@ -4,11 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -59,16 +54,19 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	private DbAdapter db;
 	private DisplayImageOptions options;
 	private ImageLoader imageLoader;
+	private String json, baseUrl;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public MovieDiscoveryFragment() {}
 
-	public static MovieDiscoveryFragment newInstance(String type) { 
+	public static MovieDiscoveryFragment newInstance(String type, String json, String baseUrl) { 
 		MovieDiscoveryFragment pageFragment = new MovieDiscoveryFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("type", type);
+		bundle.putString("json", json);
+		bundle.putString("baseUrl", baseUrl);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
@@ -78,7 +76,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		super.onCreate(savedInstanceState);
 
 		db = MizuuApplication.getMovieAdapter();
-		
+
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
@@ -88,24 +86,22 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-		
+
 		imageLoader = ImageLoader.getInstance();
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
-
-		new GetTrailers().execute(getArguments().getString("type"));
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.image_grid_fragment, container, false);
 	}
-	
+
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
-		
+
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
-		if (pics_sources.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
+		pbar.setVisibility(View.GONE);
 
 		mAdapter = new ImageAdapter(getActivity());
 
@@ -148,6 +144,12 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 			}
 		});
 		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
+		
+		if (getArguments().containsKey("json")) {
+			json = getArguments().getString("json");
+			baseUrl = getArguments().getString("baseUrl");
+			loadJson();
+		}
 	}
 
 	@Override
@@ -156,7 +158,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -237,7 +239,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				holder.text.setVisibility(TextView.GONE);
 				holder.subtext.setVisibility(TextView.GONE);
 			}
-			
+
 			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {
 				holder.subtext.setVisibility(TextView.VISIBLE);
 				holder.subtext.setText(getString(R.string.inLibrary).toUpperCase(Locale.getDefault()));
@@ -269,47 +271,24 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		}
 	}
 
-	protected class GetTrailers extends AsyncTask<String, String, String> {
-		@Override
-		protected String doInBackground(String... params) {
-			try {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String baseUrl = httpclient.execute(httppost, responseHandler);
+	private void loadJson() {
+		try {
+			JSONObject jObject = new JSONObject(json);
 
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = "http://cf2.imgobject.com/t/p/"; }
+			JSONArray jArray = jObject.getJSONObject(getArguments().getString("type")).getJSONArray("results");
 
-				httpclient = new DefaultHttpClient();
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + MizLib.TMDB_API);
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
-				String html = httpclient.execute(httppost, responseHandler);
-
-				jObject = new JSONObject(html);
-
-				JSONArray jArray = jObject.getJSONArray("results");
-
-				for (int i = 0; i < jArray.length(); i++) {
-						pics_sources.add(new WebMovie(
-								jArray.getJSONObject(i).getString("original_title"),
-								jArray.getJSONObject(i).getString("id"),
-								baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path")));
-				}
-			} catch (Exception e) { e.printStackTrace(); }
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
+			pics_sources.clear();
+			for (int i = 0; i < jArray.length(); i++) {
+				pics_sources.add(new WebMovie(
+						jArray.getJSONObject(i).getString("original_title"),
+						jArray.getJSONObject(i).getString("id"),
+						baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path")));
+			}
+			
 			if (isAdded()) {
 				new MoviesInLibraryCheck(pics_sources).execute();
-			}
-		}
+			}			
+		} catch (Exception e) {}
 	}
 
 	@Override
@@ -327,29 +306,27 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 			}
 		}
 	}
-	
+
 	private class MoviesInLibraryCheck extends AsyncTask<Void, Void, Void> {
 
 		private ArrayList<WebMovie> movies = new ArrayList<WebMovie>();
-		
+
 		public MoviesInLibraryCheck(ArrayList<WebMovie> movies) {
 			this.movies = movies;
 			movieMap.clear();
 		}
-		
+
 		@Override
 		protected Void doInBackground(Void... params) {
-			
 			for (int i = 0; i < movies.size(); i++)
 				movieMap.put(Integer.valueOf(movies.get(i).getId()), db.movieExists(movies.get(i).getId()));
-			
+
 			return null;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void result) {
 			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
 			}
 		}

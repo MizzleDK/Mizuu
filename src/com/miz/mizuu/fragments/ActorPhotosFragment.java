@@ -240,7 +240,7 @@ public class ActorPhotosFragment extends Fragment {
 
 				JSONObject jObject = new JSONObject(baseUrl);
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = "http://cf2.imgobject.com/t/p/"; }
+				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
 				httpclient = new DefaultHttpClient();
 				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "/images?api_key=" + MizLib.TMDB_API);

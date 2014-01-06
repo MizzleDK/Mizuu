@@ -232,7 +232,7 @@ public class CoverSearchFragment extends Fragment {
 
 				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = "http://cf2.imgobject.com/t/p/"; }
+				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
 				jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + TMDBID + "/images?api_key=" + MizLib.TMDB_API);
 

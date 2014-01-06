@@ -84,8 +84,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 			}
 		});
 
-		if (savedInstanceState != null) {
-			
+		if (savedInstanceState != null) {	
 			json = savedInstanceState.getString("json", "");
 			baseUrl = savedInstanceState.getString("baseUrl");
 			setupActionBarStuff();
