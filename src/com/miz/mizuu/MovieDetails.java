@@ -46,6 +46,7 @@ import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
 import com.miz.service.DeleteFile;
+import com.miz.service.MakeAvailableOffline;
 import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
@@ -157,6 +158,13 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			}
 
 			setupSpinnerItems();
+
+			/*Intent i = new Intent(this, MakeAvailableOffline.class);
+			i.putExtra(MakeAvailableOffline.FILEPATH, thisMovie.getFilepath());
+			i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_MOVIE);
+			i.putExtra("thumb", thisMovie.getThumbnail());
+			i.putExtra("backdrop", thisMovie.getBackdrop());
+			startService(i);*/
 		} else {
 			Toast.makeText(this, getString(R.string.errorSomethingWentWrong) + " (movie ID: " + movieId + ")", Toast.LENGTH_SHORT).show();
 			finish();
@@ -400,7 +408,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				setResult(2); // Favorite removed
 			}
 
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-library-change"));
+			notifyDatasetChanges();
 
 		} else Toast.makeText(this, getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
 
@@ -435,7 +443,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				Toast.makeText(this, getString(R.string.markedAsUnwatched), Toast.LENGTH_SHORT).show();
 			}
 
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-library-change"));
+			notifyDatasetChanges();
 
 		} else Toast.makeText(this, getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
 
@@ -473,7 +481,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				Toast.makeText(this, getString(R.string.removedFromWatchList), Toast.LENGTH_SHORT).show();
 			}
 
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-library-change"));
+			notifyDatasetChanges();
 
 		} else Toast.makeText(this, getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
 
@@ -501,7 +509,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		if (success) {
 			invalidateOptionsMenu();
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-library-change"));
+			notifyDatasetChanges();
 		}
 
 		new Thread() {

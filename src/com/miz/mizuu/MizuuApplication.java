@@ -78,9 +78,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 		.threadPoolSize(4)
 		.threadPriority(Thread.NORM_PRIORITY)
 		.denyCacheImageMultipleSizesInMemory()
-		.memoryCacheSizePercentage(15)
-		.discCacheSize(100 * 1024 * 1024)
-		.discCacheFileCount(200)
+		.memoryCacheSizePercentage(20)
 		.imageDownloader(new CifsImageDownloader(context))
 		.discCacheFileNameGenerator(new Md5FileNameGenerator())
 		.tasksProcessingOrder(QueueProcessingType.FIFO)
@@ -95,7 +93,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 		.showImageOnFail(R.drawable.loading_image)
 		.cacheInMemory(true)
 		.showImageForEmptyUri(R.drawable.loading_image)
-		.cacheOnDisc(true)
+		.cacheOnDisc(false)
 		.bitmapConfig(Bitmap.Config.RGB_565)
 		.build();
 		return options;
@@ -107,7 +105,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 		.showImageOnFail(R.drawable.noactor)
 		.showImageForEmptyUri(R.drawable.noactor)
 		.cacheInMemory(true)
-		.cacheOnDisc(true)
+		.cacheOnDisc(false)
 		.bitmapConfig(Bitmap.Config.RGB_565)
 		.build();
 		return options;
@@ -119,7 +117,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 		.showImageOnFail(R.drawable.nobackdrop)
 		.showImageForEmptyUri(R.drawable.nobackdrop)
 		.cacheInMemory(true)
-		.cacheOnDisc(true)
+		.cacheOnDisc(false)
 		.bitmapConfig(Bitmap.Config.RGB_565)
 		.build();
 		return options;
@@ -128,7 +126,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 	public static DisplayImageOptions getBackdropLoadingOptions() {
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
 		.showImageOnFail(R.drawable.bg)
-		.cacheInMemory(false)
+		.cacheInMemory(true)
 		.showImageForEmptyUri(R.drawable.bg)
 		.cacheOnDisc(false)
 		.bitmapConfig(Bitmap.Config.RGB_565)

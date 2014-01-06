@@ -1,12 +1,9 @@
 package com.miz.mizuu.fragments;
 
-import java.net.URL;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,7 +20,11 @@ import com.miz.functions.AspectRatioImageViewCover;
 import com.miz.functions.MizLib;
 import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class TmdbMovieDetailsFragment extends Fragment {
 
@@ -37,7 +38,6 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private TableRow t1, t2, t3, t4, t5;
 	private View movieDetailsLayout, progressBar;
 	private FrameLayout container;
-	private Bitmap mCover, mBackdrop;
 	private boolean isRetained = false;
 
 	/**
@@ -236,60 +236,14 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			}
 
 			setLoading(false);
-
-			try {
-				new LoadImage().execute(thisMovie.getCover(), LoadImage.COVER);
-				new LoadImage().execute(thisMovie.getBackdrop(), LoadImage.BACKDROP);
-			} catch (Exception e) {} // Out of memory
-		}
-	}
-
-	private class LoadImage extends AsyncTask<Object, Object, Object> {
-
-		protected final static int COVER = 1, BACKDROP = 0;
-		private int type;
-
-		@Override
-		protected Bitmap doInBackground(Object... params) {
-			try {
-				String uri = (String) params[0];
-				type = (Integer) params[1];
-
-				if (type == COVER) {
-					if (mCover == null)
-						mCover = BitmapFactory.decodeStream(new URL(uri).openConnection().getInputStream());
-				} else {
-					if (mBackdrop == null)
-						mBackdrop = BitmapFactory.decodeStream(new URL(uri).openConnection().getInputStream());
+			
+			ImageLoader.getInstance().displayImage(thisMovie.getCover(), cover, MizuuApplication.getDefaultCoverLoadingOptions());
+			ImageLoader.getInstance().displayImage(thisMovie.getBackdrop(), background, MizuuApplication.getBackdropLoadingOptions(), new SimpleImageLoadingListener() {
+				@Override
+				public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+					ImageLoader.getInstance().displayImage(thisMovie.getCover(), background, MizuuApplication.getDefaultCoverLoadingOptions());
 				}
-
-				if (type == COVER)
-					if (mCover == null)
-						setupNullImages();
-
-			} catch (Exception e) {
-				setupNullImages();
-			}
-
-			return null;
-		}
-
-		private void setupNullImages() {
-			if (isAdded())
-				mCover = BitmapFactory.decodeResource(getResources(), R.drawable.loading_image);
-		}
-
-		@Override
-		protected void onPostExecute(Object result) {
-			if (isAdded())
-				if (type == COVER)
-					cover.setImageBitmap(mCover);
-				else {
-					if (mBackdrop != null)
-						background.setImageBitmap(mBackdrop);
-					else
-						background.setImageResource(R.drawable.bg);
-				}
+			});
 		}
 	}
 

@@ -103,8 +103,8 @@ public class TMDb {
 			if (json != null)
 				jObject = new JSONObject(json);
 			else
-				jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + id + "?api_key=" + MizLib.TMDB_API + "&language=" + language + "&append_to_response=releases,trailers,casts,images");
-
+				jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + id + "?api_key=" + MizLib.TMDB_API + (language.equals("en") ? "" : "&language=" + language) + "&append_to_response=releases,trailers,casts,images");
+				
 			movie.setTitle(MizLib.getStringFromJSONObject(jObject, "title", ""));
 
 			movie.setPlot(MizLib.getStringFromJSONObject(jObject, "overview", ""));
@@ -193,8 +193,6 @@ public class TMDb {
 
 			try {
 				JSONArray array = jObject.getJSONObject("images").getJSONArray("backdrops");
-				
-				System.out.println("TEST: " + array.length());
 				
 				if (array.length() > 0) {
 					movie.setBackdrop(baseUrl + MizLib.getBackdropUrlSize(c) + array.getJSONObject(0).getString("file_path"));
