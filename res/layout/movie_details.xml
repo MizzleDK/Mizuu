@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <LinearLayout android:id="@+id/movieDetailsLayout"
+        <LinearLayout
+            android:id="@+id/movieDetailsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
@@ -57,13 +58,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/movie_details_padding"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:padding="@dimen/movie_details_padding" >
 
                 <TextView
                     android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="#ddd"
                     android:textIsSelectable="true"
@@ -74,185 +76,181 @@
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="#ddd"
                     android:textIsSelectable="true"
                     android:textSize="@dimen/details_text_size" />
 
-                <TableLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:stretchColumns="*" >
+                    android:layout_marginTop="16dp"
+                    android:baselineAligned="false" >
 
-                    <TableRow
-                        android:id="@+id/tableRow1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" >
 
-                        <TextView
-                            android:id="@+id/TextView01"
-                            android:layout_width="match_parent"
+                        <ImageView
+                            android:id="@+id/imageView1"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="0"
-                            android:text="@string/detailsRunTime"
-                            android:textAllCaps="true"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textSize="@dimen/details_text_size"
-                            android:textStyle="bold" />
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_action_clock" />
 
                         <TextView
                             android:id="@+id/textView9"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/movie_details_padding"
+                            android:layout_marginRight="@dimen/movie_details_padding"
+                            android:layout_toRightOf="@+id/imageView1"
+                            android:focusable="false"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="#ddd"
-                            android:textIsSelectable="true"
                             android:textSize="@dimen/details_text_size" />
-                    </TableRow>
+                    </RelativeLayout>
 
-                    <TableRow
-                        android:id="@+id/TableRow01"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6" >
 
-                        <TextView
-                            android:id="@+id/TextView05"
-                            android:layout_width="match_parent"
+                        <ImageView
+                            android:id="@+id/imageView3"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="0"
-                            android:text="@string/detailsReleaseDate"
-                            android:textAllCaps="true"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textSize="@dimen/details_text_size"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textReleaseDate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="#ddd"
-                            android:textIsSelectable="true"
-                            android:textSize="@dimen/details_text_size" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/tableRow2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
-
-                        <TextView
-                            android:id="@+id/row_title_movies_online"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="0"
-                            android:text="@string/detailsCertification"
-                            android:textAllCaps="true"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textSize="@dimen/details_text_size"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textView11"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="#ddd"
-                            android:textIsSelectable="true"
-                            android:textSize="@dimen/details_text_size" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/tableRow5"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
-
-                        <TextView
-                            android:id="@+id/TextView04"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="0"
-                            android:text="@string/detailsRating"
-                            android:textAllCaps="true"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textSize="@dimen/details_text_size"
-                            android:textStyle="bold" />
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_action_star_10" />
 
                         <TextView
                             android:id="@+id/textView12"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/movie_details_padding"
+                            android:layout_marginRight="@dimen/movie_details_padding"
+                            android:layout_toRightOf="@+id/imageView3"
+                            android:focusable="false"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="#ddd"
-                            android:textIsSelectable="true"
                             android:textSize="@dimen/details_text_size" />
-                    </TableRow>
+                    </RelativeLayout>
+                </LinearLayout>
 
-                    <TableRow
-                        android:id="@+id/tableRow3"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/movie_details_padding"
+                    android:baselineAligned="false" >
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" >
+
+                        <ImageView
+                            android:id="@+id/imageView4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_action_calendar_day" />
+
+                        <TextView
+                            android:id="@+id/textReleaseDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/movie_details_padding"
+                            android:layout_marginRight="@dimen/movie_details_padding"
+                            android:layout_toRightOf="@+id/imageView4"
+                            android:focusable="false"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="#ddd"
+                            android:textSize="@dimen/details_text_size" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6" >
+
+                        <ImageView
+                            android:id="@+id/imageView5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_action_flag" />
+
+                        <TextView
+                            android:id="@+id/textView11"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/movie_details_padding"
+                            android:layout_marginRight="@dimen/movie_details_padding"
+                            android:layout_toRightOf="@+id/imageView5"
+                            android:focusable="false"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="#ddd"
+                            android:textSize="@dimen/details_text_size" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/movie_details_padding" >
+
+                    <ImageView
+                        android:id="@+id/imageView6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_action_tags" />
+
+                    <TextView
+                        android:id="@+id/textView7"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/movie_details_padding"
+                        android:layout_marginRight="@dimen/movie_details_padding"
+                        android:layout_toRightOf="@+id/imageView6"
+                        android:focusable="false"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="#ddd"
+                        android:textSize="@dimen/details_text_size" />
+                </RelativeLayout>
 
-                        <TextView
-                            android:id="@+id/TextView03"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="0"
-                            android:text="@string/choiceGenres"
-                            android:textAllCaps="true"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textSize="@dimen/details_text_size"
-                            android:textStyle="bold" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/movie_details_padding" >
 
-                        <TextView
-                            android:id="@+id/textView7"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="#ddd"
-                            android:textIsSelectable="true"
-                            android:textSize="@dimen/details_text_size" />
-                    </TableRow>
+                    <ImageView
+                        android:id="@+id/imageView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/file" />
 
-                    <TableRow
-                        android:id="@+id/tableRow4"
+                    <TextView
+                        android:id="@+id/textView3"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
-
-                        <TextView
-                            android:id="@+id/TextView06"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="0"
-                            android:text="@string/detailsFile"
-                            android:textAllCaps="true"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textSize="@dimen/details_text_size"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textView3"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="#ddd"
-                            android:textIsSelectable="true"
-                            android:textSize="@dimen/details_text_size" />
-                    </TableRow>
-                </TableLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/movie_details_padding"
+                        android:layout_marginRight="@dimen/movie_details_padding"
+                        android:layout_toRightOf="@+id/imageView7"
+                        android:focusable="false"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="#ddd"
+                        android:textSize="@dimen/details_text_size" />
+                </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
