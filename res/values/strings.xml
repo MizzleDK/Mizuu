@@ -231,7 +231,7 @@
     <string name="coverart">Cover art</string>
     <string name="backdrop">Backdrop images</string>
     <string name="collectionart">Collection art</string>
-    <string name="browseMedia">Browse media</string>
+    <string name="browseMedia">Browse artwork</string>
     <string name="advanced">Advanced</string>
     <string name="network">Network shares</string>
     <string name="bufferSize">Stream buffer size</string>

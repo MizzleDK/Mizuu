@@ -29,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.miz.functions.AsyncTask;
 import com.miz.functions.Cover;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
@@ -44,7 +43,7 @@ public class CollectionCoverSearchFragment extends Fragment {
 	private ArrayList<Cover> covers = new ArrayList<Cover>();
 	private ArrayList<String> pics_sources = new ArrayList<String>();
 	private GridView mGridView = null;
-	private String COLLECTION_ID;
+	private String COLLECTION_ID, json;
 	private String[] items = new String[]{};
 	private ProgressBar pbar;
 	private DisplayImageOptions options;
@@ -54,11 +53,13 @@ public class CollectionCoverSearchFragment extends Fragment {
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public CollectionCoverSearchFragment() {}
-
-	public static CollectionCoverSearchFragment newInstance(String collectionId) {
+	
+	public static CollectionCoverSearchFragment newInstance(String collectionId, String json, String baseUrl) {
 		CollectionCoverSearchFragment pageFragment = new CollectionCoverSearchFragment();
 		Bundle b = new Bundle();
 		b.putString("collectionId", collectionId);
+		b.putString("json", json);
+		b.putString("baseUrl", baseUrl);
 		pageFragment.setArguments(b);
 		return pageFragment;
 	}
@@ -77,8 +78,6 @@ public class CollectionCoverSearchFragment extends Fragment {
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
 
 		COLLECTION_ID = getArguments().getString("collectionId");
-
-		new GetCoverImages().execute(COLLECTION_ID);
 	}
 
 	@Override
@@ -127,6 +126,9 @@ public class CollectionCoverSearchFragment extends Fragment {
 			}
 		});
 		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
+		
+		json = getArguments().getString("json");
+		loadJson(getArguments().getString("baseUrl"));
 	}
 
 	@Override
@@ -217,58 +219,46 @@ public class CollectionCoverSearchFragment extends Fragment {
 			notifyDataSetChanged();
 		}
 	}
+	
+	private void loadJson(String baseUrl) {
+		try {
+			pics_sources.clear();
 
-	protected class GetCoverImages extends AsyncTask<String, String, String> {
-		@Override
-		protected String doInBackground(String... params) {
-			String COLLECTION_ID = params[0];
-			try {
-				String baseUrl;
+			JSONObject jObject = new JSONObject(json);
+			JSONArray array = jObject.getJSONArray("posters");
 
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-
-				jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/collection/" + COLLECTION_ID + "/images?api_key=" + MizLib.TMDB_API);
-
-				JSONArray array = jObject.getJSONArray("posters");
-				for (int i = 0; i < array.length(); i++) {
-					JSONObject o = array.getJSONObject(i);
-					covers.add(new Cover(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"), o.getString("iso_639_1")));
-					pics_sources.add(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"));
-				}
-			} catch (Exception e) {}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
-				mAdapter.notifyDataSetChanged();
-
-				TreeSet<String> languages = new TreeSet<String>();
-				for (int i = 0; i < covers.size(); i++) {
-					if (!covers.get(i).getLanguage().equals("Null"))
-						languages.add(covers.get(i).getLanguage());
-				}
-
-				items = new String[languages.size() + 1];
-				items[0] = getString(R.string.stringShowAllLanguages);
-				Iterator<String> itr = languages.iterator();
-				int i = 1;
-				while (itr.hasNext()) {
-					items[i] = itr.next();
-					i++;
-				}
-
-				getActivity().invalidateOptionsMenu();
-
-				Intent intent = new Intent("mizuu-cover-search-fragment");
-				intent.putExtra("collectionCount", pics_sources.size());
-				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject o = array.getJSONObject(i);
+				covers.add(new Cover(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"), o.getString("iso_639_1")));
+				pics_sources.add(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"));
 			}
+		} catch (Exception e) {}
+
+		if (isAdded()) {
+			showContent();
 		}
+	}
+	
+	private void showContent() {
+		pbar.setVisibility(View.GONE);
+		mAdapter.notifyDataSetChanged();
+
+		TreeSet<String> languages = new TreeSet<String>();
+		for (int i = 0; i < covers.size(); i++) {
+			if (!covers.get(i).getLanguage().equals("Null"))
+				languages.add(covers.get(i).getLanguage());
+		}
+
+		items = new String[languages.size() + 1];
+		items[0] = getString(R.string.stringShowAllLanguages);
+		Iterator<String> itr = languages.iterator();
+		int i = 1;
+		while (itr.hasNext()) {
+			items[i] = itr.next();
+			i++;
+		}
+
+		getActivity().invalidateOptionsMenu();
 	}
 
 	public class DownloadThread extends Thread {

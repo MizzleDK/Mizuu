@@ -43,9 +43,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 	private ViewPager awesomePager;
 	private ProgressBar pbar;
-	private String movieId;
-	private String baseUrl = "";
-	private String json = "";
+	private String movieId, baseUrl = "", json = "";
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
@@ -289,8 +287,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 				JSONObject jObject = new JSONObject(baseUrl);
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-
-				httpclient = new DefaultHttpClient();
+				
 				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + MizLib.TMDB_API + "&append_to_response=releases,trailers,images,casts,similar_movies");
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();

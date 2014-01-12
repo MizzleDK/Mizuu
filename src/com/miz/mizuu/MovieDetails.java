@@ -217,10 +217,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				menu.findItem(R.id.watched).setTitle(R.string.stringMarkAsWatched);
 			}
 
-			if (!thisMovie.isPartOfCollection()) {
-				menu.findItem(R.id.change_collection_cover).setVisible(false);
-			}
-
 			if (!MizLib.isImdbInstalled(this)) {
 				menu.findItem(R.id.imdb).setVisible(false);
 			}
@@ -634,32 +630,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	}
 
 	public void searchCover(MenuItem mi) {
-		searchCover();
-	}
-
-	private void searchCover() {
-		if (thisMovie.getTmdbId() != null && !thisMovie.getTmdbId().isEmpty() && MizLib.isOnline(getApplicationContext())) { // Make sure that the device is connected to the web and has the TMDb ID
-			Intent intent = new Intent();
-			intent.putExtra("tmdbId", thisMovie.getTmdbId());
-			intent.putExtra("startPosition", 0);
-			intent.setClass(this, MovieCoverFanartBrowser.class);
-			startActivity(intent); // Start the intent for result
-		} else {
-			// No movie ID / Internet connection
-			Toast.makeText(this, getString(R.string.coverSearchFailed), Toast.LENGTH_LONG).show();
-		}
-	}
-
-	public void searchCollectionCover(MenuItem mi) {
-		searchCollectionCover();
-	}
-
-	private void searchCollectionCover() {
 		if (thisMovie.getTmdbId() != null && !thisMovie.getTmdbId().isEmpty() && MizLib.isOnline(getApplicationContext())) { // Make sure that the device is connected to the web and has the TMDb ID
 			Intent intent = new Intent();
 			intent.putExtra("tmdbId", thisMovie.getTmdbId());
 			intent.putExtra("collectionId", thisMovie.getCollectionId());
-			intent.putExtra("startPosition", 2);
 			intent.setClass(this, MovieCoverFanartBrowser.class);
 			startActivity(intent); // Start the intent for result
 		} else {
@@ -701,24 +675,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
 		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
 		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-	}
-
-	public void browseFanart(MenuItem mi) {
-		browseFanart();
-	}
-
-	private void browseFanart() {
-		if (MizLib.isOnline(getApplicationContext())) {
-			if (thisMovie.getTmdbId() != null && !thisMovie.getTmdbId().isEmpty()) {
-				Intent intent = new Intent();
-				intent.putExtra("tmdbId", thisMovie.getTmdbId());
-				intent.putExtra("startPosition", 1);
-				intent.setClass(this, MovieCoverFanartBrowser.class);
-				startActivity(intent); // Start the intent for result
-			}
-		} else {
-			Toast.makeText(this, getString(R.string.noInternet), Toast.LENGTH_SHORT).show();
-		}
 	}
 
 	public void showEditMenu(MenuItem mi) {

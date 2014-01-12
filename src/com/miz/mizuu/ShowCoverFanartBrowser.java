@@ -1,31 +1,28 @@
 package com.miz.mizuu;
 
+import java.util.ArrayList;
+
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.FragmentTransaction;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.app.ActionBar.OnNavigationListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
-import android.view.ViewParent;
 
-import com.miz.functions.MizLib;
+import com.miz.functions.ActionBarSpinner;
+import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.CoverSearchFragmentTv;
 import com.miz.mizuu.fragments.FanartSearchFragmentTv;
 
-public class ShowCoverFanartBrowser extends MizActivity implements ActionBar.TabListener  {
+public class ShowCoverFanartBrowser extends MizActivity implements OnNavigationListener  {
 
-	private int coverCount, backdropCount, startPosition;
 	private String tvdbId;
 	private ViewPager awesomePager;
-	private ActionBar bar;
+	private ActionBar actionBar;
+	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner spinnerAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,74 +31,46 @@ public class ShowCoverFanartBrowser extends MizActivity implements ActionBar.Tab
 		setContentView(R.layout.viewpager);
 
 		tvdbId = getIntent().getExtras().getString("id");
-		startPosition = getIntent().getExtras().getInt("startPosition");
 
+		actionBar = getActionBar();
+
+		setupSpinnerItems();
+		
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
-		awesomePager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
-
-		bar = getActionBar();
-		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.coverart))
-				.setTabListener(this));
-		bar.addTab(bar.newTab()
-				.setText(getString(R.string.backdrop))
-				.setTabListener(this));
-
+		awesomePager.setOffscreenPageLimit(2);
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				bar.getTabAt(position).select();
-				ViewParent root = findViewById(android.R.id.content).getParent();
-				MizLib.findAndUpdateSpinner(root, position);
+				actionBar.setSelectedNavigationItem(position);
 			}
 		});
+		awesomePager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
+		
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner(getApplicationContext(), spinnerItems);
 
-		bar.setSelectedNavigationItem(startPosition);
+		setTitle(null);
+		
+		setupSpinnerItems();
 		
 		if (savedInstanceState != null) {
-			bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
-			coverCount = savedInstanceState.getInt("coverCount");
-			backdropCount = savedInstanceState.getInt("backdropCount");
-			displayCount();
-		}
-		
-		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-cover-search-fragment-tv"));
-	}
-	
-	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (intent.getExtras().containsKey("coverCount")) {
-				coverCount = intent.getExtras().getInt("coverCount");
-			} else {
-				backdropCount = intent.getExtras().getInt("backdropCount");
-			}
-			displayCount();
-		}
-	};
-	
-	private void displayCount() {
-		if (awesomePager.getCurrentItem() == 0) {
-			bar.setSubtitle(coverCount + " " + getString(R.string.numberOfCovers));
-		} else {
-			bar.setSubtitle(backdropCount + " " + getString(R.string.numberOfBackdrops));
+			getActionBar().setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
 		}
 	}
 	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+	private void setupSpinnerItems() {
+		spinnerItems.clear();
+		spinnerItems.add(new SpinnerItem(getString(R.string.browseMedia), getString(R.string.coverart)));
+		spinnerItems.add(new SpinnerItem(getString(R.string.browseMedia), getString(R.string.backdrop)));
+
+		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("tab", getActionBar().getSelectedNavigationIndex());
-		outState.putInt("coverCount", coverCount);
-		outState.putInt("backdropCount", backdropCount);
 	}
 
 	private class PagerAdapter extends FragmentPagerAdapter {
@@ -127,13 +96,8 @@ public class ShowCoverFanartBrowser extends MizActivity implements ActionBar.Tab
 	}
 
 	@Override
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		awesomePager.setCurrentItem(getActionBar().getSelectedTab().getPosition(), true);
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		awesomePager.setCurrentItem(itemPosition);
+		return true;
 	}
-
-	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {}
-
-	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
 }

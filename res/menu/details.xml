@@ -52,21 +52,7 @@
             android:enabled="true"
             android:icon="@drawable/backdrops"
             android:onClick="searchCover"
-            android:title="@string/detailsChangeCover">
-        </item>
-        <item
-            android:id="@+id/change_backdrop"
-            android:enabled="true"
-            android:icon="@drawable/backdrops"
-            android:onClick="browseFanart"
-            android:title="@string/detailsBackdrops">
-        </item>
-        <item
-            android:id="@+id/change_collection_cover"
-            android:enabled="true"
-            android:icon="@drawable/backdrops"
-            android:onClick="searchCollectionCover"
-            android:title="@string/detailsChangeCollectionCover">
+            android:title="@string/browseMedia">
         </item>
         <item
             android:id="@+id/imdb"

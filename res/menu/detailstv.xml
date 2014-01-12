@@ -22,13 +22,7 @@
             android:id="@+id/change_cover"
             android:enabled="true"
             android:icon="@drawable/backdrops"
-            android:title="@string/detailsChangeCover">
-        </item>
-        <item
-            android:id="@+id/change_backdrop"
-            android:enabled="true"
-            android:icon="@drawable/backdrops"
-            android:title="@string/detailsBackdrops">
+            android:title="@string/browseMedia">
         </item>
         <item
             android:id="@+id/menuDeleteShow"

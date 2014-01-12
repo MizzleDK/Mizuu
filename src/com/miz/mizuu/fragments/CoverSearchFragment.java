@@ -31,7 +31,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.miz.functions.AsyncTask;
 import com.miz.functions.Cover;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
@@ -48,7 +47,7 @@ public class CoverSearchFragment extends Fragment {
 	private ArrayList<Cover> covers = new ArrayList<Cover>();
 	private ArrayList<String> pics_sources = new ArrayList<String>();
 	private GridView mGridView = null;
-	private String TMDB_ID;
+	private String TMDB_ID, json;
 	private String[] items = new String[]{};
 	private ProgressBar pbar;
 	private DisplayImageOptions options;
@@ -59,10 +58,12 @@ public class CoverSearchFragment extends Fragment {
 	 */
 	public CoverSearchFragment() {}
 
-	public static CoverSearchFragment newInstance(String tmdbId) {
+	public static CoverSearchFragment newInstance(String tmdbId, String json, String baseUrl) {
 		CoverSearchFragment pageFragment = new CoverSearchFragment();
 		Bundle b = new Bundle();
 		b.putString("tmdbId", tmdbId);
+		b.putString("json", json);
+		b.putString("baseUrl", baseUrl);
 		pageFragment.setArguments(b);
 		return pageFragment;
 	}
@@ -81,8 +82,6 @@ public class CoverSearchFragment extends Fragment {
 		options = MizuuApplication.getDefaultCoverLoadingOptions();
 
 		TMDB_ID = getArguments().getString("tmdbId");
-
-		new GetCoverImages().execute(TMDB_ID);
 	}
 
 	@Override
@@ -131,6 +130,9 @@ public class CoverSearchFragment extends Fragment {
 			}
 		});
 		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
+
+		json = getArguments().getString("json");
+		loadJson(getArguments().getString("baseUrl"));
 	}
 
 	@Override
@@ -223,56 +225,44 @@ public class CoverSearchFragment extends Fragment {
 		}
 	}
 
-	protected class GetCoverImages extends AsyncTask<String, String, String> {
-		@Override
-		protected String doInBackground(String... params) {
-			String TMDBID = params[0];
-			try {
-				String baseUrl;
+	private void loadJson(String baseUrl) {
+		try {
+			pics_sources.clear();
 
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
+			JSONObject jObject = new JSONObject(json);
+			JSONArray array = jObject.getJSONArray("posters");
 
-				jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + TMDBID + "/images?api_key=" + MizLib.TMDB_API);
-
-				JSONArray array = jObject.getJSONArray("posters");
-				for (int i = 0; i < array.length(); i++) {
-					JSONObject o = array.getJSONObject(i);
-					covers.add(new Cover(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"), o.getString("iso_639_1")));
-					pics_sources.add(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"));
-				}
-			} catch (Exception e) {}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
-				mAdapter.notifyDataSetChanged();
-
-				TreeSet<String> languages = new TreeSet<String>();
-				for (int i = 0; i < covers.size(); i++)
-					if (!covers.get(i).getLanguage().equals("Null"))
-						languages.add(covers.get(i).getLanguage());
-
-				items = new String[languages.size() + 1];
-				items[0] = getString(R.string.stringShowAllLanguages);
-				Iterator<String> itr = languages.iterator();
-				int i = 1;
-				while (itr.hasNext()) {
-					items[i] = itr.next();
-					i++;
-				}
-
-				getActivity().invalidateOptionsMenu();
-
-				Intent intent = new Intent("mizuu-cover-search-fragment");
-				intent.putExtra("coverCount", pics_sources.size());
-				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject o = array.getJSONObject(i);
+				covers.add(new Cover(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"), o.getString("iso_639_1")));
+				pics_sources.add(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"));
 			}
+		} catch (Exception e) {}
+
+		if (isAdded()) {
+			showContent();
 		}
+	}
+
+	private void showContent() {
+		pbar.setVisibility(View.GONE);
+		mAdapter.notifyDataSetChanged();
+
+		TreeSet<String> languages = new TreeSet<String>();
+		for (int i = 0; i < covers.size(); i++)
+			if (!covers.get(i).getLanguage().equals("Null"))
+				languages.add(covers.get(i).getLanguage());
+
+		items = new String[languages.size() + 1];
+		items[0] = getString(R.string.stringShowAllLanguages);
+		Iterator<String> itr = languages.iterator();
+		int i = 1;
+		while (itr.hasNext()) {
+			items[i] = itr.next();
+			i++;
+		}
+
+		getActivity().invalidateOptionsMenu();
 	}
 
 	public class DownloadThread extends Thread {

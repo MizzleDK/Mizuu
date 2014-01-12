@@ -195,9 +195,6 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 		case R.id.menuDeleteShow:
 			deleteShow();
 			break;
-		case R.id.change_backdrop:
-			searchBackdrops();
-			break;
 		case R.id.change_cover:
 			searchCover();
 			break;
@@ -257,18 +254,9 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 		}.start();
 	}
 
-	private void searchBackdrops() {
-		Intent i = new Intent();
-		i.putExtra("id", thisShow.getId());
-		i.putExtra("startPosition", 1);
-		i.setClass(this, ShowCoverFanartBrowser.class);
-		startActivity(i);
-	}
-
 	private void searchCover() {
 		Intent i = new Intent();
 		i.putExtra("id", thisShow.getId());
-		i.putExtra("startPosition", 0);
 		i.setClass(this, ShowCoverFanartBrowser.class);
 		startActivity(i);
 	}

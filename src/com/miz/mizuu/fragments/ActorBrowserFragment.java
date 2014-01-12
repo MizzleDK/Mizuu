@@ -260,7 +260,6 @@ public class ActorBrowserFragment extends Fragment {
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
-				httpclient = new DefaultHttpClient();
 				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/casts?api_key=" + MizLib.TMDB_API);
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
