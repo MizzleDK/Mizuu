@@ -194,7 +194,7 @@
                                         android:layout_weight="0.5" >
 
                                         <ImageView
-                                            android:id="@+id/imageView3"
+                                            android:id="@+id/imageView9"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_centerVertical="true"
@@ -207,7 +207,7 @@
                                             android:layout_centerVertical="true"
                                             android:layout_marginLeft="@dimen/movie_details_padding"
                                             android:layout_marginRight="@dimen/movie_details_padding"
-                                            android:layout_toRightOf="@+id/imageView3"
+                                            android:layout_toRightOf="@+id/imageView9"
                                             android:focusable="false"
                                             android:textAppearance="?android:attr/textAppearanceSmall"
                                             android:textColor="#ddd"

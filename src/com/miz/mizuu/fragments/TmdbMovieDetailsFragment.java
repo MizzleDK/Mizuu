@@ -8,12 +8,12 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.miz.functions.AspectRatioImageViewCover;
@@ -29,13 +29,12 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 public class TmdbMovieDetailsFragment extends Fragment {
 
 	private String movieId;
-	private TextView textTitle, textPlot, textGenre, textRuntime, textReleaseDate, textRating, textTagline, textCertification, tv1, tv2, tv3, tv4, tv5;
+	private TextView textTitle, textPlot, textGenre, textRuntime, textReleaseDate, textRating, textTagline, textCertification;
 	private AspectRatioImageViewCover cover;
 	private ImageView background;
 	private Typeface tf;
 	private TMDb tmdb;
 	private TMDbMovie thisMovie;
-	private TableRow t1, t2, t3, t4, t5;
 	private View movieDetailsLayout, progressBar;
 	private FrameLayout container;
 	private boolean isRetained = false;
@@ -93,21 +92,11 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		textRating = (TextView) v.findViewById(R.id.textView12);
 		textTagline = (TextView) v.findViewById(R.id.textView6);
 		textCertification = (TextView) v.findViewById(R.id.textView11);
-		t1 = (TableRow) v.findViewById(R.id.tableRow1);
-		t2 = (TableRow) v.findViewById(R.id.tableRow2);
-		t3 = (TableRow) v.findViewById(R.id.tableRow3);
-		t4 = (TableRow) v.findViewById(R.id.TableRow01);
-		t5 = (TableRow) v.findViewById(R.id.tableRow5);
-		tv1 = (TextView) v.findViewById(R.id.TextView01);
-		tv2 = (TextView) v.findViewById(R.id.row_title_movies_online);
-		tv3 = (TextView) v.findViewById(R.id.TextView03);
-		tv4 = (TextView) v.findViewById(R.id.TextView04);
-		tv5 = (TextView) v.findViewById(R.id.TextView05);
 		cover = (AspectRatioImageViewCover) v.findViewById(R.id.traktIcon);
 		cover.setImageResource(R.drawable.loading_image);
 
 		// Get rid of these...
-		v.findViewById(R.id.TextView06).setVisibility(View.GONE); // File
+		v.findViewById(R.id.imageView7).setVisibility(View.GONE); // File
 		v.findViewById(R.id.textView3).setVisibility(View.GONE); // File
 		v.findViewById(R.id.imageView2).setVisibility(View.GONE); // Play button
 
@@ -156,12 +145,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			if (!MizLib.isEmpty(thisMovie.getGenres())) {
 				textGenre.setText(thisMovie.getGenres());
 			} else {
-				if (t3 != null) 
-					t3.setVisibility(View.GONE);
-				else {
-					tv3.setVisibility(View.GONE);
-					textGenre.setVisibility(View.GONE);
-				}
+				textGenre.setText(R.string.stringNA);
 			}
 
 			// Set the movie runtime
@@ -182,12 +166,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 				if (!MizLib.isEmpty(thisMovie.getRuntime())) {
 					textRuntime.setText(thisMovie.getRuntime());
 				} else {
-					if (t1 != null) 
-						t1.setVisibility(View.GONE);
-					else {
-						tv1.setVisibility(View.GONE);
-						textRuntime.setVisibility(View.GONE);
-					}
+					textRuntime.setText(R.string.stringNA);
 				}
 			}
 
@@ -203,36 +182,22 @@ public class TmdbMovieDetailsFragment extends Fragment {
 					textReleaseDate.setText(thisMovie.getReleasedate());
 				}
 			} else {
-				if (t4 != null) 
-					t4.setVisibility(View.GONE);
-				else {
-					tv5.setVisibility(View.GONE);
-					textReleaseDate.setVisibility(View.GONE);
-				}
+				textReleaseDate.setText(R.string.stringNA);
 			}
 
 			// Set the movie rating
-			if (!thisMovie.getRating().equals("0.0/10"))
-				textRating.setText(thisMovie.getRating());
-			else {
-				if (t5 != null) 
-					t5.setVisibility(View.GONE);
-				else {
-					tv4.setVisibility(View.GONE);
-					textRating.setVisibility(View.GONE);
-				}
+			if (!thisMovie.getRating().equals("0.0")) {
+				thisMovie.setRating(thisMovie.getRating() + "/10");
+				textRating.setText(Html.fromHtml("<b>" + thisMovie.getRating().replace("/", "</b><small> / ") + "</small>"));
+			} else {
+				textRating.setText(R.string.stringNA);
 			}
 
 			// Set the movie certification
 			if (!MizLib.isEmpty(thisMovie.getCertification())) {
 				textCertification.setText(thisMovie.getCertification());
 			} else {
-				if (t2 != null) 
-					t2.setVisibility(View.GONE);
-				else {
-					tv2.setVisibility(View.GONE);
-					textCertification.setVisibility(View.GONE);
-				}
+				textCertification.setText(R.string.stringNA);
 			}
 
 			setLoading(false);

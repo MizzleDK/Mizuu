@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -206,13 +207,7 @@ public class MovieDetailsFragment extends Fragment {
 		if (!MizLib.isEmpty(thisMovie.getGenres())) {
 			textGenre.setText(thisMovie.getGenres());
 		} else {
-			View tableRow = view.findViewById(R.id.tableRow3);
-			if (tableRow != null) 
-				tableRow.setVisibility(View.GONE);
-			else {
-				view.findViewById(R.id.TextView03).setVisibility(View.GONE);
-				textGenre.setVisibility(View.GONE);
-			}
+			textGenre.setText(R.string.stringNA);
 		}
 
 		// Set the movie runtime
@@ -233,13 +228,7 @@ public class MovieDetailsFragment extends Fragment {
 			if (!MizLib.isEmpty(thisMovie.getRuntime())) {
 				textRuntime.setText(thisMovie.getRuntime());
 			} else {
-				View tableRow = view.findViewById(R.id.tableRow1);
-				if (tableRow != null) 
-					tableRow.setVisibility(View.GONE);
-				else {
-					view.findViewById(R.id.TextView01).setVisibility(View.GONE);
-					textRuntime.setVisibility(View.GONE);
-				}
+				textRuntime.setText(R.string.stringNA);
 			}
 		}
 
@@ -255,39 +244,25 @@ public class MovieDetailsFragment extends Fragment {
 				textReleaseDate.setText(thisMovie.getReleasedate());
 			}
 		} else {
-			View tableRow = view.findViewById(R.id.TableRow01);
-			if (tableRow != null) 
-				tableRow.setVisibility(View.GONE);
-			else {
-				view.findViewById(R.id.TextView05).setVisibility(View.GONE);
-				textReleaseDate.setVisibility(View.GONE);
-			}
+			textReleaseDate.setText(R.string.stringNA);
 		}
 
 		// Set the movie rating
-		if (!thisMovie.getRating().equals("0.0/10"))
-			textRating.setText(thisMovie.getRating());
-		else {
-			View tableRow = view.findViewById(R.id.tableRow5);
-			if (tableRow != null) 
-				tableRow.setVisibility(View.GONE);
-			else {
-				view.findViewById(R.id.TextView04).setVisibility(View.GONE);
-				textRating.setVisibility(View.GONE);
+		if (!thisMovie.getRating().equals("0.0/10")) {
+			if (thisMovie.getRating().contains("/")) {
+				textRating.setText(Html.fromHtml("<b>" + thisMovie.getRating().replace("/", "</b><small> / ") + "</small>"));
+			} else {
+				textRating.setText(thisMovie.getRating());
 			}
+		} else {
+			textRating.setText(R.string.stringNA);
 		}
 
 		// Set the movie certification
 		if (!MizLib.isEmpty(thisMovie.getCertification())) {
 			textCertification.setText(thisMovie.getCertification());
 		} else {
-			View tableRow = view.findViewById(R.id.tableRow2);
-			if (tableRow != null) 
-				tableRow.setVisibility(View.GONE);
-			else {
-				view.findViewById(R.id.row_title_movies_online).setVisibility(View.GONE);
-				textCertification.setVisibility(View.GONE);
-			}
+			textCertification.setText(R.string.stringNA);
 		}
 
 		playbutton.setOnClickListener(new OnClickListener() {

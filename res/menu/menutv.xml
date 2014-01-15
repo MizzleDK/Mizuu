@@ -44,7 +44,7 @@
                 android:title="@string/choiceGenres"/>
             <item
                 android:id="@+id/certifications"
-                android:icon="@drawable/ic_action_emo_basic"
+                android:icon="@drawable/ic_action_flag"
                 android:title="@string/detailsCertification"/>
         </menu>
     </item>
