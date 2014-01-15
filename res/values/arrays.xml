@@ -98,7 +98,6 @@
         <item>@string/episodeDetails</item>
     </string-array>
     <string-array name="grid_item_size">
-        <item>@string/large</item>
         <item>@string/normal</item>
         <item>@string/small</item>
     </string-array>

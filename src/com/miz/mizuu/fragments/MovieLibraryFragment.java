@@ -132,9 +132,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
 
 		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
-		if (thumbnailSize.equals(getString(R.string.large)))
-			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.25);
-		else if (thumbnailSize.equals(getString(R.string.normal))) 
+		if (thumbnailSize.equals(getString(R.string.normal))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 		else
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
@@ -1372,9 +1370,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			forceLoaderLoad();
 		} else if (key.equals("prefsGridItemSize")) {
 			String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
-			if (thumbnailSize.equals(getString(R.string.large)))
-				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.25);
-			else if (thumbnailSize.equals(getString(R.string.normal))) 
+			if (thumbnailSize.equals(getString(R.string.normal))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);

@@ -115,9 +115,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
 
 		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
-		if (thumbnailSize.equals(getString(R.string.large)))
-			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.25);
-		else if (thumbnailSize.equals(getString(R.string.normal))) 
+		if (thumbnailSize.equals(getString(R.string.normal))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 		else
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
@@ -1022,9 +1020,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			forceLoaderLoad();
 		} else if (key.equals("prefsGridItemSize")) {
 			String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
-			if (thumbnailSize.equals(getString(R.string.large)))
-				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.25);
-			else if (thumbnailSize.equals(getString(R.string.normal))) 
+			if (thumbnailSize.equals(getString(R.string.normal))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
