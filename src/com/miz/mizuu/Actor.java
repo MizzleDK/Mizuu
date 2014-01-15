@@ -2,8 +2,16 @@ package com.miz.mizuu;
 
 import java.util.ArrayList;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
+
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import com.miz.base.MizActivity;
@@ -11,7 +19,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
@@ -24,10 +35,11 @@ import com.miz.mizuu.R;
 public class Actor extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
-	private String actorId, actorName;
+	private String actorId, actorName, json, baseUrl;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
+	private ProgressBar pbar;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,19 +55,18 @@ public class Actor extends MizActivity implements OnNavigationListener {
 
 		setContentView(R.layout.viewpager);
 		
-		actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		if (spinnerAdapter == null)
-			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
+		findViewById(R.id.layout).setBackgroundResource(R.drawable.bg);
 		
-		setTitle(null);
+		pbar = (ProgressBar) findViewById(R.id.progressbar);
+		pbar.setVisibility(View.VISIBLE);
 
 		actorId = getIntent().getExtras().getString("actorID");
 		actorName = getIntent().getExtras().getString("actorName");
+		
+		setTitle(actorName);
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
-		awesomePager.setOffscreenPageLimit(2);
-		awesomePager.setAdapter(new ActorDetailsAdapter(getSupportFragmentManager()));
+		awesomePager.setOffscreenPageLimit(3);
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
@@ -63,10 +74,14 @@ public class Actor extends MizActivity implements OnNavigationListener {
 			}
 		});
 		
-		setupSpinnerItems();
-		
-		if (savedInstanceState != null) {
+		if (savedInstanceState != null) {	
+			json = savedInstanceState.getString("json", "");
+			baseUrl = savedInstanceState.getString("baseUrl");
+			setupActionBarStuff();
+
 			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+		} else {
+			new ActorLoader().execute(actorId);
 		}
 	}
 	
@@ -83,6 +98,8 @@ public class Actor extends MizActivity implements OnNavigationListener {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("tab", awesomePager.getCurrentItem());
+		outState.putString("json", json);
+		outState.putString("baseUrl", baseUrl);
 	}
 
 	@Override
@@ -108,12 +125,12 @@ public class Actor extends MizActivity implements OnNavigationListener {
 			super(fm);
 		}
 
-		@Override  
+		@Override
 		public Fragment getItem(int index) {
 			switch (index) {
-			case 0: return ActorBiographyFragment.newInstance(actorId);
-			case 1: return ActorMoviesFragment.newInstance(actorId, true);
-			case 2: return ActorPhotosFragment.newInstance(actorId, actorName, true);
+			case 0: return ActorBiographyFragment.newInstance(json, baseUrl);
+			case 1: return ActorMoviesFragment.newInstance(json, true, baseUrl);
+			case 2: return ActorPhotosFragment.newInstance(json, actorName, true, baseUrl);
 			default: return null;
 			}
 		}  
@@ -128,5 +145,59 @@ public class Actor extends MizActivity implements OnNavigationListener {
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
+	}
+	
+	private class ActorLoader extends AsyncTask<Object, Object, String> {
+		@Override
+		protected String doInBackground(Object... params) {
+			try {				
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				httppost.setHeader("Accept", "application/json");
+				ResponseHandler<String> responseHandler = new BasicResponseHandler();
+				baseUrl = httpclient.execute(httppost, responseHandler);
+
+				JSONObject jObject = new JSONObject(baseUrl);
+				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
+				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
+
+				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + MizLib.TMDB_API + "&append_to_response=credits,images");
+				httppost.setHeader("Accept", "application/json");
+				responseHandler = new BasicResponseHandler();
+
+				json = httpclient.execute(httppost, responseHandler);
+
+				return json;
+			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result != null) {
+				setupActionBarStuff();
+			} else {
+				Toast.makeText(getApplicationContext(), R.string.errorSomethingWentWrong, Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
+	
+	private void setupActionBarStuff() {
+		actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (spinnerAdapter == null)
+			spinnerAdapter = new ActionBarSpinner(getApplicationContext(), spinnerItems);
+
+		setTitle(null);
+
+		if (!MizLib.runsInPortraitMode(getApplicationContext()))
+			findViewById(R.id.layout).setBackgroundResource(0);
+		pbar.setVisibility(View.GONE);
+
+		awesomePager.setAdapter(new ActorDetailsAdapter(getSupportFragmentManager()));
+		setupSpinnerItems();
+		
+		findViewById(R.id.layout).setBackgroundResource(0);
 	}
 }

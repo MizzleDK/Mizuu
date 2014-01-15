@@ -2106,13 +2106,13 @@ public class MizLib {
 	}
 
 	public static String removeWikipediaNotes(String original) {
-		original = original.replaceAll("(?i)from wikipedia, the free encyclopedia.", "").replaceAll("(?i)from wikipedia, the free encyclopedia", "");
+		original = original.trim().replaceAll("(?i)from wikipedia, the free encyclopedia.", "").replaceAll("(?i)from wikipedia, the free encyclopedia", "");
+		original = original.replaceAll("(?m)^[ \t]*\r?\n", "");
 		if (original.contains("Description above from the Wikipedia")) {
 			original = original.substring(0, original.lastIndexOf("Description above from the Wikipedia"));
 		}
-		original = original.trim();
 
-		return original;
+		return original.trim();
 	}
 
 	public static String getParentFolder(String filepath) {

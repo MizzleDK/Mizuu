@@ -2,17 +2,11 @@ package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -25,7 +19,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -43,22 +36,23 @@ public class ActorPhotosFragment extends Fragment {
 	private ImageAdapter mAdapter;
 	private ArrayList<String> pics_sources = new ArrayList<String>();
 	private GridView mGridView = null;
-	private ProgressBar pbar;
 	private DisplayImageOptions options;
 	private ImageLoader imageLoader;
 	private boolean setBackground;
-	
+	private String json, baseUrl;
+
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public ActorPhotosFragment() {}
 
-	public static ActorPhotosFragment newInstance(String actorId, String actorName, boolean setBackground) { 
+	public static ActorPhotosFragment newInstance(String json, String actorName, boolean setBackground, String baseUrl) { 
 		ActorPhotosFragment pageFragment = new ActorPhotosFragment();
 		Bundle bundle = new Bundle();
-		bundle.putString("actorId", actorId);
+		bundle.putString("json", json);
 		bundle.putString("actorName", actorName);
 		bundle.putBoolean("setBackground", setBackground);
+		bundle.putString("baseUrl", baseUrl);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
@@ -70,14 +64,15 @@ public class ActorPhotosFragment extends Fragment {
 		setRetainInstance(true);
 
 		setBackground = getArguments().getBoolean("setBackground");
-		
+
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		imageLoader = ImageLoader.getInstance();
 		options = MizuuApplication.getDefaultActorLoadingOptions();
-		
-		new GetActorDetails().execute(getArguments().getString("actorId"));
+
+		json = getArguments().getString("json");
+		baseUrl = getArguments().getString("baseUrl");
 	}
 
 	@Override
@@ -90,11 +85,10 @@ public class ActorPhotosFragment extends Fragment {
 
 		if (setBackground && !MizLib.runsInPortraitMode(getActivity()))
 			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
-		
+
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
-		pbar = (ProgressBar) v.findViewById(R.id.progress);
-		if (pics_sources.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
+		v.findViewById(R.id.progress).setVisibility(View.GONE);
 
 		mAdapter = new ImageAdapter(getActivity());
 
@@ -132,7 +126,8 @@ public class ActorPhotosFragment extends Fragment {
 				startActivity(intent);
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
+
+		loadData();
 	}
 
 	@Override
@@ -141,7 +136,7 @@ public class ActorPhotosFragment extends Fragment {
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -228,44 +223,17 @@ public class ActorPhotosFragment extends Fragment {
 		}
 	}
 
-	protected class GetActorDetails extends AsyncTask<String, String, String> {
-		@Override
-		protected String doInBackground(String... params) {
-			try {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String baseUrl = httpclient.execute(httppost, responseHandler);
+	private void loadData() {
+		try {
+			JSONObject jObject = new JSONObject(json);
 
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
+			JSONArray jArray = jObject.getJSONObject("images").getJSONArray("profiles");
 
-				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "/images?api_key=" + MizLib.TMDB_API);
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
-				String html = httpclient.execute(httppost, responseHandler);
-
-				jObject = new JSONObject(html);
-
-				JSONArray jArray = jObject.getJSONArray("profiles");
-
-				for (int i = 0; i < jArray.length(); i++) {
-					pics_sources.add(baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("file_path"));
-				}				
-
-			} catch (Exception e) { e.printStackTrace(); }
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
-				mAdapter.notifyDataSetChanged();
+			for (int i = 0; i < jArray.length(); i++) {
+				pics_sources.add(baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("file_path"));
 			}
-		}
-	}	
+
+			mAdapter.notifyDataSetChanged();
+		} catch (Exception ignored) {}
+	}
 }
