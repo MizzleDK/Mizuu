@@ -16,6 +16,7 @@ import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.CifsImageDownloader;
+import com.miz.functions.PicassoDownloader;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -23,6 +24,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.utils.L;
+import com.squareup.picasso.LruCache;
+import com.squareup.picasso.Picasso;
 
 public class MizuuApplication extends Application implements OnSharedPreferenceChangeListener {
 
@@ -33,6 +36,8 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 	private static DbAdapterSources dbSources;
 	private static DbAdapter db;
 	private static HashMap<String, String[]> map = new HashMap<String, String[]>();
+	private static Picasso mPicasso;
+	private static LruCache mLruCache;
 
 	@Override
 	public void onCreate() {
@@ -51,6 +56,8 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 		dbSources = new DbAdapterSources(this);
 		db = new DbAdapter(this);
 
+		mLruCache = new LruCache(this);
+		
 		// Set OnSharedPreferenceChange listener
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
@@ -174,5 +181,15 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 			mPauseOnScrollListener = new PauseOnScrollListener(imageLoader, true, true);
 
 		return mPauseOnScrollListener;
+	}
+	
+	public static Picasso getPicassoForCovers(Context context) {
+		mPicasso = new Picasso.Builder(context).downloader(new PicassoDownloader(context)).memoryCache(getLruCache()).build();
+		
+		return mPicasso;
+	}
+	
+	public static LruCache getLruCache() {
+		return mLruCache;
 	}
 }

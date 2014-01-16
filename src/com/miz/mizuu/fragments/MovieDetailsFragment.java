@@ -250,7 +250,7 @@ public class MovieDetailsFragment extends Fragment {
 		// Set the movie rating
 		if (!thisMovie.getRating().equals("0.0/10")) {
 			if (thisMovie.getRating().contains("/")) {
-				textRating.setText(Html.fromHtml("<b>" + thisMovie.getRating().replace("/", "</b><small> / ") + "</small>"));
+				textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
 			} else {
 				textRating.setText(thisMovie.getRating());
 			}

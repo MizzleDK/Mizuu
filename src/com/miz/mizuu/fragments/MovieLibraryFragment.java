@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -59,7 +60,6 @@ import com.miz.db.DbHelper;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.FileSource;
-import com.miz.functions.ImageLoadingErrorListener;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
@@ -71,8 +71,6 @@ import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.miz.mizuu.Update;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.picasso.Picasso;
 
 public class MovieLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
@@ -91,10 +89,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	private boolean showGridTitles, ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo;
 	private ActionBar actionBar;
 	private int type;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -138,8 +135,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
+		mPicasso = MizuuApplication.getPicassoForCovers(getActivity());
 
 		mAdapter = new LoaderAdapter(getActivity());
 	}
@@ -262,10 +258,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	};
 
 	private void clearCaches() {
-		try {
-			imageLoader.clearMemoryCache();
-			imageLoader.clearDiscCache();
-		} catch (Exception e) {}
+		MizuuApplication.getLruCache().clear();
 	}
 
 	@Override
@@ -329,7 +322,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				}
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 	}
 
 	@Override
@@ -342,14 +334,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
 	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
-	}
-
+	
 	@Override
 	public void onDestroy() {	
 		// Unregister since the activity is about to be closed.
@@ -361,18 +346,21 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private class LoaderAdapter extends BaseAdapter implements SectionIndexer {
 
+		private Drawable gray;
 		private LayoutInflater inflater;
 		private final Context mContext;
 		private int mItemHeight = 0;
 		private int mNumColumns = 0;
 		private GridView.LayoutParams mImageViewLayoutParams;
 		private Object[] sections;
+		private boolean isCollections = false;
 
 		public LoaderAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			gray = context.getResources().getDrawable(R.drawable.gray);
 		}
 
 		@Override
@@ -405,37 +393,28 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.text.setVisibility(TextView.GONE);
+			holder.text.setText(shownMovies.get(position).getTitle());
+
+			if (showGridTitles)
+				holder.text.setVisibility(TextView.VISIBLE);
+			else
+				holder.text.setVisibility(TextView.GONE);
 
 			// Check the height matches our calculated column width
 			if (holder.layout.getLayoutParams().height != mItemHeight) {
 				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
 
-			if (actionBar.getSelectedNavigationIndex() == 3) {
-				if (showGridTitles) {
-					holder.text.setVisibility(TextView.VISIBLE);
-					holder.text.setText(shownMovies.get(position).getCollection());
-					imageLoader.displayImage("file://" + shownMovies.get(position).getCollectionPoster(), holder.cover, options);
-				} else
-					imageLoader.displayImage("file://" + shownMovies.get(position).getCollectionPoster(), holder.cover, options,
-							new ImageLoadingErrorListener(shownMovies.get(position).getCollection(), null, null));
-			} else {
+			holder.cover.setImageDrawable(gray);
+
+			if (isCollections) {
+				mPicasso.load(shownMovies.get(position).getCollectionPoster()).into(holder);
+				holder.text.setText(shownMovies.get(position).getCollection());
+			} else { // Movies
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
-					if (showGridTitles) {
-						holder.text.setVisibility(TextView.VISIBLE);
-						holder.text.setText(shownMovies.get(position).getTitle());
-					}
-					imageLoader.displayImage(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail(), holder.cover, options,
-							new ImageLoadingErrorListener(shownMovies.get(position).getTitle(), null, null));
+					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>file://" + shownMovies.get(position).getThumbnail()).into(holder);
 				} else {
-					if (showGridTitles) {
-						holder.text.setVisibility(TextView.VISIBLE);
-						holder.text.setText(shownMovies.get(position).getTitle());
-						imageLoader.displayImage("file://" + shownMovies.get(position).getThumbnail(), holder.cover, options);
-					} else
-						imageLoader.displayImage("file://" + shownMovies.get(position).getThumbnail(), holder.cover, options,
-								new ImageLoadingErrorListener(shownMovies.get(position).getTitle(), null, null));
+					mPicasso.load(shownMovies.get(position).getThumbnail()).into(holder);
 				}
 			}
 
@@ -478,6 +457,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		public void notifyDataSetChanged() {
+			
+			isCollections = (actionBar.getSelectedNavigationIndex() == 3);
 
 			ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>(shownMovies);
 			sections = new Object[tempMovies.size()];

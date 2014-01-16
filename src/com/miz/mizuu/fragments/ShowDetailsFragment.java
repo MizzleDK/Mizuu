@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,13 +121,13 @@ public class ShowDetailsFragment extends Fragment {
 		textCertification = (TextView) v.findViewById(R.id.textView11);
 		cover = (AspectRatioImageViewCover) v.findViewById(R.id.traktIcon);
 
-		// Set the movie title
+		// Set the show title
 		textTitle.setVisibility(View.VISIBLE);
 		textTitle.setText(thisShow.getTitle());
 		textTitle.setTypeface(tf);
 		textTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-		// Set the movie plot
+		// Set the show plot
 		textPlot.setText(thisShow.getDescription());
 
 		textTagline.setVisibility(TextView.GONE);
@@ -135,13 +136,7 @@ public class ShowDetailsFragment extends Fragment {
 		if (!MizLib.isEmpty(thisShow.getGenres())) {
 			textGenre.setText(thisShow.getGenres());
 		} else {
-			View tableRow = v.findViewById(R.id.tableRow3);
-			if (tableRow != null) 
-				tableRow.setVisibility(View.GONE);
-			else {
-				v.findViewById(R.id.TextView03).setVisibility(View.GONE);
-				textGenre.setVisibility(View.GONE);
-			}
+			textGenre.setText(R.string.stringNA);
 		}
 
 		// Set the show runtime
@@ -162,13 +157,7 @@ public class ShowDetailsFragment extends Fragment {
 			if (!MizLib.isEmpty(thisShow.getRuntime())) {
 				textRuntime.setText(thisShow.getRuntime() + " " + getString(R.string.minutes));
 			} else {
-				View tableRow = v.findViewById(R.id.tableRow1);
-				if (tableRow != null) 
-					tableRow.setVisibility(View.GONE);
-				else {
-					v.findViewById(R.id.TextView01).setVisibility(View.GONE);
-					textRuntime.setVisibility(View.GONE);
-				}
+				textRuntime.setText(R.string.stringNA);
 			}
 		}
 
@@ -183,40 +172,27 @@ public class ShowDetailsFragment extends Fragment {
 			if (!MizLib.isEmpty(thisShow.getFirstAirdate())) {
 				textReleaseDate.setText(thisShow.getFirstAirdate());
 			} else {
-				View tableRow = v.findViewById(R.id.TableRow01);
-				if (tableRow != null) 
-					tableRow.setVisibility(View.GONE);
-				else {
-					v.findViewById(R.id.TextView05).setVisibility(View.GONE);
-					textReleaseDate.setVisibility(View.GONE);
-				}
+				textReleaseDate.setText(R.string.stringNA);
+				
 			}
 		}
 
-		// Set the movie rating
-		if (!thisShow.getRating().equals("0/10"))
-			textRating.setText(thisShow.getRating());
-		else {
-			View tableRow = v.findViewById(R.id.tableRow5);
-			if (tableRow != null) 
-				tableRow.setVisibility(View.GONE);
-			else {
-				v.findViewById(R.id.TextView04).setVisibility(View.GONE);
-				textRating.setVisibility(View.GONE);
+		// Set the show rating		
+		if (!thisShow.getRating().equals("0.0/10")) {
+			if (thisShow.getRating().contains("/")) {
+				textRating.setText(Html.fromHtml(thisShow.getRating().replace("/", "<small> / ") + "</small>"));
+			} else {
+				textRating.setText(thisShow.getRating());
 			}
+		} else {
+			textRating.setText(R.string.stringNA);
 		}
 
-		// Set the movie certification
+		// Set the show certification
 		if (!MizLib.isEmpty(thisShow.getCertification())) {
 			textCertification.setText(thisShow.getCertification());
 		} else {
-			View tableRow = v.findViewById(R.id.tableRow2);
-			if (tableRow != null) 
-				tableRow.setVisibility(View.GONE);
-			else {
-				v.findViewById(R.id.row_title_movies_online).setVisibility(View.GONE);
-				textCertification.setVisibility(View.GONE);
-			}
+			textCertification.setText(R.string.stringNA);
 		}
 
 		loadImages();

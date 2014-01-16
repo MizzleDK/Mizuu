@@ -188,7 +188,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			// Set the movie rating
 			if (!thisMovie.getRating().equals("0.0")) {
 				thisMovie.setRating(thisMovie.getRating() + "/10");
-				textRating.setText(Html.fromHtml("<b>" + thisMovie.getRating().replace("/", "</b><small> / ") + "</small>"));
+				textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
 			} else {
 				textRating.setText(R.string.stringNA);
 			}
