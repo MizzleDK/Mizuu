@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -70,6 +71,8 @@ public class ShowEpisodesFragment extends Fragment {
 		mDualPane = v.findViewById(R.id.episode) == null ? false : true;
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		if (!MizLib.runsInPortraitMode(getActivity()) && !MizLib.runsOnTablet(getActivity()))
+			v.findViewById(R.id.container).setBackgroundColor(Color.parseColor("#101010"));
 
 		fm = getChildFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();

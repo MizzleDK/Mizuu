@@ -185,7 +185,7 @@ public class ShowSeasonsFragment extends Fragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (setBackground && !MizLib.runsInPortraitMode(getActivity()))
+		if (setBackground && !MizLib.runsInPortraitMode(getActivity()) && MizLib.runsOnTablet(getActivity()))
 			view.findViewById(R.id.container).setBackgroundColor(Color.parseColor("#101010"));
 
 		pbar = (ProgressBar) view.findViewById(R.id.progressbar);
