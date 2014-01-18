@@ -7,10 +7,6 @@
             android:icon="@drawable/ic_action_settings"
             android:title="@string/settings_name" android:showAsAction="never">
         </item>
-        <item
-            android:id="@+id/menuContact"
-            android:icon="@drawable/ic_action_mail"
-            android:title="@string/menuAboutContact" android:showAsAction="never"/>
     </group>
 
 </menu>

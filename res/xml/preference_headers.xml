@@ -16,7 +16,7 @@
             android:name="resource"
             android:value="identification_search_prefs" />
     </header>
-        <header
+    <header
         android:fragment="com.miz.mizuu.fragments.ScheduledUpdatesFragment"
         android:icon="@drawable/refresh"
         android:title="@string/scheduledUpdates" />
@@ -48,5 +48,9 @@
             android:name="resource"
             android:value="other_prefs" />
     </header>
+    <header
+        android:fragment="com.miz.mizuu.fragments.ContactDeveloperFragment"
+        android:icon="@drawable/ic_action_mail"
+        android:title="@string/menuAboutContact" />
 
 </preference-headers>

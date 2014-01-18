@@ -147,9 +147,6 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		case R.id.menuSettings:
 			startActivity(new Intent(getActivity(), Preferences.class));
 			break;
-		case R.id.menuContact:
-			MizLib.contactDev(getActivity());
-			break;
 		case R.id.search_textbox:
 			Intent i = new Intent(getActivity().getApplicationContext(), SearchWebMovies.class);
 			startActivity(i);

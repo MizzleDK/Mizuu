@@ -1,5 +1,6 @@
 package com.miz.functions;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import jcifs.smb.SmbFile;
@@ -19,7 +20,6 @@ public class PicassoDownloader implements Downloader {
 	
 	@Override
 	public Response load(Uri uri, boolean localCacheOnly) throws IOException {
-
 		String imageUri = uri.toString();
 		
 		if (imageUri.startsWith("smb")) {
@@ -39,11 +39,8 @@ public class PicassoDownloader implements Downloader {
 				return new Response(contentResolver.openInputStream(Uri.parse(backup)), localCacheOnly);
 			}
 			
-		} else {
-			if (!imageUri.startsWith("file://"))
-				uri = Uri.parse("file://" + uri.toString());
-			ContentResolver contentResolver = mContext.getContentResolver();
-			return new Response(contentResolver.openInputStream(uri), localCacheOnly);
+		} else {			
+			return new Response(new FileInputStream(imageUri), localCacheOnly);
 		}
 	}
 

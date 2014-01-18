@@ -151,7 +151,7 @@
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"
-            android:summary="@string/unknownLicense"
+            android:summary="Creative Commons Attribution License, Version 3.0"
             android:title="YouTube Android Player API" >
             <intent
                 android:action="android.intent.action.VIEW"

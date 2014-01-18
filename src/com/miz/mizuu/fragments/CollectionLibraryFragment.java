@@ -627,9 +627,6 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		case R.id.menuSettings:
 			startActivity(new Intent(getActivity(), Preferences.class));
 			break;
-		case R.id.menuContact:
-			MizLib.contactDev(getActivity());
-			break;
 		case R.id.genres:
 			showGenres();
 			break;

@@ -63,6 +63,24 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/message" >
             </EditText>
+
+            <LinearLayout
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="right" >
+
+                <Button
+                    android:id="@+id/send"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/movie_details_padding"
+                    android:paddingRight="@dimen/movie_details_padding"
+                    android:text="@string/send" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -72,8 +90,7 @@
             android:orientation="vertical"
             android:paddingBottom="12dp"
             android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="12dp" >
+            android:paddingRight="8dp" >
 
             <TextView
                 android:id="@+id/TextView01"

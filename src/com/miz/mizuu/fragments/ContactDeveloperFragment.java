@@ -1,52 +1,68 @@
-package com.miz.mizuu;
+package com.miz.mizuu.fragments;
 
 import java.util.List;
 import java.util.Locale;
 
 import android.animation.ObjectAnimator;
-import android.app.ActionBar;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
-import com.miz.base.MizActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Support extends MizActivity {
+import com.miz.mizuu.R;
+
+public class ContactDeveloperFragment extends Fragment {
 
 	private Spinner subject;
 	private EditText message;
 	private TextView deviceDetails;
+	private Button send;
 
 	@Override
-	public void onCreate(Bundle b) {
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 
-		super.onCreate(b);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.support, container, false);
+	}
 
-		setupDoneDiscard();
+	@Override
+	public void onViewCreated(View v, Bundle savedInstanceState) {
+		super.onViewCreated(v, savedInstanceState);
 
-		setContentView(R.layout.contact_developer);
-
-		subject = (Spinner) findViewById(R.id.subjectSpinner);
-		message = (EditText) findViewById(R.id.traktUsername);
-		deviceDetails = (TextView) findViewById(R.id.textView2);
+		subject = (Spinner) v.findViewById(R.id.subjectSpinner);
+		message = (EditText) v.findViewById(R.id.traktUsername);
+		deviceDetails = (TextView) v.findViewById(R.id.textView2);
+		send = (Button) v.findViewById(R.id.send);
+		send.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				send();
+			}
+		});
 
 		try {
 			String versionType = "";
-			if (getPackageName().equals("com.miz.mizuulite")) {
+			if (getActivity().getPackageName().equals("com.miz.mizuulite")) {
 				versionType = " (lite)";
 			}
 
-			PackageManager manager = getPackageManager();
-			PackageInfo packageInfo = manager.getPackageInfo(getPackageName(), 0);
+			PackageManager manager = getActivity().getPackageManager();
+			PackageInfo packageInfo = manager.getPackageInfo(getActivity().getPackageName(), 0);
 
 			deviceDetails.setText(
 					getString(R.string.contactDeviceModel) + ": " + Build.MODEL + " (" + Build.PRODUCT + ")\n" + // Model
@@ -56,10 +72,10 @@ public class Support extends MizActivity {
 							"Mizuu version: " + packageInfo.versionName + versionType
 					);
 		} catch (Exception e) {
-			Toast.makeText(this, getString(R.string.errorSomethingWentWrong), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), getString(R.string.errorSomethingWentWrong), Toast.LENGTH_SHORT).show();
 		}
 	}
-
+	
 	private void send() {
 		if (!message.getText().toString().isEmpty() && message.getText().toString().length() > 5) {
 			try {
@@ -72,7 +88,7 @@ public class Support extends MizActivity {
 						"\n\nMessage:\n" + message.getText().toString() + // Enter description
 						"\n\n" + deviceDetails.getText().toString()); // Mizuu version
 				emailIntent.setType("plain/text"); // This is an incorrect MIME, but Gmail is one of the only apps that responds to it
-				final PackageManager pm = getPackageManager();
+				final PackageManager pm = getActivity().getPackageManager();
 				final List<ResolveInfo> matches = pm.queryIntentActivities(emailIntent, 0);
 				ResolveInfo best = null;
 				int count = matches.size();
@@ -84,11 +100,10 @@ public class Support extends MizActivity {
 					emailIntent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
 				emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(emailIntent);
-				Toast.makeText(this, getString(R.string.launchingGmail), Toast.LENGTH_SHORT).show();
-				finish();
+				Toast.makeText(getActivity(), getString(R.string.launchingGmail), Toast.LENGTH_SHORT).show();
 				return;
 			} catch (Exception e) {
-				Toast.makeText(this, getString(R.string.failedGmailLaunch), Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), getString(R.string.failedGmailLaunch), Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			// Animation
@@ -96,35 +111,7 @@ public class Support extends MizActivity {
 			animation.setDuration(250);
 			animation.start();
 		    
-			Toast.makeText(this, getString(R.string.enterAMessage), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), getString(R.string.enterAMessage), Toast.LENGTH_SHORT).show();
 		}
-	}
-
-	private void setupDoneDiscard() {
-		// Inflate a "Done/Discard" custom action bar view.
-		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-
-		final View customActionBarView = inflater.inflate(R.layout.actionbar_custom_view_send_discard, null);
-
-		customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						send();
-					}
-				});
-		customActionBarView.findViewById(R.id.actionbar_discard).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						finish();
-						return;
-					}
-				});
-
-		// Show the custom action bar view and hide the normal Home icon and title.
-		final ActionBar actionBar = getActionBar();
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-		actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 	}
 }

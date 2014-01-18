@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.miz.functions.ActionBarSpinner;
-import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.MainMenuActivity;
 import com.miz.mizuu.Preferences;
@@ -119,9 +118,6 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 		switch (item.getItemId()) {
 		case R.id.menuSettings:
 			startActivity(new Intent(getActivity(), Preferences.class));
-			break;
-		case R.id.menuContact:
-			MizLib.contactDev(getActivity());
 			break;
 		}
 

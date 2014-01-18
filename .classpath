@@ -4,7 +4,6 @@
 	<classpathentry excluding="com/miz/mizuu/RandomAccessInputStream.java|com/miz/mizuu/FileEntry.java|com/miz/mizuu/StreamOverHttp.java|com/miz/mizuu/TvShowDetails.java|com/miz/mizuu/Reviews.java|com/miz/mizuu_beta/TvShowDetails.java|com/miz/mizuu_beta/fragments/LoaderFragment.java|com/miz/mizuu_beta/ActorBrowser.java|com/miz/functions/ObservableScrollView.java|com/miz/mizuu_beta/MovieTrailerNew.java|com/miz/mizuu_beta/UpdateMovieServiceNew.java|com/miz/mizuu_beta/CoverSearch.java|com/miz/mizuu_beta/FanartSearch.java|com/miz/mizuu_beta/UpdateTvShowService.java|com/miz/mizuu_beta/UpdateTv.java|com/miz/mizuu_beta/UpdateMovieIntentService.java|com/miz/mizuu_beta/TMDb.java|com/miz/mizuu_beta/MovieTrailer.java|com/miz/mizuu_beta/ActorBrowserTv.java|com/miz/functions/YouTubeTrailerSearch.java|com/miz/mizuu_beta/TVDb.java|com/miz/mizuu_beta/FlushedInputStream.java|com/miz/mizuu_beta/SimpleCursorLoader.java|com/miz/mizuu_beta/Main.java|com/miz/mizuu_beta/TvShowEpisodeDetails.java|com/miz/mizuu_beta/fragments/TvShowSeasonGridFragment.java|com/miz/mizuu_beta/fragments/TvShowEpisodeBrowserFragment.java|com/miz/mizuu_beta/TvShowEpisodeBrowser.java|com/miz/mizuu_beta/fragments/MovieDetailsImageFragment.java|com/miz/mizuu_beta/MainTV.java|com/miz/mizuu/fragments/CalendarFragment.java|com/android/bitmap/" kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="libs/YouTubeAndroidPlayerApi.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
@@ -12,5 +11,7 @@
 	<classpathentry kind="lib" path="libs/universal-image-loader-1.9.1-with-sources.jar"/>
 	<classpathentry kind="lib" path="libs/crashlytics.jar"/>
 	<classpathentry kind="lib" path="libs/okhttp-1.3.0-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="libs/picasso-2.1.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

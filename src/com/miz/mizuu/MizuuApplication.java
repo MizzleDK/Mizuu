@@ -2,6 +2,10 @@ package com.miz.mizuu;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Application;
 import android.content.Context;
@@ -41,11 +45,11 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 	private static Picasso mPicasso;
 	private static LruCache mLruCache;
 	private static File mMovieThumbFolder;
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
+
 		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "false");
 
 		if (!(0 != ( getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)))
@@ -60,7 +64,7 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 		db = new DbAdapter(this);
 
 		mLruCache = new LruCache(this);
-		
+
 		// Set OnSharedPreferenceChange listener
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
@@ -185,17 +189,39 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 
 		return mPauseOnScrollListener;
 	}
-	
+
 	public static Picasso getPicassoForCovers(Context context) {
-		mPicasso = new Picasso.Builder(context).downloader(new PicassoDownloader(context)).memoryCache(getLruCache()).build();
-		
+		mPicasso = new Picasso.Builder(context).downloader(new PicassoDownloader(context)).executor(getThreadPoolExecutor()).build();
+
 		return mPicasso;
 	}
 	
+	private static ThreadPoolExecutor getThreadPoolExecutor() {
+		return new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS,
+		        new LinkedBlockingQueue<Runnable>(), new PicassoThreadFactory());
+	}
+
+	static class PicassoThreadFactory implements ThreadFactory {
+		public Thread newThread(Runnable r) {
+			return new PicassoThread(r);
+		}
+	}
+
+	private static class PicassoThread extends Thread {
+		public PicassoThread(Runnable r) {
+			super(r);
+		}
+
+		@Override public void run() {
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_DISPLAY);
+			super.run();
+		}
+	}
+
 	public static LruCache getLruCache() {
 		return mLruCache;
 	}
-	
+
 	public static File getMovieThumbFolder(Context context) {
 		if (mMovieThumbFolder == null)
 			mMovieThumbFolder = MizLib.getMovieThumbFolder(context);

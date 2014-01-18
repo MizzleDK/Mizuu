@@ -91,7 +91,6 @@ import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.miz.mizuu.Support;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
@@ -345,14 +344,6 @@ public class MizLib {
 	public static String substring(String s, int maxLength) {
 		if (s.length() >= maxLength) return s.substring(0, maxLength);
 		else return s;
-	}
-
-	/**
-	 * Launches an intent to contact the developer (me!)
-	 * @param context
-	 */
-	public static void contactDev(Context context) {
-		context.startActivity(new Intent(Intent.ACTION_VIEW).setClass(context, Support.class));
 	}
 
 	/**

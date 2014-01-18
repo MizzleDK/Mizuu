@@ -247,6 +247,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 
 			showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
+			
+			updateTextAndUpdateButton();
 		}
 
 		@Override
@@ -303,6 +305,13 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 								mAdapter.setNumColumns(numColumns);
 								mAdapter.setItemHeight(columnWidth);
 							}
+							if (MizLib.hasJellyBean()) {
+								mGridView.getViewTreeObserver()
+								.removeOnGlobalLayoutListener(this);
+							} else {
+								mGridView.getViewTreeObserver()
+								.removeGlobalOnLayoutListener(this);
+							}
 						}
 					}
 				});
@@ -334,7 +343,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
 	}
-	
+
 	@Override
 	public void onDestroy() {	
 		// Unregister since the activity is about to be closed.
@@ -504,6 +513,10 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		if (spinnerAdapter != null)
 			spinnerAdapter.notifyDataSetChanged();
 
+		updateTextAndUpdateButton();
+	}
+	
+	private void updateTextAndUpdateButton() {
 		try {
 			if (movies.size() == 0) {
 				overviewMessage.setVisibility(View.VISIBLE);
@@ -520,6 +533,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					overviewMessage.setText(getString(R.string.noMoviesOnWatchlist));
 					updateMovieLibrary.setVisibility(View.GONE);
 				}
+				
+				hideProgressBar();
 			} else {
 				overviewMessage.setVisibility(View.GONE);
 				updateMovieLibrary.setVisibility(View.GONE);
@@ -790,9 +805,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			break;
 		case R.id.menuSettings:
 			startActivity(new Intent(getActivity(), Preferences.class));
-			break;
-		case R.id.menuContact:
-			MizLib.contactDev(getActivity());
 			break;
 		case R.id.genres:
 			showGenres();

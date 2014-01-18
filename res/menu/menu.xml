@@ -70,10 +70,6 @@
             android:icon="@drawable/ic_action_settings"
             android:title="@string/settings_name">
         </item>
-        <item
-            android:id="@+id/menuContact"
-            android:icon="@drawable/ic_action_mail"
-            android:title="@string/menuAboutContact"/>
     </group>
 
 </menu>

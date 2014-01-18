@@ -624,9 +624,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		case R.id.menuSettings:
 			startActivity(new Intent(getActivity(), Preferences.class));
 			break;
-		case R.id.menuContact:
-			MizLib.contactDev(getActivity());
-			break;
 		}
 
 		return true;
