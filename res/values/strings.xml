@@ -415,5 +415,13 @@
     <string name="overviewGridItemSizeDescription">Change the size of movie and TV show covers in the overviews.</string>
     <string name="normal">Normal</string>
     <string name="small">Small</string>
+    <string name="watchOffline">Watch offline</string>
+    <string name="unavailable_file">The file is not available!</string>
+    <string name="not_enough_space">Not enough storage space!</string>
+    <string name="removeOfflineCopy">Remove offline copy</string>
+    <string name="starting_download">Starting download…</string>
+    <string name="downloadOfflineCopy">This will download a local copy of the video file for offline playback. Do you want to continue?</string>
+    <string name="stringDownloadCancelled">Download cancelled!</string>
+    <string name="addedToDownloadQueue">Added to download queue!</string>
 
 </resources>

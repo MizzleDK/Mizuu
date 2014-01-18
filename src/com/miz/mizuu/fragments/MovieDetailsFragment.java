@@ -296,7 +296,9 @@ public class MovieDetailsFragment extends Fragment {
 	}
 
 	private void playMovie() {
-		if (thisMovie.hasMultipleVersions() && !thisMovie.isUnidentified()) {
+		if (thisMovie.hasOfflineCopy()) {
+			playMovie(thisMovie.getOfflineCopyUri(), false);
+		} else if (thisMovie.hasMultipleVersions() && !thisMovie.isUnidentified()) {
 			final MovieVersion[] versions = thisMovie.getMultipleVersions();
 			CharSequence[] items = new CharSequence[versions.length];
 			for (int i = 0; i < versions.length; i++)
@@ -375,9 +377,7 @@ public class MovieDetailsFragment extends Fragment {
 				for (int i = 0; i < temp.size(); i++)
 					parts.add(new SplitFile(temp.get(i)));
 
-			} catch (Exception e) {
-				System.out.println(e);
-			}
+			} catch (Exception e) {}
 
 			return parts;
 		}

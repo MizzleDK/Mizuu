@@ -77,9 +77,8 @@
             android:name="com.miz.mizuu.CancelUpdateDialog"
             android:excludeFromRecents="true"
             android:exported="false"
-            android:label="@string/stringCancelUpdate"
-            android:noHistory="true"
-            android:theme="@android:style/Theme.Holo.Dialog.MinWidth" >
+            android:theme="@style/Theme.Transparent"
+            android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -411,6 +410,16 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.miz.mizuu.CancelOfflineDownload"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@style/Theme.Transparent"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- Widgets -->
         <receiver
@@ -531,7 +540,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 

@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -39,9 +38,10 @@ import android.widget.Toast;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterTvShow;
-import com.miz.functions.AsyncTask;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 @SuppressLint("NewApi")
 public abstract class MainMenuActivity extends MizActivity {
@@ -160,64 +160,39 @@ public abstract class MainMenuActivity extends MizActivity {
 		outState.putInt("selectedIndex", selectedIndex);
 	}
 
-	private AsyncTask<Void, Void, Void> asyncLoader;
-
 	private void setupUserDetails() {
+		String filepath = MizLib.getLatestBackdropPath(getApplicationContext());
 
-		if (asyncLoader != null)
-			asyncLoader.cancel(true);
-		asyncLoader = new AsyncTask<Void, Void, Void>() {
-			private Bitmap cover = null, profile = null;
-			private String full_name;
-
-			@Override
-			protected Void doInBackground(Void... params) {
-				String filepath = MizLib.getLatestBackdropPath(getApplicationContext());
-
-				int width = MizLib.convertDpToPixels(getApplicationContext(), 320),
-						height = MizLib.convertDpToPixels(getApplicationContext(), 170);
-
-				if (!isCancelled()) {
-					if (!MizLib.isEmpty(filepath)) {
-						cover = MizLib.decodeSampledBitmapFromFile(filepath, width, height);
-					} else {
-						cover = MizLib.decodeSampledBitmapFromResource(getResources(), R.drawable.cover_image, width, height);
-					}
+		if (!filepath.isEmpty())
+			Picasso.with(getApplicationContext()).load("file://" + filepath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 170)).into(((ImageView) findViewById(R.id.userCover)), new Callback() {
+				@Override
+				public void onError() {
+					((ImageView) findViewById(R.id.userCover)).setImageResource(R.drawable.gray);
 				}
 
-				full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("traktFullName", "");
+				@Override
+				public void onSuccess() {}
+			});
+		else
+			((ImageView) findViewById(R.id.userCover)).setImageResource(R.drawable.gray);
 
-				if (!isCancelled()) {
-					if (!MizLib.isEmpty(full_name)) {
-						int size = MizLib.convertDpToPixels(getApplicationContext(), 50);
-						if (new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").exists())
-							profile = MizLib.decodeSampledBitmapFromFile(new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath(), size, size);
-					} else {
-						int size = MizLib.convertDpToPixels(getApplicationContext(), 50);
-						profile = MizLib.decodeSampledBitmapFromResource(getResources(), R.drawable.unknown_user, size, size);
-					}
+		String full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("traktFullName", "");
+		if (!MizLib.isEmpty(full_name))
+			((TextView) findViewById(R.id.username)).setText(full_name);
+
+		if (!MizLib.isEmpty(full_name)) {
+			Picasso.with(getApplicationContext()).load("file://" + new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath()).resize(MizLib.convertDpToPixels(getApplicationContext(), 50), MizLib.convertDpToPixels(getApplicationContext(), 50)).into(((ImageView) findViewById(R.id.userPhoto)), new Callback() {
+				@Override
+				public void onError() {
+					((ImageView) findViewById(R.id.userPhoto)).setImageResource(R.drawable.unknown_user);
 				}
 
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				if (!isCancelled()) {
-					if (cover != null)
-						((ImageView) findViewById(R.id.userCover)).setImageBitmap(cover);
-
-					if (profile != null)
-						((ImageView) findViewById(R.id.userPhoto)).setImageBitmap(profile);
-
-					if (!MizLib.isEmpty(full_name))
-						((TextView) findViewById(R.id.username)).setText(full_name);
-				}
-
-				cover = null;
-				profile = null;
-			}
-		}.execute();
+				@Override
+				public void onSuccess() {}
+			});
+		} else {
+			((ImageView) findViewById(R.id.userPhoto)).setImageResource(R.drawable.unknown_user);
+		}
 	}
 
 	private void changeTabSelection(int index) {

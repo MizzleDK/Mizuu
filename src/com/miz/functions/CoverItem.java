@@ -15,7 +15,7 @@ public class CoverItem implements Target {
 	public TextView text, subtext;
 	public ImageView cover;
 	public RelativeLayout layout;
-	
+
 	@Override
 	public void onBitmapFailed(Drawable arg0) {
 		text.setVisibility(View.VISIBLE);
@@ -25,9 +25,11 @@ public class CoverItem implements Target {
 	}
 	@Override
 	public void onBitmapLoaded(Bitmap arg0, LoadedFrom arg1) {
-		cover.setAlpha(0f);
+		if (arg1 == LoadedFrom.DISK || arg1 == LoadedFrom.NETWORK)
+			cover.setAlpha(0f);
 		cover.setImageBitmap(arg0);
-		cover.animate().alpha(1f).setDuration(250);
+		if (arg1 == LoadedFrom.DISK || arg1 == LoadedFrom.NETWORK)
+			cover.animate().alpha(1f).setDuration(250);
 	}
 	@Override
 	public void onPrepareLoad(Drawable arg0) {}

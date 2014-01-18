@@ -95,6 +95,7 @@ import com.miz.mizuu.Support;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
+import com.miz.service.MakeAvailableOffline;
 import com.miz.service.UpdateMovieService;
 import com.miz.service.UpdateShowsService;
 import com.squareup.okhttp.OkHttpClient;
@@ -1915,6 +1916,18 @@ public class MizLib {
 		}
 		return false;
 	}
+	
+	public static boolean isLocalCopyBeingDownloaded(Context c) {
+		ActivityManager manager = (ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
+		List<RunningServiceInfo> services = manager.getRunningServices(Integer.MAX_VALUE);
+		int count = services.size();
+		for (int i = 0; i < count; i++) {
+			if (MakeAvailableOffline.class.getName().equals(services.get(i).service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public static final int HEIGHT = 100, WIDTH = 110;
 
@@ -2910,5 +2923,15 @@ public class MizLib {
 			return choice;
 		}
 		return null;
+	}
+	
+	public static String getFileExtension(String path) {
+		String extension = "";
+
+		int i = path.lastIndexOf('.');
+		if (i > 0)
+		    extension = path.substring(i+1);
+
+		return extension;
 	}
 }

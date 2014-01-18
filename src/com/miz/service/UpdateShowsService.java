@@ -76,7 +76,8 @@ public class UpdateShowsService extends Service {
 		// Set up cancel dialog intent
 		Intent notificationIntent = new Intent(this, CancelUpdateDialog.class);
 		notificationIntent.putExtra("type", CancelUpdateDialog.TVSHOWS);
-		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		notificationIntent.setAction(Intent.ACTION_MAIN);
+		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		// Setup up notification
@@ -89,7 +90,7 @@ public class UpdateShowsService extends Service {
 		builder.setOngoing(true);
 		builder.setOnlyAlertOnce(true);
 		builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.refresh));
-		builder.addAction(R.drawable.remove, getString(R.string.stringCancelUpdate), contentIntent);
+		builder.addAction(R.drawable.remove, getString(android.R.string.cancel), contentIntent);
 
 		// Build notification
 		Notification updateNotification = builder.build();

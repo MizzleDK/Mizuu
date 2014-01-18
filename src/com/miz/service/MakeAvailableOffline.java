@@ -16,13 +16,17 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.IntentFilter;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 
 import com.miz.functions.MizLib;
-import com.miz.mizuu.CancelUpdateDialog;
+import com.miz.mizuu.CancelOfflineDownload;
 import com.miz.mizuu.R;
 
 public class MakeAvailableOffline extends IntentService {
@@ -41,25 +45,60 @@ public class MakeAvailableOffline extends IntentService {
 	private NotificationManager mNotificationManager;
 	private Notification mNotification;
 	private PendingIntent contentIntent;
+	private Handler mHandler;
+	private boolean mStopDownload = false;
+	private long lastTime, currentTime, lastLength, totalLength, currentLength;
+	private DecimalFormat oneDecimal = new DecimalFormat("#.#");
 
 	public MakeAvailableOffline() {
 		super("MakeAvailableOffline");
 	}
+	
+	@Override
+	public void onCreate() {
+	    super.onCreate();
+	    
+	    mHandler = new Handler();
+	}
 
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			mStopDownload = true;
+		}
+	};
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+	}
+	
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		super.onStartCommand(intent, flags, startId);
+		
+		return START_NOT_STICKY;
+	}
+	
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		reset();
-
+		
+		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-stop-offline-download"));
+		
 		mContext = getApplicationContext();
+
 		file = intent.getExtras().getString(FILEPATH);
 		type = intent.getExtras().getInt(TYPE); // MizLib.TYPE_MOVIE
 		
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// Set up cancel dialog intent
-		Intent notificationIntent = new Intent(this, CancelUpdateDialog.class);
-		notificationIntent.putExtra("type", CancelUpdateDialog.MOVIE);
-		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		Intent notificationIntent = new Intent(this, CancelOfflineDownload.class);
+		notificationIntent.setAction(Intent.ACTION_MAIN);
+		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		builder = new NotificationCompat.Builder(mContext);
@@ -71,34 +110,57 @@ public class MakeAvailableOffline extends IntentService {
 		builder.setContentTitle("Downloading movie");
 		builder.setContentText(getContentText());
 		builder.setLargeIcon(MizLib.getNotificationImageThumbnail(mContext, intent.getExtras().getString("thumb")));
+		builder.addAction(R.drawable.remove, getString(android.R.string.cancel), contentIntent);
 
-		boolean exists = checkIfFileExists();
+		boolean exists = checkIfNetworkFileExists();
 
 		if (!exists) {
-			// TODO EXIT AND ALERT THE USER!
+			mHandler.post(new Runnable() {            
+		        @Override
+		        public void run() {
+		        	Toast.makeText(mContext, R.string.unavailable_file, Toast.LENGTH_LONG).show();              
+		        }
+		    });
 			stopSelf();
 			return;
 		}
-
+		
 		boolean sizeOK = checkFilesize();
 		
 		if (!sizeOK) {
-			// TODO EXIT AND ALERT THE USER!
+			mHandler.post(new Runnable() {            
+		        @Override
+		        public void run() {
+		        	Toast.makeText(mContext, R.string.not_enough_space, Toast.LENGTH_LONG).show();              
+		        }
+		    });
+			stopSelf();
+			return;
+		}
+		
+		exists = checkIfLocalCopyExists();
+		if (exists) { // There's already an exact local copy - don't download again
 			stopSelf();
 			return;
 		}
 
-		long time = System.currentTimeMillis();
-
+		mHandler.post(new Runnable() {            
+	        @Override
+	        public void run() {
+	        	Toast.makeText(mContext, R.string.starting_download, Toast.LENGTH_SHORT).show();              
+	        }
+	    });
+		
 		updateNotification();
 		startForeground(NOTIFICATION_ID, mNotification);
 
 		boolean success = beginTransfer();
-
-		System.out.println("SUCCESS: " + success + ". Time: " + (System.currentTimeMillis() - time));
+		
+		if (!success) // Delete the offline file if the transfer wasn't successful
+			new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(smb.getCanonicalPath()) + "." + MizLib.getFileExtension(smb.getName())).delete();
 	}
 
-	private boolean checkIfFileExists() {
+	private boolean checkIfNetworkFileExists() {
 		auth = MizLib.getAuthFromFilepath(type, file);
 		try {
 			smb = new SmbFile(
@@ -114,13 +176,16 @@ public class MakeAvailableOffline extends IntentService {
 			return false;
 		}
 	}
+	
+	private boolean checkIfLocalCopyExists() {
+		File f = new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(smb.getCanonicalPath()) + "." + MizLib.getFileExtension(smb.getName()));
+		return f.exists() && smbSize == f.length();
+	}
 
 	private boolean checkFilesize() {
 		try {
 			long freeMemory = (long) (MizLib.getFreeMemory() * 0.975);
 			smbSize = smb.length();
-			
-			System.out.println("FREE: " + freeMemory + ". SMB: " + smbSize);
 
 			return freeMemory > smbSize;
 		} catch (SmbException e) {
@@ -128,11 +193,9 @@ public class MakeAvailableOffline extends IntentService {
 		}
 	}
 
-	private long totalLength, currentLength;
-
 	private boolean beginTransfer() {
 		try {
-			File offline = new File(MizLib.getAvailableOfflineFolder(mContext), smb.getName());
+			File offline = new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(smb.getCanonicalPath()) + "." + MizLib.getFileExtension(smb.getName()));
 			offline.createNewFile();
 
 			totalLength = smb.length();
@@ -142,6 +205,11 @@ public class MakeAvailableOffline extends IntentService {
 			byte[] b = new byte[16384];
 			int n;
 			while((n = in.read(b)) != -1) {
+				if (mStopDownload) {
+					os.close();
+					in.close();
+					return false;
+				}
 				os.write(b, 0, n);
 				currentLength += n;
 				update();
@@ -154,10 +222,6 @@ public class MakeAvailableOffline extends IntentService {
 			return false;
 		}
 	}
-
-
-	private long lastTime, currentTime, lastLength;
-	private DecimalFormat oneDecimal = new DecimalFormat("#.#");
 
 	private void update() {
 		currentTime = System.currentTimeMillis();
@@ -199,5 +263,11 @@ public class MakeAvailableOffline extends IntentService {
 		mNotificationManager = null;
 		mNotification = null;
 		contentIntent = null;
+		mStopDownload = false;
+		lastTime = 0;
+		currentTime = 0;
+		lastLength = 0;
+		totalLength = 0;
+		currentLength = 0;
 	}
 }

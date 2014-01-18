@@ -17,7 +17,7 @@ public class MizActivity extends FragmentActivity implements OnSharedPreferenceC
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		mFullscreen = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false);
 
 		if (isFullscreen())
@@ -25,7 +25,7 @@ public class MizActivity extends FragmentActivity implements OnSharedPreferenceC
 
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 	}
-	
+
 	protected boolean isFullscreen() {
 		return mFullscreen;
 	}

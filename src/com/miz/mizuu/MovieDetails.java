@@ -158,13 +158,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			}
 
 			setupSpinnerItems();
-
-			/*Intent i = new Intent(this, MakeAvailableOffline.class);
-			i.putExtra(MakeAvailableOffline.FILEPATH, thisMovie.getFilepath());
-			i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_MOVIE);
-			i.putExtra("thumb", thisMovie.getThumbnail());
-			i.putExtra("backdrop", thisMovie.getBackdrop());
-			startService(i);*/
 		} else {
 			Toast.makeText(this, getString(R.string.errorSomethingWentWrong) + " (movie ID: " + movieId + ")", Toast.LENGTH_SHORT).show();
 			finish();
@@ -219,6 +212,15 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 			if (!MizLib.isImdbInstalled(this)) {
 				menu.findItem(R.id.imdb).setVisible(false);
+			}
+
+			if (thisMovie.isNetworkFile()) {
+				menu.findItem(R.id.watchOffline).setVisible(true);
+				
+				if (thisMovie.hasOfflineCopy())
+					menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
+				else
+					menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
 			}
 		} catch (Exception e) {} // This can happen if thisMovie is null for whatever reason
 
@@ -543,6 +545,56 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				Toast.makeText(this, getString(R.string.searching), Toast.LENGTH_SHORT).show();
 				new TmdbTrailerSearch().execute(thisMovie.getTmdbId());
 			}
+		}
+	}
+
+	public void watchOffline(MenuItem item) {
+		if (thisMovie.hasOfflineCopy()) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(getString(R.string.areYouSure))
+			.setTitle(getString(R.string.removeOfflineCopy))
+			.setCancelable(false)
+			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {	
+					boolean success = thisMovie.getOfflineCopyFile().delete();
+					if (!success)
+						thisMovie.getOfflineCopyFile().delete();
+					invalidateOptionsMenu();
+					return;
+				}
+			})
+			.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			})
+			.create().show();
+		} else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(getString(R.string.downloadOfflineCopy))
+			.setTitle(getString(R.string.watchOffline))
+			.setCancelable(false)
+			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					
+					if (MizLib.isLocalCopyBeingDownloaded(MovieDetails.this))
+						Toast.makeText(getApplicationContext(), R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
+					
+					Intent i = new Intent(MovieDetails.this, MakeAvailableOffline.class);
+					i.putExtra(MakeAvailableOffline.FILEPATH, thisMovie.getFilepath());
+					i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_MOVIE);
+					i.putExtra("thumb", thisMovie.getThumbnail());
+					i.putExtra("backdrop", thisMovie.getBackdrop());
+					startService(i);
+					return;
+				}
+			})
+			.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			})
+			.create().show();
 		}
 	}
 

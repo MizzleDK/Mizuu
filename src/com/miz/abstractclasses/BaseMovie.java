@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Locale;
 
 import com.miz.functions.MizLib;
+import com.miz.mizuu.MizuuApplication;
 
 import android.content.Context;
 
@@ -84,7 +85,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		}
 
 		// New naming style
-		return new File(MizLib.getMovieThumbFolder(CONTEXT), TMDB_ID + ".jpg").getAbsolutePath();
+		return new File(MizuuApplication.getMovieThumbFolder(CONTEXT), TMDB_ID + ".jpg").getAbsolutePath();
 	}
 
 	public String getBackdrop() {

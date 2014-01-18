@@ -107,7 +107,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {		
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		type = getArguments().getInt("type");
@@ -360,7 +360,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			gray = context.getResources().getDrawable(R.drawable.gray);
+			gray = getResources().getDrawable(R.drawable.gray);
 		}
 
 		@Override
@@ -370,7 +370,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		public Object getItem(int position) {
-			return shownMovies.get(position).getThumbnail();
+			return position;
 		}
 
 		@Override
@@ -456,8 +456,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		}
 
 		@Override
-		public void notifyDataSetChanged() {
-			
+		public void notifyDataSetChanged() {			
 			isCollections = (actionBar.getSelectedNavigationIndex() == 3);
 
 			ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>(shownMovies);

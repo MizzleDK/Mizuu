@@ -207,9 +207,7 @@ public class TMDb {
 							}
 						} catch (Exception e) {}
 				}
-			} catch (Exception e) {
-				System.out.println(e);
-			}
+			} catch (Exception e) {}
 
 			// Trakt.tv
 			if (ratingsProvider.equals(c.getString(R.string.ratings_option_2)) && json == null) {

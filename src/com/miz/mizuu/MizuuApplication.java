@@ -1,5 +1,6 @@
 package com.miz.mizuu;
 
+import java.io.File;
 import java.util.HashMap;
 
 import android.app.Application;
@@ -16,6 +17,7 @@ import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.CifsImageDownloader;
+import com.miz.functions.MizLib;
 import com.miz.functions.PicassoDownloader;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -38,7 +40,8 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 	private static HashMap<String, String[]> map = new HashMap<String, String[]>();
 	private static Picasso mPicasso;
 	private static LruCache mLruCache;
-
+	private static File mMovieThumbFolder;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -191,5 +194,11 @@ public class MizuuApplication extends Application implements OnSharedPreferenceC
 	
 	public static LruCache getLruCache() {
 		return mLruCache;
+	}
+	
+	public static File getMovieThumbFolder(Context context) {
+		if (mMovieThumbFolder == null)
+			mMovieThumbFolder = MizLib.getMovieThumbFolder(context);
+		return mMovieThumbFolder;
 	}
 }
