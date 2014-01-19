@@ -14,6 +14,7 @@
         android:horizontalSpacing="@dimen/image_thumbnail_spacing"
         android:numColumns="auto_fit"
         android:scrollingCache="false"
+        android:cacheColorHint="#00000000"
         android:smoothScrollbar="true"
         android:stretchMode="columnWidth"
         android:verticalSpacing="@dimen/image_thumbnail_spacing" >
