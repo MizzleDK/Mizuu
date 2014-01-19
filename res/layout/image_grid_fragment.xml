@@ -9,9 +9,12 @@
         style="@style/PhotoGridLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:animationCache="false"
         android:columnWidth="@dimen/image_thumbnail_size"
         android:horizontalSpacing="@dimen/image_thumbnail_spacing"
         android:numColumns="auto_fit"
+        android:scrollingCache="false"
+        android:smoothScrollbar="true"
         android:stretchMode="columnWidth"
         android:verticalSpacing="@dimen/image_thumbnail_spacing" >
     </GridView>

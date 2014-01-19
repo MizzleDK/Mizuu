@@ -2292,7 +2292,7 @@ public class MizLib {
 	}
 
 	private final static String YEAR_PATTERN = "(19|20)[0-9][0-9]";
-	private final static String WAREZ_PATTERN = "(?i)(dvdscreener|dvdscreen|dvdscr|dvdrip|dvd5|dvd|xvid|divx|m\\-480p|m\\-576p|m\\-720p|m\\-864p|m\\-900p|m\\-1080p|m480p|m576p|m720p|m864p|m900p|m1080p|480p|576p|720p|864p|900p|1080p|1080i|720i|mhd|brrip|bdrip|brscreener|brscreen|brscr|aac|x264|bluray|dts|screener|hdtv|ac3|repack|2\\.1|5\\.1|ac3_6|7\\.1|h264|hdrip|ntsc|proper|readnfo|rerip|vcd|scvd|pdtv|sdtv|sample|tvrip|tvr|extended.editions?|directors cut|tfe|unrated|\\(.*?torrent.*?\\)|\\[.*?\\]|\\(.*?\\)|\\{.*?\\}|part[0-9]|cd[0-9])";
+	private final static String WAREZ_PATTERN = "(?i)(dvdscreener|dvdscreen|dvdscr|dvdrip|dvd5|dvd|xvid|divx|m\\-480p|m\\-576p|m\\-720p|m\\-864p|m\\-900p|m\\-1080p|m480p|m576p|m720p|m864p|m900p|m1080p|480p|576p|720p|864p|900p|1080p|1080i|720i|mhd|brrip|bdrip|brscreener|brscreen|brscr|aac|x264|bluray|dts|screener|hdtv|ac3|repack|2\\.1|5\\.1|ac3_6|7\\.1|h264|hdrip|ntsc|proper|readnfo|rerip|vcd|scvd|pdtv|sdtv|hqts|hdcam|multisubs|650mb|700mb|750mb|webdl|web-dl|bts|korrip|webrip|korsub|1link|sample|tvrip|tvr|extended.editions?|directors cut|tfe|unrated|\\(.*?torrent.*?\\)|\\[.*?\\]|\\(.*?\\)|\\{.*?\\}|part[0-9]|cd[0-9])";
 	private final static String ABBREVIATION_PATTERN = "(?<=(^|[.])[\\S&&\\D])[.](?=[\\S&&\\D]([.]|$))";
 
 	public static String getNameFromFilename(String input) {

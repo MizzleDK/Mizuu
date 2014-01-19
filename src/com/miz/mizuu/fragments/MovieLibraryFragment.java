@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import jcifs.smb.SmbFile;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
@@ -73,6 +74,7 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.Update;
 import com.squareup.picasso.Picasso;
 
+@SuppressLint("NewApi")
 public class MovieLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
 	public static final int MAIN = 0, OTHER = 1;
@@ -296,6 +298,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
 				new ViewTreeObserver.OnGlobalLayoutListener() {
+					@SuppressWarnings("deprecation")
 					@Override
 					public void onGlobalLayout() {
 						if (mAdapter.getNumColumns() == 0) {
@@ -386,6 +389,16 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		public long getItemId(int position) {
 			return position;
 		}
+		
+		@Override
+		public int getItemViewType(int position) {
+		    return 0;
+		}
+
+		@Override
+		public int getViewTypeCount() {
+		    return 1;
+		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
@@ -397,6 +410,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
@@ -408,11 +427,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder.text.setVisibility(TextView.VISIBLE);
 			else
 				holder.text.setVisibility(TextView.GONE);
-
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
-			}
 
 			holder.cover.setImageDrawable(gray);
 
