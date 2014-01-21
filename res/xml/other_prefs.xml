@@ -127,6 +127,14 @@
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
+            android:title="Picasso by Square, Inc." >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://square.github.io/picasso/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
             android:summary="@string/unknownLicense"
             android:title="Stack Blur Algorithm by Mario Klingemann" >
             <intent
@@ -140,14 +148,6 @@
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/TonicArtos/StickyGridHeaders/" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_action_puzzle"
-            android:summary="Apache License, Version 2.0"
-            android:title="Universal Image Loader by Sergey Tarasevich" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/nostra13/Android-Universal-Image-Loader" />
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"
