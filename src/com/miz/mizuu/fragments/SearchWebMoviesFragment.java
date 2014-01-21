@@ -3,18 +3,6 @@ package com.miz.mizuu.fragments;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.miz.db.DbAdapter;
-import com.miz.functions.AsyncTask;
-import com.miz.functions.MizLib;
-import com.miz.functions.TMDb;
-import com.miz.functions.TMDbMovie;
-import com.miz.mizuu.MizuuApplication;
-import com.miz.mizuu.MovieDetails;
-import com.miz.mizuu.R;
-import com.miz.mizuu.TMDbMovieDetails;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -37,9 +26,19 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
+
+import com.miz.db.DbAdapter;
+import com.miz.functions.AsyncTask;
+import com.miz.functions.MizLib;
+import com.miz.functions.TMDb;
+import com.miz.functions.TMDbMovie;
+import com.miz.mizuu.MizuuApplication;
+import com.miz.mizuu.MovieDetails;
+import com.miz.mizuu.R;
+import com.miz.mizuu.TMDbMovieDetails;
+import com.squareup.picasso.Picasso;
 
 public class SearchWebMoviesFragment extends Fragment {
 
@@ -54,8 +53,7 @@ public class SearchWebMoviesFragment extends Fragment {
 	private SharedPreferences settings;
 	private CheckBox useSystemLanguage;
 	private Locale locale;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -77,8 +75,7 @@ public class SearchWebMoviesFragment extends Fragment {
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 
 		mAdapter = new ListAdapter(getActivity());
 
@@ -111,7 +108,6 @@ public class SearchWebMoviesFragment extends Fragment {
 				showMovie(arg2);
 			}
 		});
-		lv.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		searchText = (EditText) v.findViewById(R.id.search);
 		searchText.setSelection(searchText.length());
@@ -141,13 +137,6 @@ public class SearchWebMoviesFragment extends Fragment {
 			i.putExtra("title", results.get(arg2).getName());
 			startActivity(i);
 		}
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
 	}
 
 	public void searchForMovies(View v) {
@@ -266,7 +255,7 @@ public class SearchWebMoviesFragment extends Fragment {
 			holder.orig_title.setText(results.get(position).getOriginalTitle());
 			holder.release.setText(results.get(position).getRelease());
 
-			imageLoader.displayImage(results.get(position).getPic(), holder.cover, options);
+			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(holder.cover);
 
 			return convertView;
 		}

@@ -35,8 +35,7 @@ import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class WebVideoFragment extends Fragment implements OnSharedPreferenceChangeListener {
 
@@ -47,8 +46,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 	private ProgressBar pbar;
 	private SharedPreferences settings;
 	private String type;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -76,8 +74,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 		mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 1.4);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 		
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultBackdropLoadingOptions();
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 		
 		type = getArguments().getString("type");
 		if (type.equals(getString(R.string.choiceYouTube))) {
@@ -134,7 +131,6 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 				}
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 	}
 
 	@Override
@@ -148,13 +144,6 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 	public void onDestroy() {
 		super.onDestroy();
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
 	}
 	
 	@Override
@@ -222,7 +211,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 
 			holder.text.setText(videos.get(position).getTitle());
 			
-			imageLoader.displayImage(videos.get(position).getUrl(), holder.cover, options);
+			mPicasso.load(videos.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(holder.cover);
 			
 			return convertView;
 		}

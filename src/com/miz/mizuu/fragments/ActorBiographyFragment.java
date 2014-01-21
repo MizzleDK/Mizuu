@@ -21,9 +21,8 @@ import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 public class ActorBiographyFragment extends Fragment {
 
@@ -32,6 +31,7 @@ public class ActorBiographyFragment extends Fragment {
 	private ImageView mActorImage, mActorImageBackground;
 	private Typeface tf;
 	private String json, baseUrl;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -57,6 +57,8 @@ public class ActorBiographyFragment extends Fragment {
 
 		json = getArguments().getString("json");
 		baseUrl = getArguments().getString("baseUrl");
+		
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 	}
 
 	@Override
@@ -147,24 +149,17 @@ public class ActorBiographyFragment extends Fragment {
 			else
 				mActorBirthday.setVisibility(View.GONE);
 
-			ImageLoader.getInstance().displayImage(mImage, mActorImage, MizuuApplication.getDefaultActorLoadingOptions(), new ImageLoadingListener() {
-
+			mPicasso.load(mImage).placeholder(R.drawable.gray).error(R.drawable.noactor).into(mActorImage, new Callback() {
 				@Override
-				public void onLoadingStarted(String imageUri, View view) {}
-
-				@Override
-				public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+				public void onError() {
 					mActorImage.setVisibility(View.VISIBLE);
 				}
 
 				@Override
-				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+				public void onSuccess() {
 					mActorImage.setVisibility(View.VISIBLE);
 					new BlurImage().execute();
 				}
-
-				@Override
-				public void onLoadingCancelled(String imageUri, View view) {}
 			});
 		} catch (Exception ignored) {}
 	}

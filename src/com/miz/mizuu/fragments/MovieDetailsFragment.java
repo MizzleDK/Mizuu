@@ -44,9 +44,8 @@ import com.miz.functions.Movie;
 import com.miz.functions.MovieVersion;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 import com.test.smbstreamer.variant1.Streamer;
 
 public class MovieDetailsFragment extends Fragment {
@@ -60,6 +59,7 @@ public class MovieDetailsFragment extends Fragment {
 	private ImageView background, playbutton;
 	private Typeface tf;
 	private long videoPlaybackStarted, videoPlaybackEnded;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -132,6 +132,8 @@ public class MovieDetailsFragment extends Fragment {
 		if (db.hasMultipleVersions(thisMovie.getTmdbId()) && !thisMovie.isUnidentified()) {
 			thisMovie.setMultipleVersions(db.getRowIdsForMovie(thisMovie.getTmdbId()));
 		}
+		
+		mPicasso = MizuuApplication.getPicassoForCovers(getActivity());
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-backdrop-change"));
@@ -595,26 +597,32 @@ public class MovieDetailsFragment extends Fragment {
 	private void loadImages() {
 		if (!MizLib.runsInPortraitMode(getActivity())) {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
-				ImageLoader.getInstance().displayImage(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail(), cover, MizuuApplication.getDefaultCoverLoadingOptions());
-				ImageLoader.getInstance().displayImage(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop(), background, MizuuApplication.getBackdropLoadingOptions());
+				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(cover);
+				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 			} else {
-				ImageLoader.getInstance().displayImage("file://" + thisMovie.getThumbnail(), cover, MizuuApplication.getDefaultCoverLoadingOptions());
-				ImageLoader.getInstance().displayImage("file://" + thisMovie.getBackdrop(), background, MizuuApplication.getBackdropLoadingOptions());
+				mPicasso.load(thisMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);
+				mPicasso.load(thisMovie.getBackdrop()).error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
 			}
 		} else {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
-				ImageLoader.getInstance().displayImage(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop(), background, MizuuApplication.getBackdropLoadingOptions(), new SimpleImageLoadingListener() {
+				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
-					public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-						ImageLoader.getInstance().displayImage(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail(), background, MizuuApplication.getDefaultCoverLoadingOptions());
+					public void onError() {
+						mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 					}
+
+					@Override
+					public void onSuccess() {}					
 				});
 			} else {
-				ImageLoader.getInstance().displayImage("file://" + thisMovie.getBackdrop(), background, MizuuApplication.getBackdropLoadingOptions(), new SimpleImageLoadingListener() {
+				mPicasso.load(thisMovie.getBackdrop()).placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
-					public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-						ImageLoader.getInstance().displayImage(thisMovie.getThumbnail(), background, MizuuApplication.getDefaultCoverLoadingOptions());
+					public void onError() {
+						mPicasso.load(thisMovie.getThumbnail()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 					}
+
+					@Override
+					public void onSuccess() {}					
 				});
 			}
 		}

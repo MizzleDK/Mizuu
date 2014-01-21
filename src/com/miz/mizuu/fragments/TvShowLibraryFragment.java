@@ -9,9 +9,9 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import android.app.ActionBar;
-import android.app.SearchManager;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -54,7 +54,6 @@ import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.db.DbHelperTvShow;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
-import com.miz.functions.ImageLoadingErrorListener;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
@@ -66,8 +65,7 @@ import com.miz.mizuu.ShowDetails;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.UnidentifiedFiles;
 import com.miz.mizuu.Update;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class TvShowLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
@@ -81,8 +79,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	private Button updateMovieLibrary;
 	private boolean showGridTitles, ignorePrefixes;
 	private ActionBar actionBar;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
+	private Picasso mPicasso;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private SearchTask mSearch;
@@ -121,9 +118,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
-
+		mPicasso = MizuuApplication.getPicassoForCovers(getActivity());
+		
 		mAdapter = new LoaderAdapter(getActivity());
 	}
 
@@ -217,10 +213,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	};
 
 	private void clearCaches() {
-		try {
-			imageLoader.clearMemoryCache();
-			imageLoader.clearDiscCache();
-		} catch (Exception e) {}
+		MizuuApplication.getLruCache().clear();
 	}
 
 	@Override
@@ -271,7 +264,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				startActivityForResult(intent, 0);
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		return v;
 	}
@@ -285,12 +277,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		imageLoader.stop();
 	}
 
 	@Override
@@ -353,18 +339,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
 
+			holder.text.setText(shownShows.get(position).getTitle());
+			
 			if (showGridTitles) {
 				holder.text.setVisibility(TextView.VISIBLE);
-				holder.text.setText(shownShows.get(position).getTitle());
 			} else {
-				holder.text.setVisibility(TextView.INVISIBLE);
+				holder.text.setVisibility(TextView.GONE);
 			}
 
-			if (showGridTitles)
-				imageLoader.displayImage("file://" + shownShows.get(position).getThumbnail(), holder.cover, options);
-			else
-				imageLoader.displayImage("file://" + shownShows.get(position).getThumbnail(), holder.cover, options,
-						new ImageLoadingErrorListener(shownShows.get(position).getTitle(), null, null));
+			mPicasso.load(shownShows.get(position).getThumbnail()).into(holder);
 
 			return convertView;
 		}

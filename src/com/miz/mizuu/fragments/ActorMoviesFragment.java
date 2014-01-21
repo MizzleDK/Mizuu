@@ -37,8 +37,7 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class ActorMoviesFragment extends Fragment {
 
@@ -50,7 +49,7 @@ public class ActorMoviesFragment extends Fragment {
 	private boolean showGridTitles, setBackground;
 	private SharedPreferences settings;
 	private DbAdapter db;
-	private DisplayImageOptions options;
+	private Picasso mPicasso;
 	private String json, baseUrl;
 
 	/**
@@ -76,7 +75,7 @@ public class ActorMoviesFragment extends Fragment {
 
 		db = MizuuApplication.getMovieAdapter();
 		setBackground = getArguments().getBoolean("setBackground");
-		
+
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -85,8 +84,8 @@ public class ActorMoviesFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
-		
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+
 		json = getArguments().getString("json");
 		baseUrl = getArguments().getString("baseUrl");
 	}
@@ -101,7 +100,7 @@ public class ActorMoviesFragment extends Fragment {
 
 		if (setBackground && !MizLib.runsInPortraitMode(getActivity()))
 			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
-		
+
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
 		v.findViewById(R.id.progress).setVisibility(View.GONE);
@@ -146,7 +145,7 @@ public class ActorMoviesFragment extends Fragment {
 				}
 			}
 		});
-		
+
 		loadData();
 	}
 
@@ -222,7 +221,10 @@ public class ActorMoviesFragment extends Fragment {
 				holder.subtext.setText(getString(R.string.inLibrary).toUpperCase(Locale.getDefault()));
 			}
 
-			ImageLoader.getInstance().displayImage(pics_sources.get(position).getUrl().contains("null") ? "" : pics_sources.get(position).getUrl(), holder.cover, options);
+			if (!pics_sources.get(position).getUrl().contains("null"))
+				mPicasso.load(pics_sources.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(holder.cover);
+			else
+				holder.cover.setImageResource(R.drawable.loading_image);
 
 			return convertView;
 		}
@@ -250,22 +252,22 @@ public class ActorMoviesFragment extends Fragment {
 
 	private void loadData() {
 		try {
-		JSONObject jObject = new JSONObject(json);
+			JSONObject jObject = new JSONObject(json);
 
-		JSONArray jArray = jObject.getJSONObject("credits").getJSONArray("cast");
+			JSONArray jArray = jObject.getJSONObject("credits").getJSONArray("cast");
 
-		for (int i = 0; i < jArray.length(); i++) {
-			if (!isInArray(jArray.getJSONObject(i).getString("id")))
-				pics_sources.add(new WebMovie(
-						jArray.getJSONObject(i).getString("original_title"),
-						jArray.getJSONObject(i).getString("id"),
-						baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
-						jArray.getJSONObject(i).getString("release_date")));
-		}
+			for (int i = 0; i < jArray.length(); i++) {
+				if (!isInArray(jArray.getJSONObject(i).getString("id")))
+					pics_sources.add(new WebMovie(
+							jArray.getJSONObject(i).getString("original_title"),
+							jArray.getJSONObject(i).getString("id"),
+							baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
+							jArray.getJSONObject(i).getString("release_date")));
+			}
 
-		Collections.sort(pics_sources, getMovieComparator());
-		
-		new MoviesInLibraryCheck(pics_sources).execute();
+			Collections.sort(pics_sources, getMovieComparator());
+
+			new MoviesInLibraryCheck(pics_sources).execute();
 		} catch (Exception ignored) {}
 	}
 

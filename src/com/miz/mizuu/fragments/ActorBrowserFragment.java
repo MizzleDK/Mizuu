@@ -1,5 +1,15 @@
 package com.miz.mizuu.fragments;
 
+import java.util.ArrayList;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,24 +20,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 import com.miz.functions.Actor;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import com.squareup.picasso.Picasso;
 
 public class ActorBrowserFragment extends Fragment {
 
@@ -37,8 +43,8 @@ public class ActorBrowserFragment extends Fragment {
 	private GridView mGridView = null;
 	private ProgressBar pbar;
 	private boolean setBackground;
-	private DisplayImageOptions options;
 	private String json;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -76,8 +82,8 @@ public class ActorBrowserFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);	
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		options = MizuuApplication.getDefaultActorLoadingOptions();
-		
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+
 		if (!getArguments().containsKey("json")) {		
 			if (getArguments().getString("movieId") == null) {
 				new GetActorDetails().execute(getActivity().getIntent().getExtras().getString("movieId"));
@@ -142,7 +148,7 @@ public class ActorBrowserFragment extends Fragment {
 				startActivity(intent);
 			}
 		});
-		
+
 		if (getArguments().containsKey("json")) {
 			json = getArguments().getString("json");
 			loadJson(getArguments().getString("baseUrl"));
@@ -220,7 +226,10 @@ public class ActorBrowserFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			ImageLoader.getInstance().displayImage(actors.get(position).getUrl().contains("null") ? "" : actors.get(position).getUrl(), holder.cover, options);
+			if (!actors.get(position).getUrl().contains("null"))
+				mPicasso.load(actors.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.noactor).into(holder.cover);
+			else
+				holder.cover.setImageResource(R.drawable.noactor);
 
 			return convertView;
 		}
@@ -299,7 +308,7 @@ public class ActorBrowserFragment extends Fragment {
 			JSONArray jArray = jObject.getJSONObject("casts").getJSONArray("cast");
 
 			actors.clear();
-			
+
 			for (int i = 0; i < jArray.length(); i++) {
 				actors.add(new Actor(
 						jArray.getJSONObject(i).getString("name"),
@@ -307,9 +316,9 @@ public class ActorBrowserFragment extends Fragment {
 						jArray.getJSONObject(i).getString("id"),
 						baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
 			}
-			
+
 		} catch (Exception e) {}
-		
+
 		if (isAdded()) {
 			pbar.setVisibility(View.GONE);
 			mAdapter.notifyDataSetChanged();

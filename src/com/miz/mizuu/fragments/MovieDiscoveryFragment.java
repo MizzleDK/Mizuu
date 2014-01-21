@@ -38,8 +38,7 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferenceChangeListener {
 
@@ -52,8 +51,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	private boolean showGridTitles;
 	private SharedPreferences settings;
 	private DbAdapter db;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
+	private Picasso mPicasso;
 	private String json, baseUrl;
 
 	/**
@@ -87,8 +85,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 	}
 
 	@Override
@@ -143,8 +140,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				}
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
-		
+
 		if (getArguments().containsKey("json")) {
 			json = getArguments().getString("json");
 			baseUrl = getArguments().getString("baseUrl");
@@ -157,13 +153,6 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		super.onResume();
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
 	}
 
 	@Override
@@ -245,7 +234,10 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				holder.subtext.setText(getString(R.string.inLibrary).toUpperCase(Locale.getDefault()));
 			}
 
-			imageLoader.displayImage(pics_sources.get(position).getUrl().contains("null") ? "" : pics_sources.get(position).getUrl(), holder.cover, options);
+			if (!pics_sources.get(position).getUrl().contains("null"))
+				mPicasso.load(pics_sources.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(holder.cover);
+			else
+				holder.cover.setImageResource(R.drawable.loading_image);
 
 			return convertView;
 		}
@@ -284,7 +276,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 						jArray.getJSONObject(i).getString("id"),
 						baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path")));
 			}
-			
+
 			if (isAdded()) {
 				new MoviesInLibraryCheck(pics_sources).execute();
 			}			

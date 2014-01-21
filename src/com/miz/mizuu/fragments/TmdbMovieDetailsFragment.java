@@ -22,9 +22,8 @@ import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 public class TmdbMovieDetailsFragment extends Fragment {
 
@@ -38,6 +37,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private View movieDetailsLayout, progressBar;
 	private FrameLayout container;
 	private boolean isRetained = false;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -73,6 +73,8 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		movieId = getArguments().getString("movieId");
 
 		tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Thin.ttf");
+		
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 	}
 
 	@Override
@@ -202,12 +204,15 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 			setLoading(false);
 			
-			ImageLoader.getInstance().displayImage(thisMovie.getCover(), cover, MizuuApplication.getDefaultCoverLoadingOptions());
-			ImageLoader.getInstance().displayImage(thisMovie.getBackdrop(), background, MizuuApplication.getBackdropLoadingOptions(), new SimpleImageLoadingListener() {
+			mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(cover);
+			mPicasso.load(thisMovie.getBackdrop()).placeholder(R.drawable.gray).error(R.drawable.bg).into(background, new Callback() {
 				@Override
-				public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-					ImageLoader.getInstance().displayImage(thisMovie.getCover(), background, MizuuApplication.getDefaultCoverLoadingOptions());
+				public void onError() {
+					mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 				}
+
+				@Override
+				public void onSuccess() {}
 			});
 		}
 	}

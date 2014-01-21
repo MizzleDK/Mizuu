@@ -11,18 +11,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.miz.db.DbAdapter;
-import com.miz.functions.AsyncTask;
-import com.miz.functions.CoverItem;
-import com.miz.functions.MizLib;
-import com.miz.functions.WebMovie;
-import com.miz.mizuu.MizuuApplication;
-import com.miz.mizuu.MovieDetails;
-import com.miz.mizuu.TMDbMovieDetails;
-import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,16 +21,27 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.miz.db.DbAdapter;
+import com.miz.functions.AsyncTask;
+import com.miz.functions.CoverItem;
+import com.miz.functions.MizLib;
+import com.miz.functions.WebMovie;
+import com.miz.mizuu.MizuuApplication;
+import com.miz.mizuu.MovieDetails;
+import com.miz.mizuu.R;
+import com.miz.mizuu.TMDbMovieDetails;
+import com.squareup.picasso.Picasso;
 
 public class RelatedMoviesFragment extends Fragment {
 
@@ -54,8 +53,7 @@ public class RelatedMoviesFragment extends Fragment {
 	private ProgressBar pbar;
 	private boolean showGridTitles, setBackground;
 	private SharedPreferences settings;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
+	private Picasso mPicasso;
 	private DbAdapter db;
 	private String json;
 
@@ -101,8 +99,7 @@ public class RelatedMoviesFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 	}
 
 	@Override
@@ -161,8 +158,7 @@ public class RelatedMoviesFragment extends Fragment {
 				}
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
-		
+
 		if (getArguments().containsKey("json")) {
 			json = getArguments().getString("json");
 			loadJson(getArguments().getString("baseUrl"));
@@ -175,13 +171,6 @@ public class RelatedMoviesFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		if (mAdapter != null) mAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
 	}
 
 	@Override
@@ -257,7 +246,10 @@ public class RelatedMoviesFragment extends Fragment {
 				holder.subtext.setText(getString(R.string.inLibrary).toUpperCase(Locale.getDefault()));
 			}
 
-			imageLoader.displayImage(pics_sources.get(position).getUrl().contains("null") ? "" : pics_sources.get(position).getUrl(), holder.cover, options);
+			if (!pics_sources.get(position).getUrl().contains("null"))
+				mPicasso.load(pics_sources.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(holder.cover);
+			else
+				holder.cover.setImageResource(R.drawable.loading_image);
 
 			return convertView;
 		}
@@ -334,7 +326,7 @@ public class RelatedMoviesFragment extends Fragment {
 			JSONArray jArray = jObject.getJSONObject("similar_movies").getJSONArray("results");
 
 			pics_sources.clear();
-			
+
 			for (int i = 0; i < jArray.length(); i++) {
 				pics_sources.add(new WebMovie(
 						jArray.getJSONObject(i).getString("original_title"),

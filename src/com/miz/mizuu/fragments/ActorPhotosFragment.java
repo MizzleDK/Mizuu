@@ -27,8 +27,7 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.ImageViewer;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class ActorPhotosFragment extends Fragment {
 
@@ -36,10 +35,9 @@ public class ActorPhotosFragment extends Fragment {
 	private ImageAdapter mAdapter;
 	private ArrayList<String> pics_sources = new ArrayList<String>();
 	private GridView mGridView = null;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
 	private boolean setBackground;
 	private String json, baseUrl;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -68,11 +66,10 @@ public class ActorPhotosFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultActorLoadingOptions();
-
 		json = getArguments().getString("json");
 		baseUrl = getArguments().getString("baseUrl");
+		
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 	}
 
 	@Override
@@ -137,13 +134,6 @@ public class ActorPhotosFragment extends Fragment {
 			mAdapter.notifyDataSetChanged();
 	}
 
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
-	}
-
 	private class ImageAdapter extends BaseAdapter {
 
 		private LayoutInflater inflater;
@@ -197,7 +187,7 @@ public class ActorPhotosFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			imageLoader.displayImage(pics_sources.get(position), holder.cover, options);
+			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.noactor).into(holder.cover);
 
 			return convertView;
 		}

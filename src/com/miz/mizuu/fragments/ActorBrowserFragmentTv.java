@@ -34,8 +34,7 @@ import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class ActorBrowserFragmentTv extends Fragment {
 
@@ -46,7 +45,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 	private String TVDB_ID;
 	private ProgressBar pbar;
 	private boolean setBackground;
-	private DisplayImageOptions options;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -72,10 +71,10 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-
-		options = MizuuApplication.getDefaultActorLoadingOptions();
 		
 		TVDB_ID = getArguments().getString("tvdbId");
+		
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 
 		new GetCoverImages().execute(TVDB_ID);
 	}
@@ -189,7 +188,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			ImageLoader.getInstance().displayImage(actors.get(position).getUrl(), holder.cover, options);
+			mPicasso.load(actors.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.noactor).into(holder.cover);
 
 			return convertView;
 		}

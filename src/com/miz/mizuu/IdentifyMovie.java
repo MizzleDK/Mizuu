@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import com.miz.base.MizActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -34,14 +33,14 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import com.miz.base.MizActivity;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.DecryptedMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
 import com.miz.service.TheMovieDB;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class IdentifyMovie extends MizActivity {
 
@@ -57,9 +56,8 @@ public class IdentifyMovie extends MizActivity {
 	private SharedPreferences settings;
 	private CheckBox useSystemLanguage;
 	private Locale locale;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
 	private DecryptedMovie mMovie;
+	private Picasso mPicasso;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,8 +71,7 @@ public class IdentifyMovie extends MizActivity {
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
+		mPicasso = MizuuApplication.getPicassoForWeb(this);
 
 		rowId = Long.valueOf(getIntent().getExtras().getString("rowId"));
 		filename = getIntent().getExtras().getString("fileName");
@@ -99,7 +96,6 @@ public class IdentifyMovie extends MizActivity {
 				updateMovie(arg2);
 			}
 		});
-		lv.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		searchText = (EditText) findViewById(R.id.search);
 		searchText.setText(mMovie.getDecryptedFileName());
@@ -122,13 +118,6 @@ public class IdentifyMovie extends MizActivity {
 		} else {
 			Toast.makeText(getApplicationContext(), getString(R.string.noInternet), Toast.LENGTH_SHORT).show();
 		}
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -274,8 +263,8 @@ public class IdentifyMovie extends MizActivity {
 			holder.title.setText(results.get(position).getName());
 			holder.orig_title.setText(results.get(position).getOriginalTitle());
 			holder.release.setText(results.get(position).getRelease());
-
-			imageLoader.displayImage(results.get(position).getPic(), holder.cover, options);
+			
+			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(holder.cover);
 
 			return convertView;
 		}

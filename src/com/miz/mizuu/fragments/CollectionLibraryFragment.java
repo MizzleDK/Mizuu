@@ -54,7 +54,6 @@ import com.miz.db.DbHelper;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.FileSource;
-import com.miz.functions.ImageLoadingErrorListener;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
@@ -63,8 +62,7 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class CollectionLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
@@ -73,8 +71,6 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	private SharedPreferences settings;
 	private int mImageThumbSize, mImageThumbSpacing;
 	private LoaderAdapter mAdapter;
-	private ImageLoader imageLoader;
-	private DisplayImageOptions options;
 	private ArrayList<MediumMovie> movies = new ArrayList<MediumMovie>(), shownMovies = new ArrayList<MediumMovie>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
@@ -84,6 +80,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private SearchTask mSearch;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -132,8 +129,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
+		mPicasso = MizuuApplication.getPicassoForCovers(getActivity());
 
 		mAdapter = new LoaderAdapter(getActivity());
 	}
@@ -226,10 +222,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	};
 
 	private void clearCaches() {
-		try {
-			imageLoader.clearMemoryCache();
-			imageLoader.clearDiscCache();
-		} catch (Exception e) {}
+		MizuuApplication.getLruCache().clear();
 	}
 
 	@Override
@@ -269,7 +262,6 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 				startActivityForResult(intent, 0);
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		return v;
 	}
@@ -342,21 +334,18 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			if (holder.layout.getLayoutParams().height != mItemHeight) {
 				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
+			
+			holder.text.setText(shownMovies.get(position).getTitle());
 
 			if (showGridTitles) {
 				holder.text.setVisibility(TextView.VISIBLE);
-				holder.text.setText(shownMovies.get(position).getTitle());
 			} else {
-				holder.text.setVisibility(TextView.INVISIBLE);
+				holder.text.setVisibility(TextView.GONE);
 			}
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			if (showGridTitles)
-				imageLoader.displayImage(shownMovies.get(position).getThumbnail(), holder.cover, options);
-			else
-				imageLoader.displayImage(shownMovies.get(position).getThumbnail(), holder.cover, options,
-						new ImageLoadingErrorListener(shownMovies.get(position).getTitle(), null, null));
+			mPicasso.load(shownMovies.get(position).getThumbnail()).into(holder);
 
 			return convertView;
 		}

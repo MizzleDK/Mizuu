@@ -38,8 +38,7 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.widgets.MovieBackdropWidgetProvider;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class FanartSearchFragmentTv extends Fragment {
 
@@ -49,9 +48,7 @@ public class FanartSearchFragmentTv extends Fragment {
 	private GridView mGridView = null;
 	private ProgressBar pbar;
 	private String TVDB_ID;
-	private final String TVDBAPI = "1CB9725D261FAF38";
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -76,10 +73,9 @@ public class FanartSearchFragmentTv extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultBackdropLoadingOptions();
-
 		TVDB_ID = getArguments().getString("tvdbId");
+		
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 
 		new GetCoverImages().execute(TVDB_ID);
 	}
@@ -119,20 +115,12 @@ public class FanartSearchFragmentTv extends Fragment {
 				new DownloadThread(pics_sources.get(arg2).replace("/_cache/", "/")).start();
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		if (mAdapter != null) mAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
 	}
 
 	@Override
@@ -187,7 +175,7 @@ public class FanartSearchFragmentTv extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			imageLoader.displayImage(pics_sources.get(position), imageView, options);
+			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(imageView);
 
 			return imageView;
 		}
@@ -214,7 +202,7 @@ public class FanartSearchFragmentTv extends Fragment {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				Document doc = db.parse("http://thetvdb.com/api/" + TVDBAPI + "/series/" + params[0] + "/banners.xml");
+				Document doc = db.parse("http://thetvdb.com/api/" + MizLib.TVDBAPI + "/series/" + params[0] + "/banners.xml");
 				doc.getDocumentElement().normalize();
 				NodeList nodeList = doc.getElementsByTagName("Banners");
 				if (nodeList.getLength() > 0) {

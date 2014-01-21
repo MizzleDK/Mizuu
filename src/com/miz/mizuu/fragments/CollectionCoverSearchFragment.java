@@ -33,8 +33,7 @@ import com.miz.functions.Cover;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 public class CollectionCoverSearchFragment extends Fragment {
 
@@ -46,14 +45,13 @@ public class CollectionCoverSearchFragment extends Fragment {
 	private String COLLECTION_ID, json;
 	private String[] items = new String[]{};
 	private ProgressBar pbar;
-	private DisplayImageOptions options;
-	private ImageLoader imageLoader;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public CollectionCoverSearchFragment() {}
-	
+
 	public static CollectionCoverSearchFragment newInstance(String collectionId, String json, String baseUrl) {
 		CollectionCoverSearchFragment pageFragment = new CollectionCoverSearchFragment();
 		Bundle b = new Bundle();
@@ -74,8 +72,7 @@ public class CollectionCoverSearchFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultCoverLoadingOptions();
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 
 		COLLECTION_ID = getArguments().getString("collectionId");
 	}
@@ -93,11 +90,11 @@ public class CollectionCoverSearchFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.image_grid_fragment, container, false);
 	}
-	
+
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
-		
+
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
 		if (pics_sources.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
 
@@ -125,8 +122,7 @@ public class CollectionCoverSearchFragment extends Fragment {
 				new DownloadThread(pics_sources.get(arg2)).start();
 			}
 		});
-		mGridView.setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
-		
+
 		json = getArguments().getString("json");
 		loadJson(getArguments().getString("baseUrl"));
 	}
@@ -135,13 +131,6 @@ public class CollectionCoverSearchFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		if (mAdapter != null) mAdapter.notifyDataSetChanged();
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		imageLoader.stop();
 	}
 
 	@Override
@@ -198,7 +187,10 @@ public class CollectionCoverSearchFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			imageLoader.displayImage(pics_sources.get(position).contains("null") ? "" : pics_sources.get(position), imageView, options);
+			if (!pics_sources.get(position).contains("null"))
+				mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(imageView);
+			else
+				imageView.setImageResource(R.drawable.loading_image);
 
 			return imageView;
 		}
@@ -219,7 +211,7 @@ public class CollectionCoverSearchFragment extends Fragment {
 			notifyDataSetChanged();
 		}
 	}
-	
+
 	private void loadJson(String baseUrl) {
 		try {
 			pics_sources.clear();
@@ -238,7 +230,7 @@ public class CollectionCoverSearchFragment extends Fragment {
 			showContent();
 		}
 	}
-	
+
 	private void showContent() {
 		pbar.setVisibility(View.GONE);
 		mAdapter.notifyDataSetChanged();

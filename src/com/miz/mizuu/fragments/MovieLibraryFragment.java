@@ -72,7 +72,6 @@ import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.miz.mizuu.Update;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.picasso.Picasso;
 
 @SuppressLint("NewApi")
@@ -264,11 +263,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private void clearCaches() {
 		MizuuApplication.getLruCache().clear();
-		
-		try {
-			ImageLoader.getInstance().clearMemoryCache();
-			ImageLoader.getInstance().clearDiscCache();
-		} catch (Exception e) {}
 	}
 
 	@Override

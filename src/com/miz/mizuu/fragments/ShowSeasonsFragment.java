@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import jcifs.smb.SmbFile;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,7 +18,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -53,7 +56,6 @@ import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.FileSource;
-import com.miz.functions.ImageLoadingErrorListener;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.IdentifyTvShow;
 import com.miz.mizuu.MizuuApplication;
@@ -61,8 +63,9 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.service.DeleteFile;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Picasso.LoadedFrom;
+import com.squareup.picasso.Target;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapter;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 
@@ -81,10 +84,8 @@ public class ShowSeasonsFragment extends Fragment {
 	private ProgressBar pbar;
 	private SharedPreferences settings;
 	private boolean isPortrait, setBackground;
-	private DisplayImageOptions options;
 	private TvShow thisShow;
-	private ImageLoadingErrorListener errorListener;
-	private ImageLoader imageLoader;
+	private Picasso mPicasso;
 
 	public static ShowSeasonsFragment newInstance(String showId, boolean setBackground) {
 		ShowSeasonsFragment frag = new ShowSeasonsFragment();
@@ -120,13 +121,12 @@ public class ShowSeasonsFragment extends Fragment {
 		else
 			mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width);
 
-		imageLoader = ImageLoader.getInstance();
-		options = MizuuApplication.getDefaultBackdropLoadingOptions();
-
 		if (useGridView)
 			mGridAdapter = new SeasonsAdapterGrid(getActivity());
 		else
 			mListAdapter = new SeasonsAdapterList(getActivity());
+
+		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
 
 		Cursor cursor = MizuuApplication.getTvDbAdapter().getShow(getArguments().getString("showId"));
 		if (cursor.moveToFirst()) {
@@ -147,13 +147,10 @@ public class ShowSeasonsFragment extends Fragment {
 		}
 		cursor.close();
 
-		if (thisShow != null)
-			errorListener = new ImageLoadingErrorListener("", "file://" + thisShow.getBackdrop(), options);
-		else
-			if (isAdded()) {
-				getActivity().finish();
-				return;
-			}
+		if (thisShow == null && isAdded()) {
+			getActivity().finish();
+			return;
+		}
 
 		loadEpisodes();
 
@@ -274,7 +271,6 @@ public class ShowSeasonsFragment extends Fragment {
 				return true;
 			}
 		});
-		getCollectionView().setOnScrollListener(MizuuApplication.getPauseOnScrollListener(imageLoader));
 
 		loadEpisodes(0, true);
 	}
@@ -318,10 +314,24 @@ public class ShowSeasonsFragment extends Fragment {
 		builder.show();
 	}
 
-	static class CoverItem {
+	class CoverItem implements Target {
 		TextView title, number;
 		ImageView cover, watched, selectedOverlay;
 		RelativeLayout layout;
+
+		@Override
+		public void onBitmapFailed(Drawable arg0) {
+			Picasso.with(getActivity()).load("file://" + thisShow.getBackdrop()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(cover);
+		}
+		@Override
+		public void onBitmapLoaded(Bitmap arg0, LoadedFrom arg1) {
+			cover.setImageBitmap(arg0);
+			ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(200).start();
+		}
+		@Override
+		public void onPrepareLoad(Drawable arg0) {
+			cover.setImageDrawable(arg0);
+		}
 	}
 
 	static class RowItem {
@@ -412,7 +422,7 @@ public class ShowSeasonsFragment extends Fragment {
 			} else
 				holder.selectedOverlay.setVisibility(View.GONE);
 
-			imageLoader.displayImage("file://" + shownEpisodes.get(position).getEpisodePhoto(), holder.cover, options, errorListener);
+			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(holder);
 
 			return convertView;
 		}
@@ -546,7 +556,7 @@ public class ShowSeasonsFragment extends Fragment {
 			else
 				holder.watched.setVisibility(View.GONE);
 
-			imageLoader.displayImage(shownEpisodes.get(position).getEpisodePhoto(), holder.cover, options, errorListener);
+			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(holder.cover);
 
 			return convertView;
 		}
