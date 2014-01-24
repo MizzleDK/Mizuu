@@ -82,7 +82,7 @@ public class ActorBrowserFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);	
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		if (!getArguments().containsKey("json")) {		
 			if (getArguments().getString("movieId") == null) {

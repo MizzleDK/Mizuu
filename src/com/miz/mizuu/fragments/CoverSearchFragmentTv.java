@@ -76,7 +76,7 @@ public class CoverSearchFragmentTv extends Fragment {
 
 		TVDB_ID = getArguments().getString("tvdbId");
 
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		new GetCoverImages().execute(TVDB_ID);
 	}

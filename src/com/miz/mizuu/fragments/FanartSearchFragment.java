@@ -77,7 +77,7 @@ public class FanartSearchFragment extends Fragment {
 
 		TMDB_ID = getArguments().getString("tmdbId");
 		
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 	}
 
 	@Override

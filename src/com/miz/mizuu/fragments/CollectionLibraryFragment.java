@@ -129,7 +129,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		mPicasso = MizuuApplication.getPicassoForCovers(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		mAdapter = new LoaderAdapter(getActivity());
 	}
@@ -222,7 +222,8 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	};
 
 	private void clearCaches() {
-		MizuuApplication.getLruCache().clear();
+		if (isAdded())
+			MizuuApplication.getLruCache(getActivity()).clear();
 	}
 
 	@Override
@@ -269,7 +270,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		if (movies.size() == 0)
 			forceLoaderLoad();
 
@@ -334,7 +335,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			if (holder.layout.getLayoutParams().height != mItemHeight) {
 				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
-			
+
 			holder.text.setText(shownMovies.get(position).getTitle());
 
 			if (showGridTitles) {
@@ -917,14 +918,14 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	private void search(String query) {
 		showProgressBar();
-		
+
 		if (mSearch != null)
 			mSearch.cancel(true);
 
 		mSearch = new SearchTask(query);
 		mSearch.execute();
 	}
-	
+
 	private class SearchTask extends AsyncTask<String, String, String> {
 
 		private String searchQuery = "";
@@ -956,14 +957,14 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			} else {
 				String lowerCase = "", filepath; // Reuse String variables
 				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
-				
+
 				for (int i = 0; i < movies.size(); i++) {
 					if (isCancelled())
 						return null;
 
 					lowerCase = movies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
 					filepath = movies.get(i).getFilepath().toLowerCase(Locale.ENGLISH);
-					
+
 					if (lowerCase.indexOf(searchQuery) != -1 || filepath.indexOf(searchQuery) != -1 || p.matcher(lowerCase).replaceAll("").indexOf(searchQuery) != -1)
 						shownMovies.add(movies.get(i));
 				}
@@ -1016,9 +1017,9 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
-			
+
 			mGridView.setColumnWidth(mImageThumbSize);
-			
+
 			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 			if (numColumns > 0) {
 				final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;

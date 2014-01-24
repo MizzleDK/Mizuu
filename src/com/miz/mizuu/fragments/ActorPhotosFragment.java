@@ -69,7 +69,7 @@ public class ActorPhotosFragment extends Fragment {
 		json = getArguments().getString("json");
 		baseUrl = getArguments().getString("baseUrl");
 		
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 	}
 
 	@Override

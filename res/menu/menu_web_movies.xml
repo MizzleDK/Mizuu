@@ -1,17 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-        <item
+    <item
         android:id="@+id/search_textbox"
         android:icon="@drawable/search"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/stringSearch">
     </item>
+
     <group android:id="@+id/group1" >
         <item
             android:id="@+id/menuSettings"
             android:enabled="true"
             android:icon="@drawable/ic_action_settings"
-            android:title="@string/settings_name" android:showAsAction="never">
+            android:showAsAction="never"
+            android:title="@string/settings_name">
         </item>
     </group>
 

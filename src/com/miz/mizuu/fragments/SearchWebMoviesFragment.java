@@ -75,7 +75,7 @@ public class SearchWebMoviesFragment extends Fragment {
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
 
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		mAdapter = new ListAdapter(getActivity());
 

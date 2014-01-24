@@ -104,7 +104,7 @@ public class MakeAvailableOffline extends IntentService {
 		builder = new NotificationCompat.Builder(mContext);
 		builder.setOngoing(true);
 		builder.setOnlyAlertOnce(true);
-		builder.setSmallIcon(R.drawable.refresh);
+		builder.setSmallIcon(android.R.drawable.stat_sys_download);
 		builder.setContentIntent(contentIntent);
 		builder.setTicker("Downloading movie");
 		builder.setContentTitle("Downloading movie");

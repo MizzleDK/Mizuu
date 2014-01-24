@@ -18,7 +18,8 @@ import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.MizLib;
-import com.miz.functions.PicassoDownloader;
+import com.miz.functions.Utils;
+import com.squareup.picasso.Downloader;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
 
@@ -32,6 +33,8 @@ public class MizuuApplication extends Application {
 	private static Picasso mPicasso;
 	private static LruCache mLruCache;
 	private static File mMovieThumbFolder;
+	private static Downloader mDownloader;
+	private static ThreadPoolExecutor mThreadPoolExecutor;
 
 	@Override
 	public void onCreate() {
@@ -47,8 +50,6 @@ public class MizuuApplication extends Application {
 		dbTvShowEpisode = new DbAdapterTvShowEpisode(this);
 		dbSources = new DbAdapterSources(this);
 		db = new DbAdapter(this);
-
-		mLruCache = new LruCache(calculateMemoryCacheSize(this));
 	}
 
 	@Override
@@ -86,21 +87,17 @@ public class MizuuApplication extends Application {
 			map.put(parentPath, list);
 	}
 
-	public static Picasso getPicassoForCovers(Context context) {
-		mPicasso = new Picasso.Builder(context).downloader(new PicassoDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache()).build();
-		
-		return mPicasso;
-	}
-	
-	public static Picasso getPicassoForWeb(Context context) {
-		mPicasso = new Picasso.Builder(context).executor(getThreadPoolExecutor()).memoryCache(getLruCache()).build();
+	public static Picasso getPicasso(Context context) {
+		mPicasso = new Picasso.Builder(context).downloader(getDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache(context)).build();
 		
 		return mPicasso;
 	}
 
 	private static ThreadPoolExecutor getThreadPoolExecutor() {
-		return new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS,
+		if (mThreadPoolExecutor == null)
+			mThreadPoolExecutor = new ThreadPoolExecutor(3, 3, 0, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>(), new PicassoThreadFactory());
+		return mThreadPoolExecutor;
 	}
 
 	static class PicassoThreadFactory implements ThreadFactory {
@@ -120,8 +117,16 @@ public class MizuuApplication extends Application {
 		}
 	}
 
-	public static LruCache getLruCache() {
+	public static LruCache getLruCache(Context context) {
+		if (mLruCache == null)
+			mLruCache = new LruCache(calculateMemoryCacheSize(context));
 		return mLruCache;
+	}
+	
+	public static Downloader getDownloader(Context context) {
+		if (mDownloader == null)
+			mDownloader = Utils.createDefaultDownloader(context);
+		return mDownloader;
 	}
 
 	public static File getMovieThumbFolder(Context context) {

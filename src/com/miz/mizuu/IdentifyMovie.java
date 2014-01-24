@@ -71,7 +71,7 @@ public class IdentifyMovie extends MizActivity {
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
 
-		mPicasso = MizuuApplication.getPicassoForWeb(this);
+		mPicasso = MizuuApplication.getPicasso(this);
 
 		rowId = Long.valueOf(getIntent().getExtras().getString("rowId"));
 		filename = getIntent().getExtras().getString("fileName");

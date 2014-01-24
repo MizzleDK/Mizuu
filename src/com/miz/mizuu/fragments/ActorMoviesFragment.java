@@ -84,7 +84,7 @@ public class ActorMoviesFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		json = getArguments().getString("json");
 		baseUrl = getArguments().getString("baseUrl");

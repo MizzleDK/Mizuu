@@ -126,7 +126,7 @@ public class ShowSeasonsFragment extends Fragment {
 		else
 			mListAdapter = new SeasonsAdapterList(getActivity());
 
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		Cursor cursor = MizuuApplication.getTvDbAdapter().getShow(getArguments().getString("showId"));
 		if (cursor.moveToFirst()) {

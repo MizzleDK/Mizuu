@@ -1,18 +1,18 @@
 package com.miz.widgets;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 import com.miz.db.DbAdapter;
 import com.miz.functions.SmallMovie;

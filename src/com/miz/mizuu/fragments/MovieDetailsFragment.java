@@ -133,7 +133,7 @@ public class MovieDetailsFragment extends Fragment {
 			thisMovie.setMultipleVersions(db.getRowIdsForMovie(thisMovie.getTmdbId()));
 		}
 		
-		mPicasso = MizuuApplication.getPicassoForCovers(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-backdrop-change"));

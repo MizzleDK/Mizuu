@@ -74,7 +74,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 		tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Thin.ttf");
 		
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 	}
 
 	@Override

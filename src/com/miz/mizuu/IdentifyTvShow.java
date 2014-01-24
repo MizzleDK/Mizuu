@@ -87,7 +87,7 @@ public class IdentifyTvShow extends MizActivity {
 
 		mAdapter = new ListAdapter(this);
 		
-		mPicasso = MizuuApplication.getPicassoForWeb(this);
+		mPicasso = MizuuApplication.getPicasso(this);
 
 		locale = Locale.getDefault();
 

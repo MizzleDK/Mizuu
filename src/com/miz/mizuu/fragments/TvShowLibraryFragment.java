@@ -118,7 +118,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		mPicasso = MizuuApplication.getPicassoForCovers(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 		
 		mAdapter = new LoaderAdapter(getActivity());
 	}
@@ -213,7 +213,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	};
 
 	private void clearCaches() {
-		MizuuApplication.getLruCache().clear();
+		if (isAdded())
+			MizuuApplication.getLruCache(getActivity()).clear();
 	}
 
 	@Override

@@ -74,7 +74,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 		mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 1.4);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 		
-		mPicasso = MizuuApplication.getPicassoForWeb(getActivity());
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 		
 		type = getArguments().getString("type");
 		if (type.equals(getString(R.string.choiceYouTube))) {
