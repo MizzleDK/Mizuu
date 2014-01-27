@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
@@ -21,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -244,6 +246,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
 				new ViewTreeObserver.OnGlobalLayoutListener() {
+					@SuppressLint("NewApi")
+					@SuppressWarnings("deprecation")
 					@Override
 					public void onGlobalLayout() {
 						if (mAdapter.getNumColumns() == 0) {
@@ -252,6 +256,13 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
 								mAdapter.setItemHeight(columnWidth);
+							}
+							if (MizLib.hasJellyBean()) {
+								mGridView.getViewTreeObserver()
+								.removeOnGlobalLayoutListener(this);
+							} else {
+								mGridView.getViewTreeObserver()
+								.removeGlobalOnLayoutListener(this);
 							}
 						}
 					}
@@ -291,6 +302,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	private class LoaderAdapter extends BaseAdapter implements SectionIndexer {
 
+		private Drawable gray;
 		private LayoutInflater inflater;
 		private final Context mContext;
 		private int mItemHeight = 0;
@@ -303,6 +315,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			gray = getResources().getDrawable(R.drawable.gray);
 		}
 
 		@Override
@@ -312,12 +325,22 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		@Override
 		public Object getItem(int position) {
-			return shownShows.get(position).getThumbnail();
+			return position;
 		}
 
 		@Override
 		public long getItemId(int position) {
 			return position;
+		}
+		
+		@Override
+		public int getItemViewType(int position) {
+		    return 0;
+		}
+
+		@Override
+		public int getViewTypeCount() {
+		    return 1;
 		}
 
 		@Override
@@ -330,14 +353,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
-			}
-
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
 
 			holder.text.setText(shownShows.get(position).getTitle());
@@ -348,6 +372,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.text.setVisibility(TextView.GONE);
 			}
 
+			holder.cover.setImageDrawable(gray);
+			
 			mPicasso.load(shownShows.get(position).getThumbnail()).into(holder);
 
 			return convertView;

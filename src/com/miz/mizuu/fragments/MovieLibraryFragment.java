@@ -436,7 +436,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder.text.setText(shownMovies.get(position).getCollection());
 			} else { // Movies
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
-					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>file://" + shownMovies.get(position).getThumbnail()).into(holder);
+					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).into(holder);
 				} else {
 					mPicasso.load(shownMovies.get(position).getThumbnail()).into(holder);
 				}
