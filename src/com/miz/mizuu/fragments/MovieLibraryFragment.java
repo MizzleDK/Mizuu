@@ -952,7 +952,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					String first = "", second = "";
 
 					if (o1.getReleasedate() != null)
-						first = o1.getReleasedate().replace("-", "").replace("/", ""); // TODO FIX THIS. It shouldn't be possible to have dates with '/'
+						first = o1.getReleasedate().replace("-", "").replace(".", "").replace("/", ""); // TODO FIX THIS. It shouldn't be possible to have dates with '/' or '.'
 
 					if (!(first.equals("null") | first.isEmpty()))
 						firstDate = Integer.valueOf(first);
@@ -1295,6 +1295,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private class SearchTask extends AsyncTask<String, String, String> {
 
+		// TODO Make a temporary copy of the movie array and search in that instead!!!
 		private String searchQuery = "";
 
 		public SearchTask(String query) {

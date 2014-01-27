@@ -10,6 +10,9 @@ public class DecryptedShowEpisode {
 	}
 
 	public void setFilepath(String filepath) {
+		if (null == filepath)
+			return;
+		
 		mFilepath = filepath;
 		
 		if (mFilepath.contains("/")) {

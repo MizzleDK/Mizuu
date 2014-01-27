@@ -51,7 +51,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
-	
+
 	public static TmdbMovieDetailsFragment newInstance(String movieId, String json) { 
 		TmdbMovieDetailsFragment pageFragment = new TmdbMovieDetailsFragment();
 		Bundle bundle = new Bundle();
@@ -73,7 +73,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		movieId = getArguments().getString("movieId");
 
 		tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Thin.ttf");
-		
+
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 	}
 
@@ -203,17 +203,31 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			}
 
 			setLoading(false);
-			
-			mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(cover);
-			mPicasso.load(thisMovie.getBackdrop()).placeholder(R.drawable.gray).error(R.drawable.bg).into(background, new Callback() {
-				@Override
-				public void onError() {
-					mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
-				}
 
-				@Override
-				public void onSuccess() {}
-			});
+			if (!thisMovie.getCover().isEmpty())
+				mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(cover);
+			else
+				cover.setImageResource(R.drawable.gray);
+
+			if (!thisMovie.getBackdrop().isEmpty())
+				mPicasso.load(thisMovie.getBackdrop()).placeholder(R.drawable.gray).error(R.drawable.bg).into(background, new Callback() {
+					@Override
+					public void onError() {
+						if (!thisMovie.getCover().isEmpty())
+							mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
+						else
+							background.setImageResource(R.drawable.bg);
+					}
+
+					@Override
+					public void onSuccess() {}
+				});
+			else {
+				if (!thisMovie.getCover().isEmpty())
+					mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
+				else
+					background.setImageResource(R.drawable.bg);
+			}
 		}
 	}
 

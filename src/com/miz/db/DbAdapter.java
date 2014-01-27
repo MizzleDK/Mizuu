@@ -47,7 +47,7 @@ public class DbAdapter {
 	public DbAdapter(Context context) {
 		database = DbHelper.getHelper(context).getWritableDatabase();
 	}
-	
+
 	public void close() {
 		database.close();
 	}
@@ -124,7 +124,7 @@ public class DbAdapter {
 		return database.query(DATABASE_TABLE, SELECT_ALL,
 				KEY_CAST + " like '%" + newQuery + "%'", null, KEY_TMDBID, null, KEY_TITLE + " ASC");
 	}
-	
+
 	public int getMovieCountByActor(String actor) {
 		String newQuery = actor.replace("'", "''");
 		Cursor cursor = database.query(DATABASE_TABLE, SELECT_ALL,
@@ -154,7 +154,7 @@ public class DbAdapter {
 		}
 		return mCursor;
 	}
-	
+
 	public Cursor fetchMovie(String movieId) throws SQLException {
 		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, KEY_TMDBID, null, null, null);
 		if (mCursor != null) {
@@ -162,28 +162,32 @@ public class DbAdapter {
 		}
 		return mCursor;
 	}
-	
+
 	public boolean movieExists(String movieId) {
 		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, KEY_TMDBID, null, null, null);
 		if (mCursor == null)
 			return false;
-		if (mCursor.getCount() == 0)
+		try {
+			if (mCursor.getCount() == 0)
+				return false;
+		} catch (Exception e) {
 			return false;
+		}
 		return true;
 	}
-	
+
 	public boolean hasMultipleVersions(String movieId) {
 		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
 		if (mCursor == null)
 			return false;
 		return mCursor.getCount() > 1;
 	}
-	
+
 	public MovieVersion[] getRowIdsForMovie(String movieId) {
 		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
 		if (mCursor == null)
 			return null;
-		
+
 		MovieVersion[] results = new MovieVersion[mCursor.getCount()];
 		int count = 0;
 		while (mCursor.moveToNext()) {
@@ -191,7 +195,7 @@ public class DbAdapter {
 					mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)));
 			count++;
 		}
-		
+
 		return results;
 	}
 
