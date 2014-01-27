@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="91"
+    android:versionCode="92"
     android:versionName="2.6.0.4" >
 
     <uses-sdk
