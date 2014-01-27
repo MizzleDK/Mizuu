@@ -29,6 +29,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		return getThumbnail();
 	}
 	
+	public String getFullFilepath() {
+		return FILEPATH;
+	}
+	
 	public double getRawRating() {
 		try {
 			return Double.valueOf(RATING);
@@ -118,5 +122,17 @@ public abstract class MediumBaseMovie extends BaseMovie {
 			return true;
 		
 		return false;
+	}
+	
+	public boolean hasOfflineCopy() {
+		return getOfflineCopyFile().exists();
+	}
+	
+	public String getOfflineCopyUri() {
+		return getOfflineCopyFile().getAbsolutePath();
+	}
+	
+	public File getOfflineCopyFile() {
+		return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
 	}
 }

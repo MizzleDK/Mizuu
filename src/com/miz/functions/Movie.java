@@ -44,10 +44,6 @@ public class Movie extends MediumBaseMovie {
 		this.ignoreNfo = ignoreNfo;
 	}
 
-	public String getFullFilepath() {
-		return FILEPATH;
-	}
-
 	/**
 	 * This is only used for the SectionIndexer in the overview
 	 */
@@ -181,17 +177,5 @@ public class Movie extends MediumBaseMovie {
 	
 	public boolean hasMultipleVersions() {
 		return mVersions.length > 1;
-	}
-	
-	public boolean hasOfflineCopy() {
-		return getOfflineCopyFile().exists();
-	}
-	
-	public String getOfflineCopyUri() {
-		return getOfflineCopyFile().getAbsolutePath();
-	}
-	
-	public File getOfflineCopyFile() {
-		return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
 	}
 }

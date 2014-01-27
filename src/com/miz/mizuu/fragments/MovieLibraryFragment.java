@@ -138,7 +138,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
-		
+
 		mAdapter = new LoaderAdapter(getActivity());
 	}
 
@@ -249,7 +249,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 
 			showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
-			
+
 			updateTextAndUpdateButton();
 		}
 
@@ -390,15 +390,15 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		public long getItemId(int position) {
 			return position;
 		}
-		
+
 		@Override
 		public int getItemViewType(int position) {
-		    return 0;
+			return 0;
 		}
 
 		@Override
 		public int getViewTypeCount() {
-		    return 1;
+			return 1;
 		}
 
 		@Override
@@ -411,12 +411,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-				
+
 				// Check the height matches our calculated column width
 				if (holder.layout.getLayoutParams().height != mItemHeight) {
 					holder.layout.setLayoutParams(mImageViewLayoutParams);
 				}
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
@@ -530,7 +530,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		updateTextAndUpdateButton();
 	}
-	
+
 	private void updateTextAndUpdateButton() {
 		try {
 			if (movies.size() == 0) {
@@ -548,7 +548,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					overviewMessage.setText(getString(R.string.noMoviesOnWatchlist));
 					updateMovieLibrary.setVisibility(View.GONE);
 				}
-				
+
 				hideProgressBar();
 			} else {
 				overviewMessage.setVisibility(View.GONE);
@@ -644,30 +644,34 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 				for (int i = 0; i < movies.size(); i++) {
 					if (movies.get(i).isNetworkFile()) {
-						if (MizLib.isWifiConnected(getActivity(), prefsDisableEthernetWiFiCheck)) {
-							FileSource source = null;
+						if (movies.get(i).hasOfflineCopy()) {
+							tempMovies.add(movies.get(i));
+						} else {						
+							if (MizLib.isWifiConnected(getActivity(), prefsDisableEthernetWiFiCheck)) {
+								FileSource source = null;
 
-							for (int j = 0; j < filesources.size(); j++)
-								if (movies.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
-									source = filesources.get(j);
+								for (int j = 0; j < filesources.size(); j++)
+									if (movies.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
+										source = filesources.get(j);
+										continue;
+									}
+
+								if (source == null)
 									continue;
-								}
 
-							if (source == null)
-								continue;
-
-							try {
-								final SmbFile file = new SmbFile(
-										MizLib.createSmbLoginString(
-												URLEncoder.encode(source.getDomain(), "utf-8"),
-												URLEncoder.encode(source.getUser(), "utf-8"),
-												URLEncoder.encode(source.getPassword(), "utf-8"),
-												movies.get(i).getFilepath(),
-												false
-												));
-								if (file.exists())
-									tempMovies.add(movies.get(i));
-							} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
+								try {
+									final SmbFile file = new SmbFile(
+											MizLib.createSmbLoginString(
+													URLEncoder.encode(source.getDomain(), "utf-8"),
+													URLEncoder.encode(source.getUser(), "utf-8"),
+													URLEncoder.encode(source.getPassword(), "utf-8"),
+													movies.get(i).getFilepath(),
+													false
+													));
+									if (file.exists())
+										tempMovies.add(movies.get(i));
+								} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
+							}
 						}
 					} else {
 						if (new File(movies.get(i).getFilepath()).exists())

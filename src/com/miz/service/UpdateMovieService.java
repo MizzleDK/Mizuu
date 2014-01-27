@@ -513,7 +513,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 
 		for (int i = 0; i < dbMovies.size(); i++) {
 			if (dbMovies.get(i).isNetworkFile()) {
-				if (MizLib.isWifiConnected(getApplicationContext(), prefsDisableEthernetWiFiCheck)) {
+				if (MizLib.isWifiConnected(getApplicationContext(), prefsDisableEthernetWiFiCheck) && !dbMovies.get(i).hasOfflineCopy(getApplicationContext())) {
 					FileSource source = null;
 
 					for (int j = 0; j < filesources.size(); j++)
@@ -661,9 +661,17 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		public boolean isNetworkFile() {
 			return getFilepath().contains("smb:/");
 		}
-		
+
 		public String getTmdbId() {
 			return tmdbId;
+		}
+
+		public boolean hasOfflineCopy(Context ctx) {
+			return getOfflineCopyFile(ctx).exists();
+		}
+
+		public File getOfflineCopyFile(Context CONTEXT) {
+			return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(filepath) + "." + MizLib.getFileExtension(filepath));
 		}
 	}
 }
