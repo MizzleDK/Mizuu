@@ -117,7 +117,7 @@ public class OkHttpDownloader implements Downloader {
 			if (s != null)
 				return new Response(s.getInputStream(), localCacheOnly);
 			else {
-				return new Response(new BufferedInputStream(new FileInputStream(new File(backup))), localCacheOnly);
+				return new Response(new BufferedInputStream(new FileInputStream(new File(backup)), 4096), localCacheOnly);
 			}
 		} else if (imageUri.startsWith("http")) {
 			HttpURLConnection connection = openConnection(uri);

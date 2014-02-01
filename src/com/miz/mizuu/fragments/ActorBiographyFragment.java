@@ -149,7 +149,7 @@ public class ActorBiographyFragment extends Fragment {
 			else
 				mActorBirthday.setVisibility(View.GONE);
 
-			mPicasso.load(mImage).placeholder(R.drawable.gray).error(R.drawable.noactor).into(mActorImage, new Callback() {
+			mPicasso.load(mImage).placeholder(R.drawable.gray).error(R.drawable.noactor).noFade().into(mActorImage, new Callback() {
 				@Override
 				public void onError() {
 					mActorImage.setVisibility(View.VISIBLE);
@@ -166,12 +166,13 @@ public class ActorBiographyFragment extends Fragment {
 
 	protected class BlurImage extends AsyncTask<String, String, Bitmap> {
 		@Override
-		protected Bitmap doInBackground(String... params) {
-
+		protected Bitmap doInBackground(String... params) {			
 			Bitmap image = drawableToBitmap(mActorImage.getDrawable());
 
 			if (image != null)
 				return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(image, image.getWidth() / 3, image.getHeight() / 3, false), 4);
+			else
+				System.out.println("YO");
 			return null;
 		}
 

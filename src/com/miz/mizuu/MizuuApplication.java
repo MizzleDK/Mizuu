@@ -95,7 +95,7 @@ public class MizuuApplication extends Application {
 
 	private static ThreadPoolExecutor getThreadPoolExecutor() {
 		if (mThreadPoolExecutor == null)
-			mThreadPoolExecutor = new ThreadPoolExecutor(3, 3, 0, TimeUnit.MILLISECONDS,
+			mThreadPoolExecutor = new ThreadPoolExecutor(1, 2, 2, TimeUnit.SECONDS,
 				new LinkedBlockingQueue<Runnable>(), new PicassoThreadFactory());
 		return mThreadPoolExecutor;
 	}
@@ -112,7 +112,7 @@ public class MizuuApplication extends Application {
 		}
 
 		@Override public void run() {
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_DISPLAY);
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 			super.run();
 		}
 	}

@@ -13,12 +13,12 @@
             android:key="prefsIgnorePrefixesInTitles"
             android:summary="@string/ignoreMoviePrefixesDescription"
             android:title="@string/ignoreMoviePrefixes" />
-        <CheckBoxPreference
+        <!-- <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/backdrops"
             android:key="prefsLoadImagesWhileScrolling"
             android:summary="@string/loadImagesWhileScrollingDescription"
-            android:title="@string/loadImagesWhileScrolling" />
+            android:title="@string/loadImagesWhileScrolling" /> -->
         <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_action_expand"

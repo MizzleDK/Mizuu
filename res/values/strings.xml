@@ -423,5 +423,7 @@
     <string name="downloadOfflineCopy">This will download a local copy of the video file for offline playback. Do you want to continue?</string>
     <string name="stringDownloadCancelled">Download cancelled!</string>
     <string name="addedToDownloadQueue">Added to download queue!</string>
+    <string name="ignoreFilesizeCheckTitle">Ignore file size check for offline watching</string>
+    <string name="ignoreFilesizeCheck">Skip the available storage space check when downloading videos for offline watching.</string>
 
 </resources>

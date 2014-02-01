@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
@@ -53,12 +54,12 @@ public class MakeAvailableOffline extends IntentService {
 	public MakeAvailableOffline() {
 		super("MakeAvailableOffline");
 	}
-	
+
 	@Override
 	public void onCreate() {
-	    super.onCreate();
-	    
-	    mHandler = new Handler();
+		super.onCreate();
+
+		mHandler = new Handler();
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -67,32 +68,32 @@ public class MakeAvailableOffline extends IntentService {
 			mStopDownload = true;
 		}
 	};
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 	}
-	
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		
+
 		return START_NOT_STICKY;
 	}
-	
+
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		reset();
-		
+
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-stop-offline-download"));
-		
+
 		mContext = getApplicationContext();
 
 		file = intent.getExtras().getString(FILEPATH);
 		type = intent.getExtras().getInt(TYPE); // MizLib.TYPE_MOVIE
-		
+
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// Set up cancel dialog intent
@@ -116,28 +117,31 @@ public class MakeAvailableOffline extends IntentService {
 
 		if (!exists) {
 			mHandler.post(new Runnable() {            
-		        @Override
-		        public void run() {
-		        	Toast.makeText(mContext, R.string.unavailable_file, Toast.LENGTH_LONG).show();              
-		        }
-		    });
+				@Override
+				public void run() {
+					Toast.makeText(mContext, R.string.unavailable_file, Toast.LENGTH_LONG).show();              
+				}
+			});
 			stopSelf();
 			return;
 		}
-		
-		boolean sizeOK = checkFilesize();
-		
-		if (!sizeOK) {
-			mHandler.post(new Runnable() {            
-		        @Override
-		        public void run() {
-		        	Toast.makeText(mContext, R.string.not_enough_space, Toast.LENGTH_LONG).show();              
-		        }
-		    });
-			stopSelf();
-			return;
+
+		boolean ignoreSizeCheck = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("prefsIgnoreFilesizeCheck", false);
+		if (!ignoreSizeCheck) {
+			boolean sizeOK = checkFilesize();
+
+			if (!sizeOK) {
+				mHandler.post(new Runnable() {            
+					@Override
+					public void run() {
+						Toast.makeText(mContext, R.string.not_enough_space, Toast.LENGTH_LONG).show();              
+					}
+				});
+				stopSelf();
+				return;
+			}
 		}
-		
+
 		exists = checkIfLocalCopyExists();
 		if (exists) { // There's already an exact local copy - don't download again
 			stopSelf();
@@ -145,17 +149,17 @@ public class MakeAvailableOffline extends IntentService {
 		}
 
 		mHandler.post(new Runnable() {            
-	        @Override
-	        public void run() {
-	        	Toast.makeText(mContext, R.string.starting_download, Toast.LENGTH_SHORT).show();              
-	        }
-	    });
-		
+			@Override
+			public void run() {
+				Toast.makeText(mContext, R.string.starting_download, Toast.LENGTH_SHORT).show();              
+			}
+		});
+
 		updateNotification();
 		startForeground(NOTIFICATION_ID, mNotification);
 
 		boolean success = beginTransfer();
-		
+
 		if (!success) // Delete the offline file if the transfer wasn't successful
 			new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(smb.getCanonicalPath()) + "." + MizLib.getFileExtension(smb.getName())).delete();
 	}
@@ -176,7 +180,7 @@ public class MakeAvailableOffline extends IntentService {
 			return false;
 		}
 	}
-	
+
 	private boolean checkIfLocalCopyExists() {
 		File f = new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(smb.getCanonicalPath()) + "." + MizLib.getFileExtension(smb.getName()));
 		return f.exists() && smbSize == f.length();
@@ -239,7 +243,7 @@ public class MakeAvailableOffline extends IntentService {
 			long data_sent = (currentLength - lastLength);
 			double percentage = (100.0 / (double) totalLength) * (double) currentLength;
 			long data_per_sec = (data_sent / elapsed) * 1000;
-			
+
 			return Double.valueOf(oneDecimal.format(percentage)) + "% - " + (currentLength / 1024 / 1024) + " of " + (totalLength / 1024 / 1024) + " MB (" + (data_per_sec / 1000) + " KB/s)";
 		} catch (Exception e) {
 			return "Starting...";

@@ -29,6 +29,7 @@
             android:key="prefsDisableEthernetWiFiCheck"
             android:summary="@string/disableEthernetWiFiCheckDescription"
             android:title="@string/disableEthernetWiFiCheck" />
+        <CheckBoxPreference android:defaultValue="false" android:summary="@string/ignoreFilesizeCheck" android:title="@string/ignoreFilesizeCheckTitle" android:icon="@drawable/ic_action_download" android:key="prefsIgnoreFilesizeCheck"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/video" >
         <CheckBoxPreference

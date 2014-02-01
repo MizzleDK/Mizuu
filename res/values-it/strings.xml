@@ -11,9 +11,9 @@
     <string name="detailsCertification">Certificazione</string>
     <string name="noInternet">Connesione ad Internet assente</string>
     <string name="errorOccured">È avvenuto un errore</string>
-    <string name="updatingMovieInfo">Informazioni sul film in aggiornamento…</string>
-    <string name="updatingEpisodeInfo">Informazioni sull\'episodio in aggiornamento…</string>
-    <string name="updatingShowInfo">Informazioni sulla serie TV in aggiornamento…</string>
+    <string name="updatingMovieInfo">Informazioni sul film in aggiornamento&#8230;</string>
+    <string name="updatingEpisodeInfo">Informazioni sull\'episodio in aggiornamento&#8230;</string>
+    <string name="updatingShowInfo">Informazioni sulla serie TV in aggiornamento&#8230;</string>
     <string name="stringNA">N/D</string>
     <string name="minutes">minuti</string>
     <string name="removeMovie">Elimina film</string>
@@ -33,13 +33,13 @@
     <string name="prefsAppFeedback">Feedback sull\'applicazione</string>
     <string name="prefsAppFeedbackDescription">Comunica al mondo cosa pensi di Mizuu su Google Play.</string>
     <string name="prefsIdentificationAndSearch">Identificazione &amp; ricerca</string>
-    <string name="shareWith">Condividi con…</string>
+    <string name="shareWith">Condividi con&#8230;</string>
     <string name="addedToFavs">Aggiunto ai preferiti!</string>
     <string name="removedFromFavs">Rimosso dai preferiti!</string>
     <string name="addedToWatchList">Aggiungi alla watchlist!</string>
     <string name="removedFromWatchList">Rimosso dalla watchlist!</string>
     <string name="unknownYear">(sconosciuto)</string>
-    <string name="addingCover">Download di una nuova cover art…</string>
+    <string name="addingCover">Download di una nuova cover art&#8230;</string>
     <string name="coverSearchFailed">Ricerca della cover art fallita!</string>
     <string name="updateCheckBox">Svuota libreria durante l\'aggiornamento</string>
     <string name="stringSearch">Cerca</string>
@@ -69,7 +69,7 @@
     <string name="showDirector">Regista</string>
     <string name="showSeason">Stagione</string>
     <string name="showEpisode">Episodio</string>
-    <string name="mainWebLoading">Caricamento…</string>
+    <string name="mainWebLoading">Caricamento&#8230;</string>
     <string name="chooserWebVideos">Video web</string>
     <string name="fileSources">Fonti file</string>
     <string name="updateTvShowsTitle">Aggiorna Serie TV</string>
@@ -93,7 +93,7 @@
     <string name="updatedMovie">Film aggiornato con successo!</string>
     <string name="updatingMovies">Aggiornamento Film</string>
     <string name="updatingTvShows">Aggiornamento Serie TV</string>
-    <string name="updateLookingForFiles">Cerco i file…</string>
+    <string name="updateLookingForFiles">Cerco i file&#8230;</string>
     <string name="editMovieTitle">Titolo</string>
     <string name="editMovieTagline">Tagline</string>
     <string name="editMoviePlot">Trama</string>
@@ -133,8 +133,6 @@
     <string name="watchedEpisodes">Episodi visti</string>
     <string name="unwatchedEpisodes">Episodi non visti</string>
     <string name="stringJustAdded">Aggiunto</string>
-    <string name="stringCancelUpdate">Annulla aggiornamento</string>
-    <string name="stringUpdateCancelled">Aggiornamento annullato!</string>
     <string name="areYouSure">Sei sicuro?</string>
     <string name="detailsFile">File</string>
     <string name="stringShowAllLanguages">Mostra tutte le lingue</string>
@@ -163,7 +161,7 @@
     <string name="send">Invia</string>
     <string name="openSourceLibraries">Librerie open source</string>
     <string name="enterAMessage">Inserisci un messaggio!</string>
-    <string name="launchingGmail">Apertura di Gmail…</string>
+    <string name="launchingGmail">Apertura di Gmail&#8230;</string>
     <string name="failedGmailLaunch">"Non è stato possibile aprire Gmail"</string>
     <string name="problem">Problema</string>
     <string name="other">Altro</string>
@@ -186,7 +184,6 @@
     <string name="coverart">Copertina</string>
     <string name="backdrop">Immagini di sfondo</string>
     <string name="collectionart">Immagine collezione</string>
-    <string name="browseMedia">Sfoglia media</string>
     <string name="advanced">Avanzato</string>
     <string name="network">Condivisioni di rete</string>
     <string name="bufferSize">Dimensione buffer dello stream</string>
@@ -196,8 +193,8 @@
     <string name="ignoreFileTypeDescription">Disabilita gli intenti di specifici video di tipo MIME e usa una wildcard generica.</string>
     <string name="disableEthernetWiFiCheck">Disabilita controllo Ethernet / Wi-Fi</string>
     <string name="disableEthernetWiFiCheckDescription">Non controllare la presenza di una connessione Ethernet o Wi-Fi prima di connettersi ad una risorsa di rete.</string>
-    <string name="lookingForNetworkSources">Cercando fonti di rete…</string>
-    <string name="searching">Cercando…</string>
+    <string name="lookingForNetworkSources">Cercando fonti di rete&#8230;</string>
+    <string name="searching">Cercando&#8230;</string>
     <string name="scanForSources">Cerca risorse di rete</string>
     <string name="detailsFirstAired">Prima messa in onda</string>
     <string name="episodes">Episode</string>
@@ -227,7 +224,7 @@
     <string name="removedAccount">Dattagli account rimossi!</string>
     <string name="removeAccount">Rimuovi account</string>
     <string name="automaticallyShareSocialUpdates">Condividi automaticamente aggiornamenti di stato quando guardi un film o una serie TV.</string>
-    <string name="updatingLibraryDescription">Aggiornamento della libreria…</string>
+    <string name="updatingLibraryDescription">Aggiornamento della libreria&#8230;</string>
     <string name="noMoviesInLibrary">Nessun film nella libreria.</string>
     <string name="noShowsInLibrary">Nessuna serie TV nella libreria.</string>
     <string name="noMoviesOnWatchlist">Nessun film nella watchlist.</string>
@@ -238,7 +235,7 @@
     <string name="stringLocal">Contenuto locale</string>
     <string name="stringDiscover">Scopri</string>
     <string name="stringAdd">Aggiungi</string>
-    <string name="enterTagHint">Inserisci tag…</string>
+    <string name="enterTagHint">Inserisci tag&#8230;</string>
     <string name="ignoredFilenameTagsTitle">Tags nome file ignorati</string>
     <string name="ignoreFilenameTagsDescription">Imposta tags dei nomi file personalizzati da ignorare in fase di identificazione di film e serie TV.</string>
     <string name="ignoredFilesTitle">File ignorati</string>
@@ -275,7 +272,7 @@
     <string name="allCertifications">Tutti le certificazioni</string>
     <string name="selectCertification">Seleziona certificazione</string>
     <string name="movingDataFiles">Spostando i file dei dati</string>
-    <string name="movingDataFilesDescription">Mizuu si avvierà a breve. Potrebbe essere necessario qualche minuto…</string>
+    <string name="movingDataFilesDescription">Mizuu si avvierà a breve. Potrebbe essere necessario qualche minuto&#8230;</string>
     <string name="social">Sociale</string>
     <string name="syncTvShows">Sincronizzazione serie TV tramite Trakt</string>
     <string name="syncMovies">Sincronizzazione di film tramite Trakt</string>
@@ -289,9 +286,6 @@
     <string name="scheduledUpdates">Aggiornamenti pianificati</string>
     <string name="enableScheduledLibraryUpdates">Attiva aggiornamenti pianificati della libreria</string>
     <string name="scheduledAtLaunch">Al lancio dell\'applicazione</string>
-    <string name="scheduledEveryHour">Ogni ore</string>
-    <string name="scheduledEvery2Hours">Ogni 2 ore</string>
-    <string name="scheduledEvery4Hours">Ogni 4 ore</string>
     <string name="scheduledEvery6Hours">Ogni 6 ore</string>
     <string name="scheduledEvery12Hours">Ogni 12 ore</string>
     <string name="scheduledEveryDay">Ogni giorno</string>
