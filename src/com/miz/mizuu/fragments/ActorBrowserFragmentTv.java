@@ -172,14 +172,15 @@ public class ActorBrowserFragmentTv extends Fragment {
 				holder.text.setVisibility(View.VISIBLE);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 				holder.subtext.setVisibility(View.VISIBLE);
+				
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
-			}
-
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
 
 			holder.text.setText(actors.get(position).getName());
@@ -188,7 +189,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(actors.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.noactor).into(holder.cover);
+			mPicasso.load(actors.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 
 			return convertView;
 		}

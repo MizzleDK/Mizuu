@@ -372,7 +372,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(shownMovies.get(position).getThumbnail()).into(holder);
+			mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
 
 			return convertView;
 		}

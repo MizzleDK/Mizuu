@@ -198,20 +198,21 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 				holder.layout = (FrameLayout) convertView.findViewById(R.id.layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.image);
 				holder.text = (TextView) convertView.findViewById(R.id.widgetTitle);
+				
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 				holder.cover.setImageBitmap(null);
 			}
 
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
-			}
-
 			holder.text.setText(videos.get(position).getTitle());
 			
-			mPicasso.load(videos.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(holder.cover);
+			mPicasso.load(videos.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 			
 			return convertView;
 		}

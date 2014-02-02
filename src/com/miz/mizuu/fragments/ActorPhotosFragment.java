@@ -175,19 +175,20 @@ public class ActorPhotosFragment extends Fragment {
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.text.setVisibility(View.GONE);
+				
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
-			}
-
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.noactor).into(holder.cover);
+			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 
 			return convertView;
 		}

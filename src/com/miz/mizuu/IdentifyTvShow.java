@@ -300,14 +300,14 @@ public class IdentifyTvShow extends MizActivity {
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.layout = (LinearLayout) convertView.findViewById(R.id.cover_layout);
 
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
-			}
-
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
 			}
 
 			holder.title.setText(results.get(position).getName());
@@ -315,7 +315,7 @@ public class IdentifyTvShow extends MizActivity {
 			holder.release.setText(results.get(position).getRelease());
 
 			if (!results.get(position).getPic().contains("null"))
-			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(holder.cover);
+			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 			else
 				holder.cover.setImageResource(R.drawable.loading_image);
 

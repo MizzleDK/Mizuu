@@ -374,7 +374,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 			holder.cover.setImageDrawable(gray);
 			
-			mPicasso.load(shownShows.get(position).getThumbnail()).into(holder);
+			mPicasso.load(shownShows.get(position).getThumbnail()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
 
 			return convertView;
 		}

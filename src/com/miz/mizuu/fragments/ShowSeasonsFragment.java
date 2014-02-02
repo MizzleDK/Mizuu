@@ -422,7 +422,7 @@ public class ShowSeasonsFragment extends Fragment {
 			} else
 				holder.selectedOverlay.setVisibility(View.GONE);
 
-			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(holder);
+			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(holder);
 
 			return convertView;
 		}
@@ -556,7 +556,7 @@ public class ShowSeasonsFragment extends Fragment {
 			else
 				holder.watched.setVisibility(View.GONE);
 
-			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(holder.cover);
+			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 
 			return convertView;
 		}

@@ -199,6 +199,12 @@ public class CalendarFragment extends Fragment implements OnSharedPreferenceChan
 				holder.title = (TextView) convertView.findViewById(R.id.text);
 				holder.number = (TextView) convertView.findViewById(R.id.episodeText);
 				holder.layout = (RelativeLayout) convertView.findViewById(R.id.relativeLayout1);
+				
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
@@ -208,11 +214,6 @@ public class CalendarFragment extends Fragment implements OnSharedPreferenceChan
 			holder.title.setVisibility(TextView.VISIBLE);
 			holder.number.setText(allEpisodes.get(position).getEpisode());
 			holder.number.setVisibility(TextView.VISIBLE);
-
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
-			}
 
 			mImageFetcher.loadImage(allEpisodes.get(position).getEpisodePhoto(), holder.cover, null, null);
 
@@ -338,6 +339,12 @@ public class CalendarFragment extends Fragment implements OnSharedPreferenceChan
 				holder.title = (TextView) convertView.findViewById(R.id.text);
 				holder.number = (TextView) convertView.findViewById(R.id.episodeText);
 				holder.layout = (RelativeLayout) convertView.findViewById(R.id.relativeLayout1);
+				
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
@@ -347,11 +354,6 @@ public class CalendarFragment extends Fragment implements OnSharedPreferenceChan
 			holder.title.setVisibility(TextView.VISIBLE);
 			holder.number.setText(allEpisodes.get(position).getEpisode());
 			holder.number.setVisibility(TextView.VISIBLE);
-
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
-			}
 
 			mImageFetcher.loadImage(allEpisodes.get(position).getEpisodePhoto(), holder.cover, null, null);
 

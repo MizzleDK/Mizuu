@@ -13,21 +13,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class CoverItem implements Target {
-	
+
 	public TextView text, subtext;
 	public ImageView cover;
 	public RelativeLayout layout;
+	private int animationDuration = 200;
 
 	@Override
 	public void onBitmapFailed(Drawable arg0) {
 		text.setVisibility(View.VISIBLE);
 		cover.setImageResource(R.drawable.loading_image);
-		ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(200).start();
+		ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(animationDuration).start();
 	}
 	@Override
 	public void onBitmapLoaded(Bitmap arg0, LoadedFrom arg1) {
 		cover.setImageBitmap(arg0);
-		ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(200).start();
+		ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(animationDuration).start();
 	}
 	@Override
 	public void onPrepareLoad(Drawable arg0) {}

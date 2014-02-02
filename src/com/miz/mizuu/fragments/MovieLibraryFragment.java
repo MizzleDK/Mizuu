@@ -432,13 +432,13 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			holder.cover.setImageDrawable(gray);
 
 			if (isCollections) {
-				mPicasso.load(shownMovies.get(position).getCollectionPoster()).into(holder);
+				mPicasso.load(shownMovies.get(position).getCollectionPoster()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
 				holder.text.setText(shownMovies.get(position).getCollection());
 			} else { // Movies
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
-					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).into(holder);
+					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
 				} else {
-					mPicasso.load(shownMovies.get(position).getThumbnail()).into(holder);
+					mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
 				}
 			}
 

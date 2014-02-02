@@ -186,7 +186,7 @@ public class FanartSearchFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).into(imageView);
+			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(imageView);
 
 			return imageView;
 		}

@@ -149,7 +149,7 @@ public class ActorBiographyFragment extends Fragment {
 			else
 				mActorBirthday.setVisibility(View.GONE);
 
-			mPicasso.load(mImage).placeholder(R.drawable.gray).error(R.drawable.noactor).noFade().into(mActorImage, new Callback() {
+			mPicasso.load(mImage).placeholder(R.drawable.gray).error(R.drawable.noactor).noFade().config(MizuuApplication.getBitmapConfig()).into(mActorImage, new Callback() {
 				@Override
 				public void onError() {
 					mActorImage.setVisibility(View.VISIBLE);
@@ -171,8 +171,6 @@ public class ActorBiographyFragment extends Fragment {
 
 			if (image != null)
 				return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(image, image.getWidth() / 3, image.getHeight() / 3, false), 4);
-			else
-				System.out.println("YO");
 			return null;
 		}
 

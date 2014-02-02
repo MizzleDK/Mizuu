@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.miz.functions.Actor;
+import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -161,14 +163,9 @@ public class ActorBrowserFragment extends Fragment {
 		if (mAdapter != null) mAdapter.notifyDataSetChanged();
 	}
 
-	static class CoverItem {
-		TextView text, subtext;
-		ImageView cover;
-		RelativeLayout layout;
-	}
-
 	private class ImageAdapter extends BaseAdapter {
 
+		private Drawable gray;
 		private LayoutInflater inflater;
 		private final Context mContext;
 		private int mItemHeight = 0;
@@ -180,6 +177,7 @@ public class ActorBrowserFragment extends Fragment {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			gray = getResources().getDrawable(R.drawable.gray);
 		}
 
 		@Override
@@ -189,12 +187,22 @@ public class ActorBrowserFragment extends Fragment {
 
 		@Override
 		public Object getItem(int position) {
-			return actors.get(position).getUrl();
+			return position;
 		}
 
 		@Override
 		public long getItemId(int position) {
 			return position;
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			return 0;
+		}
+
+		@Override
+		public int getViewTypeCount() {
+			return 1;
 		}
 
 		@Override
@@ -210,24 +218,26 @@ public class ActorBrowserFragment extends Fragment {
 				holder.text.setVisibility(View.VISIBLE);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 				holder.subtext.setVisibility(View.VISIBLE);
+				
+				// Check the height matches our calculated column width
+				if (holder.layout.getLayoutParams().height != mItemHeight) {
+					holder.layout.setLayoutParams(mImageViewLayoutParams);
+				}
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			// Check the height matches our calculated column width
-			if (holder.layout.getLayoutParams().height != mItemHeight) {
-				holder.layout.setLayoutParams(mImageViewLayoutParams);
-			}
-
+			holder.cover.setImageDrawable(gray);
+			
 			holder.text.setText(actors.get(position).getName());
 			holder.subtext.setText(actors.get(position).getCharacter().equals("null") ? "" : actors.get(position).getCharacter());
-			holder.subtext.setVisibility(View.VISIBLE);
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			if (!actors.get(position).getUrl().contains("null"))
-				mPicasso.load(actors.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.noactor).into(holder.cover);
+			if (!actors.get(position).getUrl().endsWith("null"))
+				mPicasso.load(actors.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(holder);
 			else
 				holder.cover.setImageResource(R.drawable.noactor);
 
@@ -243,7 +253,6 @@ public class ActorBrowserFragment extends Fragment {
 		public void setItemHeight(int height) {
 			mItemHeight = height;
 			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 1.5));
-			notifyDataSetChanged();
 		}
 
 		public void setNumColumns(int numColumns) {
@@ -258,7 +267,7 @@ public class ActorBrowserFragment extends Fragment {
 	protected class GetActorDetails extends AsyncTask<String, String, String> {
 		@Override
 		protected String doInBackground(String... params) {
-			try {
+			try {				
 				HttpClient httpclient = new DefaultHttpClient();
 				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
 				httppost.setHeader("Accept", "application/json");

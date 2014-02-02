@@ -11,6 +11,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.graphics.Bitmap;
 
 import com.crashlytics.android.Crashlytics;
 import com.miz.db.DbAdapter;
@@ -141,5 +142,11 @@ public class MizuuApplication extends Application {
 		
 		// Target 20% of the available heap.
 		return 1024 * 1024 * memoryClass / 5;
+	}
+	
+	private static Bitmap.Config mBitmapConfig = Bitmap.Config.RGB_565;
+	
+	public static Bitmap.Config getBitmapConfig() {
+		return mBitmapConfig;
 	}
 }
