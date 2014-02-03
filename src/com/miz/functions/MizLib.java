@@ -549,6 +549,7 @@ public class MizLib {
 	}
 
 	public static void resizeBitmapFileToCoverSize(Context c, String filepath) {
+		
 		final int mImageThumbSize = c.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		final int mImageThumbSpacing = c.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
@@ -577,8 +578,11 @@ public class MizLib {
 			if (new File(filepath).exists())
 				try {
 					Bitmap bm = decodeSampledBitmapFromFile(filepath, imageWidth, (int) (imageWidth * 1.5));
+					bm = Bitmap.createScaledBitmap(bm, imageWidth, (int) (imageWidth * 1.5), true);
 					FileOutputStream out = new FileOutputStream(filepath);
 					bm.compress(Bitmap.CompressFormat.JPEG, 90, out);
+					out.close();
+					bm.recycle();
 				} catch (Exception e) {}
 		}
 	}

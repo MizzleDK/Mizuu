@@ -268,8 +268,12 @@ public class CoverSearchFragmentTv extends Fragment {
 					}}
 						);
 
-				MizLib.downloadFile(url, new File(MizLib.getTvShowThumbFolder(getActivity()), TVDB_ID + ".jpg").getAbsolutePath());
+				String path = new File(MizLib.getTvShowThumbFolder(getActivity()), TVDB_ID + ".jpg").getAbsolutePath();
+				
+				MizLib.downloadFile(url, path);
 
+				MizLib.resizeBitmapFileToCoverSize(getActivity(), path);
+				
 				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-show-cover-change"));
 				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-shows-update"));
 
