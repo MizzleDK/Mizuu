@@ -4,14 +4,12 @@ public class MenuItem {
 	
 	private boolean isHeader, isThirdPartyApp;
 	private int count;
-	private Class<?> className;
 	private String title, packageName;
 	
-	public MenuItem(String title, int count, boolean isHeader, Class<?> className) {
+	public MenuItem(String title, int count, boolean isHeader) {
 		this.title = title;
 		this.count = count;
 		this.isHeader = isHeader;
-		this.className = className;
 	}
 	
 	public MenuItem(String title, int count, boolean isHeader, String packageName) {
@@ -36,10 +34,6 @@ public class MenuItem {
 	
 	public boolean isThirdPartyApp() {
 		return isThirdPartyApp;
-	}
-	
-	public Class<?> getClassName() {
-		return className;
 	}
 	
 	public String getPackageName() {

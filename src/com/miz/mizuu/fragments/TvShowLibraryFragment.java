@@ -59,7 +59,7 @@ import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
-import com.miz.mizuu.MainMenuActivity;
+import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
@@ -374,7 +374,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 			holder.cover.setImageDrawable(gray);
 			
-			mPicasso.load(shownShows.get(position).getThumbnail()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
+			mPicasso.load(shownShows.get(position).getThumbnail()).config(MizuuApplication.getBitmapConfig()).into(holder);
 
 			return convertView;
 		}
@@ -570,9 +570,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+		if (((Main) getActivity()).isDrawerOpen()) {
 			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
-			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
+			((Main) getActivity()).showDrawerOptionsMenu(menu, inflater);
 		} else {
 			setupActionBar();
 			inflater.inflate(R.menu.menutv, menu);

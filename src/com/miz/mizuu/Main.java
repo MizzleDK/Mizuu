@@ -19,6 +19,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -40,11 +42,15 @@ import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
+import com.miz.mizuu.fragments.MovieDiscoveryViewPagerFragment;
+import com.miz.mizuu.fragments.MovieLibraryFragment;
+import com.miz.mizuu.fragments.TvShowLibraryFragment;
+import com.miz.mizuu.fragments.WebVideosViewPagerFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 @SuppressLint("NewApi")
-public abstract class MainMenuActivity extends MizActivity {
+public class Main extends MizActivity {
 
 	public static final int MOVIES = 0, SHOWS = 1, WATCHLIST = 2, WEB_MOVIES = 3, WEB_VIDEOS = 4;
 	private int mNumMovies, mNumShows, mNumWatchlist, selectedIndex;
@@ -99,11 +105,12 @@ public abstract class MainMenuActivity extends MizActivity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				if (tab1.isSelected()) {
-					Intent i = new Intent();
+					/*Intent i = new Intent();
 					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 					i.setClass(getApplicationContext(), menu.get(arg2).getClassName());
 					startActivity(i);
-					overridePendingTransition(R.anim.mainfadein, R.anim.splashfadeout);
+					overridePendingTransition(R.anim.mainfadein, R.anim.splashfadeout);*/
+					loadFragment(arg2 + 1);
 				} else {
 					final PackageManager pm = getPackageManager();
 					Intent i = pm.getLaunchIntentForPackage(thirdPartyApps.get(arg2).getPackageName());
@@ -115,13 +122,6 @@ public abstract class MainMenuActivity extends MizActivity {
 				}
 			}
 		});
-
-		if (savedInstanceState != null && savedInstanceState.containsKey("tabIndex")) {
-			selectedIndex = savedInstanceState.getInt("selectedIndex");
-			changeTabSelection(savedInstanceState.getInt("tabIndex"));
-		} else {
-			tab1.setSelected(true);
-		}
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		if (MizLib.hasICS())
@@ -147,9 +147,66 @@ public abstract class MainMenuActivity extends MizActivity {
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+		if (savedInstanceState != null && savedInstanceState.containsKey("tabIndex")) {
+			selectedIndex = savedInstanceState.getInt("selectedIndex");
+			changeTabSelection(savedInstanceState.getInt("tabIndex"));
+			loadFragment(selectedIndex + 1);
+		} else {
+			tab1.setSelected(true);
+			loadFragment(Integer.parseInt(startup));
+		}
+
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
+	}
+
+	private void loadFragment(int type) {
+		type--; // Since the prefsStartup preference starts at 0 for Welcome, and I'm using 0 for Movies here, we subtract one from type.
+
+		setTitle(null);
+
+		Fragment frag = getSupportFragmentManager().findFragmentByTag("frag" + type);
+		if (frag == null) {
+			final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+			switch (type) {
+			case MOVIES:
+				ft.replace(R.id.content_frame, MovieLibraryFragment.newInstance(MovieLibraryFragment.MAIN), "frag" + type);
+				break;
+			case SHOWS:
+				ft.replace(R.id.content_frame, TvShowLibraryFragment.newInstance(), "frag" + type);
+				break;
+			case WATCHLIST:
+				ft.replace(R.id.content_frame, MovieLibraryFragment.newInstance(MovieLibraryFragment.OTHER), "frag" + type);
+				break;
+			case WEB_MOVIES:
+				ft.replace(R.id.content_frame, MovieDiscoveryViewPagerFragment.newInstance(), "frag" + type);
+				break;
+			case WEB_VIDEOS:
+				ft.replace(R.id.content_frame, WebVideosViewPagerFragment.newInstance(), "frag" + type);
+				break;
+			}
+			ft.commit();
+		}
+
+		selectListIndex(type);
+
+		if (mDrawerLayout != null)
+			mDrawerLayout.closeDrawers();
+	}
+
+	@Override
+	public void onNewIntent(Intent newIntent) {
+		super.onNewIntent(newIntent);
+
+		Intent i = null;
+		if (selectedIndex == MOVIES)
+			i = new Intent("mizuu-movie-actor-search");
+		else // TV shows
+			i = new Intent("mizuu-shows-actor-search");
+		i.putExtras(newIntent.getExtras());
+		LocalBroadcastManager.getInstance(this).sendBroadcast(i);
 	}
 
 	@Override
@@ -241,11 +298,11 @@ public abstract class MainMenuActivity extends MizActivity {
 	private void setupMenuItems() {
 		menu.clear();
 
-		menu.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, false, MainMovies.class));
-		menu.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, false, MainTvShows.class));
-		menu.add(new MenuItem(getString(R.string.chooserWatchList), mNumWatchlist, false, MainWatchlist.class));
-		menu.add(new MenuItem(getString(R.string.drawerOnlineMovies), 0, false, MovieDiscovery.class));
-		menu.add(new MenuItem(getString(R.string.drawerWebVideos), 0, false, MainWeb.class));
+		menu.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, false));
+		menu.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, false));
+		menu.add(new MenuItem(getString(R.string.chooserWatchList), mNumWatchlist, false));
+		menu.add(new MenuItem(getString(R.string.drawerOnlineMovies), 0, false));
+		menu.add(new MenuItem(getString(R.string.drawerWebVideos), 0, false));
 
 		setupThirdPartyApps();
 	}

@@ -65,7 +65,7 @@ import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
-import com.miz.mizuu.MainMenuActivity;
+import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieCollection;
 import com.miz.mizuu.MovieDetails;
@@ -432,13 +432,13 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			holder.cover.setImageDrawable(gray);
 
 			if (isCollections) {
-				mPicasso.load(shownMovies.get(position).getCollectionPoster()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
+				mPicasso.load(shownMovies.get(position).getCollectionPoster()).config(MizuuApplication.getBitmapConfig()).into(holder);
 				holder.text.setText(shownMovies.get(position).getCollection());
 			} else { // Movies
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
-					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
+					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).config(MizuuApplication.getBitmapConfig()).into(holder);
 				} else {
-					mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
+					mPicasso.load(shownMovies.get(position).getThumbnail()).config(MizuuApplication.getBitmapConfig()).into(holder);
 				}
 			}
 
@@ -767,9 +767,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+		if (((Main) getActivity()).isDrawerOpen()) {
 			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
-			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
+			((Main) getActivity()).showDrawerOptionsMenu(menu, inflater);
 		} else {
 			setupActionBar();
 			inflater.inflate(R.menu.menu, menu);

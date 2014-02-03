@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.SpinnerItem;
-import com.miz.mizuu.MainMenuActivity;
+import com.miz.mizuu.Main;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 
@@ -103,9 +103,9 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+		if (((Main) getActivity()).isDrawerOpen()) {
 			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
-			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
+			((Main) getActivity()).showDrawerOptionsMenu(menu, inflater);
 		} else {
 			setupActionBar();
 			inflater.inflate(R.menu.menuweb, menu);

@@ -186,7 +186,8 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 			if (getIntent().getExtras().getBoolean("isFromWidget")) {
 				Intent i = new Intent(Intent.ACTION_VIEW);
 				i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-				i.setClass(getApplicationContext(), MainTvShows.class);
+				i.putExtra("startup", String.valueOf(Main.SHOWS));
+				i.setClass(getApplicationContext(), Main.class);
 				startActivity(i);
 			}
 			finish();

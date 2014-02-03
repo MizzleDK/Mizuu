@@ -32,7 +32,7 @@ import android.widget.Toast;
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
-import com.miz.mizuu.MainMenuActivity;
+import com.miz.mizuu.Main;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.miz.mizuu.SearchWebMovies;
@@ -131,9 +131,9 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if (((MainMenuActivity) getActivity()).isDrawerOpen()) {
+		if (((Main) getActivity()).isDrawerOpen()) {
 			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
-			((MainMenuActivity) getActivity()).showDrawerOptionsMenu(menu, inflater);
+			((Main) getActivity()).showDrawerOptionsMenu(menu, inflater);
 		} else {
 			setupActionBar();
 			inflater.inflate(R.menu.menu_web_movies, menu);

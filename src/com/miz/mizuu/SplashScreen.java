@@ -67,16 +67,8 @@ public class SplashScreen extends MizActivity {
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		if (startup.equals("0")) { // Welcome
 			i.setClass(getApplicationContext(), Welcome.class);
-		} else if (startup.equals("1")) {
-			i.setClass(getApplicationContext(), MainMovies.class);
-		} else if (startup.equals("2")) {
-			i.setClass(getApplicationContext(), MainTvShows.class);
-		} else if (startup.equals("3")) {
-			i.setClass(getApplicationContext(), MainWatchlist.class);
-		} else if (startup.equals("4")) {
-			i.setClass(getApplicationContext(), MovieDiscovery.class);
-		} else {	
-			i.setClass(getApplicationContext(), MainWeb.class);
+		} else {
+			i.setClass(getApplicationContext(), Main.class);
 		}
 
 		startActivity(i);

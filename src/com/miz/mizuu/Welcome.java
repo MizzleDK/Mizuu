@@ -110,24 +110,8 @@ public class Welcome extends MizActivity implements ViewFactory {
 				if (!(arg2 == 0 || arg2 == 4)) {
 					Intent i = new Intent(Intent.ACTION_VIEW);
 					i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-					switch (arg2) {
-					case 1:
-						i.setClass(getApplicationContext(), MainMovies.class);
-						break;
-					case 2:
-						i.setClass(getApplicationContext(), MainTvShows.class);
-						break;
-					case 3:
-						i.setClass(getApplicationContext(), MainWatchlist.class);
-						break;
-					case 4:
-						i.setClass(getApplicationContext(), MovieDiscovery.class);
-						break;
-					default:
-						i.setClass(getApplicationContext(), MainWeb.class);
-						break;
-					}
-					i.putExtra("section", arg2);
+					i.putExtra("startup", String.valueOf(arg2 + 1));
+					i.setClass(getApplicationContext(), Main.class);
 					startActivity(i);
 					overridePendingTransition(R.anim.mainfadein, R.anim.splashfadeout);
 				}
