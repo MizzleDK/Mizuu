@@ -250,7 +250,7 @@ public class DbAdapter {
 		values.put(KEY_GENRES, genres);
 		values.put(KEY_TO_WATCH, toWatch);
 		values.put(KEY_HAS_WATCHED, hasWatched);
-		values.put(KEY_EXTRA_2, date);
+		values.put(KEY_EXTRA_1, date);
 		return values;
 	}
 
