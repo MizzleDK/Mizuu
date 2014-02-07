@@ -15,7 +15,6 @@ import com.miz.base.MizActivity;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MoveFilesService;
-import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.UpdateMovieService;
 import com.miz.service.UpdateShowsService;
 

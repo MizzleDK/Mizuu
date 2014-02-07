@@ -13,7 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.miz.functions.MizLib;
-import com.miz.service.UpdateMovieService;
+import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.UpdateShowsService;
 
 public class Update extends MizActivity {
@@ -70,7 +70,7 @@ public class Update extends MizActivity {
 
 	public void startUpdate(View v) {
 		if (isMovie && !MizLib.isMovieLibraryBeingUpdated(this))
-			getApplicationContext().startService(new Intent(getApplicationContext(), UpdateMovieService.class));
+			getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));
 		else if (!isMovie && !MizLib.isTvShowLibraryBeingUpdated(this))
 			getApplicationContext().startService(new Intent(getApplicationContext(), UpdateShowsService.class));
 		setResult(1); // end activity and reload Main activity

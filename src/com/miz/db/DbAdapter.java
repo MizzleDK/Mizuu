@@ -177,6 +177,8 @@ public class DbAdapter {
 	}
 
 	public boolean hasMultipleVersions(String movieId) {
+		if (movieId.equalsIgnoreCase("invalid"))
+			return false;
 		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
 		if (mCursor == null)
 			return false;

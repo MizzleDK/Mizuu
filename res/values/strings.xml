@@ -426,6 +426,7 @@
     <string name="ignoreFilesizeCheckTitle">Ignore file size check for offline watching</string>
     <string name="ignoreFilesizeCheck">Skip the available storage space check when downloading videos for offline watching.</string>
     <string name="finishedMovieLibraryUpdate">Finished updating movies</string>
+    <string name="finishedTvShowsLibraryUpdate">Finished updating TV shows</string>
     <string name="stopFileDownload">Stop file download</string>
     <string name="scanning">Scanning</string>
 

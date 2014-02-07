@@ -95,6 +95,7 @@ import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MakeAvailableOffline;
+import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.UpdateMovieService;
 import com.miz.service.UpdateShowsService;
 import com.squareup.okhttp.OkHttpClient;
@@ -1921,7 +1922,7 @@ public class MizLib {
 		List<RunningServiceInfo> services = manager.getRunningServices(Integer.MAX_VALUE);
 		int count = services.size();
 		for (int i = 0; i < count; i++) {
-			if (UpdateMovieService.class.getName().equals(services.get(i).service.getClassName())) {
+			if (UpdateMovieService.class.getName().equals(services.get(i).service.getClassName()) || MovieLibraryUpdate.class.getName().equals(services.get(i).service.getClassName())) {
 				return true;
 			}
 		}
