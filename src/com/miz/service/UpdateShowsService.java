@@ -179,7 +179,7 @@ public class UpdateShowsService extends Service {
 			storageDirectories.add(new FileSource(
 					c.getLong(c.getColumnIndex(DbAdapterSources.KEY_ROWID)),
 					c.getString(c.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-					c.getInt(c.getColumnIndex(DbAdapterSources.KEY_IS_SMB)),
+					c.getInt(c.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
 					c.getString(c.getColumnIndex(DbAdapterSources.KEY_USER)),
 					c.getString(c.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
 					c.getString(c.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),
@@ -297,7 +297,7 @@ public class UpdateShowsService extends Service {
 
 		int count = storageDirectories.size();
 		for (int i = 0; i < count; i++) {
-			if (storageDirectories.get(i).isSmb()) {
+			if (storageDirectories.get(i).getFileSourceType() == FileSource.SMB) {
 				if (MizLib.isOnline(getApplicationContext())) {
 					try {
 						MizFile storageDirectory = new MizFile(new SmbFile(

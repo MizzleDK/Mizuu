@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miz.db.DbAdapterSources;
+import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 import com.miz.functions.NetworkFile;
 import com.miz.mizuu.MizuuApplication;
@@ -94,9 +95,9 @@ public class NetworkBrowserFragment extends Fragment {
 			public void onClick(View v) {
 				DbAdapterSources dbHelper = MizuuApplication.getSourcesAdapter();
 				if (isMovie) {
-					dbHelper.createSource("smb://" + visiblePath.replace("smb://", ""), DbAdapterSources.KEY_TYPE_MOVIE, 1, user, pass, domain);
+					dbHelper.createSource("smb://" + visiblePath.replace("smb://", ""), DbAdapterSources.KEY_TYPE_MOVIE, FileSource.SMB, user, pass, domain);
 				} else {
-					dbHelper.createSource("smb://" + visiblePath.replace("smb://", ""), DbAdapterSources.KEY_TYPE_SHOW, 1, user, pass, domain);
+					dbHelper.createSource("smb://" + visiblePath.replace("smb://", ""), DbAdapterSources.KEY_TYPE_SHOW, FileSource.SMB, user, pass, domain);
 				}
 				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-filesource-change"));
 				getActivity().finish();

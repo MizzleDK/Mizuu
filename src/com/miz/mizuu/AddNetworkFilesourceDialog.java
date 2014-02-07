@@ -119,11 +119,11 @@ public class AddNetworkFilesourceDialog extends Activity {
 		// Fetch all movie sources and add them to the array
 		Cursor cursor = dbHelper.fetchAllSources();
 		while (cursor.moveToNext()) {
-			if (cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_IS_SMB)) == 1)
+			if (cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)) == FileSource.SMB)
 				sources.add(new FileSource(
 						cursor.getLong(cursor.getColumnIndex(DbAdapterSources.KEY_ROWID)),
 						cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-						cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_IS_SMB)),
+						cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
 						cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_USER)),
 						cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
 						cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),
@@ -180,7 +180,7 @@ public class AddNetworkFilesourceDialog extends Activity {
 			sources.add(new FileSource(
 					cursor.getLong(cursor.getColumnIndex(DbAdapterSources.KEY_ROWID)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-					cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_IS_SMB)),
+					cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_USER)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),

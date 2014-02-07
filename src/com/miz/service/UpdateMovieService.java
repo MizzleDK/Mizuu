@@ -38,6 +38,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterSources;
+import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizFile;
 import com.miz.functions.MizLib;
@@ -169,7 +170,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 			storageDirectories.add(new FileSource(
 					c.getLong(c.getColumnIndex(DbAdapterSources.KEY_ROWID)),
 					c.getString(c.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-					c.getInt(c.getColumnIndex(DbAdapterSources.KEY_IS_SMB)),
+					c.getInt(c.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
 					c.getString(c.getColumnIndex(DbAdapterSources.KEY_USER)),
 					c.getString(c.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
 					c.getString(c.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),
@@ -345,11 +346,11 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 				try {
 					baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) {
-					baseUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
+					baseUrl = MizLib.TMDB_BASE_URL;
 				}
 			}
 		} catch (Exception e) {
-			baseUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
+			baseUrl = MizLib.TMDB_BASE_URL;
 		} finally {
 			editor = settings.edit();
 			editor.putString("tmdbBaseUrl", baseUrl);
@@ -371,7 +372,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 
 		int count = storageDirectories.size();
 		for (int i = 0; i < count; i++) {
-			if (storageDirectories.get(i).isSmb()) {
+			if (storageDirectories.get(i).getFileSourceType() == FileSource.SMB) {
 				if (MizLib.isOnline(getApplicationContext())) {
 					try {
 						MizFile storageDirectory = new MizFile(new SmbFile(
@@ -420,7 +421,8 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles, true);
 		while (tempCursor.moveToNext()) {
 			try {
-				dbMovies.add(new DbMovie(tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
+				dbMovies.add(new DbMovie(getApplicationContext(),
+						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
 						tempCursor.getLong(tempCursor.getColumnIndex(DbAdapter.KEY_ROWID)),
 						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
 						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
@@ -501,7 +503,7 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles, true);
 		while (tempCursor.moveToNext()) {
 			try {
-				dbMovies.add(new DbMovie(tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
+				dbMovies.add(new DbMovie(getApplicationContext(), tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
 						tempCursor.getLong(tempCursor.getColumnIndex(DbAdapter.KEY_ROWID)),
 						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TMDBID))));
 			} catch (NullPointerException e) {}
@@ -591,87 +593,6 @@ public class UpdateMovieService extends Service implements OnSharedPreferenceCha
 		if (MizLib.hasTraktAccount(this) && syncLibraries) {
 			Intent movies = new Intent(getApplicationContext(), TraktMoviesSyncService.class);
 			getApplicationContext().startService(movies);
-		}
-	}
-
-	private class DbMovie {
-		private String filepath, tmdbId, runtime, year, genres, title;
-		private long rowId;
-
-		public DbMovie(String filepath, long rowId, String tmdbId) {
-			this.filepath = filepath;
-			this.rowId = rowId;
-			this.tmdbId = tmdbId;
-		}
-
-		public DbMovie(String filepath, long rowId, String tmdbId, String runtime, String year, String genres, String title) {
-			this.filepath = filepath;
-			this.rowId = rowId;
-			this.tmdbId = tmdbId;
-			this.runtime = runtime;
-			this.year = year;
-			this.genres = genres;
-			this.title = title;
-		}
-
-		public String getFilepath() {
-			if (filepath.contains("smb") && filepath.contains("@"))
-				return "smb://" + filepath.substring(filepath.indexOf("@") + 1);
-			return filepath.replace("/smb:/", "smb://");
-		}
-
-		public long getRowId() {
-			return rowId;
-		}
-
-		public String getThumbnail() {
-			return new File(MizLib.getMovieThumbFolder(getApplicationContext()), tmdbId + ".jpg").getAbsolutePath();
-		}
-
-		public String getBackdrop() {
-			return new File(MizLib.getMovieBackdropFolder(getApplicationContext()), tmdbId + "_bg.jpg").getAbsolutePath();
-		}
-
-		public String getRuntime() {
-			return runtime;
-		}
-
-		public String getReleaseYear() {
-			return year;
-		}
-
-		public String getGenres() {
-			return genres;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public boolean isUnidentified() {
-			if (getRuntime().equals("0")
-					&& MizLib.isEmpty(getReleaseYear())
-					&& MizLib.isEmpty(getGenres())
-					&& MizLib.isEmpty(getTitle()))
-				return true;
-
-			return false;
-		}
-
-		public boolean isNetworkFile() {
-			return getFilepath().contains("smb:/");
-		}
-
-		public String getTmdbId() {
-			return tmdbId;
-		}
-
-		public boolean hasOfflineCopy(Context ctx) {
-			return getOfflineCopyFile(ctx).exists();
-		}
-
-		public File getOfflineCopyFile(Context CONTEXT) {
-			return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(filepath) + "." + MizLib.getFileExtension(filepath));
 		}
 	}
 }

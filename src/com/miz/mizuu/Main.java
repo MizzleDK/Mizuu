@@ -155,7 +155,7 @@ public class Main extends MizActivity {
 			tab1.setSelected(true);
 			loadFragment(Integer.parseInt(startup));
 		}
-		
+
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
@@ -200,13 +200,15 @@ public class Main extends MizActivity {
 	public void onNewIntent(Intent newIntent) {
 		super.onNewIntent(newIntent);
 
-		Intent i = null;
-		if (selectedIndex == MOVIES)
-			i = new Intent("mizuu-movie-actor-search");
-		else // TV shows
-			i = new Intent("mizuu-shows-actor-search");
-		i.putExtras(newIntent.getExtras());
-		LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+		if (!newIntent.hasExtra("fromUpdate")) {
+			Intent i = null;
+			if (selectedIndex == MOVIES)
+				i = new Intent("mizuu-movie-actor-search");
+			else // TV shows
+				i = new Intent("mizuu-shows-actor-search");
+			i.putExtras(newIntent.getExtras());
+			LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+		}
 	}
 
 	@Override

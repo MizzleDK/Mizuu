@@ -762,6 +762,34 @@ public class MizLib {
 		}
 		return false;
 	}
+	
+	public static boolean isNfoFile(String file) {
+		if (file.contains(".")) { // Must have a file type
+			String type = file.substring(file.lastIndexOf("."));
+			return type.equalsIgnoreCase(".nfo");
+		}
+		return false;
+	}
+	
+	public static String removeExtension(String filepath) {
+	    final int lastPeriodPos = filepath.lastIndexOf('.');
+	    if (lastPeriodPos <= 0) {
+	        return filepath;
+	    } else {
+	        // Remove the last period and everything after it
+	        return filepath.substring(0, lastPeriodPos);
+	    }
+	}
+	
+	public static String convertToGenericNfo(String filepath) {
+	    final int lastPeriodPos = filepath.lastIndexOf('/');
+	    if (lastPeriodPos <= 0) {
+	        return filepath;
+	    } else {
+	        // Remove the last period and everything after it
+	        return filepath.substring(0, lastPeriodPos) + "/movie.nfo";
+	    }
+	}
 
 	/**
 	 * Returns a blurred bitmap. It uses a fast blur algorithm.
@@ -1137,11 +1165,11 @@ public class MizLib {
 
 		while (c.moveToNext()) {
 			if (onlyNetworkSources) {
-				if (c.getInt(c.getColumnIndex(DbAdapterSources.KEY_IS_SMB)) == 1) {
+				if (c.getInt(c.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)) == FileSource.SMB) {
 					filesources.add(new FileSource(
 							c.getLong(c.getColumnIndex(DbAdapterSources.KEY_ROWID)),
 							c.getString(c.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-							c.getInt(c.getColumnIndex(DbAdapterSources.KEY_IS_SMB)),
+							c.getInt(c.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
 							c.getString(c.getColumnIndex(DbAdapterSources.KEY_USER)),
 							c.getString(c.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
 							c.getString(c.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),
@@ -1152,7 +1180,7 @@ public class MizLib {
 				filesources.add(new FileSource(
 						c.getLong(c.getColumnIndex(DbAdapterSources.KEY_ROWID)),
 						c.getString(c.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-						c.getInt(c.getColumnIndex(DbAdapterSources.KEY_IS_SMB)),
+						c.getInt(c.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
 						c.getString(c.getColumnIndex(DbAdapterSources.KEY_USER)),
 						c.getString(c.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
 						c.getString(c.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),

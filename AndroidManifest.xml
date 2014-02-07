@@ -129,9 +129,6 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable_actors_tv" />
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value="com.miz.mizuu.Main" />
         </activity>
 
         <!-- Collection activity -->
@@ -280,6 +277,7 @@
         <service android:name="com.miz.service.TraktMoviesSyncService" />
         <service android:name="com.miz.service.TraktTvShowsSyncService" />
         <service android:name="com.miz.service.MakeAvailableOffline" />
+        <service android:name="com.miz.service.MovieLibraryUpdate" />
 
         <!-- Update activity -->
         <activity
@@ -373,7 +371,17 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name="com.miz.mizuu.CancelMovieUpdate"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@style/Theme.Transparent" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
         <!-- Widgets -->
         <receiver
             android:name="com.miz.widgets.MovieStackWidgetProvider"

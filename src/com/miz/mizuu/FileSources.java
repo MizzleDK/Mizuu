@@ -89,7 +89,7 @@ public class FileSources extends MizActivity {
 			sources.add(new FileSource(
 					cursor.getLong(cursor.getColumnIndex(DbAdapterSources.KEY_ROWID)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-					cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_IS_SMB)),
+					cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_USER)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),

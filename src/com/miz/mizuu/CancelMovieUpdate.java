@@ -1,5 +1,7 @@
 package com.miz.mizuu;
 
+import com.miz.service.MovieLibraryUpdate;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,7 +11,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
-public class CancelOfflineDownload extends Activity {
+public class CancelMovieUpdate extends Activity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -19,13 +21,13 @@ public class CancelOfflineDownload extends Activity {
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(getString(R.string.areYouSure))
-		.setTitle(getString(R.string.stopFileDownload))
+		.setTitle(getString(R.string.stringCancelUpdate))
 		.setCancelable(false)
 		.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {	
-				LocalBroadcastManager.getInstance(CancelOfflineDownload.this).sendBroadcast(new Intent("mizuu-stop-offline-download"));
+				LocalBroadcastManager.getInstance(CancelMovieUpdate.this).sendBroadcast(new Intent(MovieLibraryUpdate.STOP_MOVIE_LIBRARY_UPDATE));
 				
-				Toast.makeText(CancelOfflineDownload.this, getString(R.string.stringDownloadCancelled), Toast.LENGTH_LONG).show();
+				Toast.makeText(CancelMovieUpdate.this, getString(R.string.stringUpdateCancelled), Toast.LENGTH_LONG).show();
 				finish();
 				return;
 			}

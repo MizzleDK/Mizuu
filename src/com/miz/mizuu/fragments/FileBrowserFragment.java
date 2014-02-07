@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.miz.db.DbAdapterSources;
+import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -75,10 +76,10 @@ public class FileBrowserFragment extends Fragment {
 			public void onClick(View v) {
 				DbAdapterSources dbHelper = MizuuApplication.getSourcesAdapter();
 				if (isMovie) {
-					dbHelper.createSource(currentFolder.getAbsolutePath(), DbAdapterSources.KEY_TYPE_MOVIE, 0, "", "", "");
+					dbHelper.createSource(currentFolder.getAbsolutePath(), DbAdapterSources.KEY_TYPE_MOVIE, FileSource.FILE, "", "", "");
 					getActivity().setResult(0); // Movie
 				} else {
-					dbHelper.createSource(currentFolder.getAbsolutePath(), DbAdapterSources.KEY_TYPE_SHOW, 0, "", "", "");
+					dbHelper.createSource(currentFolder.getAbsolutePath(), DbAdapterSources.KEY_TYPE_SHOW, FileSource.FILE, "", "", "");
 					getActivity().setResult(1); // Show
 				}
 				getActivity().finish();

@@ -5,14 +5,16 @@ import java.io.File;
 import com.miz.db.DbAdapterSources;
 
 public class FileSource {
+	
+	public static final int FILE = 0, SMB = 1;
 	private long rowId;
 	private String filepath, user, password, domain, type;
-	private int isSmb;
+	private int fileSourceType;
 
-	public FileSource(long rowId, String filepath, int isSmb, String user, String password, String domain, String type) {
+	public FileSource(long rowId, String filepath, int fileSourceType, String user, String password, String domain, String type) {
 		this.rowId = rowId;
 		this.filepath = filepath;
-		this.isSmb = isSmb;
+		this.fileSourceType = fileSourceType;
 		this.user = user;
 		this.password = password;
 		this.domain = domain;
@@ -35,8 +37,8 @@ public class FileSource {
 		}
 	}
 
-	public boolean isSmb() {
-		return isSmb == 1 ? true : false;
+	public int getFileSourceType() {
+		return fileSourceType;
 	}
 
 	public String getUser() {

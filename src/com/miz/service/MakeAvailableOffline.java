@@ -77,13 +77,6 @@ public class MakeAvailableOffline extends IntentService {
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		super.onStartCommand(intent, flags, startId);
-
-		return START_NOT_STICKY;
-	}
-
-	@Override
 	protected void onHandleIntent(Intent intent) {
 		reset();
 
