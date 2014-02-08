@@ -6,12 +6,15 @@ import java.util.ArrayList;
 
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
+import com.miz.mizuu.R;
 
 import jcifs.smb.SmbFile;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 public class DeleteFile extends IntentService {
 
@@ -78,12 +81,19 @@ public class DeleteFile extends IntentService {
 					}
 					
 				} catch (Exception e) {
-				}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
+				}  // the file isn't available (either MalformedURLException or SmbException)
+				showErrorMessage();
 			}
 		} else {
+			boolean deleted;
 			File f = new File(file);
-			if (!f.delete())
-				f.delete();
+			
+			deleted = f.delete();
+			if (!deleted)
+				deleted = f.delete();
+			
+			if (!deleted)
+				showErrorMessage();
 			
 			ArrayList<File> subs = new ArrayList<File>();
 
@@ -102,5 +112,15 @@ public class DeleteFile extends IntentService {
 					subs.get(i).delete();
 			}
 		}
+	}
+	
+	private void showErrorMessage() {
+		Handler mHandler = new Handler();
+		mHandler.post(new Runnable() {            
+			@Override
+			public void run() {
+				Toast.makeText(getApplicationContext(), R.string.failedDeleting, Toast.LENGTH_LONG).show();              
+			}
+		});
 	}
 }

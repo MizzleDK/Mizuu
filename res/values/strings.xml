@@ -429,5 +429,6 @@
     <string name="finishedTvShowsLibraryUpdate">Finished updating TV shows</string>
     <string name="stopFileDownload">Stop file download</string>
     <string name="scanning">Scanning</string>
+    <string name="failedDeleting">Could not delete file!</string>
 
 </resources>
