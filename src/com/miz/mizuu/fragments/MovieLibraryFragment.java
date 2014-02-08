@@ -768,6 +768,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		if (((Main) getActivity()).isDrawerOpen()) {
+			if (actionBar == null && getActivity() != null)
+				actionBar = getActivity().getActionBar();
 			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
 			((Main) getActivity()).showDrawerOptionsMenu(menu, inflater);
 		} else {

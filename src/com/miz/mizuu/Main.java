@@ -143,12 +143,12 @@ public class Main extends MizActivity {
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
+		
 		if (savedInstanceState != null && savedInstanceState.containsKey("tabIndex")) {
 			selectedIndex = savedInstanceState.getInt("selectedIndex");
 			changeTabSelection(savedInstanceState.getInt("tabIndex"));
 			loadFragment(selectedIndex + 1);
-		} else if (getIntent().getExtras().containsKey("startup")) {
+		} else if (getIntent().getExtras() != null && getIntent().getExtras().containsKey("startup")) {
 			tab1.setSelected(true);
 			loadFragment(Integer.parseInt(getIntent().getExtras().getString("startup")));
 		} else {

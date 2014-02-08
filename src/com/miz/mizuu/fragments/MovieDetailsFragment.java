@@ -142,10 +142,7 @@ public class MovieDetailsFragment extends Fragment {
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (isAdded()) {
-				getActivity().finish();
-				return;
-			}
+			loadImages();
 		}
 	};
 
@@ -598,27 +595,27 @@ public class MovieDetailsFragment extends Fragment {
 		if (!MizLib.runsInPortraitMode(getActivity())) {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
 				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(cover);
-				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
+				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 			} else {
 				mPicasso.load(thisMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);
-				mPicasso.load(thisMovie.getBackdrop()).error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
+				mPicasso.load(thisMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
 			}
 		} else {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
-				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).placeholder(R.drawable.bg).into(background, new Callback() {
+				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
-						mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
+						mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 					}
 
 					@Override
 					public void onSuccess() {}					
 				});
 			} else {
-				mPicasso.load(thisMovie.getBackdrop()).placeholder(R.drawable.bg).into(background, new Callback() {
+				mPicasso.load(thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
-						mPicasso.load(thisMovie.getThumbnail()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
+						mPicasso.load(thisMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 					}
 
 					@Override

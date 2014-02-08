@@ -36,13 +36,14 @@ import android.widget.Toast;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
-import com.miz.functions.ImageLoad;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.IdentifyTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.R;
 import com.miz.service.DeleteFile;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 import com.test.smbstreamer.variant1.Streamer;
 
 public class ShowEpisodeDetailsFragment extends Fragment {
@@ -55,6 +56,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 	private boolean useWildcard, prefsDisableEthernetWiFiCheck, ignoreDeletedFiles;
 	private Typeface tf;
 	private long videoPlaybackStarted, videoPlaybackEnded;
+	private Picasso mPicasso;
 
 	public static ShowEpisodeDetailsFragment newInstance(String rowId) {
 		ShowEpisodeDetailsFragment frag = new ShowEpisodeDetailsFragment();
@@ -103,6 +105,8 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 			}
 			cursor.close();
 		}
+		
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 	}
 
 	@Override
@@ -200,24 +204,16 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 					}
 				}
 			});
-
-			if (new File(thisEpisode.getEpisodePhoto()).exists()) {
-				ImageLoad loader = new ImageLoad();
-				loader.setFileUrl(thisEpisode.getEpisodePhoto());
-				loader.setImageView(cover);
-				loader.setDuration(250);
-				loader.execute();
-			} else {
-				if (new File(MizLib.getTvShowThumbFolder(getActivity()) + "/" + thisEpisode.getShowId() + ".jpg").exists()) {
-					ImageLoad loader = new ImageLoad();
-					loader.setFileUrl(MizLib.getTvShowBackdropFolder(getActivity()) + "/" + thisEpisode.getShowId() + "_tvbg.jpg");
-					loader.setImageView(cover);
-					loader.setDuration(250);
-					loader.execute();
-				} else {
-					cover.setImageResource(R.drawable.nobackdrop);
+			
+			mPicasso.load(thisEpisode.getEpisodePhoto()).skipMemoryCache().placeholder(R.drawable.bg).into(cover, new Callback() {
+				@Override
+				public void onError() {
+					mPicasso.load(MizLib.getTvShowThumbFolder(getActivity()) + "/" + thisEpisode.getShowId() + ".jpg").skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.nobackdrop).into(cover);
 				}
-			}
+
+				@Override
+				public void onSuccess() {}					
+			});
 		}
 	}
 

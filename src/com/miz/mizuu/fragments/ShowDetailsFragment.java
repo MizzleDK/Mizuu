@@ -23,11 +23,12 @@ import android.widget.TextView;
 
 import com.miz.db.DbAdapterTvShow;
 import com.miz.functions.AspectRatioImageViewCover;
-import com.miz.functions.ImageLoad;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 public class ShowDetailsFragment extends Fragment {
 
@@ -38,6 +39,7 @@ public class ShowDetailsFragment extends Fragment {
 	private ImageView background;
 	private Typeface tf;
 	private boolean ignorePrefixes;
+	private Picasso mPicasso;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -83,6 +85,8 @@ public class ShowDetailsFragment extends Fragment {
 		}
 
 		cursor.close();
+		
+		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-cover-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-backdrop-change"));
@@ -91,8 +95,7 @@ public class ShowDetailsFragment extends Fragment {
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (isAdded())
-				getActivity().recreate();
+			loadImages();
 		}
 	};
 
@@ -200,26 +203,18 @@ public class ShowDetailsFragment extends Fragment {
 
 	private void loadImages() {
 		if (!MizLib.runsInPortraitMode(getActivity())) {
-			ImageLoad posterLoader = new ImageLoad();
-			posterLoader.setFileUrl(thisShow.getCoverPhoto());
-			posterLoader.setOnFailResource(R.drawable.loading_image);
-			posterLoader.setImageView(cover);
-			posterLoader.setDuration(0);
-			posterLoader.execute();
-
-			ImageLoad backdropLoader = new ImageLoad();
-			backdropLoader.setFileUrl(thisShow.getBackdrop());
-			backdropLoader.setImageView(background);
-			backdropLoader.setOnFailResource(R.drawable.bg);
-			backdropLoader.setDuration(0);
-			backdropLoader.execute();
+			mPicasso.load(thisShow.getCoverPhoto()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);
+			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
 		} else {
-			ImageLoad backdropLoader = new ImageLoad();
-			backdropLoader.setFileUrl(thisShow.getBackdrop());
-			backdropLoader.setImageView(background);
-			backdropLoader.setOnFailResource(R.drawable.bg);
-			backdropLoader.setDuration(0);
-			backdropLoader.execute();
+			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
+				@Override
+				public void onError() {
+					mPicasso.load(thisShow.getCoverPhoto()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
+				}
+
+				@Override
+				public void onSuccess() {}					
+			});
 		}
 	}
 }

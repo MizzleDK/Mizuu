@@ -1307,7 +1307,7 @@ public class MizLib {
 		return null;
 	}
 
-	public static String[] subtitleFormats = new String[]{".srt", ".sub", ".ssa", ".ssf", ".smi", ".txt", ".usf", ".ass", ".stp",};
+	public static String[] subtitleFormats = new String[]{".srt", ".sub", ".ssa", ".ssf", ".smi", ".txt", ".usf", ".ass", ".stp", ".idx", ".aqt", ".cvd", ".dks", ".jss", ".mpl", ".pjs", ".psb", ".rt", ".svcd", ".usf"};
 
 	public static List<SmbFile> getSubtitleFiles(String filepath, NtlmPasswordAuthentication auth) throws MalformedURLException, UnsupportedEncodingException {
 		ArrayList<SmbFile> subs = new ArrayList<SmbFile>();
