@@ -12,6 +12,7 @@
             android:key="prefsConfirmBackPress"
             android:summary="@string/confirmBackPressDescription"
             android:title="@string/confirmBackPressTitle" />
+        <CheckBoxPreference android:title="@string/alwaysDeleteFileTitle" android:summary="@string/alwaysDeleteFile" android:icon="@drawable/delete" android:defaultValue="false" android:key="prefsAlwaysDeleteFile"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/network" >
         <ListPreference

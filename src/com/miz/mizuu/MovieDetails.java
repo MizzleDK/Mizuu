@@ -268,6 +268,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		View dialogLayout = getLayoutInflater().inflate(R.layout.delete_file_dialog_layout, null);
 		final CheckBox cb = (CheckBox) dialogLayout.findViewById(R.id.deleteFile);
+		cb.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsAlwaysDeleteFile", true));
 
 		builder.setTitle(getString(R.string.removeMovie))
 		.setView(dialogLayout)

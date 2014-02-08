@@ -430,5 +430,7 @@
     <string name="stopFileDownload">Stop file download</string>
     <string name="scanning">Scanning</string>
     <string name="failedDeleting">Could not delete file!</string>
+    <string name="alwaysDeleteFileTitle">Always delete file when removing content</string>
+    <string name="alwaysDeleteFile">Automatically check the \"Delete file\" option when removing a movie or TV show episode.</string>
 
 </resources>

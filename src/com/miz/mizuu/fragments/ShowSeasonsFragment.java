@@ -957,6 +957,7 @@ public class ShowSeasonsFragment extends Fragment {
 
 		View dialogLayout = getActivity().getLayoutInflater().inflate(R.layout.delete_file_dialog_layout, null);
 		final CheckBox cb = (CheckBox) dialogLayout.findViewById(R.id.deleteFile);
+		cb.setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsAlwaysDeleteFile", true));
 
 		builder.setTitle(getString(R.string.removeEpisode) + " S" + shownEpisodes.get(selectedEpisodeIndex).getSeason() + "E" + shownEpisodes.get(selectedEpisodeIndex).getEpisode())
 		.setView(dialogLayout)
