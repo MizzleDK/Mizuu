@@ -30,11 +30,6 @@ public class FileMovie extends MovieFileSource<File> {
 	}
 
 	@Override
-	public boolean supportsNfo() {
-		return true;
-	}
-
-	@Override
 	public void removeUnidentifiedMovies() {
 		DbAdapter db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
@@ -160,7 +155,7 @@ public class FileMovie extends MovieFileSource<File> {
 
 	@Override
 	public void addToResults(File file, LinkedHashSet<String> results) {
-		if (MizLib.isNfoFile(file.getAbsolutePath())) {
+		if (supportsNfo() && MizLib.isNfoFile(file.getAbsolutePath())) {
 			try {
 				addNfoFile(MizLib.removeExtension(file.getAbsolutePath()), new FileInputStream(file));
 			} catch (FileNotFoundException ignored) {}

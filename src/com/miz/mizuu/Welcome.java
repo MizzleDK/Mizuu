@@ -110,7 +110,23 @@ public class Welcome extends MizActivity implements ViewFactory {
 				if (!(arg2 == 0 || arg2 == 4)) {
 					Intent i = new Intent(Intent.ACTION_VIEW);
 					i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-					i.putExtra("startup", String.valueOf(arg2 + 1));
+					switch (arg2) {
+					case 1:
+						i.putExtra("startup", "1");
+						break;
+					case 2:
+						i.putExtra("startup", "2");
+						break;
+					case 3:
+						i.putExtra("startup", "3");
+						break;
+					case 5:
+						i.putExtra("startup", "4");
+						break;
+					case 6:
+						i.putExtra("startup", "5");
+						break;
+					}
 					i.setClass(getApplicationContext(), Main.class);
 					startActivity(i);
 					overridePendingTransition(R.anim.mainfadein, R.anim.splashfadeout);

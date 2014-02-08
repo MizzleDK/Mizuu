@@ -15,7 +15,7 @@ import com.miz.base.MizActivity;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MoveFilesService;
-import com.miz.service.UpdateMovieService;
+import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.UpdateShowsService;
 
 public class SplashScreen extends MizActivity {
@@ -58,7 +58,7 @@ public class SplashScreen extends MizActivity {
 		}
 
 		if (settings.getInt(ScheduledUpdatesFragment.MOVIE_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
-			getApplicationContext().startService(new Intent(getApplicationContext(), UpdateMovieService.class));
+			getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));
 
 		if (settings.getInt(ScheduledUpdatesFragment.SHOWS_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
 			getApplicationContext().startService(new Intent(getApplicationContext(), UpdateShowsService.class));

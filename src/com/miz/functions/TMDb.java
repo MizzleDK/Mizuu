@@ -199,7 +199,6 @@ public class TMDb {
 				} else { // Try with English set as the language, if no results are returned (usually caused by a server-side cache error)
 					if (json == null)
 						try {
-							System.out.println("YOYOYOYO");
 							jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + id + "/images?api_key=" + MizLib.TMDB_API);
 
 							JSONArray array2 = jObject.getJSONArray("backdrops");

@@ -33,11 +33,6 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 	}
 
 	@Override
-	public boolean supportsNfo() {
-		return true;
-	}
-
-	@Override
 	public void removeUnidentifiedMovies() {
 		DbAdapter db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
@@ -229,7 +224,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 	@Override
 	public void addToResults(SmbFile file, LinkedHashSet<String> results) {
-		if (MizLib.isNfoFile(file.getCanonicalPath())) {
+		if (supportsNfo() && MizLib.isNfoFile(file.getCanonicalPath())) {
 			try {
 				addNfoFile(MizLib.removeExtension(file.getCanonicalPath()), file.getInputStream());
 			} catch (IOException ignored) {}

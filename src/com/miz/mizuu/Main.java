@@ -74,6 +74,8 @@ public class Main extends MizActivity {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		confirmExit = settings.getBoolean("prefsConfirmBackPress", false);
 		startup = settings.getString("prefsStartup", "1");
+		if (startup.equals("0"))
+			startup = "1";
 
 		dbHelper = MizuuApplication.getMovieAdapter();
 		dbHelperTv = MizuuApplication.getTvDbAdapter();
@@ -105,11 +107,6 @@ public class Main extends MizActivity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				if (tab1.isSelected()) {
-					/*Intent i = new Intent();
-					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-					i.setClass(getApplicationContext(), menu.get(arg2).getClassName());
-					startActivity(i);
-					overridePendingTransition(R.anim.mainfadein, R.anim.splashfadeout);*/
 					loadFragment(arg2 + 1);
 				} else {
 					final PackageManager pm = getPackageManager();
@@ -151,6 +148,9 @@ public class Main extends MizActivity {
 			selectedIndex = savedInstanceState.getInt("selectedIndex");
 			changeTabSelection(savedInstanceState.getInt("tabIndex"));
 			loadFragment(selectedIndex + 1);
+		} else if (getIntent().getExtras().containsKey("startup")) {
+			tab1.setSelected(true);
+			loadFragment(Integer.parseInt(getIntent().getExtras().getString("startup")));
 		} else {
 			tab1.setSelected(true);
 			loadFragment(Integer.parseInt(startup));
@@ -317,6 +317,8 @@ public class Main extends MizActivity {
 	};
 
 	protected void selectListIndex(int index) {
+		if (index == -1)
+			index = 0;
 		if (!menu.get(index).isThirdPartyApp()) {
 			selectedIndex = index;
 			mDrawerList.setItemChecked(index, true);

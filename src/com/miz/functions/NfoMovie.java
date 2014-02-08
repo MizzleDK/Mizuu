@@ -232,7 +232,7 @@ public class NfoMovie {
 						tag = element.getChildNodes();
 						movie.setId(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setId("");
+						movie.setId("invalid");
 					}
 
 					try {
@@ -290,7 +290,7 @@ public class NfoMovie {
 					}
 				}
 			}
-		} catch (Exception ignored) {	
+		} catch (Exception ignored) {
 		} finally {
 			try {
 				if (is != null)

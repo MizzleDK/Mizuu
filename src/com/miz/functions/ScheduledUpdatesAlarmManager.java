@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
-import com.miz.service.UpdateMovieService;
+import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.UpdateShowsService;
 
 public class ScheduledUpdatesAlarmManager {
@@ -20,7 +20,7 @@ public class ScheduledUpdatesAlarmManager {
 		try {
 			AlarmManager alarmMan = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-			Intent defineIntent = new Intent(context, (type == MOVIES) ? UpdateMovieService.class : UpdateShowsService.class);
+			Intent defineIntent = new Intent(context, (type == MOVIES) ? MovieLibraryUpdate.class : UpdateShowsService.class);
 			defineIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			PendingIntent piWakeUp = PendingIntent.getService(context,0, defineIntent, PendingIntent.FLAG_NO_CREATE);
 
@@ -46,7 +46,7 @@ public class ScheduledUpdatesAlarmManager {
 			if (MizLib.isTvShowLibraryBeingUpdated(context))
 				return;
 		}
-		Intent defineIntent = new Intent(context, (type == MOVIES) ? UpdateMovieService.class : UpdateShowsService.class);
+		Intent defineIntent = new Intent(context, (type == MOVIES) ? MovieLibraryUpdate.class : UpdateShowsService.class);
 		defineIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent piWakeUp = PendingIntent.getService(context,0, defineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

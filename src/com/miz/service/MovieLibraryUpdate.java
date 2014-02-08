@@ -364,11 +364,11 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 				sb2.delete(0, sb2.length());
 				sb2.append(MizLib.convertToGenericNfo(file));
-
-				if (mNfoFiles.containsKey(sb1)) {
-					new NfoMovie(file, mNfoFiles.get(sb1), getApplicationContext(), this);
-				} else if (mNfoFiles.containsKey(sb2)) {
-					new NfoMovie(file, mNfoFiles.get(sb2), getApplicationContext(), this);
+				
+				if (mNfoFiles.containsKey(sb1.toString())) {
+					new NfoMovie(file, mNfoFiles.get(sb1.toString()), getApplicationContext(), this);
+				} else if (mNfoFiles.containsKey(sb2.toString())) {
+					new NfoMovie(file, mNfoFiles.get(sb2.toString()), getApplicationContext(), this);
 				} else {
 					newMovieDbObject(file);
 				}

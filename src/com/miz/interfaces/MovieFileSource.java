@@ -118,10 +118,12 @@ public abstract class MovieFileSource<T> {
 	}
 
 	/**
-	 * Determine if this file source supports loading of .NFO files. In most cases this should return true.
+	 * Determine if this file source supports loading of .NFO files. Should be overridden if the file source doesn't support .NFO files.
 	 * @return The value indicates if the file source supports loading of .NFO files or not.
 	 */
-	public abstract boolean supportsNfo();
+	public boolean supportsNfo() {
+		return true;
+	}
 
 	public abstract void removeUnidentifiedMovies();
 
