@@ -28,6 +28,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterSources;
 import com.miz.filesources.FileMovie;
@@ -37,8 +38,7 @@ import com.miz.functions.MizLib;
 import com.miz.functions.MovieLibraryUpdateCallback;
 import com.miz.functions.NfoMovie;
 import com.miz.functions.TheMovieDb;
-import com.miz.interfaces.MovieFileSource;
-import com.miz.mizuu.CancelMovieUpdate;
+import com.miz.mizuu.CancelLibraryUpdate;
 import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -54,7 +54,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private ArrayList<MovieFileSource<?>> mMovieFileSources;
 	private HashMap<String, InputStream> mNfoFiles = new HashMap<String, InputStream>();
 	private LinkedList<String> mMovieQueue = new LinkedList<String>();
-	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mIgnoreNfoFiles, mDisableEthernetWiFiCheck, mSyncLibraries, mStopDownload;
+	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mIgnoreNfoFiles, mDisableEthernetWiFiCheck, mSyncLibraries, mStopUpdate;
 	private int mTotalFiles, mCount;
 	private SharedPreferences mSettings;
 	private Editor mEditor;
@@ -118,15 +118,15 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		// Add the different file sources to the MovieFileSource ArrayList
 		setupMovieFileSources(mIgnoreRemovedFiles, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck);
 
-		log("removeUnidentifiedMovies()");
-
-		if (mStopDownload)
+		if (mStopUpdate)
 			return;
 
+		log("removeUnidentifiedFiles()");
+		
 		// Remove unavailable movies, so we can try to identify them again
-		removeUnidentifiedMovies();
+		removeUnidentifiedFiles();
 
-		if (mStopDownload)
+		if (mStopUpdate)
 			return;
 
 		// Check if the library should be cleared
@@ -144,7 +144,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			removeMoviesFromDatabase();
 		}
 
-		if (mStopDownload)
+		if (mStopUpdate)
 			return;
 
 		// Check if we should remove all unavailable files.
@@ -159,20 +159,20 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		log("searchFolders()");
 
-		if (mStopDownload)
+		if (mStopUpdate)
 			return;
 
 		// Search all folders
 		searchFolders();
 
-		if (mStopDownload)
+		if (mStopUpdate)
 			return;
 		log("getTMDbConfiguration()");
 
 		// Get TMDb image configuration
 		getTMDbConfiguration();
 
-		if (mStopDownload)
+		if (mStopUpdate)
 			return;
 		log("mTotalFiles > 0 check");
 
@@ -209,7 +209,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 	private void setupMovieFileSources(boolean mIgnoreRemovedFiles, boolean mSearchSubfolders, boolean mClearLibrary, boolean mDisableEthernetWiFiCheck) {
 		for (FileSource fileSource : mFileSources) {
-			if (mStopDownload)
+			if (mStopUpdate)
 				return;
 			switch (fileSource.getFileSourceType()) {
 			case FileSource.FILE:
@@ -222,9 +222,9 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		}
 	}
 
-	private void removeUnidentifiedMovies() {
+	private void removeUnidentifiedFiles() {
 		for (MovieFileSource<?> movieFileSource : mMovieFileSources) {
-			movieFileSource.removeUnidentifiedMovies();
+			movieFileSource.removeUnidentifiedFiles();
 		}
 	}
 
@@ -271,7 +271,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		HashMap<String, InputStream> tempNfoMap = null;
 
 		for (int j = 0; j < mMovieFileSources.size(); j++) {
-			updateMovieAddedNotification(mMovieFileSources.get(j).toString());
+			updateMovieScaningNotification(mMovieFileSources.get(j).toString());
 			tempList = mMovieFileSources.get(j).searchFolder();
 			for (int i = 0; i < tempList.size(); i++)
 				mMovieQueue.add(tempList.get(i));
@@ -296,7 +296,8 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(STOP_MOVIE_LIBRARY_UPDATE));
 
 		// Set up cancel dialog intent
-		Intent notificationIntent = new Intent(this, CancelMovieUpdate.class);
+		Intent notificationIntent = new Intent(this, CancelLibraryUpdate.class);
+		notificationIntent.putExtra("isMovie", false);
 		notificationIntent.setAction(Intent.ACTION_MAIN);
 		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -304,9 +305,9 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
 		mBuilder.setSmallIcon(R.drawable.refresh);
-		mBuilder.setTicker(getString(R.string.updateLookingForFiles));
+		mBuilder.setTicker(getString(R.string.updatingMovies));
 		mBuilder.setContentTitle(getString(R.string.updatingMovies));
-		mBuilder.setContentText(getString(R.string.updateLookingForFiles));
+		mBuilder.setContentText(getString(R.string.gettingReady));
 		mBuilder.setContentIntent(contentIntent);
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
@@ -338,39 +339,41 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			mStopDownload = true;
+			mStopUpdate = true;
 		}
 	};
 
 	private void updateMovies() {
-
 		// Temporary StringBuilder objects to re-use memory and reduce GC's
-		StringBuilder sb1 = new StringBuilder(), sb2 = new StringBuilder();
+		StringBuilder sb = new StringBuilder(), sb1 = new StringBuilder(), sb2 = new StringBuilder();
 
 		// Let's sort the files by their file name before updating
 		Collections.sort(mMovieQueue);
 
 		while (mMovieQueue.peek() != null) {
-			if (mStopDownload)
+			if (mStopUpdate)
 				return;
-			String file = mMovieQueue.pop();
+			
+			sb.delete(0, sb.length());
+			sb.append(mMovieQueue.pop());
+			
 			mCount++;
 
 			if (mIgnoreNfoFiles) {
-				newMovieDbObject(file);
+				newMovieDbObject(sb.toString());
 			} else {
 				sb1.delete(0, sb1.length());
-				sb1.append(MizLib.removeExtension(file.replaceAll("part[1-9]|cd[1-9]", "").trim()));
+				sb1.append(MizLib.removeExtension(sb.toString().replaceAll("part[1-9]|cd[1-9]", "").trim()));
 
 				sb2.delete(0, sb2.length());
-				sb2.append(MizLib.convertToGenericNfo(file));
+				sb2.append(MizLib.convertToGenericNfo(sb.toString()));
 				
 				if (mNfoFiles.containsKey(sb1.toString())) {
-					new NfoMovie(file, mNfoFiles.get(sb1.toString()), getApplicationContext(), this);
+					new NfoMovie(sb.toString(), mNfoFiles.get(sb1.toString()), getApplicationContext(), this);
 				} else if (mNfoFiles.containsKey(sb2.toString())) {
-					new NfoMovie(file, mNfoFiles.get(sb2.toString()), getApplicationContext(), this);
+					new NfoMovie(sb.toString(), mNfoFiles.get(sb2.toString()), getApplicationContext(), this);
 				} else {
-					newMovieDbObject(file);
+					newMovieDbObject(sb.toString());
 				}
 			}
 		}
@@ -401,7 +404,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mIgnoreNfoFiles = true;
 		mDisableEthernetWiFiCheck = false;
 		mSyncLibraries = true;
-		mStopDownload = false;
+		mStopUpdate = false;
 
 		// Other variables
 		mEditor = null;
@@ -438,10 +441,10 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 	}
 
-	private void updateMovieAddedNotification(String filesource) {
+	private void updateMovieScaningNotification(String filesource) {
 		mBuilder.setSmallIcon(R.drawable.refresh);
 		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.refresh));
-		mBuilder.setContentTitle(getString(R.string.updateLookingForFiles));
+		mBuilder.setContentTitle(getString(R.string.updatingTvShows));
 		mBuilder.setContentText(getString(R.string.scanning) + ": " + filesource);
 
 		// Show the updated notification
@@ -452,12 +455,13 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		// Set up cancel dialog intent
 		Intent notificationIntent = new Intent(this, Main.class);
 		notificationIntent.putExtra("fromUpdate", true);
+		notificationIntent.putExtra("startup", "1");
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
-		if (!mStopDownload) {
+		if (!mStopUpdate) {
 			mBuilder.setSmallIcon(R.drawable.done);
 			mBuilder.setTicker(getString(R.string.finishedMovieLibraryUpdate));
 			mBuilder.setContentTitle(getString(R.string.finishedMovieLibraryUpdate));

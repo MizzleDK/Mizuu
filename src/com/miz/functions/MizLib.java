@@ -96,8 +96,8 @@ import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.service.MovieLibraryUpdate;
+import com.miz.service.TvShowsLibraryUpdate;
 import com.miz.service.UpdateMovieService;
-import com.miz.service.UpdateShowsService;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.apache.OkApacheClient;
 
@@ -152,11 +152,9 @@ public class MizLib {
 	 * @return Input String with first character in upper case.
 	 */
 	public static String toCapitalFirstChar(String s) {
-		if (s == null) return s;
-		else {
-			if (!s.isEmpty()) return s.substring(0, 1).toUpperCase(Locale.ENGLISH) + s.substring(1, s.length());
-			else return s;
-		}
+		if (s == null || s.isEmpty())
+			return "";
+		return s.substring(0, 1).toUpperCase(Locale.ENGLISH) + s.substring(1, s.length());
 	}
 
 	/**
@@ -166,17 +164,15 @@ public class MizLib {
 	 * @return Input string with first character of all words in upper case.
 	 */
 	public static String toCapitalWords(String s) {
-		if (s == null) return s;
-		else {
-			if (!s.isEmpty()) {
-				String result = "";
-				String[] split = s.split("\\s");
-				int count = split.length;
-				for (int i = 0; i < count; i++) result += toCapitalFirstChar(split[i]) + " ";
-				if (result.endsWith(" ")) result = result.substring(0, result.length() - 1);
-				return result;
-			} else return s;
-		}
+		if (s == null || s.isEmpty())
+			return "";
+
+		StringBuilder result = new StringBuilder();
+		String[] split = s.split("\\s");
+		int count = split.length;
+		for (int i = 0; i < count; i++)
+			result.append(toCapitalFirstChar(split[i]) + " ");
+		return result.toString().trim();
 	}
 
 	/**
@@ -185,22 +181,20 @@ public class MizLib {
 	 * @return Input string with spaces between capital characters.
 	 */
 	public static String addSpaceByCapital(String s) {
-		if (s == null) return "";
-		else {
-			String result = "";
-			if (!s.isEmpty()) {
-				char[] chars = s.toCharArray();
-				for (int i = 0; i < chars.length; i++)
-					if (chars.length > (i+1))
-						if (Character.isUpperCase(chars[i]) && (Character.isLowerCase(chars[i+1]) && !Character.isSpaceChar(chars[i+1])))
-							result += " " + chars[i];
-						else
-							result += chars[i];
-					else
-						result += chars[i];
-			}
-			return result.trim();
-		}
+		if (s == null || s.isEmpty())
+			return "";
+
+		StringBuilder result = new StringBuilder();
+		char[] chars = s.toCharArray();
+		for (int i = 0; i < chars.length; i++)
+			if (chars.length > (i+1))
+				if (Character.isUpperCase(chars[i]) && (Character.isLowerCase(chars[i+1]) && !Character.isSpaceChar(chars[i+1])))
+					result.append(" " + chars[i]);
+				else
+					result.append(chars[i]);
+			else
+				result.append(chars[i]);
+		return result.toString().trim();
 	}
 
 	/**
@@ -209,17 +203,14 @@ public class MizLib {
 	 * @return A string with any digits from the input string
 	 */
 	public static String getNumbersInString(String s) {
-		if (s == null) return s;
-		else {
-			String result = "";
-			if (!s.isEmpty()) {
-				char[] charArray = s.toCharArray();
-				int count = charArray.length;
-				for (int i = 0; i < count; i++)
-					if (Character.isDigit(charArray[i])) result += charArray[i];
-			}
-			return result;
-		}
+		if (s == null || s.isEmpty()) return "";
+		StringBuilder result = new StringBuilder();
+		char[] charArray = s.toCharArray();
+		int count = charArray.length;
+		for (int i = 0; i < count; i++)
+			if (Character.isDigit(charArray[i]))
+				result.append(charArray[i]);
+		return result.toString();
 	}
 
 	public static int getCharacterCountInString(String source, char c) {
@@ -550,7 +541,7 @@ public class MizLib {
 	}
 
 	public static void resizeBitmapFileToCoverSize(Context c, String filepath) {
-		
+
 		final int mImageThumbSize = c.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		final int mImageThumbSpacing = c.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
@@ -763,7 +754,7 @@ public class MizLib {
 		}
 		return false;
 	}
-	
+
 	public static boolean isNfoFile(String file) {
 		if (file.contains(".")) { // Must have a file type
 			String type = file.substring(file.lastIndexOf("."));
@@ -771,25 +762,25 @@ public class MizLib {
 		}
 		return false;
 	}
-	
+
 	public static String removeExtension(String filepath) {
-	    final int lastPeriodPos = filepath.lastIndexOf('.');
-	    if (lastPeriodPos <= 0) {
-	        return filepath;
-	    } else {
-	        // Remove the last period and everything after it
-	        return filepath.substring(0, lastPeriodPos);
-	    }
+		final int lastPeriodPos = filepath.lastIndexOf('.');
+		if (lastPeriodPos <= 0) {
+			return filepath;
+		} else {
+			// Remove the last period and everything after it
+			return filepath.substring(0, lastPeriodPos);
+		}
 	}
-	
+
 	public static String convertToGenericNfo(String filepath) {
-	    final int lastPeriodPos = filepath.lastIndexOf('/');
-	    if (lastPeriodPos <= 0) {
-	        return filepath;
-	    } else {
-	        // Remove the last period and everything after it
-	        return filepath.substring(0, lastPeriodPos) + "/movie.nfo";
-	    }
+		final int lastPeriodPos = filepath.lastIndexOf('/');
+		if (lastPeriodPos <= 0) {
+			return filepath;
+		} else {
+			// Remove the last period and everything after it
+			return filepath.substring(0, lastPeriodPos) + "/movie.nfo";
+		}
 	}
 
 	/**
@@ -1365,7 +1356,7 @@ public class MizLib {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("smb://");
-		
+
 		user = user.replace("+", "%20");
 		password = password.replace("+", "%20");
 		domain = domain.replace("+", "%20");
@@ -1934,13 +1925,13 @@ public class MizLib {
 		List<RunningServiceInfo> services = manager.getRunningServices(Integer.MAX_VALUE);
 		int count = services.size();
 		for (int i = 0; i < count; i++) {
-			if (UpdateShowsService.class.getName().equals(services.get(i).service.getClassName())) {
+			if (TvShowsLibraryUpdate.class.getName().equals(services.get(i).service.getClassName())) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public static boolean isLocalCopyBeingDownloaded(Context c) {
 		ActivityManager manager = (ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
 		List<RunningServiceInfo> services = manager.getRunningServices(Integer.MAX_VALUE);
@@ -2065,7 +2056,7 @@ public class MizLib {
 		f.mkdirs();
 		return f;
 	}
-	
+
 	public static File getAvailableOfflineFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/offline_storage");
 		f.mkdirs();
@@ -2715,7 +2706,9 @@ public class MizLib {
 
 		// Calculate inSampleSize
 		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
+		options.inMutable = true;
+		options.inPreferredConfig = Config.RGB_565;
+		
 		// Decode bitmap with inSampleSize set
 		options.inJustDecodeBounds = false;
 
@@ -2948,13 +2941,13 @@ public class MizLib {
 		}
 		return null;
 	}
-	
+
 	public static String getFileExtension(String path) {
 		String extension = "";
 
 		int i = path.lastIndexOf('.');
 		if (i > 0)
-		    extension = path.substring(i+1);
+			extension = path.substring(i+1);
 
 		return extension;
 	}

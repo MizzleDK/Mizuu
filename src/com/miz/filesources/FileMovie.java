@@ -13,11 +13,11 @@ import java.util.Locale;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapter;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
-import com.miz.interfaces.MovieFileSource;
 import com.miz.mizuu.MizuuApplication;
 
 public class FileMovie extends MovieFileSource<File> {
@@ -30,18 +30,16 @@ public class FileMovie extends MovieFileSource<File> {
 	}
 
 	@Override
-	public void removeUnidentifiedMovies() {
+	public void removeUnidentifiedFiles() {
 		DbAdapter db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 
 		File temp;
 		int count = dbMovies.size();
 		for (int i = 0; i < count; i++) {
-			if (!dbMovies.get(i).isNetworkFile()) {
-				temp = new File(dbMovies.get(i).getFilepath());
-				if (temp.exists() && dbMovies.get(i).isUnidentified())
-					db.deleteMovie(dbMovies.get(i).getRowId());
-			}
+			temp = new File(dbMovies.get(i).getFilepath());
+			if (temp.exists() && dbMovies.get(i).isUnidentified())
+				db.deleteMovie(dbMovies.get(i).getRowId());
 		}
 	}
 

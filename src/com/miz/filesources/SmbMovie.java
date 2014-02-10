@@ -16,11 +16,11 @@ import jcifs.smb.SmbFile;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapter;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
-import com.miz.interfaces.MovieFileSource;
 import com.miz.mizuu.MizuuApplication;
 
 public class SmbMovie extends MovieFileSource<SmbFile> {
@@ -33,7 +33,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 	}
 
 	@Override
-	public void removeUnidentifiedMovies() {
+	public void removeUnidentifiedFiles() {
 		DbAdapter db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 

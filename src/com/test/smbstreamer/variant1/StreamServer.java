@@ -130,7 +130,6 @@ public abstract class StreamServer {
 	 * Throws an IOException if the socket is already in use
 	 */
 
-	private HTTPSession ss;
 	public StreamServer( int port, File wwwroot ) throws IOException {
 		myTcpPort = port;
 		myServerSocket = new ServerSocket( myTcpPort );

@@ -12,7 +12,12 @@
             android:key="prefsConfirmBackPress"
             android:summary="@string/confirmBackPressDescription"
             android:title="@string/confirmBackPressTitle" />
-        <CheckBoxPreference android:title="@string/alwaysDeleteFileTitle" android:summary="@string/alwaysDeleteFile" android:icon="@drawable/delete" android:defaultValue="false" android:key="prefsAlwaysDeleteFile"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/delete"
+            android:key="prefsAlwaysDeleteFile"
+            android:summary="@string/alwaysDeleteFile"
+            android:title="@string/alwaysDeleteFileTitle" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/network" >
         <ListPreference
@@ -30,7 +35,12 @@
             android:key="prefsDisableEthernetWiFiCheck"
             android:summary="@string/disableEthernetWiFiCheckDescription"
             android:title="@string/disableEthernetWiFiCheck" />
-        <CheckBoxPreference android:defaultValue="false" android:summary="@string/ignoreFilesizeCheck" android:title="@string/ignoreFilesizeCheckTitle" android:icon="@drawable/ic_action_download" android:key="prefsIgnoreFilesizeCheck"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_action_download"
+            android:key="prefsIgnoreFilesizeCheck"
+            android:summary="@string/ignoreFilesizeCheck"
+            android:title="@string/ignoreFilesizeCheckTitle" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/video" >
         <CheckBoxPreference

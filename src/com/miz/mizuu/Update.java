@@ -14,7 +14,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.miz.functions.MizLib;
 import com.miz.service.MovieLibraryUpdate;
-import com.miz.service.UpdateShowsService;
+import com.miz.service.TvShowsLibraryUpdate;
 
 public class Update extends MizActivity {
 
@@ -43,7 +43,7 @@ public class Update extends MizActivity {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				editor.putBoolean("prefsClearLibrary", isChecked);
+				editor.putBoolean(isMovie ? "prefsClearLibrary" : "prefsClearLibraryTv", isChecked);
 				editor.commit();
 			}
 		});
@@ -54,7 +54,7 @@ public class Update extends MizActivity {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				editor.putBoolean("prefsRemoveUnavailable", isChecked);
+				editor.putBoolean(isMovie ? "prefsRemoveUnavailable" : "prefsRemoveUnavailableTv", isChecked);
 				editor.commit();
 			}
 		});
@@ -64,15 +64,15 @@ public class Update extends MizActivity {
 	public void onResume() {
 		super.onResume();
 
-		checkBox.setChecked(settings.getBoolean("prefsClearLibrary", false));
-		checkBox2.setChecked(settings.getBoolean("prefsRemoveUnavailable", false));
+		checkBox.setChecked(settings.getBoolean(isMovie ? "prefsClearLibrary" : "prefsClearLibraryTv", false));
+		checkBox2.setChecked(settings.getBoolean(isMovie ? "prefsRemoveUnavailable" : "prefsRemoveUnavailableTv", false));
 	}
 
 	public void startUpdate(View v) {
 		if (isMovie && !MizLib.isMovieLibraryBeingUpdated(this))
 			getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));
 		else if (!isMovie && !MizLib.isTvShowLibraryBeingUpdated(this))
-			getApplicationContext().startService(new Intent(getApplicationContext(), UpdateShowsService.class));
+			getApplicationContext().startService(new Intent(getApplicationContext(), TvShowsLibraryUpdate.class));
 		setResult(1); // end activity and reload Main activity
 
 		finish(); // Leave the Update screen once the update has been started

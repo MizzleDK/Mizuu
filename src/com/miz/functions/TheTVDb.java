@@ -48,7 +48,7 @@ public class TheTVDb {
 		if (show.getId().equals("invalid")) {
 			checkSearchQuery(show, episode.getDecryptedParentName());
 		}
-
+		
 		// Try to search on another site if TheTVDb failed
 		if (show.getId().equals("invalid")) {
 			try {
@@ -91,7 +91,7 @@ public class TheTVDb {
 				// Connection set-up
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				URL url = new URL("http://thetvdb.com/api/GetSeries.php?seriesname=" + URLEncoder.encode(show.getTitle().replace(" ", "+"), "utf-8"));
+				URL url = new URL("http://thetvdb.com/api/GetSeries.php?seriesname=" + URLEncoder.encode(show.getTitle(), "utf-8"));
 
 				URLConnection con = url.openConnection();
 				con.setReadTimeout(60000);

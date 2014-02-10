@@ -1,9 +1,8 @@
-package com.miz.interfaces;
+package com.miz.abstractclasses;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import android.content.Context;
@@ -15,16 +14,10 @@ import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 
-public abstract class MovieFileSource<T> {
+public abstract class MovieFileSource<T> extends AbstractFileSource<T> {
 
 	protected HashMap<String, InputStream> mNfoFiles = new HashMap<String, InputStream>();
-	protected List<String> mFiles = new ArrayList<String>();
 	protected List<DbMovie> mDbMovies = new ArrayList<DbMovie>();
-	protected T mFolder;
-	protected FileSource mFileSource = null;
-	protected Context mContext;
-	protected boolean mIgnoreRemovedFiles, mSubFolderSearch, mClearLibrary, mDisableEthernetWiFiCheck;
-	protected int mFileSizeLimit;
 
 	public MovieFileSource(Context context, FileSource fileSource, boolean ignoreRemovedFiles, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
 		mContext = context;
@@ -68,22 +61,6 @@ public abstract class MovieFileSource<T> {
 			setupDbMovies();
 		return mDbMovies;
 	}
-	
-	public void setFolder(T folder) {
-		mFolder = folder;
-	}
-
-	public T getFolder() {
-		return mFolder;
-	}
-
-	public List<String> getFiles() {
-		return mFiles;
-	}
-
-	public FileSource getFileSource() {
-		return mFileSource;
-	}
 
 	public void addNfoFile(String filepath, InputStream is) {
 		mNfoFiles.put(filepath, is);
@@ -93,30 +70,6 @@ public abstract class MovieFileSource<T> {
 		return mNfoFiles;
 	}
 
-	public Context getContext() {
-		return mContext;
-	}
-
-	public boolean ignoreRemovedFiles() {
-		return mIgnoreRemovedFiles;
-	}
-
-	public boolean searchSubFolders() {
-		return mSubFolderSearch;
-	}
-
-	public boolean clearLibrary() {
-		return mClearLibrary;
-	}
-	
-	public boolean disableEthernetWiFiCheck() {
-		return mDisableEthernetWiFiCheck;
-	}
-
-	public int getFileSizeLimit() {
-		return mFileSizeLimit;
-	}
-
 	/**
 	 * Determine if this file source supports loading of .NFO files. Should be overridden if the file source doesn't support .NFO files.
 	 * @return The value indicates if the file source supports loading of .NFO files or not.
@@ -124,18 +77,4 @@ public abstract class MovieFileSource<T> {
 	public boolean supportsNfo() {
 		return true;
 	}
-
-	public abstract void removeUnidentifiedMovies();
-
-	public abstract void removeUnavailableFiles();
-
-	public abstract List<String> searchFolder();
-
-	public abstract void recursiveSearch(T folder, LinkedHashSet<String> results);
-
-	public abstract void addToResults(T folder, LinkedHashSet<String> results);
-
-	public abstract T getRootFolder();
-	
-	public abstract String toString();
 }

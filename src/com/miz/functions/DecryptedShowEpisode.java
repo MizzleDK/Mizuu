@@ -88,7 +88,7 @@ public class DecryptedShowEpisode {
 	public String getDecryptedFileName() {
 		if (mDecryptedFileName.isEmpty())
 			return getDecryptedParentName();
-		return mDecryptedFileName;
+		return MizLib.toCapitalWords(mDecryptedFileName);
 	}
 	
 	public void setDecryptedParentName(String decryptedParentName) {
@@ -96,7 +96,7 @@ public class DecryptedShowEpisode {
 	}
 	
 	public String getDecryptedParentName() {
-		return mDecryptedParentName;
+		return MizLib.toCapitalWords(mDecryptedParentName);
 	}
 	
 	public void setSeason(int season) {

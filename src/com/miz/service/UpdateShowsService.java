@@ -35,6 +35,7 @@ import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.AsyncTask;
+import com.miz.functions.DbEpisode;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizFile;
 import com.miz.functions.MizLib;
@@ -378,7 +379,8 @@ public class UpdateShowsService extends Service {
 		Cursor tempCursor = db.getAllEpisodesInDatabase(ignoreRemovedFiles);
 		while (tempCursor.moveToNext()) {
 			try {
-				dbEpisodes.add(new DbEpisode(tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_FILEPATH)),
+				dbEpisodes.add(new DbEpisode(this,
+						tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_FILEPATH)),
 						tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_ROWID)),
 						tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SHOW_ID)),
 						tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SHOW_ID)) + "_S" + tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON)) + "E" + tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)) + ".jpg"));
@@ -463,47 +465,5 @@ public class UpdateShowsService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
-	}
-
-	private class DbEpisode {
-
-		private String filepath, rowId, showId, episodeCoverPath;
-
-		public DbEpisode(String filepath, String rowId, String showId, String episodeCoverPath) {
-			this.filepath = filepath;
-			this.rowId = rowId;
-			this.showId = showId;
-			this.episodeCoverPath = episodeCoverPath;
-		}
-
-		public String getFilepath() {
-			if (filepath.contains("smb") && filepath.contains("@"))
-				return "smb://" + filepath.substring(filepath.indexOf("@") + 1);
-			return filepath.replace("/smb:/", "smb://");
-		}
-
-		public String getRowId() {
-			return rowId;
-		}
-
-		public String getShowId() {
-			return showId;
-		}
-
-		public String getEpisodeCoverPath() {
-			return new File(MizLib.getTvShowEpisodeFolder(getApplicationContext()), episodeCoverPath).getAbsolutePath();
-		}
-
-		public String getThumbnail() {
-			return new File(MizLib.getTvShowThumbFolder(getApplicationContext()), getShowId() + ".jpg").getAbsolutePath();
-		}
-
-		public String getBackdrop() {
-			return new File(MizLib.getTvShowBackdropFolder(getApplicationContext()), getShowId() + "_tvbg.jpg").getAbsolutePath();
-		}
-
-		public boolean isNetworkFile() {
-			return getFilepath().contains("smb:/");
-		}
 	}
 }

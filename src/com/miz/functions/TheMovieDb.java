@@ -119,30 +119,20 @@ public class TheMovieDb {
 		updateNotification();
 	}
 
-	private void updateNotification() {		
-		Intent intent = null;
+	private void updateNotification() {
 		if (!isFromManualIdentify) {
-			intent = new Intent("mizuu-movies-object");
-			intent.putExtra("movieName", movie.getTitle());
-			intent.putExtra("thumbFile", new File(thumbsFolder, movie.getId() + ".jpg").getAbsolutePath());
-
 			File backdropFile = new File(MizLib.getMovieBackdropFolder(context), movie.getId() + "_bg.jpg");
-
 			if (!backdropFile.exists())
 				backdropFile = new File(thumbsFolder, movie.getId() + ".jpg");
 
-			intent.putExtra("backdrop", backdropFile.getAbsolutePath());
-			
 			if (callback != null)
 				callback.onMovieAdded(movie.getTitle(), new File(thumbsFolder, movie.getId() + ".jpg").getAbsolutePath(), backdropFile.getAbsolutePath());
 		} else {
-			intent = new Intent("mizuu-movies-identification");
+			sendUpdateBroadcast(new Intent("mizuu-movies-identification"));
+			updateWidgets();
 		}
 
-		sendUpdateBroadcast(intent);
 		sendUpdateBroadcast(new Intent("mizuu-movies-update"));
-
-		updateWidgets();
 	}
 
 	private void sendUpdateBroadcast(Intent i) {

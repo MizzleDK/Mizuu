@@ -278,6 +278,7 @@
         <service android:name="com.miz.service.TraktTvShowsSyncService" />
         <service android:name="com.miz.service.MakeAvailableOffline" />
         <service android:name="com.miz.service.MovieLibraryUpdate" />
+        <service android:name="com.miz.service.TvShowsLibraryUpdate" />
 
         <!-- Update activity -->
         <activity
@@ -372,7 +373,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.miz.mizuu.CancelMovieUpdate"
+            android:name="com.miz.mizuu.CancelLibraryUpdate"
             android:excludeFromRecents="true"
             android:exported="false"
             android:noHistory="true"
