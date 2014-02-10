@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.miz.mizuu.R;
 
 public class MizActivity extends FragmentActivity implements OnSharedPreferenceChangeListener {
@@ -43,17 +42,5 @@ public class MizActivity extends FragmentActivity implements OnSharedPreferenceC
 		if (FULLSCREEN_TAG.equals(key)) {
 			mFullscreen = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false);
 		}
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		EasyTracker.getInstance(this).activityStart(this);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		EasyTracker.getInstance(this).activityStop(this);
 	}
 }

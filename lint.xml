@@ -24,6 +24,9 @@
         <ignore path="src/com/miz/mizuu_beta/UpdateShowsService.java" />
     </issue>
     <issue id="ParserError" severity="ignore" />
+    <issue id="Registered">
+        <ignore path="src/com/miz/base/MizActivity.java" />
+    </issue>
     <issue id="UnusedResources">
         <ignore path="res/xml/preferences.xml" />
         <ignore path="res/xml/preferences2.xml" />

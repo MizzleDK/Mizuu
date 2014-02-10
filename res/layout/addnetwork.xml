@@ -5,17 +5,21 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="bottom" >
 
         <EditText
             android:id="@+id/server"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
             android:layout_weight="1"
+            android:drawableLeft="@drawable/localizedinfo"
+            android:drawablePadding="8dp"
             android:ems="10"
             android:hint="@string/networkIpAddress"
             android:maxLines="1"
@@ -28,8 +32,6 @@
             android:id="@+id/imageButton1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
             android:onClick="search"
             android:src="@drawable/search" />
     </LinearLayout>
@@ -40,6 +42,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:drawableLeft="@drawable/photo"
+        android:drawablePadding="8dp"
         android:ems="10"
         android:hint="@string/networkUsername"
         android:maxLines="1"
@@ -51,7 +56,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="8dp"
+        android:drawableLeft="@drawable/ic_action_key"
+        android:drawablePadding="8dp"
         android:ems="10"
         android:hint="@string/networkPassword"
         android:inputType="textPassword"
@@ -64,7 +71,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="8dp"
+        android:drawableLeft="@drawable/folder"
+        android:drawablePadding="8dp"
         android:ems="10"
         android:hint="@string/networkDomain"
         android:maxLines="1"
@@ -76,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="8dp"
         android:text="@string/loginAsAnonymous" />
 
     <CheckBox
@@ -86,7 +95,6 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="7dp"
         android:text="@string/loginAsGuest" />
 
     <View

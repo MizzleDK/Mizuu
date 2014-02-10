@@ -592,9 +592,12 @@ public class MovieDetailsFragment extends Fragment {
 	}
 
 	private void loadImages() {
+		System.out.println("HEIGHT: " + MizLib.getDisplaySize(getActivity(), MizLib.HEIGHT) * 0.6);
 		if (!MizLib.runsInPortraitMode(getActivity())) {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
-				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(cover);
+				int height = (int) (MizLib.getDisplaySize(getActivity(), MizLib.HEIGHT) * 0.6);
+				int width = (int) (height * 0.67);
+				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).resize(width, height).into(cover);
 				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 			} else {
 				mPicasso.load(thisMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);

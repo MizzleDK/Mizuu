@@ -130,175 +130,97 @@
                             android:layout_marginTop="@dimen/movie_details_padding"
                             android:orientation="vertical" >
 
-                                <LinearLayout
-                                    android:layout_width="match_parent"
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:baselineAligned="false" >
+
+                                <TextView
+                                    android:id="@+id/textView9"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:baselineAligned="false" >
+                                    android:layout_marginRight="@dimen/movie_details_padding"
+                                    android:layout_weight="1"
+                                    android:drawableLeft="@drawable/ic_action_clock"
+                                    android:drawablePadding="@dimen/movie_details_padding"
+                                    android:focusable="false"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:textColor="#ddd"
+                                    android:textSize="@dimen/details_text_size" />
 
-                                    <RelativeLayout
-                                        android:layout_width="0dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_weight="1" >
-
-                                        <ImageView
-                                            android:id="@+id/imageView1"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:src="@drawable/ic_action_clock" />
-
-                                        <TextView
-                                            android:id="@+id/textView9"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:layout_marginLeft="@dimen/movie_details_padding"
-                                            android:layout_marginRight="@dimen/movie_details_padding"
-                                            android:layout_toRightOf="@+id/imageView1"
-                                            android:focusable="false"
-                                            android:textAppearance="?android:attr/textAppearanceSmall"
-                                            android:textColor="#ddd"
-                                            android:textSize="@dimen/details_text_size" />
-                                    </RelativeLayout>
-
-                                    <RelativeLayout
-                                        android:layout_width="0dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_weight="0.6" >
-
-                                        <ImageView
-                                            android:id="@+id/imageView9"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:src="@drawable/ic_action_star_10" />
-
-                                        <TextView
-                                            android:id="@+id/textView12"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:layout_marginLeft="@dimen/movie_details_padding"
-                                            android:layout_marginRight="@dimen/movie_details_padding"
-                                            android:layout_toRightOf="@+id/imageView9"
-                                            android:focusable="false"
-                                            android:textAppearance="?android:attr/textAppearanceSmall"
-                                            android:textColor="#ddd"
-                                            android:textSize="@dimen/details_text_size" />
-                                    </RelativeLayout>
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
+                                <TextView
+                                    android:id="@+id/textView12"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/movie_details_padding"
-                                    android:baselineAligned="false" >
-
-                                    <RelativeLayout
-                                        android:layout_width="0dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_weight="1" >
-
-                                        <ImageView
-                                            android:id="@+id/imageView4"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:src="@drawable/ic_action_calendar_day" />
-
-                                        <TextView
-                                            android:id="@+id/textReleaseDate"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:layout_marginLeft="@dimen/movie_details_padding"
-                                            android:layout_marginRight="@dimen/movie_details_padding"
-                                            android:layout_toRightOf="@+id/imageView4"
-                                            android:focusable="false"
-                                            android:textAppearance="?android:attr/textAppearanceSmall"
-                                            android:textColor="#ddd"
-                                            android:textSize="@dimen/details_text_size" />
-                                    </RelativeLayout>
-
-                                    <RelativeLayout
-                                        android:layout_width="0dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_weight="0.6" >
-
-                                        <ImageView
-                                            android:id="@+id/imageView5"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:src="@drawable/ic_action_flag" />
-
-                                        <TextView
-                                            android:id="@+id/textView11"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerVertical="true"
-                                            android:layout_marginLeft="@dimen/movie_details_padding"
-                                            android:layout_marginRight="@dimen/movie_details_padding"
-                                            android:layout_toRightOf="@+id/imageView5"
-                                            android:focusable="false"
-                                            android:textAppearance="?android:attr/textAppearanceSmall"
-                                            android:textColor="#ddd"
-                                            android:textSize="@dimen/details_text_size" />
-                                    </RelativeLayout>
-                                </LinearLayout>
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/movie_details_padding" >
-
-                                    <ImageView
-                                        android:id="@+id/imageView6"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_centerVertical="true"
-                                        android:src="@drawable/ic_action_tags" />
-
-                                    <TextView
-                                        android:id="@+id/textView7"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_centerVertical="true"
-                                        android:layout_marginLeft="@dimen/movie_details_padding"
-                                        android:layout_marginRight="@dimen/movie_details_padding"
-                                        android:layout_toRightOf="@+id/imageView6"
-                                        android:focusable="false"
-                                        android:textAppearance="?android:attr/textAppearanceSmall"
-                                        android:textColor="#ddd"
-                                        android:textSize="@dimen/details_text_size" />
-                                </RelativeLayout>
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/movie_details_padding" >
-
-                                    <ImageView
-                                        android:id="@+id/imageView7"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_centerVertical="true"
-                                        android:src="@drawable/file" />
-
-                                    <TextView
-                                        android:id="@+id/textView3"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_centerVertical="true"
-                                        android:layout_marginLeft="@dimen/movie_details_padding"
-                                        android:layout_marginRight="@dimen/movie_details_padding"
-                                        android:layout_toRightOf="@+id/imageView7"
-                                        android:focusable="false"
-                                        android:textAppearance="?android:attr/textAppearanceSmall"
-                                        android:textColor="#ddd"
-                                        android:textSize="@dimen/details_text_size" />
-                                </RelativeLayout>
+                                    android:layout_marginRight="@dimen/movie_details_padding"
+                                    android:layout_weight="0.6"
+                                    android:drawableLeft="@drawable/ic_action_star_10"
+                                    android:drawablePadding="@dimen/movie_details_padding"
+                                    android:focusable="false"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:textColor="#ddd"
+                                    android:textSize="@dimen/details_text_size" />
                             </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/movie_details_padding"
+                                android:baselineAligned="false" >
+
+                                <TextView
+                                    android:id="@+id/textReleaseDate"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="@dimen/movie_details_padding"
+                                    android:layout_weight="1"
+                                    android:drawableLeft="@drawable/ic_action_calendar_day"
+                                    android:drawablePadding="@dimen/movie_details_padding"
+                                    android:focusable="false"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:textColor="#ddd"
+                                    android:textSize="@dimen/details_text_size" />
+
+                                <TextView
+                                    android:id="@+id/textView11"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="@dimen/movie_details_padding"
+                                    android:layout_weight="0.6"
+                                    android:drawableLeft="@drawable/ic_action_flag"
+                                    android:drawablePadding="@dimen/movie_details_padding"
+                                    android:focusable="false"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:textColor="#ddd"
+                                    android:textSize="@dimen/details_text_size" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/textView7"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/movie_details_padding"
+                                android:layout_marginTop="@dimen/movie_details_padding"
+                                android:drawableLeft="@drawable/ic_action_tags"
+                                android:drawablePadding="@dimen/movie_details_padding"
+                                android:focusable="false"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:textColor="#ddd"
+                                android:textSize="@dimen/details_text_size" />
+
+                            <TextView
+                                android:id="@+id/textView3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/movie_details_padding"
+                                android:layout_marginTop="@dimen/movie_details_padding"
+                                android:drawableLeft="@drawable/file"
+                                android:drawablePadding="@dimen/movie_details_padding"
+                                android:focusable="false"
+                                android:textAppearance="?android:attr/textAppearanceSmall"
+                                android:textColor="#ddd"
+                                android:textSize="@dimen/details_text_size" />
+                        </LinearLayout>
                     </LinearLayout>
                 </ScrollView>
             </RelativeLayout>

@@ -98,7 +98,6 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		cover.setImageResource(R.drawable.loading_image);
 
 		// Get rid of these...
-		v.findViewById(R.id.imageView7).setVisibility(View.GONE); // File
 		v.findViewById(R.id.textView3).setVisibility(View.GONE); // File
 		v.findViewById(R.id.imageView2).setVisibility(View.GONE); // Play button
 

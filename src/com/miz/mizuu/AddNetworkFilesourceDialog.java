@@ -14,11 +14,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import com.miz.db.DbAdapterSources;
-
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
@@ -27,6 +27,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.miz.db.DbAdapterSources;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 
@@ -51,6 +52,8 @@ public class AddNetworkFilesourceDialog extends Activity {
 		domain = (EditText) findViewById(R.id.domain);
 		username = (EditText) findViewById(R.id.username);
 		password  = (EditText) findViewById(R.id.password);
+		password.setTypeface(Typeface.DEFAULT);
+		password.setTransformationMethod(new PasswordTransformationMethod());
 		anonymous = (CheckBox) findViewById(R.id.checkBox);
 		guest = (CheckBox) findViewById(R.id.checkBox2);
 

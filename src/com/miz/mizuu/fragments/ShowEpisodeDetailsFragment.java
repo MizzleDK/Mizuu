@@ -105,7 +105,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 			}
 			cursor.close();
 		}
-		
+
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 	}
 
@@ -118,7 +118,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
-		
+
 		if (thisEpisode != null) {
 			cover = (ImageView) v.findViewById(R.id.traktIcon);
 			playbutton = (ImageView) v.findViewById(R.id.imageView2);
@@ -204,11 +204,12 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 					}
 				}
 			});
-			
+
 			mPicasso.load(thisEpisode.getEpisodePhoto()).skipMemoryCache().placeholder(R.drawable.bg).into(cover, new Callback() {
 				@Override
 				public void onError() {
-					mPicasso.load(MizLib.getTvShowThumbFolder(getActivity()) + "/" + thisEpisode.getShowId() + ".jpg").skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.nobackdrop).into(cover);
+					if (isAdded())
+						mPicasso.load(MizLib.getTvShowThumbFolder(getActivity()) + "/" + thisEpisode.getShowId() + ".jpg").skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.nobackdrop).into(cover);
 				}
 
 				@Override
