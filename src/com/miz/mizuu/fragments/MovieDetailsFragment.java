@@ -592,7 +592,6 @@ public class MovieDetailsFragment extends Fragment {
 	}
 
 	private void loadImages() {
-		System.out.println("HEIGHT: " + MizLib.getDisplaySize(getActivity(), MizLib.HEIGHT) * 0.6);
 		if (!MizLib.runsInPortraitMode(getActivity())) {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
 				int height = (int) (MizLib.getDisplaySize(getActivity(), MizLib.HEIGHT) * 0.6);

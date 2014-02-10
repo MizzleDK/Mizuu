@@ -14,6 +14,7 @@ import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -65,6 +66,7 @@ import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.miz.mizuu.ShowDetails;
 import com.miz.mizuu.TvShow;
+import com.miz.mizuu.TvShowActorSearchActivity;
 import com.miz.mizuu.UnidentifiedFiles;
 import com.miz.mizuu.Update;
 import com.squareup.picasso.Picasso;
@@ -580,7 +582,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			inflater.inflate(R.menu.menutv, menu);
 			SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
-			searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+			ComponentName cn = new ComponentName(getActivity(), TvShowActorSearchActivity.class);
+			searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				@Override
 				public boolean onQueryTextChange(String newText) {

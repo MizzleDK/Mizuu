@@ -126,6 +126,23 @@
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value="com.miz.mizuu.Main" />
+        </activity>
+        
+        <!-- Actor Search Activity. Used as a middle-man to circumvent the issue of having two searchables for one Activity. -->
+        <activity
+            android:name="com.miz.mizuu.TvShowActorSearchActivity"
+            android:excludeFromRecents="true"
+            android:hardwareAccelerated="false"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="com.miz.mizuu.TvShowActorSearchActivity" />
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable_actors_tv" />
@@ -382,7 +399,7 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-        
+
         <!-- Widgets -->
         <receiver
             android:name="com.miz.widgets.MovieStackWidgetProvider"
@@ -502,7 +519,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 
