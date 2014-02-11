@@ -73,6 +73,15 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 									name.equalsIgnoreCase("cover.jpg") ||
 									name.equalsIgnoreCase("cover.jpeg") ||
 									name.equalsIgnoreCase("cover.tbn") ||
+									absolutePath.equalsIgnoreCase(filename + "-poster.jpg") ||
+									absolutePath.equalsIgnoreCase(filename + "-poster.jpeg") ||
+									absolutePath.equalsIgnoreCase(filename + "-poster.tbn") ||
+									absolutePath.equalsIgnoreCase(filename + "-folder.jpg") ||
+									absolutePath.equalsIgnoreCase(filename + "-folder.jpeg") ||
+									absolutePath.equalsIgnoreCase(filename + "-folder.tbn") ||
+									absolutePath.equalsIgnoreCase(filename + "-cover.jpg") ||
+									absolutePath.equalsIgnoreCase(filename + "-cover.jpeg") ||
+									absolutePath.equalsIgnoreCase(filename + "-cover.tbn") ||
 									absolutePath.equalsIgnoreCase(filename + ".jpg") ||
 									absolutePath.equalsIgnoreCase(filename + ".jpeg") ||
 									absolutePath.equalsIgnoreCase(filename + ".tbn")) {

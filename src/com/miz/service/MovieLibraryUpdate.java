@@ -88,10 +88,9 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
 		MizLib.scheduleMovieUpdate(this);
-
+		
 		if (MizLib.hasTraktAccount(this) && mSyncLibraries && ((mTotalFiles - mMovieQueue.size()) > 0)) {
-			Intent movies = new Intent(getApplicationContext(), TraktMoviesSyncService.class);
-			getApplicationContext().startService(movies);
+			getApplicationContext().startService(new Intent(getApplicationContext(), TraktMoviesSyncService.class));
 		}
 	}
 
@@ -293,14 +292,14 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	}
 
 	private void setup() {
-		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(STOP_MOVIE_LIBRARY_UPDATE));
+		LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter(STOP_MOVIE_LIBRARY_UPDATE));
 
 		// Set up cancel dialog intent
 		Intent notificationIntent = new Intent(this, CancelLibraryUpdate.class);
-		notificationIntent.putExtra("isMovie", false);
+		notificationIntent.putExtra("isMovie", true);
 		notificationIntent.setAction(Intent.ACTION_MAIN);
 		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, 0);
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
@@ -352,7 +351,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		while (mMovieQueue.peek() != null) {
 			if (mStopUpdate)
-				return;
+				break;
 			
 			sb.delete(0, sb.length());
 			sb.append(mMovieQueue.pop());
@@ -444,7 +443,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private void updateMovieScaningNotification(String filesource) {
 		mBuilder.setSmallIcon(R.drawable.refresh);
 		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.refresh));
-		mBuilder.setContentTitle(getString(R.string.updatingTvShows));
+		mBuilder.setContentTitle(getString(R.string.updatingMovies));
 		mBuilder.setContentText(getString(R.string.scanning) + ": " + filesource);
 
 		// Show the updated notification

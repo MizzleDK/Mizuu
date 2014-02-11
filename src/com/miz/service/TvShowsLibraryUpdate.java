@@ -267,14 +267,14 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 			return;
 		}
 
-		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(STOP_TVSHOW_LIBRARY_UPDATE));
+		LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter(STOP_TVSHOW_LIBRARY_UPDATE));
 
 		// Set up cancel dialog intent
 		Intent notificationIntent = new Intent(this, CancelLibraryUpdate.class);
 		notificationIntent.putExtra("isMovie", false);
 		notificationIntent.setAction(Intent.ACTION_MAIN);
 		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, 0);
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());

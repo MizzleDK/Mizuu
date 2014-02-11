@@ -48,7 +48,7 @@ public class FileTvShow extends TvShowFileSource<File> {
 	public void removeUnavailableFiles() {
 		ArrayList<DbEpisode> dbEpisodes = new ArrayList<DbEpisode>(), removedEpisodes = new ArrayList<DbEpisode>();
 
-		// Fetch all the movies from the database
+		// Fetch all the episodes from the database
 		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
 
 		Cursor tempCursor = db.getAllEpisodesInDatabase(ignoreRemovedFiles());
