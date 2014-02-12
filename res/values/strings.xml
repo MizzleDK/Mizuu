@@ -75,8 +75,6 @@
     <string name="updateCheckBox">Clear library on update</string>
     <string name="stringSearch">Search</string>
     <string name="stringNoPlot">Plot not available.</string>
-    <string name="detailsChangeCover">Change cover art</string>
-    <string name="detailsChangeCollectionCover">Change collection art</string>
     <string name="txtSelectFileSources">Select file sources</string>
     <string name="menuFavouriteTitle">Add favorite</string>
     <string name="menuFavouriteTitleRemove">Remove favorite</string>
@@ -109,7 +107,6 @@
     <string name="options">Options</string>
     <string name="cancel">Cancel</string>
     <string name="selectGenre">Select genre</string>
-    <string name="detailsBackdrops">Change backdrop</string>
     <string name="trailersTitle">Trailers</string>
     <string name="prefsShowGridTitlesTitle">Show titles in overview</string>
     <string name="prefsShowGridTitles">Enable movie and show titles in library overview.</string>
@@ -153,7 +150,6 @@
     <string name="networkPassword">Password</string>
     <string name="networkDomain">Domain name</string>
     <string name="networkLogin">Log in to Samba server</string>
-    <string name="actorMoviesInLibrary">In library</string>
     <string name="noConnection">"Connection failed. Make sure you're connected to a network!"</string>
     <string name="sortTitle">Sort by title</string>
     <string name="sortNewestEpisode">Sort by newest episode</string>
@@ -183,8 +179,6 @@
     <string name="areYouSure">Are you sure?</string>
     <string name="detailsFile">File</string>
     <string name="stringShowAllLanguages">Show all languages</string>
-    <string name="numberOfCovers">covers</string>
-    <string name="numberOfBackdrops">backdrops</string>
     <string name="stringMarkAsWatched">Mark as watched</string>
     <string name="markedAsWatched">Marked as watched!</string>
     <string name="stringMarkAsUnwatched">Mark as unwatched</string>
@@ -199,14 +193,12 @@
     <string name="stringUpcoming">Upcoming</string>
     <string name="stringNowPlaying">In theaters</string>
     <string name="stringPopular">Popular</string>
-    <string name="stringTopRated">Top rated</string>
     <string name="addFileSource">Folder content</string>
     <string name="fileSourceLocal">Local folder</string>
     <string name="fileSourceNetwork">Network folder</string>
     <string name="done">Done</string>
     <string name="discard">Discard</string>
     <string name="send">Send</string>
-    <string name="openSourceLibraries">Open source libraries</string>
     <string name="enterAMessage">Enter a message!</string>
     <string name="launchingGmail">Opening Gmail…</string>
     <string name="failedGmailLaunch">"Couldn't open Gmail"</string>
@@ -218,8 +210,6 @@
     <string name="subject">Subject</string>
     <string name="ignorenfotitle">Ignore custom movie data files</string>
     <string name="ignorenfo">Disable reading of local .nfo files and custom image art.</string>
-    <string name="HQImagesTitle">Use high quality images</string>
-    <string name="HQImagesDescription">If available, use high quality images.</string>
     <string name="noVideoPlayerFound">No compatible video player found!</string>
     <string name="originalTitle">Original title</string>
     <string name="searchIn">Search in</string>
@@ -250,9 +240,6 @@
     <string name="episodes">Episodes</string>
     <string name="openInBrowser">Open in browser</string>
     <string name="deviceNotSupported">Unsupported device!</string>
-    <string name="views">Views</string>
-    <string name="likes">Likes</string>
-    <string name="dislikes">Dislikes</string>
     <string name="choiceWatchedMovies">Watched movies</string>
     <string name="choiceUnwatchedMovies">Unwatched movies</string>
     <string name="allGenres">All genres</string>
@@ -266,8 +253,6 @@
     <string name="browseSources">Browse sources</string>
     <string name="playPart">Play part</string>
     <string name="part">Part</string>
-    <string name="mizuuSocialServicesSetup">Connect to your existing social services.</string>
-    <string name="userAccount">User account</string>
     <string name="failedToLogin">Failed to log in!</string>
     <string name="loginSucceeded">Log in succeeded!</string>
     <string name="logIn">Log in</string>
@@ -292,11 +277,6 @@
     <string name="ignoredFilesDescription">Set up previously removed files to ignore when updating the library.</string>
     <string name="includePreviouslyRemovedFilesTitle">Ignore previously removed files</string>
     <string name="includePreviouslyRemovedFiles">Don\'t include removed files in library updates.</string>
-    <string name="stringUpdates">Updates</string>
-    <string name="updateMovieLibraryAtLaunchTitle">Update movie library at launch</string>
-    <string name="updateMovieLibraryAtLaunch">Look for new movies when the application launches.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">Update TV shows library at launch</string>
-    <string name="updateShowsLibraryAtLaunch">Look for new TV shows when the application launches.</string>
     <string name="removeFromWatchlist">Remove from Watch list</string>
     <string name="watchLater">Watch later</string>
     <string name="ignoreSmallFilesDescription">Ignore video files smaller than the set file size.</string>
@@ -337,7 +317,6 @@
     <string name="syncTvShows">Synchronizing TV shows with Trakt</string>
     <string name="syncMovies">Synchronizing movies with Trakt</string>
     <string name="calendar">Calendar</string>
-    <string name="upcomingEpisodes">Upcoming episodes</string>
     <string name="folders">Folders</string>
     <string name="allFolders">All folders</string>
     <string name="selectFolder">Select folder</string>
@@ -359,8 +338,6 @@
     <string name="identify">Identify</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="playEpisode">Play episode</string>
-    <string name="enterYear">Enter year</string>
     <string name="moviesWeb">Movies (web)</string>
 
     <!-- Used in the image viewer, i.e. "1 of 6" -->
@@ -390,12 +367,8 @@
     <string name="tv_shows_start_page_title">TV shows initial page</string>
     <string name="tv_shows_start_page_description">Show details or episodes first when viewing a TV show.</string>
     <string name="installed_media_apps">Media apps</string>
-    <string name="showMediaAppsNavDrawer">Show media apps in navigation drawer</string>
-    <string name="showMediaAppsNavDrawerDesc">Enable or disable the list of installed media apps in the navigation drawer.</string>
     <string name="searchMoviesFromMizuu">Search movies from Mizuu</string>
     <string name="searchTvShowsFromMizuu">Search TV shows from Mizuu</string>
-    <string name="loadImagesWhileScrolling">Load images while scrolling</string>
-    <string name="loadImagesWhileScrollingDescription">May result in lag while scrolling. Requires application restart.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Unwatched shows</string>
     <string name="loading_movie_parts">Loading movie parts</string>
     <string name="few_moments">This may take a few moments…</string>
@@ -434,5 +407,24 @@
     <string name="alwaysDeleteFile">Automatically check the \"Delete file\" option when removing a movie or TV show episode.</string>
     <string name="gettingReady">Getting ready…</string>
     <string name="stoppingUpdate">Stopping update… This may take a short while.</string>
+    <string name="downloadingMovieCollection">Downloading movie collection…</string>
+    <string name="updatingMovieCollection">Updating movie collection…</string>
+    <string name="downloadingWatchedMovies">Downloading watched movies…</string>
+    <string name="updatingWatchedMovies">Updating watched movies…</string>
+    <string name="downloadingMovieFavorites">Downloading movie favorites…</string>
+    <string name="updatingMovieFavorites">Updating movie favorites…</string>
+    <string name="downloadingWatchlist">Downloading watchlist…</string>
+    <string name="updatingWatchlist">Updating watchlist…</string>
+    <string name="finishedTraktMovieSync">Finished synchronizing movies with Trakt</string>
+    <string name="finishedTraktTvShowSync">Finished synchronizing TV shows with Trakt</string>
+    <string name="syncNow">Synchronize now</string>
+    <string name="authenticating">Authenticating…</string>
+    <string name="downloadingTvShowCollection">Downloading TV show collection…</string>
+    <string name="updatingTvShowCollection">Updating TV show collection…</string>
+    <string name="downloadingWatchedTvShows">Updating watched TV shows…</string>
+    <string name="updatingWatchedTvShows">Updating watched TV shows…</string>
+    <string name="downloadingTvShowFavorites">Downloading TV show favorites…</string>
+    <string name="updatingTvShowFavorites">Updating TV show favorites…</string>
+    <string name="traktSyncFailed">Trakt synchronization failed</string>
 
 </resources>

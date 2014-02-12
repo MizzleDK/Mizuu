@@ -18,8 +18,11 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,7 +31,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.miz.functions.AsyncTask;
@@ -40,8 +43,8 @@ import com.miz.service.TraktTvShowsSyncService;
 public class AccountsFragment extends Fragment {
 
 	private SharedPreferences settings;
-	private TextView traktUser, traktPass;
-	private Button traktLogIn, traktRemoveAccount;
+	private EditText traktUser, traktPass;
+	private Button traktLogIn, traktRemoveAccount, traktSyncNow;
 	private CheckBox syncTrakt;
 
 	@Override
@@ -60,8 +63,12 @@ public class AccountsFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		traktUser = (TextView) v.findViewById(R.id.traktUsername);
-		traktPass = (TextView) v.findViewById(R.id.traktPassword);
+		traktUser = (EditText) v.findViewById(R.id.traktUsername);
+		traktUser.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		
+		traktPass = (EditText) v.findViewById(R.id.traktPassword);
+		traktPass.setTypeface(Typeface.DEFAULT);
+		traktPass.setTransformationMethod(new PasswordTransformationMethod());
 
 		traktLogIn = (Button) v.findViewById(R.id.traktLogIn);
 		traktLogIn.setOnClickListener(new OnClickListener() {
@@ -75,6 +82,14 @@ public class AccountsFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				traktRemove();
+			}
+		});
+		traktSyncNow = (Button) v.findViewById(R.id.traktSyncNow);
+		traktSyncNow.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getActivity().startService(new Intent(getActivity(), TraktMoviesSyncService.class));
+				getActivity().startService(new Intent(getActivity(), TraktTvShowsSyncService.class));
 			}
 		});
 
@@ -94,17 +109,19 @@ public class AccountsFragment extends Fragment {
 			traktPass.setText("");
 			traktUser.setEnabled(true);
 			traktPass.setEnabled(true);
-			traktLogIn.setEnabled(true);
-			traktRemoveAccount.setEnabled(false);
-			syncTrakt.setEnabled(false);
+			traktLogIn.setVisibility(View.VISIBLE);
+			traktSyncNow.setVisibility(View.GONE);
+			traktRemoveAccount.setVisibility(View.GONE);
+			syncTrakt.setVisibility(View.GONE);
 			syncTrakt.setChecked(false);
 		} else {
 			traktPass.setText("password");
 			traktUser.setEnabled(false);
 			traktPass.setEnabled(false);
-			traktLogIn.setEnabled(false);
-			traktRemoveAccount.setEnabled(true);
-			syncTrakt.setEnabled(true);
+			traktLogIn.setVisibility(View.GONE);
+			traktSyncNow.setVisibility(View.VISIBLE);
+			traktRemoveAccount.setVisibility(View.VISIBLE);
+			syncTrakt.setVisibility(View.VISIBLE);;
 		}
 	}
 
@@ -112,6 +129,12 @@ public class AccountsFragment extends Fragment {
 
 		private String username, password;
 
+		@Override
+		protected void onPreExecute() {
+			traktLogIn.setText(R.string.authenticating);
+			traktLogIn.setEnabled(false);
+		}
+		
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			username = traktUser.getText().toString().trim();
@@ -190,16 +213,20 @@ public class AccountsFragment extends Fragment {
 
 					traktUser.setEnabled(false);
 					traktPass.setEnabled(false);
-					syncTrakt.setEnabled(true);
+					syncTrakt.setVisibility(View.VISIBLE);;
 
-					traktLogIn.setEnabled(false);
-					traktRemoveAccount.setEnabled(true);
+					traktLogIn.setVisibility(View.GONE);
+					traktSyncNow.setVisibility(View.VISIBLE);
+					traktRemoveAccount.setVisibility(View.VISIBLE);
 
 					startServices();
 				}
 			} else {
-				if (isAdded())
+				if (isAdded()) {
 					Toast.makeText(getActivity(), getString(R.string.failedToLogin), Toast.LENGTH_LONG).show();
+					traktLogIn.setText(R.string.logIn);
+					traktLogIn.setEnabled(true);
+				}
 			}
 		}
 
@@ -216,11 +243,12 @@ public class AccountsFragment extends Fragment {
 		traktUser.setEnabled(true);
 		traktPass.setText("");
 		traktPass.setEnabled(true);
-		syncTrakt.setEnabled(false);
+		syncTrakt.setVisibility(View.GONE);
 		syncTrakt.setChecked(false);
 
-		traktLogIn.setEnabled(true);
-		traktRemoveAccount.setEnabled(false);
+		traktLogIn.setVisibility(View.VISIBLE);
+		traktSyncNow.setVisibility(View.GONE);
+		traktRemoveAccount.setVisibility(View.GONE);
 
 		Toast.makeText(getActivity(), getString(R.string.removedAccount), Toast.LENGTH_LONG).show();
 	}

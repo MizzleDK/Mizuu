@@ -111,6 +111,16 @@
                     android:paddingLeft="@dimen/movie_details_padding"
                     android:paddingRight="@dimen/movie_details_padding"
                     android:text="@string/logIn" />
+                
+                <Button
+                    android:id="@+id/traktSyncNow"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/movie_details_padding"
+                    android:paddingRight="@dimen/movie_details_padding"
+                    android:text="@string/syncNow"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

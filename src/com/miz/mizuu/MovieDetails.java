@@ -222,6 +222,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				else
 					menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
 			}
+			
+			if (thisMovie.getTmdbId().isEmpty() || thisMovie.getTmdbId().equals("invalid"))
+				menu.findItem(R.id.change_cover).setVisible(false);
+			
 		} catch (Exception e) {} // This can happen if thisMovie is null for whatever reason
 
 		return true;

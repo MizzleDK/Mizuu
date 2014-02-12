@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -111,7 +112,7 @@ public class MizLib {
 	public static final String TMDB_API = "8f5f9f44983b8af692aae5f9974500f8";
 	public static final String TVDBAPI = "1CB9725D261FAF38";
 	public static final String YOUTUBE_API = "AIzaSyACKcfmngguy_PhREycetiispyMZ4fLPDY";
-	public static final String TRAKT_API = "4f1093165b7b59c887526ce7abe365e8550c258d";
+	public static final String TRAKT_API = "b85f6110fd2522022bc53614965415bf";
 	public static final String CHARACTER_REGEX = "[^\\w\\s]";
 	public static final String[] prefixes = new String[]{"the ", "a ", "an "};
 
@@ -1632,10 +1633,6 @@ public class MizLib {
 				jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
 				jsonMovie.put("year", movies.get(i).getReleaseYear());
 				jsonMovie.put("title", movies.get(i).getTitle());
-				if (movies.get(i).hasWatched()) {
-					jsonMovie.put("plays", "1");
-					jsonMovie.put("last_played", String.valueOf(System.currentTimeMillis() / 1000L));
-				}
 				array.put(jsonMovie);
 			}
 			json.put("movies", array);
@@ -1698,7 +1695,89 @@ public class MizLib {
 
 		return false;
 	}
+	
+	public static boolean markTvShowAsWatched(TraktTvShow show, Context c) {
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+		String username = settings.getString("traktUsername", "").trim();
+		String password = settings.getString("traktPassword", "");
 
+		if (username.isEmpty() || password.isEmpty())
+			return false;
+
+		// Mark episode as seen / unseen
+		OkApacheClient httpclient = new OkApacheClient();
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/seen/" + MizLib.TRAKT_API);
+
+		try {
+			JSONObject json = new JSONObject();
+			json.put("username", username);
+			json.put("password", password);
+			json.put("tvdb_id", show.getId());
+			json.put("title", show.getTitle());
+
+			JSONArray array = new JSONArray();
+			for (String season : show.getSeasons().keySet()) {
+				Collection<String> episodes = show.getSeasons().get(season);
+				for (String episode : episodes) {
+					JSONObject jsonShow = new JSONObject();
+					jsonShow.put("season", season);
+					jsonShow.put("episode", episode);
+					array.put(jsonShow);
+				}
+			}
+			json.put("episodes", array);
+
+			httppost.setEntity(new StringEntity(json.toString()));
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			httpclient.execute(httppost, responseHandler);
+
+			return true;
+		} catch (Exception e) {}
+
+		return false;
+	}
+
+	public static boolean addMoviesToTraktLibrary(List<Movie> movies, Context c) {
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+		String username = settings.getString("traktUsername", "").trim();
+		String password = settings.getString("traktPassword", "");
+
+		if (username.isEmpty() || password.isEmpty())
+			return false;
+
+		if (movies.size() == 0)
+			return false;
+
+		OkApacheClient httpclient = new OkApacheClient();
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/library/" + MizLib.TRAKT_API);
+
+		try {
+			JSONObject json = new JSONObject();
+			json.put("username", username);
+			json.put("password", password);
+
+			JSONArray array = new JSONArray();
+			int count = movies.size();
+			for (int i = 0; i < count; i++) {
+				JSONObject jsonMovie = new JSONObject();
+				jsonMovie.put("imdb_id", movies.get(i).getImdbId());
+				jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
+				jsonMovie.put("year", movies.get(i).getReleaseYear());
+				jsonMovie.put("title", movies.get(i).getTitle());
+				array.put(jsonMovie);
+			}
+			json.put("movies", array);
+
+			httppost.setEntity(new StringEntity(json.toString()));
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			httpclient.execute(httppost, responseHandler);
+
+			return true;
+		} catch (Exception e) {}
+
+		return false;
+	}
+	
 	public static boolean movieWatchlist(List<Movie> movies, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString("traktUsername", "").trim();
@@ -1798,6 +1877,47 @@ public class MizLib {
 
 		return true;
 	}
+	
+	public static boolean addTvShowToLibrary(TraktTvShow show, Context c) {
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+		String username = settings.getString("traktUsername", "").trim();
+		String password = settings.getString("traktPassword", "");
+
+		if (username.isEmpty() || password.isEmpty())
+			return false;
+
+		// Mark as seen / unseen
+		OkApacheClient httpclient = new OkApacheClient();
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/library/" + MizLib.TRAKT_API);
+
+		try {
+			JSONObject json = new JSONObject();
+			json.put("username", username);
+			json.put("password", password);
+			json.put("tvdb_id", show.getId());
+			json.put("title", show.getTitle());
+
+			JSONArray array = new JSONArray();
+			for (String season : show.getSeasons().keySet()) {
+				Collection<String> episodes = show.getSeasons().get(season);
+				for (String episode : episodes) {
+					JSONObject jsonShow = new JSONObject();
+					jsonShow.put("season", season);
+					jsonShow.put("episode", episode);
+					array.put(jsonShow);
+				}
+			}
+			json.put("episodes", array);
+
+			httppost.setEntity(new StringEntity(json.toString()));
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			httpclient.execute(httppost, responseHandler);
+
+			return true;
+		} catch (Exception e) {}
+
+		return false;
+	}
 
 	public static boolean tvShowFavorite(List<TvShow> shows, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
@@ -1825,7 +1945,6 @@ public class MizLib {
 				JSONObject jsonShow = new JSONObject();
 				jsonShow.put("tvdb_id", shows.get(i).getId());
 				jsonShow.put("title", shows.get(i).getTitle());
-				jsonShow.put("year", "");
 				jsonShow.put("rating", shows.get(i).isFavorite() ? "love" : "unrate");
 				array.put(jsonShow);
 			}
@@ -1841,7 +1960,7 @@ public class MizLib {
 		return false;
 	}
 
-	public static int WATCHED = 1, RATINGS = 2, WATCHLIST = 3;
+	public static int WATCHED = 1, RATINGS = 2, WATCHLIST = 3, COLLECTION = 4;
 	public static JSONArray getTraktMovieLibrary(Context c, int type) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString("traktUsername", "").trim();
@@ -1859,6 +1978,8 @@ public class MizLib {
 			httppost = new HttpPost("http://api.trakt.tv/user/ratings/movies.json/" + MizLib.TRAKT_API + "/" + username + "/love");
 		} else if (type == WATCHLIST) {
 			httppost = new HttpPost("http://api.trakt.tv/user/watchlist/movies.json/" + MizLib.TRAKT_API + "/" + username);
+		} else if (type == COLLECTION) {
+			httppost = new HttpPost("http://api.trakt.tv/user/library/movies/collection.json/" + MizLib.TRAKT_API + "/" + username);
 		}
 
 		try {
@@ -1891,6 +2012,8 @@ public class MizLib {
 			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/watched.json/" + MizLib.TRAKT_API + "/" + username);
 		} else if (type == RATINGS) {
 			httppost = new HttpPost("http://api.trakt.tv/user/ratings/shows.json/" + MizLib.TRAKT_API + "/" + username + "/love");
+		} else if (type == COLLECTION) {
+			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/collection.json/" + MizLib.TRAKT_API + "/" + username);
 		}
 
 		try {
