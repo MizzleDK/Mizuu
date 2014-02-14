@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="98"
-    android:versionName="2.7-beta3" >
+    android:versionCode="999"
+    android:versionName="2.7-beta4" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -522,7 +522,7 @@
                 android:resource="@xml/my_dream" />
             -->
         </service>
-
+        
         <receiver android:name="com.miz.functions.StartScheduledUpdatesService" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

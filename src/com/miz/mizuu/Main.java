@@ -68,7 +68,7 @@ public class Main extends MizActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		setContentView(R.layout.menu_drawer);
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);

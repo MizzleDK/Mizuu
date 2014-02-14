@@ -46,8 +46,6 @@
     <string name="updateCheckBox">محو المكتبة عند التحديث</string>
     <string name="stringSearch">بحث</string>
     <string name="stringNoPlot">القصة غير متوفرة.</string>
-    <string name="detailsChangeCover">تغيير الغلاف</string>
-    <string name="detailsChangeCollectionCover">تغيير غلاف المجموعة</string>
     <string name="txtSelectFileSources">تحديد مصادر الملفات</string>
     <string name="menuFavouriteTitle">إضافة مفضلة</string>
     <string name="menuFavouriteTitleRemove">إزالة مفضلة</string>
@@ -80,7 +78,6 @@
     <string name="options">خيارات</string>
     <string name="cancel">إلغاء</string>
     <string name="selectGenre">تحديد النوع</string>
-    <string name="detailsBackdrops">تغيير الخلفية</string>
     <string name="trailersTitle">العروض الدعائية</string>
     <string name="prefsShowGridTitlesTitle">إظهار العناوين في النظرة العامة</string>
     <string name="prefsShowGridTitles">تمكين إظهار عناوين الأفلام والبرامج في النظرة العامة للمكتبة.</string>
@@ -113,7 +110,6 @@
     <string name="networkPassword">كلمة المرور</string>
     <string name="networkDomain">اسم النطاق</string>
     <string name="networkLogin">تسجيل الدخول إلى خادم Samba</string>
-    <string name="actorMoviesInLibrary">في المكتبة</string>
     <string name="noConnection">"فشل الاتصال. تأكد من أنك متصل بشبكة!"</string>
     <string name="sortTitle">فرز حسب العنوان</string>
     <string name="sortNewestEpisode">فرز حسب أحدث حلقة</string>
@@ -140,8 +136,6 @@
     <string name="areYouSure">هل أنت متأكد؟</string>
     <string name="detailsFile">الملف</string>
     <string name="stringShowAllLanguages">إظهار جميع اللغات</string>
-    <string name="numberOfCovers">الأغلفة</string>
-    <string name="numberOfBackdrops">الخلفيات</string>
     <string name="stringMarkAsWatched">وضع علامة \"مشاهد\"</string>
     <string name="markedAsWatched">تم وضع علامة \"مشاهد\"!</string>
     <string name="stringMarkAsUnwatched">وضع علامة \"غير مشاهد\"</string>
@@ -156,14 +150,12 @@
     <string name="stringUpcoming">قادمة</string>
     <string name="stringNowPlaying">في السينما</string>
     <string name="stringPopular">شائع</string>
-    <string name="stringTopRated">أعلى تقييم</string>
     <string name="addFileSource">محتوى المجلد</string>
     <string name="fileSourceLocal">مجلد محلي</string>
     <string name="fileSourceNetwork">مجلد شبكة</string>
     <string name="done">تم</string>
     <string name="discard">تجاهل</string>
     <string name="send">إرسال</string>
-    <string name="openSourceLibraries">مكتبات مفتوحة المصدر</string>
     <string name="enterAMessage">أدخل رسالة!</string>
     <string name="launchingGmail">فتح Gmail…</string>
     <string name="failedGmailLaunch">"تعذر فتح Gmail"</string>
@@ -175,8 +167,6 @@
     <string name="subject">الموضوع</string>
     <string name="ignorenfotitle">تجاهل ملفات بيانات الفيلم المخصصة</string>
     <string name="ignorenfo">تعطيل قراءة ملفات .nfo المحلية وصور الأغلفة المخصصة.</string>
-    <string name="HQImagesTitle">استخدام صور عالية الجودة</string>
-    <string name="HQImagesDescription">استخدام صور عالية الجودة إذا توفرت.</string>
     <string name="noVideoPlayerFound">لم يعثر على مشغل فيديو متوافق!</string>
     <string name="originalTitle">العنوان الأصلي</string>
     <string name="searchIn">بحث في</string>
@@ -205,9 +195,6 @@
     <string name="episodes">الحلقات</string>
     <string name="openInBrowser">فتح في المتصفح</string>
     <string name="deviceNotSupported">الجهاز غير مدعوم!</string>
-    <string name="views">مشاهدات</string>
-    <string name="likes">إعجاب</string>
-    <string name="dislikes">عدم إعجاب</string>
     <string name="choiceWatchedMovies">أفلام مشاهدة</string>
     <string name="choiceUnwatchedMovies">أفلام غير مشاهدة</string>
     <string name="allGenres">كل الأنواع</string>
@@ -221,8 +208,6 @@
     <string name="browseSources">تصفح المصادر</string>
     <string name="playPart">الدور</string>
     <string name="part">الجزء</string>
-    <string name="mizuuSocialServicesSetup">قم بتوصيل الخدمات الاجتماعية الخاصة بك.</string>
-    <string name="userAccount">حساب المستخدم</string>
     <string name="failedToLogin">فشل تسجيل الدخول!</string>
     <string name="loginSucceeded">نجح تسجيل الدخول!</string>
     <string name="logIn">تسجيل الدخول</string>
@@ -247,11 +232,6 @@
     <string name="ignoredFilesDescription">إعداد الملفات المزالة مسبقًا لتجاهلها عند تحديث المكتبة.</string>
     <string name="includePreviouslyRemovedFilesTitle">تجاهل الملفات المزالة مسبقًا</string>
     <string name="includePreviouslyRemovedFiles">لا تقم بتضمين الملفات المزالة في تحديثات المكتبة.</string>
-    <string name="stringUpdates">التحديثات</string>
-    <string name="updateMovieLibraryAtLaunchTitle">تحديث مكتبة الأفلام عند بدء التشغيل</string>
-    <string name="updateMovieLibraryAtLaunch">البحث عن أفلام جديدة عند بدء تشغيل التطبيق.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">تحديث مكتبة برامج التلفاز عند بدء التشغيل</string>
-    <string name="updateShowsLibraryAtLaunch">البحث عن برامج تلفازية جديدة عند بدء تشغيل التطبيق.</string>
     <string name="removeFromWatchlist">إزالة من قائمة المشاهدة</string>
     <string name="watchLater">مشاهدة لاحقًا</string>
     <string name="ignoreSmallFilesDescription">تجاهل ملفات الفيديو الأصغر من حجم الملف المحدد.</string>
@@ -281,7 +261,6 @@
     <string name="syncTvShows">مزامنة برامج التلفاز مع Trakt</string>
     <string name="syncMovies">مزامنة الأفلام مع Trakt</string>
     <string name="calendar">التقويم</string>
-    <string name="upcomingEpisodes">الحلقات القادمة</string>
     <string name="folders">المجلدات</string>
     <string name="allFolders">كل المجلدات</string>
     <string name="selectFolder">تحديد مجلد</string>
@@ -303,8 +282,6 @@
     <string name="identify">التعرف</string>
     <string name="drawer_open">فتح سحاب التنقل</string>
     <string name="drawer_close">إغلاق سحاب التنقل</string>
-    <string name="playEpisode">تشغيل الحلقة</string>
-    <string name="enterYear">إدخال السنة</string>
     <string name="moviesWeb">أفلام (ويب)</string>
     <string name="of">من</string>
     <string name="includeAdultContent">تضمين محتوى البالغين</string>
@@ -327,12 +304,8 @@
     <string name="tv_shows_start_page_title">صفحة البداية لبرامج التلفاز</string>
     <string name="tv_shows_start_page_description">عرض التفاصيل أو الحلقات أولًا عند فتح صفحة برنامج تلفازي.</string>
     <string name="installed_media_apps">تطبيقات الوسائط</string>
-    <string name="showMediaAppsNavDrawer">عرض تطبيقات الوسائط في سحّاب التنقل</string>
-    <string name="showMediaAppsNavDrawerDesc">تفعيل أو تعطيل قائمة تطبيقات الوسائط المثبتة على الجهاز في سحاب التنقل.</string>
     <string name="searchMoviesFromMizuu">البحث عن الأفلام من ميزو</string>
     <string name="searchTvShowsFromMizuu">البحث عن برامج التلفاز من ميزو</string>
-    <string name="loadImagesWhileScrolling">تحميل الصور أثناء تحريك الصفحة</string>
-    <string name="loadImagesWhileScrollingDescription">قد يؤدي إلى بطء أثناء التنقل في الصفحة. يتطلب إعادة تشغيل التطبيق.</string>
     <string name="tvShowsWithUnwatchedEpisodes">برامج غير مشاهدة</string>
     <string name="loading_movie_parts">تحميل أجزاء الفيلم</string>
     <string name="few_moments">قد يستغرق هذا بضع لحظات…</string>
