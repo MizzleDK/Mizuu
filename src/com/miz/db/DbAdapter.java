@@ -257,7 +257,7 @@ public class DbAdapter {
 	}
 
 	public int count() {
-		Cursor c = database.query(DATABASE_TABLE, new String[] {KEY_TITLE}, "NOT(" + KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, KEY_TMDBID, null, null);
+		Cursor c = database.query(DATABASE_TABLE, new String[] {KEY_TITLE}, "NOT(" + KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, "(CASE WHEN " + DbAdapter.KEY_TMDBID + " = 'invalid' OR " + DbAdapter.KEY_TMDBID + " = '' THEN " + DbAdapter.KEY_FILEPATH + " ELSE " + DbAdapter.KEY_TMDBID + " END)", null, null);
 		int count = c.getCount();
 		c.close();
 		return count;
