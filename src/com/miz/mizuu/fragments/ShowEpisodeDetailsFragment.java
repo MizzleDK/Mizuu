@@ -42,6 +42,7 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.R;
 import com.miz.service.DeleteFile;
+import com.miz.service.MakeAvailableOffline;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.test.smbstreamer.variant1.Streamer;
@@ -186,22 +187,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 			playbutton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					videoPlaybackStarted = System.currentTimeMillis();
-					if (thisEpisode.isNetworkFile()) {
-						playNetworkFile();
-					} else {
-						try { // Attempt to launch intent based on the MIME type
-							startActivity(MizLib.getVideoIntent(thisEpisode.getFilepath(), useWildcard, thisEpisode));
-							checkIn();
-						} catch (Exception e) {
-							try { // Attempt to launch intent based on wildcard MIME type
-								startActivity(MizLib.getVideoIntent(thisEpisode.getFilepath(), "video/*", thisEpisode));
-								checkIn();
-							} catch (Exception e2) {
-								Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
-							}
-						}
-					}
+					play();
 				}
 			});
 
@@ -215,6 +201,33 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 				@Override
 				public void onSuccess() {}					
 			});
+		}
+	}
+
+	private void play() {
+		if (thisEpisode.hasOfflineCopy()) {
+			playEpisode(thisEpisode.getOfflineCopyUri(), false);
+		} else {
+			playEpisode(thisEpisode.getFilepath(), thisEpisode.isNetworkFile());
+		}
+	}
+
+	private void playEpisode(String filepath, boolean isNetworkFile) {
+		videoPlaybackStarted = System.currentTimeMillis();
+		if (isNetworkFile) {
+			playNetworkFile();
+		} else {
+			try { // Attempt to launch intent based on the MIME type
+				getActivity().startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisEpisode));
+				checkIn();
+			} catch (Exception e) {
+				try { // Attempt to launch intent based on wildcard MIME type
+					getActivity().startActivity(MizLib.getVideoIntent(filepath, "video/*", thisEpisode));
+					checkIn();
+				} catch (Exception e2) {
+					Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
+				}
+			}
 		}
 	}
 
@@ -240,6 +253,15 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 			} else {
 				menu.findItem(R.id.watched).setTitle(R.string.stringMarkAsWatched);
 			}
+
+			if (thisEpisode.isNetworkFile()) {
+				menu.findItem(R.id.watchOffline).setVisible(true);
+
+				if (thisEpisode.hasOfflineCopy())
+					menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
+				else
+					menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
+			}
 		} catch (Exception e) {}
 	}
 
@@ -254,8 +276,59 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 			break;
 		case R.id.identify:
 			identifyEpisode();
+		case R.id.watchOffline:
+			watchOffline(item);
 		}
 		return false;
+	}
+
+	public void watchOffline(MenuItem m) {
+		if (thisEpisode.hasOfflineCopy()) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setMessage(getString(R.string.areYouSure))
+			.setTitle(getString(R.string.removeOfflineCopy))
+			.setCancelable(false)
+			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {	
+					boolean success = thisEpisode.getOfflineCopyFile().delete();
+					if (!success)
+						thisEpisode.getOfflineCopyFile().delete();
+					getActivity().invalidateOptionsMenu();
+					return;
+				}
+			})
+			.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			})
+			.create().show();
+		} else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setMessage(getString(R.string.downloadOfflineCopy))
+			.setTitle(getString(R.string.watchOffline))
+			.setCancelable(false)
+			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					if (MizLib.isLocalCopyBeingDownloaded(getActivity()))
+						Toast.makeText(getActivity(), R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
+
+					Intent i = new Intent(getActivity(), MakeAvailableOffline.class);
+					i.putExtra(MakeAvailableOffline.FILEPATH, thisEpisode.getFilepath());
+					i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_SHOWS);
+					i.putExtra("thumb", thisEpisode.getThumbnail());
+					i.putExtra("backdrop", thisEpisode.getEpisodePhoto());
+					getActivity().startService(i);
+					return;
+				}
+			})
+			.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			})
+			.create().show();
+		}
 	}
 
 	private void identifyEpisode() {
@@ -356,7 +429,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 			public void run() {
 				ArrayList<TvShowEpisode> episode = new ArrayList<TvShowEpisode>();
 				episode.add(thisEpisode);
-				MizLib.markEpisodeAsWatched(episode, getActivity());
+				MizLib.markEpisodeAsWatched(episode, getActivity(), false);
 			}
 		}.start();
 	}

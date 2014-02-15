@@ -142,6 +142,12 @@ public class DbAdapterTvShowEpisode {
 		Cursor c = database.query(DATABASE_TABLE, allRows, KEY_SHOW_ID + " = '" + showId + "' AND " + KEY_HAS_WATCHED + " = '0'", null, null, null, null);
 		return c.getCount() > 0;
 	}
+	
+	public boolean markSeasonAsWatched(String showId, String season) {
+		ContentValues values = new ContentValues();
+		values.put(KEY_HAS_WATCHED, "1");
+		return database.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + season + "'", null) > 0;
+	}
 
 	private ContentValues createContentValues(String filepath, String season, String episode,
 			String showId, String episodeTitle, String episodePlot, String episodeAirdate, String episodeRating,

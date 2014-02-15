@@ -421,10 +421,12 @@
     <string name="authenticating">Authenticating…</string>
     <string name="downloadingTvShowCollection">Downloading TV show collection…</string>
     <string name="updatingTvShowCollection">Updating TV show collection…</string>
-    <string name="downloadingWatchedTvShows">Updating watched TV shows…</string>
+    <string name="downloadingWatchedTvShows">Downloading watched TV shows…</string>
     <string name="updatingWatchedTvShows">Updating watched TV shows…</string>
     <string name="downloadingTvShowFavorites">Downloading TV show favorites…</string>
     <string name="updatingTvShowFavorites">Updating TV show favorites…</string>
     <string name="traktSyncFailed">Trakt synchronization failed</string>
+    <string name="downloadingMovie">Downloading movie</string>
+    <string name="downloadingEpisode">Downloading TV show episode</string>
 
 </resources>

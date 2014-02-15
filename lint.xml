@@ -4,6 +4,7 @@
         <ignore path="res/menu/menu.xml" />
         <ignore path="res/menu/menutv.xml" />
     </issue>
+    <issue id="ExtraTranslation" severity="warning" />
     <issue id="InvalidPackage" severity="ignore" />
     <issue id="MergeRootFrame">
         <ignore path="res/layout/actionbar_discard_button.xml" />

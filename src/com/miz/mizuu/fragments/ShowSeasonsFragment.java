@@ -336,6 +336,7 @@ public class ShowSeasonsFragment extends Fragment {
 
 	static class RowItem {
 		TextView title, episodeCount;
+		ImageView watched;
 	}
 
 	private class SeasonsAdapterGrid extends BaseAdapter implements StickyGridHeadersBaseAdapter {
@@ -459,7 +460,7 @@ public class ShowSeasonsFragment extends Fragment {
 		}
 
 		@Override
-		public View getHeaderView(int position, View convertView, ViewGroup parent) {
+		public View getHeaderView(final int position, View convertView, ViewGroup parent) {
 			RowItem holder;
 
 			if (convertView == null) {
@@ -468,6 +469,7 @@ public class ShowSeasonsFragment extends Fragment {
 				holder.title = (TextView) convertView.findViewById(R.id.seasonTitle);
 				holder.title.setVisibility(View.VISIBLE);
 				holder.episodeCount = (TextView) convertView.findViewById(R.id.episodeCount);
+				holder.watched = (ImageView) convertView.findViewById(R.id.watchSeason);
 				convertView.setTag(holder);
 			} else {
 				holder = (RowItem) convertView.getTag();
@@ -478,6 +480,13 @@ public class ShowSeasonsFragment extends Fragment {
 			} else {
 				holder.title.setText(getString(R.string.showSeason) + " " + seasons.get(position));
 			}
+
+			holder.watched.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					markSeasonAsWatched(seasons.get(position));
+				}
+			});
 
 			int size = seasonEpisodeCount.get(Integer.valueOf(seasons.get(position)));
 			holder.episodeCount.setText(size + " " + getResources().getQuantityString(R.plurals.episodes, size, size));
@@ -582,7 +591,7 @@ public class ShowSeasonsFragment extends Fragment {
 		}
 
 		@Override
-		public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+		public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 			RowItem holder;
 
 			if (convertView == null) {
@@ -590,6 +599,7 @@ public class ShowSeasonsFragment extends Fragment {
 				holder = new RowItem();
 				holder.title = (TextView) convertView.findViewById(R.id.seasonTitle);
 				holder.episodeCount = (TextView) convertView.findViewById(R.id.episodeCount);
+				holder.watched = (ImageView) convertView.findViewById(R.id.watchSeason);
 				convertView.setTag(holder);
 			} else {
 				holder = (RowItem) convertView.getTag();
@@ -600,6 +610,13 @@ public class ShowSeasonsFragment extends Fragment {
 			} else {
 				holder.title.setText(getString(R.string.showSeason) + " " + seasons.get(groupPosition));
 			}
+
+			holder.watched.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					markSeasonAsWatched(seasons.get(groupPosition));
+				}
+			});
 
 			int size = seasonEpisodeCount.get(Integer.valueOf(seasons.get(groupPosition)));
 			holder.episodeCount.setText(size + " " + getResources().getQuantityString(R.plurals.episodes, size, size));
@@ -631,6 +648,36 @@ public class ShowSeasonsFragment extends Fragment {
 		position += childPosition;
 
 		return position;
+	}
+
+	private void markSeasonAsWatched(final String season) {
+		// Create and open database
+		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
+
+		if (db.markSeasonAsWatched(thisShow.getId(), season)) {
+			Toast.makeText(getActivity(), getString(R.string.markedAsWatched), Toast.LENGTH_SHORT).show();
+
+			final ArrayList<TvShowEpisode> previouslyUnwatched = new ArrayList<TvShowEpisode>();		
+			for (int i = 0; i < shownEpisodes.size(); i++)
+				if (shownEpisodes.get(i).getSeason().equals(season)) {
+					if (!shownEpisodes.get(i).hasWatched())
+						previouslyUnwatched.add(shownEpisodes.get(i));
+					shownEpisodes.get(i).setHasWatched(true);
+				}
+
+			notifyDataSetChanged(true);
+
+			new Thread() {
+				@Override
+				public void run() {
+					if (previouslyUnwatched.size() > 0)
+						MizLib.markEpisodeAsWatched(previouslyUnwatched, getActivity(), true);
+				}
+			}.start();
+
+		} else {
+			Toast.makeText(getActivity(), getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private void loadEpisodes() {
@@ -693,8 +740,9 @@ public class ShowSeasonsFragment extends Fragment {
 		seasons.clear();
 
 		EpisodeLoader loader = new EpisodeLoader();
+
 		loader.setResetSelection(resetSelection);
-		loader.execute(type);
+		loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, type);
 	}
 
 	private class EpisodeLoader extends AsyncTask<Integer, Object, Object> {
@@ -1038,7 +1086,7 @@ public class ShowSeasonsFragment extends Fragment {
 			public void run() {
 				ArrayList<TvShowEpisode> episode = new ArrayList<TvShowEpisode>();
 				episode.add(shownEpisodes.get(selectedEpisodeIndex));
-				MizLib.markEpisodeAsWatched(episode, getActivity());
+				MizLib.markEpisodeAsWatched(episode, getActivity(), false);
 			}
 		}.start();
 	}

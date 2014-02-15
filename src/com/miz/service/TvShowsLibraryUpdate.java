@@ -77,6 +77,9 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		log("onDestroy()");
 
+		if (mNotificationManager == null)
+			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
 		showPostUpdateNotification();
@@ -396,7 +399,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 			contentText = getString(R.string.unidentified) + ": " + title;
 		else
 			contentText = getString(R.string.stringJustAdded) + ": " + title;
-		
+
 		mBuilder.setLargeIcon(cover);
 		mBuilder.setContentTitle(getString(R.string.updatingTvShows) + " (" + (int) ((100.0 / (double) mTotalFiles) * (double) mEpisodeCount) + "%)");
 		mBuilder.setContentText(contentText);

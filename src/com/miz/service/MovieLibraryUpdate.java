@@ -76,6 +76,9 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		log("onDestroy()");
 
+		if (mNotificationManager == null)
+			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
 		showPostUpdateNotification();

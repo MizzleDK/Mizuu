@@ -85,7 +85,7 @@ public class MakeAvailableOffline extends IntentService {
 		mContext = getApplicationContext();
 
 		file = intent.getExtras().getString(FILEPATH);
-		type = intent.getExtras().getInt(TYPE); // MizLib.TYPE_MOVIE
+		type = intent.getExtras().getInt(TYPE);
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -100,10 +100,16 @@ public class MakeAvailableOffline extends IntentService {
 		builder.setOnlyAlertOnce(true);
 		builder.setSmallIcon(android.R.drawable.stat_sys_download);
 		builder.setContentIntent(contentIntent);
-		builder.setTicker("Downloading movie");
-		builder.setContentTitle("Downloading movie");
+
+		String message = getString(R.string.downloadingMovie);
+		if (type == MizLib.TYPE_SHOWS)
+			message = getString(R.string.downloadingEpisode);
+		builder.setTicker(message);
+		builder.setContentTitle(message);
+
 		builder.setContentText(getContentText());
 		builder.setLargeIcon(MizLib.getNotificationImageThumbnail(mContext, intent.getExtras().getString("thumb")));
+
 		builder.addAction(R.drawable.remove, getString(android.R.string.cancel), contentIntent);
 
 		boolean exists = checkIfNetworkFileExists();
@@ -168,7 +174,7 @@ public class MakeAvailableOffline extends IntentService {
 							file,
 							false
 							));
-			return smb.exists();
+			return smb.exists() && smb.length() > 1000;
 		} catch (Exception e) {
 			return false;
 		}

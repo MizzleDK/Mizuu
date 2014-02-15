@@ -1647,7 +1647,7 @@ public class MizLib {
 		return false;
 	}
 
-	public static boolean markEpisodeAsWatched(List<TvShowEpisode> episodes, Context c) {
+	public static boolean markEpisodeAsWatched(List<TvShowEpisode> episodes, Context c, boolean overrideWatched) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString("traktUsername", "").trim();
 		String password = settings.getString("traktPassword", "");
@@ -1662,7 +1662,7 @@ public class MizLib {
 		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 
-		if (episodes.get(0).hasWatched())
+		if (overrideWatched || episodes.get(0).hasWatched())
 			httppost = new HttpPost("http://api.trakt.tv/show/episode/seen/" + MizLib.TRAKT_API);
 		else
 			httppost = new HttpPost("http://api.trakt.tv/show/episode/unseen/" + MizLib.TRAKT_API);

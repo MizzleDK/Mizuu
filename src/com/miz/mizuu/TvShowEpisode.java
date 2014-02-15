@@ -43,9 +43,7 @@ public class TvShowEpisode {
 	}
 
 	public String getFilepath() {
-		if (FILEPATH.contains("smb") && FILEPATH.contains("@"))
-			return "smb://" + FILEPATH.substring(FILEPATH.indexOf("@") + 1);
-		return FILEPATH.replace("/smb:/", "smb://");
+		return MizLib.transformSmbPath(FILEPATH);
 	}
 
 	public String getFullFilepath() {
@@ -160,5 +158,25 @@ public class TvShowEpisode {
 	
 	public String getFavorite() {
 		return FAVORITE;
+	}
+	
+	public boolean hasOfflineCopy() {
+		return getOfflineCopyFile().exists();
+	}
+	
+	public String getOfflineCopyUri() {
+		return getOfflineCopyFile().getAbsolutePath();
+	}
+	
+	public File getOfflineCopyFile() {
+		return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
+	}
+	
+	/**
+	 * Returns the path for the TV show thumbnail
+	 * @return
+	 */
+	public String getThumbnail() {
+		return new File(MizLib.getTvShowThumbFolder(CONTEXT), SHOW_ID + ".jpg").getAbsolutePath();
 	}
 }
