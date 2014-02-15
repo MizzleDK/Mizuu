@@ -46,8 +46,6 @@
     <string name="updateCheckBox">Limpiar biblioteca al actualizar</string>
     <string name="stringSearch">Buscar</string>
     <string name="stringNoPlot">Trama no disponible.</string>
-    <string name="detailsChangeCover">Cambiar la carátula</string>
-    <string name="detailsChangeCollectionCover">Cambiar la carátula de la colección</string>
     <string name="txtSelectFileSources">Seleccionar fuentes de archivos</string>
     <string name="menuFavouriteTitle">Agregar a favoritos</string>
     <string name="menuFavouriteTitleRemove">Quitar de favoritos</string>
@@ -80,7 +78,6 @@
     <string name="options">Opciones</string>
     <string name="cancel">Cancelar</string>
     <string name="selectGenre">Seleccionar género</string>
-    <string name="detailsBackdrops">Cambiar telón de fondo</string>
     <string name="trailersTitle">Avances</string>
     <string name="prefsShowGridTitlesTitle">Mostrar títulos en el resumen</string>
     <string name="prefsShowGridTitles">Habilitar el título de la película y la serie en el resumen de la biblioteca.</string>
@@ -113,7 +110,6 @@
     <string name="networkPassword">Contraseña</string>
     <string name="networkDomain">Nombre de dominio</string>
     <string name="networkLogin">Iniciar sesión en servidor Samba</string>
-    <string name="actorMoviesInLibrary">En la biblioteca</string>
     <string name="noConnection">"Error de conexión. Asegúrese de estar conectado a una red!"</string>
     <string name="sortTitle">Ordenar por título</string>
     <string name="sortNewestEpisode">Ordenar por episodios recientes</string>
@@ -135,11 +131,11 @@
     <string name="watchedEpisodes">Episodios vistos</string>
     <string name="unwatchedEpisodes">Episodios no vistos</string>
     <string name="stringJustAdded">Añadido</string>
+    <string name="stringCancelUpdate">Detener actualización</string>
+    <string name="stringUpdateCancelled">Actualización detenida!</string>
     <string name="areYouSure">¿Estás seguro?</string>
     <string name="detailsFile">Archivo</string>
     <string name="stringShowAllLanguages">Mostrar todos los idiomas</string>
-    <string name="numberOfCovers">Carátulas</string>
-    <string name="numberOfBackdrops">telones de fondo</string>
     <string name="stringMarkAsWatched">Marcar como vista</string>
     <string name="markedAsWatched">Marcada como vista!</string>
     <string name="stringMarkAsUnwatched">Marcar como no vista</string>
@@ -154,14 +150,12 @@
     <string name="stringUpcoming">Próximos</string>
     <string name="stringNowPlaying">En cines</string>
     <string name="stringPopular">Popular</string>
-    <string name="stringTopRated">Más valorados</string>
     <string name="addFileSource">Contenido de la carpeta</string>
     <string name="fileSourceLocal">Carpeta local</string>
     <string name="fileSourceNetwork">Carpeta de red</string>
     <string name="done">Hecho</string>
     <string name="discard">Descartar</string>
     <string name="send">Enviar</string>
-    <string name="openSourceLibraries">Bibliotecas de código abierto</string>
     <string name="enterAMessage">Ingrese un mensaje!</string>
     <string name="launchingGmail">Abriendo Gmail&#8230;</string>
     <string name="failedGmailLaunch">"No se pudo iniciar Gmail"</string>
@@ -173,8 +167,6 @@
     <string name="subject">Asunto</string>
     <string name="ignorenfotitle">Ignorar archivos personalizados de datos de películas</string>
     <string name="ignorenfo">Desactivar la lectura de archivos .nfo locales y las carátulas personalizadas de imágenes.</string>
-    <string name="HQImagesTitle">Utilizar imágenes en calidad alta</string>
-    <string name="HQImagesDescription">Si están disponibles, usar imágenes en calidad alta.</string>
     <string name="noVideoPlayerFound">No se encontró un reproductor de vídeo compatible!</string>
     <string name="originalTitle">Título original</string>
     <string name="searchIn">Buscar en</string>
@@ -186,6 +178,7 @@
     <string name="coverart">Diseño de carátula</string>
     <string name="backdrop">Imágenes del telón de fondo</string>
     <string name="collectionart">Caráula de la Colección</string>
+    <string name="browseMedia">Examinar ilustraciones</string>
     <string name="advanced">Avanzado</string>
     <string name="network">Recursos compartidos de red</string>
     <string name="bufferSize">Tamaño del búfer de Stream</string>
@@ -202,9 +195,6 @@
     <string name="episodes">Episodios</string>
     <string name="openInBrowser">Abrir en navegador web</string>
     <string name="deviceNotSupported">Dispositivo no compatible!</string>
-    <string name="views">Vistas</string>
-    <string name="likes">Me gusta</string>
-    <string name="dislikes">No me gusta</string>
     <string name="choiceWatchedMovies">Películas vistas</string>
     <string name="choiceUnwatchedMovies">Películas no vistas</string>
     <string name="allGenres">Todos los géneros</string>
@@ -218,8 +208,6 @@
     <string name="browseSources">Navegar fuentes</string>
     <string name="playPart">Reproducir parte</string>
     <string name="part">Parte</string>
-    <string name="mizuuSocialServicesSetup">Conectar los servicios de redes sociales existentes.</string>
-    <string name="userAccount">Cuenta de usuario</string>
     <string name="failedToLogin">No se pudo iniciar sesión!</string>
     <string name="loginSucceeded">Inicio de sesión exitoso!</string>
     <string name="logIn">Iniciar sesión</string>
@@ -244,11 +232,6 @@
     <string name="ignoredFilesDescription">Establece que los archivos previamente removidos sean ignorados  al actualizar la biblioteca.</string>
     <string name="includePreviouslyRemovedFilesTitle">Ignorar archivos removidos previamente</string>
     <string name="includePreviouslyRemovedFiles">No incluir archivos removidos en las actualizaciones de la biblioteca.</string>
-    <string name="stringUpdates">Actualizaciones</string>
-    <string name="updateMovieLibraryAtLaunchTitle">Actualizar la biblioteca de películas al iniciar</string>
-    <string name="updateMovieLibraryAtLaunch">Buscar nuevas películas cuando la aplicación se inicie.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">Actualizar la biblioteca de series de TV al iniciar</string>
-    <string name="updateShowsLibraryAtLaunch">Buscar nuevas series de TV cuando la aplicación se inicie.</string>
     <string name="removeFromWatchlist">Quitar de la lista Por Ver</string>
     <string name="watchLater">Ver después</string>
     <string name="ignoreSmallFilesDescription">Ignora los archivos de video más pequeños que el tamaño especificado.</string>
@@ -278,7 +261,6 @@
     <string name="syncTvShows">Sincronizar la serie de TV con Trakt</string>
     <string name="syncMovies">Sincronizar la película con Trakt</string>
     <string name="calendar">Calendario</string>
-    <string name="upcomingEpisodes">Próximos episodios</string>
     <string name="folders">Carpetas</string>
     <string name="allFolders">Todas las carpetas</string>
     <string name="selectFolder">Seleccione la carpeta</string>
@@ -287,6 +269,9 @@
     <string name="scheduledUpdates">Actualizaciones programadas</string>
     <string name="enableScheduledLibraryUpdates">Habilitar las actualizaciones programadas de la biblioteca</string>
     <string name="scheduledAtLaunch">Al iniciar la aplicación</string>
+    <string name="scheduledEveryHour">Cada hora</string>
+    <string name="scheduledEvery2Hours">Cada 2 horas</string>
+    <string name="scheduledEvery4Hours">Cada 4 horas</string>
     <string name="scheduledEvery6Hours">Cada 6 horas</string>
     <string name="scheduledEvery12Hours">Cada 12 horas</string>
     <string name="scheduledEveryDay">Cada día</string>
@@ -297,8 +282,6 @@
     <string name="identify">Identificar</string>
     <string name="drawer_open">Abrir caja de navegación</string>
     <string name="drawer_close">Cerrar caja de navegación</string>
-    <string name="playEpisode">Reproducir episodio</string>
-    <string name="enterYear">Introduzca el año</string>
     <string name="moviesWeb">Películas (web)</string>
     <string name="of">de</string>
     <string name="includeAdultContent">Incluir contenido para adultos</string>
@@ -321,12 +304,8 @@
     <string name="tv_shows_start_page_title">Página inicial de programas de TV</string>
     <string name="tv_shows_start_page_description">Mostrar primero detalles o episodios al ver una serie de TV.</string>
     <string name="installed_media_apps">Aplicaciones de medios</string>
-    <string name="showMediaAppsNavDrawer">Mostrar las aplicaciones de medios en la caja de navegación</string>
-    <string name="showMediaAppsNavDrawerDesc">Habilita o deshabilita el listado en la caja de navegación de las aplicaciones de medios instaladas.</string>
     <string name="searchMoviesFromMizuu">Buscar películas desde Mizuu</string>
     <string name="searchTvShowsFromMizuu">Buscar series de TV desde Mizuu</string>
-    <string name="loadImagesWhileScrolling">Cargar imágenes mientras se desplaza</string>
-    <string name="loadImagesWhileScrollingDescription">Podría ocasionar retrasos al desplazarse. Requiere reiniciar la aplicación.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Series no vistas</string>
     <string name="loading_movie_parts">Cargando partes de la película</string>
     <string name="few_moments">Esto podría tardar un poco&#8230;</string>
@@ -341,6 +320,25 @@
     <string name="thirdPartyLibraries">Bibliotecas de terceros</string>
     <string name="fileToIdentify">Seleccione el archivo a identificar</string>
     <string name="fileToPlay">Seleccione el archivo a reproducir</string>
+    <string name="actor">Actor</string>
+    <string name="overviewGridItemSizeTitle">Establecer el tamaño de la carátula del resumen</string>
+    <string name="overviewGridItemSizeDescription">Cambiar el tamaño de las carátulas de la película y la serie de TV en los resúmenes.</string>
+    <string name="normal">Normal</string>
+    <string name="small">Pequeño</string>
+    <string name="watchOffline">Ver sin conexión</string>
+    <string name="unavailable_file">El archivo no está disponible!</string>
+    <string name="not_enough_space">No hay espacio de almacenamiento suficiente!</string>
+    <string name="removeOfflineCopy">Quitar la copia sin conexión</string>
+    <string name="starting_download">Iniciando descarga&#8230;</string>
+    <string name="downloadOfflineCopy">Esto descargará una copia local del archivo de vídeo para su reproducción sin conexión. ¿Quieres continuar?</string>
+    <string name="stringDownloadCancelled">Descarga cancelada!</string>
+    <string name="addedToDownloadQueue">Agregado a la cola de descargas!</string>
+    <string name="ignoreFilesizeCheckTitle">Ignorar la comprobación del tamaño de archivo para la vista sin conexión</string>
+    <string name="ignoreFilesizeCheck">Saltar la comprobación de espacio de almacenamiento disponible cuando descarga videos para ver sin conexión.</string>
+    <string name="finishedMovieLibraryUpdate">Actualización de películas terminada</string>
+    <string name="finishedTvShowsLibraryUpdate">Actualización de Series de TV terminada</string>
+    <string name="stopFileDownload">Detener descarga de archivo</string>
+    <string name="scanning">Escaneando</string>
 
     <plurals name="moviesInLibrary">
         <item quantity="one">película</item>

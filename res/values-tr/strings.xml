@@ -44,8 +44,6 @@
     <string name="updateCheckBox">Güncellemeden önce kütüphaneyi temizle</string>
     <string name="stringSearch">Arama</string>
     <string name="stringNoPlot">Açıklama yok.</string>
-    <string name="detailsChangeCover">Posteri değiştir</string>
-    <string name="detailsChangeCollectionCover">Koleksiyon resmini değiştir</string>
     <string name="txtSelectFileSources">Dosya kaynakları seçin</string>
     <string name="menuFavouriteTitle">Favorilere ekle</string>
     <string name="menuFavouriteTitleRemove">Favorilerden kaldır</string>
@@ -78,7 +76,6 @@
     <string name="options">Seçenekler</string>
     <string name="cancel">İptal</string>
     <string name="selectGenre">Tür seçin</string>
-    <string name="detailsBackdrops">Arkaplan değiştir</string>
     <string name="trailersTitle">Fragmanlar</string>
     <string name="prefsShowGridTitlesTitle">Poster üzerinde başlıkları göster</string>
     <string name="prefsShowGridTitles">Film ve program isimlerini kütüphanede göster.</string>
@@ -111,7 +108,6 @@
     <string name="networkPassword">Şifre</string>
     <string name="networkDomain">Alan adı</string>
     <string name="networkLogin">Samba sunucuda oturum aç</string>
-    <string name="actorMoviesInLibrary">Kütüphanede</string>
     <string name="noConnection">"Bağlantı başarısız oldu. Bir ağa bağlı olduğunuzdan emin olun!"</string>
     <string name="sortTitle">Başlığa göre sırala</string>
     <string name="sortNewestEpisode">Yeni bölüme göre sırala</string>
@@ -135,8 +131,6 @@
     <string name="areYouSure">Emin misiniz?</string>
     <string name="detailsFile">Dosya</string>
     <string name="stringShowAllLanguages">Tüm dilleri göster</string>
-    <string name="numberOfCovers">Posterler</string>
-    <string name="numberOfBackdrops">Arka planlar</string>
     <string name="stringMarkAsWatched">İzlendi olarak işaretle</string>
     <string name="markedAsWatched">İzlendi olarak işaretlendi!</string>
     <string name="stringMarkAsUnwatched">İzlenmedi olarak işaretle</string>
@@ -151,14 +145,12 @@
     <string name="stringUpcoming">Yaklaşan</string>
     <string name="stringNowPlaying">Vizyonda</string>
     <string name="stringPopular">Popüler</string>
-    <string name="stringTopRated">En çok oy alanlar</string>
     <string name="addFileSource">Klasör içeriği</string>
     <string name="fileSourceLocal">Yerel klasör</string>
     <string name="fileSourceNetwork">Ağ klasörü</string>
     <string name="done">Bitti</string>
     <string name="discard">Yoksay</string>
     <string name="send">Gönder</string>
-    <string name="openSourceLibraries">Açık kaynak kütüphaneleri</string>
     <string name="enterAMessage">Bir ileti girin!</string>
     <string name="launchingGmail">Gmail açılıyor&#8230;</string>
     <string name="failedGmailLaunch">"Gmail açılamıyor"</string>
@@ -170,8 +162,6 @@
     <string name="subject">Konu</string>
     <string name="ignorenfotitle">Filme ait bilgi dosyalarını yoksay</string>
     <string name="ignorenfo">Filmlerin .nfo ve poster resimlerini okuma.</string>
-    <string name="HQImagesTitle">Yüksek kaliteli görüntü kullan</string>
-    <string name="HQImagesDescription">Varsa, yüksek kaliteli görüntüleri kullan.</string>
     <string name="noVideoPlayerFound">Uyumlu video oynatıcı bulunamadı!</string>
     <string name="originalTitle">Orijinal adı</string>
     <string name="searchIn">İçinde ara</string>
@@ -193,10 +183,6 @@
     <string name="episodes">Bölümler</string>
     <string name="openInBrowser">Tarayıcıda aç</string>
     <string name="deviceNotSupported">Desteklenmeyen aygıt!</string>
-    <string name="views">Görünümler</string>
-    <string name="updateMovieLibraryAtLaunch">Uygulama başladığında yeni filmler için bak.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">Kütüphane açılışında TV programlarını güncelleştir</string>
-    <string name="updateShowsLibraryAtLaunch">Uygulama başladığında yeni TV şovları için bak.</string>
     <string name="removeFromWatchlist">İzleme listesinden kaldır</string>
     <string name="watchLater">Daha sonra izle</string>
 

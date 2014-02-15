@@ -44,8 +44,6 @@
     <string name="updateCheckBox">Limpar biblioteca antes de atualizar</string>
     <string name="stringSearch">Pesquisar</string>
     <string name="stringNoPlot">Sinopse indisponível.</string>
-    <string name="detailsChangeCover">Mudar imagem de capa</string>
-    <string name="detailsChangeCollectionCover">Mudar imagem de coleção</string>
     <string name="txtSelectFileSources">Selecionar fontes de ficheiros</string>
     <string name="menuFavouriteTitle">Adicionar favorito</string>
     <string name="menuFavouriteTitleRemove">Remover favorito</string>
@@ -78,7 +76,6 @@
     <string name="options">Opções</string>
     <string name="cancel">Cancelar</string>
     <string name="selectGenre">Selecionar género</string>
-    <string name="detailsBackdrops">Mudar fundo</string>
     <string name="trailersTitle">Trailers</string>
     <string name="prefsShowGridTitlesTitle">Mostrar títulos na vista geral</string>
     <string name="prefsShowGridTitles">Ativar títulos de filmes e séries na vista geral da biblioteca.</string>
@@ -111,7 +108,6 @@
     <string name="networkPassword">Senha</string>
     <string name="networkDomain">Nome de domínio</string>
     <string name="networkLogin">Entrar no servidor Samba</string>
-    <string name="actorMoviesInLibrary">Na biblioteca</string>
     <string name="noConnection">"A ligação falhou. Garanta que está ligado a uma rede!"</string>
     <string name="sortTitle">Ordenar por título</string>
     <string name="sortNewestEpisode">Ordenar por episódio mais recente</string>
@@ -135,8 +131,6 @@
     <string name="areYouSure">Tem a certeza?</string>
     <string name="detailsFile">Ficheiro</string>
     <string name="stringShowAllLanguages">Mostrar todas as línguas</string>
-    <string name="numberOfCovers">capas</string>
-    <string name="numberOfBackdrops">fundos</string>
     <string name="stringMarkAsWatched">Marcar como visto</string>
     <string name="markedAsWatched">Marcado como visto!</string>
     <string name="stringMarkAsUnwatched">Marcar como não visto</string>
@@ -151,14 +145,12 @@
     <string name="stringUpcoming">Brevemente</string>
     <string name="stringNowPlaying">Nos cinemas</string>
     <string name="stringPopular">Popular</string>
-    <string name="stringTopRated">Melhor classificados</string>
     <string name="addFileSource">Conteúdo da pasta</string>
     <string name="fileSourceLocal">Pasta local</string>
     <string name="fileSourceNetwork">Pasta remota</string>
     <string name="done">Terminado</string>
     <string name="discard">Descartar</string>
     <string name="send">Enviar</string>
-    <string name="openSourceLibraries">Bibliotecas Open source</string>
     <string name="enterAMessage">Introduza uma mensagem!</string>
     <string name="launchingGmail">A abrir Gmail&#8230;</string>
     <string name="failedGmailLaunch">"Não foi possível abrir o Gmail"</string>
@@ -168,8 +160,6 @@
     <string name="unknownLicense">Licença desconhecida</string>
     <string name="message">Mensagem</string>
     <string name="subject">Assunto</string>
-    <string name="HQImagesTitle">Usar imagens de alta qualidade</string>
-    <string name="HQImagesDescription">Utilizar imagens de alta qualidade, se disponíveis.</string>
     <string name="noVideoPlayerFound">Nenhum reprodutor de vídeo compatível encontrado!</string>
     <string name="originalTitle">Título original</string>
     <string name="searchIn">Procurar em</string>
@@ -197,9 +187,6 @@
     <string name="episodes">Episódios</string>
     <string name="openInBrowser">Abrir no browser</string>
     <string name="deviceNotSupported">Dispositivo não suportado!</string>
-    <string name="views">Visualizações</string>
-    <string name="likes">Gosto</string>
-    <string name="dislikes">Não gosto</string>
     <string name="choiceWatchedMovies">Filmes vistos</string>
     <string name="choiceUnwatchedMovies">Filmes por ver</string>
     <string name="allGenres">Todos os géneros</string>
@@ -213,8 +200,6 @@
     <string name="browseSources">Navegar nas fontes</string>
     <string name="playPart">Reproduzir parte</string>
     <string name="part">Parte</string>
-    <string name="mizuuSocialServicesSetup">Ligar aos seus serviços sociais existentes.</string>
-    <string name="userAccount">Conta de utilizador</string>
     <string name="failedToLogin">Não foi possível realizar o login!</string>
     <string name="loginSucceeded">Login bem sucedido!</string>
     <string name="logIn">Entrar</string>
@@ -239,11 +224,6 @@
     <string name="ignoredFilesDescription">Definir os ficheiros removidos previamente a ignorar durante a atualização da biblioteca.</string>
     <string name="includePreviouslyRemovedFilesTitle">Ignorar os ficheiros previamente removidos</string>
     <string name="includePreviouslyRemovedFiles">Não incluir ficheiros removidos na atualização da bibliteca.</string>
-    <string name="stringUpdates">Atualizações</string>
-    <string name="updateMovieLibraryAtLaunchTitle">Atualizar biblioteca de filmes no arranque</string>
-    <string name="updateMovieLibraryAtLaunch">Procurar novos filmes quando a aplicação arranca.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">Atualizar biblioteca de séries no arranque</string>
-    <string name="updateShowsLibraryAtLaunch">Procurar novas séries quando a aplicação arranca.</string>
     <string name="removeFromWatchlist">Remover da watchlist</string>
     <string name="watchLater">Ver mais tarde</string>
     <string name="ignoreSmallFilesDescription">Ignorar ficheiros de vídeo de tamanho abaixo de um limite.</string>
@@ -274,7 +254,6 @@
     <string name="syncTvShows">Sincronizar séries com o Trakt</string>
     <string name="syncMovies">Sincronizar filmes com o Trakt</string>
     <string name="calendar">Calendário</string>
-    <string name="upcomingEpisodes">Próximos episódios</string>
     <string name="folders">Pastas</string>
     <string name="allFolders">Todas as pastas</string>
     <string name="selectFolder">Selecionar pasta</string>
@@ -287,8 +266,6 @@
     <string name="IMDb">Abrir no IMDb</string>
     <string name="enterTitle">Introduzir título</string>
     <string name="identify">Identificar</string>
-    <string name="playEpisode">Reproduzir episódio</string>
-    <string name="enterYear">Introduzir ano</string>
     <string name="moviesWeb">Filmes (web)</string>
     <string name="of">de</string>
     <string name="includeAdultContent">Incluir conteúdo adulto</string>

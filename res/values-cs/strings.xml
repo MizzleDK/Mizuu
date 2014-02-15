@@ -46,8 +46,6 @@
     <string name="updateCheckBox">Před aktualizací vymazat knihovnu</string>
     <string name="stringSearch">Hledat</string>
     <string name="stringNoPlot"></string>
-    <string name="detailsChangeCover">Změnit obal</string>
-    <string name="detailsChangeCollectionCover">Změnit obal zbírky</string>
     <string name="txtSelectFileSources">Vyberte složky</string>
     <string name="menuFavouriteTitle">Přidat k oblíbeným</string>
     <string name="menuFavouriteTitleRemove">Odebrat z oblíbených</string>
@@ -80,7 +78,6 @@
     <string name="options">Možnosti</string>
     <string name="cancel">Zrušit</string>
     <string name="selectGenre">Vybrat žánr</string>
-    <string name="detailsBackdrops">Změnit pozadí</string>
     <string name="trailersTitle">Trailery</string>
     <string name="prefsShowGridTitlesTitle">V přehledu zobrazit názvy</string>
     <string name="prefsShowGridTitles">Zobrazí názvy filmů a seriálů v přehledu knihovny.</string>
@@ -113,7 +110,6 @@
     <string name="networkPassword">Heslo</string>
     <string name="networkDomain">Název domény</string>
     <string name="networkLogin">Přihlásit se k serveru Samba</string>
-    <string name="actorMoviesInLibrary">V knihovně</string>
     <string name="noConnection">"Připojení se nezdařilo. Zkontrolujte, zda že jste připojeni k síti!"</string>
     <string name="sortTitle">Seřadit podle názvu</string>
     <string name="sortNewestEpisode">Seřadit podle nejnovější epizody</string>
@@ -140,8 +136,6 @@
     <string name="areYouSure">Opravdu?</string>
     <string name="detailsFile">Soubor</string>
     <string name="stringShowAllLanguages">Zobrazit všechny jazyky</string>
-    <string name="numberOfCovers">obalů</string>
-    <string name="numberOfBackdrops">pozadí</string>
     <string name="stringMarkAsWatched">Označit jako shlédnuté</string>
     <string name="markedAsWatched">Označeno jako shlédnuté!</string>
     <string name="stringMarkAsUnwatched">Označit jako neshlédnuté</string>
@@ -156,14 +150,12 @@
     <string name="stringUpcoming">Nadcházející</string>
     <string name="stringNowPlaying">V kinech</string>
     <string name="stringPopular">Populární</string>
-    <string name="stringTopRated">Nejlépe hodnocené</string>
     <string name="addFileSource">Obsah složky</string>
     <string name="fileSourceLocal">Místní složka</string>
     <string name="fileSourceNetwork">Síťová složka</string>
     <string name="done">Hotovo</string>
     <string name="discard">Zahodit</string>
     <string name="send">Odeslat</string>
-    <string name="openSourceLibraries">Open source knihovny</string>
     <string name="enterAMessage">Zadejte zprávu!</string>
     <string name="launchingGmail">Otevírání Gmail&#8230;</string>
     <string name="failedGmailLaunch">"Nelze otevřít Gmail"</string>
@@ -175,8 +167,6 @@
     <string name="subject">Předmět</string>
     <string name="ignorenfotitle">Ignorovat vlastní soubory s informacemi</string>
     <string name="ignorenfo">Zakáže čtení místních .nfo souborů a vlastních obrázků obalů.</string>
-    <string name="HQImagesTitle">Použít obrázky ve vysoké kvalitě</string>
-    <string name="HQImagesDescription">Jsou-li k dispozici, použijí se obrázky ve vysoké kvalitě.</string>
     <string name="noVideoPlayerFound">Nebyl nalezen žádný kompatibilní přehrávač videa!</string>
     <string name="originalTitle">Původní název</string>
     <string name="searchIn">Vyhledávat v</string>
@@ -205,9 +195,6 @@
     <string name="episodes">Epizody</string>
     <string name="openInBrowser">Otevřít v prohlížeči</string>
     <string name="deviceNotSupported">Nepodporované zařízení!</string>
-    <string name="views">Shlédnuto</string>
-    <string name="likes">Likes</string>
-    <string name="dislikes">Dislikes</string>
     <string name="choiceWatchedMovies">Shlédnuté filmy</string>
     <string name="choiceUnwatchedMovies">Neshlédnuté filmy</string>
     <string name="allGenres">Všechny žánry</string>
@@ -221,8 +208,6 @@
     <string name="browseSources">Procházet zdroje</string>
     <string name="playPart">Přehrát část</string>
     <string name="part">Část</string>
-    <string name="mizuuSocialServicesSetup">Připojte se k Vaší stávající sociální službě.</string>
-    <string name="userAccount">Uživatelský účet</string>
     <string name="failedToLogin">Nepodařilo se přihlásit!</string>
     <string name="loginSucceeded">Přihlášení úspěšné!</string>
     <string name="logIn">Přihlásit se</string>
@@ -247,11 +232,6 @@
     <string name="ignoredFilesDescription">Dříve odstraněné soubory, které budou ignorovány při aktualizaci knihovny.</string>
     <string name="includePreviouslyRemovedFilesTitle">Ignorovat dříve odstraněné soubory</string>
     <string name="includePreviouslyRemovedFiles">Soubory odstraněné z knihovny nebudou zahrnuty do pozdějších aktualizací knihovny.</string>
-    <string name="stringUpdates">Aktualizace</string>
-    <string name="updateMovieLibraryAtLaunchTitle">Aktualizovat knihovnu filmů při startu</string>
-    <string name="updateMovieLibraryAtLaunch">Vyhledá nové filmy při spuštění aplikace.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">Aktualizovat knihovnu TV seriálů při startu</string>
-    <string name="updateShowsLibraryAtLaunch">Vyhledá nové TV seriály při spuštění aplikace.</string>
     <string name="removeFromWatchlist">Odebrat ze seznamu k přehrání</string>
     <string name="watchLater">Přehrát později</string>
     <string name="ignoreSmallFilesDescription">Ignorovat video soubory menší než zvolená velikost.</string>
@@ -281,7 +261,6 @@
     <string name="syncTvShows">Synchronizace TV seriálů s Trakt</string>
     <string name="syncMovies">Synchronizace filmů s Trakt</string>
     <string name="calendar">Kalendář</string>
-    <string name="upcomingEpisodes">Nadcházející epizody</string>
     <string name="folders">Složky</string>
     <string name="allFolders">Všechny složky</string>
     <string name="selectFolder">Vyberte složku</string>
@@ -303,8 +282,6 @@
     <string name="identify">Rozpoznat</string>
     <string name="drawer_open">Otevřít navigační lištu</string>
     <string name="drawer_close">Zavřít navigační lištu</string>
-    <string name="playEpisode">Přehrát epizodu</string>
-    <string name="enterYear">Zadejte rok</string>
     <string name="moviesWeb">Filmy (web)</string>
     <string name="of">z</string>
     <string name="includeAdultContent">Zahrnout obsah jen pro dospělé</string>
@@ -326,12 +303,8 @@
     <string name="tv_shows_start_page_title">Úvodní strana seriálů</string>
     <string name="tv_shows_start_page_description">Zobrazit nejprve podrobnosti nebo epizody (TV seriály).</string>
     <string name="installed_media_apps">Přehrávače médií</string>
-    <string name="showMediaAppsNavDrawer">Zobrazit seznam instalovaných přehrávačů v navigační části</string>
-    <string name="showMediaAppsNavDrawerDesc">Povolit nebo zakázat seznam instalovaných přehrávačů v navigační části.</string>
     <string name="searchMoviesFromMizuu">Hledat filmy z prostředí Mizuu</string>
     <string name="searchTvShowsFromMizuu">Hledat seriály z prostředí Mizuu</string>
-    <string name="loadImagesWhileScrolling">Nahrávat obrázky během listování</string>
-    <string name="loadImagesWhileScrollingDescription">Může způsobit zpoždění při posouvání. Vyžaduje restartování aplikace.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Neshlédnuté seriály</string>
     <string name="loading_movie_parts">Načítání částí filmu</string>
     <string name="few_moments">Může to trvat i několik minut&#8230;</string>

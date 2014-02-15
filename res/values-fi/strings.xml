@@ -46,8 +46,6 @@
     <string name="updateCheckBox">Tyhjennä kirjasto päivityksen yhteydessä</string>
     <string name="stringSearch">Etsi</string>
     <string name="stringNoPlot">Juoni ei ole käytettävissä.</string>
-    <string name="detailsChangeCover">Muuta kansikuva</string>
-    <string name="detailsChangeCollectionCover">Muuta kokoelmataidetta</string>
     <string name="txtSelectFileSources">Valitse tiedostolähteet</string>
     <string name="menuFavouriteTitle">Lisää suosikki</string>
     <string name="menuFavouriteTitleRemove">Poista suosikki</string>
@@ -80,7 +78,6 @@
     <string name="options">Asetukset</string>
     <string name="cancel">Peruuta</string>
     <string name="selectGenre">Valitse genre</string>
-    <string name="detailsBackdrops">Muuta tausta</string>
     <string name="trailersTitle">Trailerit</string>
     <string name="prefsShowGridTitlesTitle">Näytä otsikot yleiskatsauksessa</string>
     <string name="prefsShowGridTitles">Mahdollista elokuvien ja TV-ohjelmien otsikkojen näyttäminen kirjanston yleiskatsauksessa.</string>
@@ -113,7 +110,6 @@
     <string name="networkPassword">Salasana</string>
     <string name="networkDomain">Verkkotunnus</string>
     <string name="networkLogin">Kirjaudu Samba-palvelimelle</string>
-    <string name="actorMoviesInLibrary">Kirjastossa</string>
     <string name="noConnection">"Yhteys epäonnistui. Varmista, että olet yhteydessä verkkoon!"</string>
     <string name="sortTitle">Lajittele otsikon mukaan</string>
     <string name="sortNewestEpisode">Lajittele uusimman jakson mukaan</string>
@@ -140,8 +136,6 @@
     <string name="areYouSure">Oletko varma?</string>
     <string name="detailsFile">Tiedosto</string>
     <string name="stringShowAllLanguages">Näytä kaikki kielet</string>
-    <string name="numberOfCovers">kansitaidetta</string>
-    <string name="numberOfBackdrops">taustaa</string>
     <string name="stringMarkAsWatched">Merkitse katsotuksi</string>
     <string name="markedAsWatched">Merkitty katsotuksi!</string>
     <string name="stringMarkAsUnwatched">Merkitse katsomattomaksi</string>
@@ -156,14 +150,12 @@
     <string name="stringUpcoming">Tuleva</string>
     <string name="stringNowPlaying">Teattereissa</string>
     <string name="stringPopular">Suosittu</string>
-    <string name="stringTopRated">Suosituimmat</string>
     <string name="addFileSource">Kansion sisältö</string>
     <string name="fileSourceLocal">Paikallinen kansio</string>
     <string name="fileSourceNetwork">Verkkokansio</string>
     <string name="done">Valmis</string>
     <string name="discard">Hylkää</string>
     <string name="send">Lähetä</string>
-    <string name="openSourceLibraries">Avaa lähdekoodin kirjasto</string>
     <string name="enterAMessage">Kirjoita viesti!</string>
     <string name="launchingGmail">Avataan Gmail&#8230;</string>
     <string name="failedGmailLaunch">"Ei voitu avata Gmailia"</string>
@@ -175,8 +167,6 @@
     <string name="subject">Aihe</string>
     <string name="ignorenfotitle">Ohita mukautetut elokuvien datatiedostot</string>
     <string name="ignorenfo">Poista käytöstä paikalliset .nfo-tiedostot ja mukautettu kuvataide.</string>
-    <string name="HQImagesTitle">Käytä korkealaatuisia kuvia</string>
-    <string name="HQImagesDescription">Jos mahdollista, käytä korkealaatuisia kuvia.</string>
     <string name="noVideoPlayerFound">Yhteensopimaton videosoitin löytyi!</string>
     <string name="originalTitle">Alkuperäinen otsikko</string>
     <string name="searchIn">Hae</string>
@@ -205,9 +195,6 @@
     <string name="episodes">Jaksot</string>
     <string name="openInBrowser">Avaa selaimessa</string>
     <string name="deviceNotSupported">Laitetta ei tueta!</string>
-    <string name="views">Näyttökertaa</string>
-    <string name="likes">Tykkää</string>
-    <string name="dislikes">Inhoaa</string>
     <string name="choiceWatchedMovies">Katsetut elokuvat</string>
     <string name="choiceUnwatchedMovies">Katsomattomat elokuvat</string>
     <string name="allGenres">Kaikki genret</string>
@@ -221,8 +208,6 @@
     <string name="browseSources">Selaa lähteitä</string>
     <string name="playPart">Toista osa</string>
     <string name="part">Osa</string>
-    <string name="mizuuSocialServicesSetup">Liitä olemassa olevia sosiaalipalveluja.</string>
-    <string name="userAccount">Käyttäjätili</string>
     <string name="failedToLogin">Sisäänkirjautuminen epäonnistui!</string>
     <string name="loginSucceeded">Sisäänkirjautuminen onnistui!</string>
     <string name="logIn">Kirjaudu sisään</string>
@@ -247,11 +232,6 @@
     <string name="ignoredFilesDescription">Määritä aiemmin poistetut tiedostot ohitettaviksi, kun päivitetään kirjastoa.</string>
     <string name="includePreviouslyRemovedFilesTitle">Ohita aiemmin poistetut tiedostot</string>
     <string name="includePreviouslyRemovedFiles">Älä sisällytä poistettuja tiedostoja kirjastopäivityksissä.</string>
-    <string name="stringUpdates">Päivitykset</string>
-    <string name="updateMovieLibraryAtLaunchTitle">Päivitä elokuvakirjasto käynnistettäessä</string>
-    <string name="updateMovieLibraryAtLaunch">Etsiä uusia elokuvia, kun sovellus käynnistyy.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">Päivitä TV-ohjelmat-kirjasto käynnistettäessä</string>
-    <string name="updateShowsLibraryAtLaunch">Etsiä uusia TV-ohjelmia, kun sovellus käynnistyy.</string>
     <string name="removeFromWatchlist">Poista serantalistasta</string>
     <string name="watchLater">Katso myöhemmin</string>
     <string name="ignoreSmallFilesDescription">Ohita videot, jotka ovat pienempiä kuin määritetty koko.</string>
@@ -281,7 +261,6 @@
     <string name="syncTvShows">Synkronoi TV-ohjelmat Trakt:n kanssa</string>
     <string name="syncMovies">Synkronoi elokuvat Trakt:n kanssa</string>
     <string name="calendar">Kalenteri</string>
-    <string name="upcomingEpisodes">Tulevat jaksot</string>
     <string name="folders">Kansiot</string>
     <string name="allFolders">Kaikki kansiot</string>
     <string name="selectFolder">Valitse kansio</string>
@@ -303,8 +282,6 @@
     <string name="identify">Tunnista</string>
     <string name="drawer_open">Avaa sivuvalikko</string>
     <string name="drawer_close">Sulje sivuvalikko</string>
-    <string name="playEpisode">Toista jakso</string>
-    <string name="enterYear">Kirjoita vuosi</string>
     <string name="moviesWeb">Elokuvat (verkko)</string>
     <string name="of">/</string>
     <string name="includeAdultContent">Sisällytä aikuisille tarkoitettu sisältö</string>
@@ -326,12 +303,8 @@
     <string name="tv_shows_start_page_title">TV-ohjelmien aloitussivu</string>
     <string name="tv_shows_start_page_description">Näytä tiedot tai jaksot ensin katseltaessa TV-ohjelmaa.</string>
     <string name="installed_media_apps">Mediasovellukset</string>
-    <string name="showMediaAppsNavDrawer">Näytä mediasovellukset sivuvalikossa</string>
-    <string name="showMediaAppsNavDrawerDesc">Näytä/piilota lista asennetuista mediasovelluksista sivuvalikosta.</string>
     <string name="searchMoviesFromMizuu">Etsi elokuvia Mizuussa</string>
     <string name="searchTvShowsFromMizuu">Etsi TV-ohjelmia Mizuussa</string>
-    <string name="loadImagesWhileScrolling">Lataa kuvat vieritettäessä</string>
-    <string name="loadImagesWhileScrollingDescription">Voi johtaa vieritessä viiveeseen. Vaatii sovelluksen uudelleenkäynnistyksen.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Katsomattomat ohjelmat</string>
     <string name="loading_movie_parts">Ladataan elokuvan osat</string>
     <string name="few_moments">Tämä saattaa kestää hetken&#8230;</string>
@@ -359,6 +332,12 @@
     <string name="downloadOfflineCopy">Tämä lataa paikallisen kopion videotiedostosta offline-toistoa varten. Haluatko jatkaa?</string>
     <string name="stringDownloadCancelled">Lataus keskeytetty!</string>
     <string name="addedToDownloadQueue">Lisätty latausjonoon!</string>
+    <string name="ignoreFilesizeCheckTitle">Ohita tiedostokoon tarkistus offline-katseluissa</string>
+    <string name="ignoreFilesizeCheck">Ohita vapaan tallennustilan tarkistus ladattaessa videoita offline-katselua varten.</string>
+    <string name="finishedMovieLibraryUpdate">Elokuvat päivitetty</string>
+    <string name="finishedTvShowsLibraryUpdate">TV-ohjelmat päivitetty</string>
+    <string name="stopFileDownload">Keskeytä tiedoston lataaminen</string>
+    <string name="scanning">Skannataan</string>
 
     <plurals name="moviesInLibrary">
         <item quantity="one">elokuva</item>

@@ -46,8 +46,6 @@
     <string name="updateCheckBox">Očistiti zbirku prilikom ažuriraja</string>
     <string name="stringSearch">Pretražiti</string>
     <string name="stringNoPlot">Radnja nije dostupna.</string>
-    <string name="detailsChangeCover">Promjeni sliku omota</string>
-    <string name="detailsChangeCollectionCover">Promjeni sliku zbirke</string>
     <string name="txtSelectFileSources">Odaberi izvore datoteka</string>
     <string name="menuFavouriteTitle">Dodaj u favorite</string>
     <string name="menuFavouriteTitleRemove">Ukloni iz favorita</string>
@@ -80,7 +78,6 @@
     <string name="options">Mogućnosti</string>
     <string name="cancel">Otkaži</string>
     <string name="selectGenre">Izaberite žanr</string>
-    <string name="detailsBackdrops">Promjena pozadine</string>
     <string name="trailersTitle">Trailer</string>
     <string name="prefsShowGridTitlesTitle">Prikaži naslove u pregledu</string>
     <string name="prefsShowGridTitles">Omogući naslove filmova i serija u pregledu zbirke.</string>
@@ -106,14 +103,13 @@
     <string name="widgetsMizuuShows">Mizuu - Serije</string>
     <string name="detailsTrailer">Trailer</string>
     <string name="prefsSubfolderSearchTitle">Omogući pretraživanje poddirektorija</string>
-    <string name="prefsSubfolderSearch">Uključi poddirektorije u pretrživanja video datoteka.</string>
+    <string name="prefsSubfolderSearch">Uključi pod direktorije u pretraživanja video datoteka.</string>
     <string name="networkIpAddress">IP adresa ili naziv računala</string>
     <string name="enterNetworkAddress">Nema IP adrese ili naziva računala!</string>
     <string name="networkUsername">Korisničko ime</string>
     <string name="networkPassword">Lozinka</string>
     <string name="networkDomain">Naziv domene</string>
     <string name="networkLogin">Prijava na Samba poslužitelj</string>
-    <string name="actorMoviesInLibrary">U zbirci</string>
     <string name="noConnection">"Povezivanje nije uspjelo. Provjerite jeste li povezani s mrežom!"</string>
     <string name="sortTitle">Razvrstaj po nazivu</string>
     <string name="sortNewestEpisode">Razvrstaj po najnovijoj epizodi</string>
@@ -140,8 +136,6 @@
     <string name="areYouSure">Da li ste sigurni?</string>
     <string name="detailsFile">Datoteka</string>
     <string name="stringShowAllLanguages">Prikaži sve jezike</string>
-    <string name="numberOfCovers">omoti</string>
-    <string name="numberOfBackdrops">pozadine</string>
     <string name="stringMarkAsWatched">Označi kao pregledano</string>
     <string name="markedAsWatched">Označeno kao pregledano!</string>
     <string name="stringMarkAsUnwatched">Označi kao nepregledano</string>
@@ -156,14 +150,12 @@
     <string name="stringUpcoming">Nadolazeće</string>
     <string name="stringNowPlaying">U kinima</string>
     <string name="stringPopular">Popularno</string>
-    <string name="stringTopRated">Najbolje ocijenjeno</string>
     <string name="addFileSource">Sadržaj mape</string>
     <string name="fileSourceLocal">Lokalna mapa</string>
     <string name="fileSourceNetwork">Mrežna mapa</string>
-    <string name="done">Učinjeno</string>
+    <string name="done">Gotovo</string>
     <string name="discard">Odbaci</string>
     <string name="send">Pošalji</string>
-    <string name="openSourceLibraries">Knjižnica otvorenog kôda</string>
     <string name="enterAMessage">Unesite poruku!</string>
     <string name="launchingGmail">Pokretanje Gmail-a&#8230;</string>
     <string name="failedGmailLaunch">"Nije moguće pokrenuti Gmail"</string>
@@ -175,8 +167,6 @@
     <string name="subject">Predmet</string>
     <string name="ignorenfotitle">Zanemari prilagođene filmske datoteke</string>
     <string name="ignorenfo">Onemogući čitanje lokalnih .nfo datoteka i prilagođenih slika omota.</string>
-    <string name="HQImagesTitle">Koristi visokokvalitetne slike</string>
-    <string name="HQImagesDescription">Ako su dostupne, koristi slike visoke kvalitete.</string>
     <string name="noVideoPlayerFound">nije pronađen kompatibilni video player!</string>
     <string name="originalTitle">Originalni naziv</string>
     <string name="searchIn">Traži u</string>
@@ -205,9 +195,6 @@
     <string name="episodes">Epizode</string>
     <string name="openInBrowser">Otvori u pregledniku</string>
     <string name="deviceNotSupported">Nepodržan uređaj!</string>
-    <string name="views">Pregledi</string>
-    <string name="likes">Sviđanja</string>
-    <string name="dislikes">Ne sviđanja</string>
     <string name="choiceWatchedMovies">Pregledani filmovi</string>
     <string name="choiceUnwatchedMovies">Nepregledani filmovi</string>
     <string name="allGenres">Svi žanrovi</string>
@@ -221,8 +208,6 @@
     <string name="browseSources">Pregledavanje izvora</string>
     <string name="playPart">Reprodukcija dijela</string>
     <string name="part">Dio</string>
-    <string name="mizuuSocialServicesSetup">Povezivanje s postojećim društvenim servisima.</string>
-    <string name="userAccount">Korisnički račun</string>
     <string name="failedToLogin">Neuspjela prijava!</string>
     <string name="loginSucceeded">Prijava uspješna!</string>
     <string name="logIn">Prijava</string>
@@ -247,11 +232,6 @@
     <string name="ignoredFilesDescription">Postavljanje prethodno uklonjenih datoteka da se zanemare pri ažuriranju zbirke.</string>
     <string name="includePreviouslyRemovedFilesTitle">Zanemari prethodno uklonjene datoteke</string>
     <string name="includePreviouslyRemovedFiles">Ne uključuj uklonjene datoteke u ažuriranja zbirke.</string>
-    <string name="stringUpdates">Ažuriranja</string>
-    <string name="updateMovieLibraryAtLaunchTitle">Ažuriraj zbirku filmova prilikom pokretanja</string>
-    <string name="updateMovieLibraryAtLaunch">Potraži nove filmove prilikom pokretanja aplikacije.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">Ažuriraj zbirku serija prilikom pokretanja</string>
-    <string name="updateShowsLibraryAtLaunch">Potraži nove serije prilikom pokretanja aplikacije.</string>
     <string name="removeFromWatchlist">Ukloni sa liste gledanja</string>
     <string name="watchLater">Gledati kasnije</string>
     <string name="ignoreSmallFilesDescription">Zanemari video datoteke manje od zadane veličine datoteke.</string>
@@ -281,7 +261,6 @@
     <string name="syncTvShows">Usklađivanje serija sa Trakt-om</string>
     <string name="syncMovies">Usklađivanje filmova s Trakt</string>
     <string name="calendar">Kalendar</string>
-    <string name="upcomingEpisodes">Nadolazeće epizode</string>
     <string name="folders">Mape</string>
     <string name="allFolders">Sve mape</string>
     <string name="selectFolder">Odaberite mapu</string>
@@ -303,8 +282,6 @@
     <string name="identify">Prepoznavanje</string>
     <string name="drawer_open">Otvori navigacijsku traku</string>
     <string name="drawer_close">Zatvori navigacijsku traku</string>
-    <string name="playEpisode">Pokreni epizodu</string>
-    <string name="enterYear">Unesite godinu</string>
     <string name="moviesWeb">Filmovi (web)</string>
     <string name="of">od</string>
     <string name="includeAdultContent">Uključiti sadržaj za odrasle</string>
@@ -326,12 +303,8 @@
     <string name="tv_shows_start_page_title">Početna stranica serija</string>
     <string name="tv_shows_start_page_description">Prikaži prvo pojedinosti ili epizode prilikom pregleda serija.</string>
     <string name="installed_media_apps">Multimedijske aplikacije</string>
-    <string name="showMediaAppsNavDrawer">Prikaži multimedijske aplikacije u traci obavijesti</string>
-    <string name="showMediaAppsNavDrawerDesc">Omogući ili onemogući popis instaliranih multimedijskih aplikacija u traci obavijesti.</string>
     <string name="searchMoviesFromMizuu">Pretraživanje filmova iz Mizuu</string>
     <string name="searchTvShowsFromMizuu">Pretraživanje serija iz Mizuu</string>
-    <string name="loadImagesWhileScrolling">Učitavanje slika tijekom pomicanja</string>
-    <string name="loadImagesWhileScrollingDescription">Moguće zaostajanje prilikom pomicanja. Zahtijeva ponovno pokretanje aplikacije.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Nepregledane serije</string>
     <string name="loading_movie_parts">Učitavanje dijelova filma</string>
     <string name="few_moments">Ovo bi moglo potrajati nekoliko trenutaka&#8230;</string>
@@ -359,6 +332,12 @@
     <string name="downloadOfflineCopy">Ovo će preuzeti lokalnu kopiju video datoteke za izvanmrežnu reprodukciju. Želite li nastaviti?</string>
     <string name="stringDownloadCancelled">Preuzimanje otkazano!</string>
     <string name="addedToDownloadQueue">Dodano u red čekanja za preuzimanje!</string>
+    <string name="ignoreFilesizeCheckTitle">Zanemariti provjeru veličine datoteke za izvanmrežno gledanje</string>
+    <string name="ignoreFilesizeCheck">Preskočiti provjeru dostupnog prostora za pohranu prilikom preuzimanja videa za izvanmrežno gledanje.</string>
+    <string name="finishedMovieLibraryUpdate">Završeno ažuriranje filmova</string>
+    <string name="finishedTvShowsLibraryUpdate">Završeno ažuriranje serija</string>
+    <string name="stopFileDownload">Zaustavi preuzimanje datoteke</string>
+    <string name="scanning">Pretraživanje</string>
 
     <plurals name="moviesInLibrary">
         <item quantity="one">film</item>

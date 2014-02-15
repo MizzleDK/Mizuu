@@ -333,6 +333,12 @@
     <string name="downloadOfflineCopy">يعمل هذا على تنزيل نسخة محلية من ملف الفيديو لتشغيلها دون اتصال، هل تود الاستمرار؟</string>
     <string name="stringDownloadCancelled">تم إلغاء التنزيل!</string>
     <string name="addedToDownloadQueue">أضيف إلى قائمة التنزيل!</string>
+    <string name="ignoreFilesizeCheckTitle">تجاهل التحقق من حجم الملف للمشاهدة دون اتصال</string>
+    <string name="ignoreFilesizeCheck">تخطي التحقق من مساحة التخزين المتوفرة عند تحميل الفيديوهات للمشاهدة دون اتصال.</string>
+    <string name="finishedMovieLibraryUpdate">انتهى تحديث الأفلام</string>
+    <string name="finishedTvShowsLibraryUpdate">انتهى تحديث برامج التلفاز</string>
+    <string name="stopFileDownload">إيقاف تحميل الملف</string>
+    <string name="scanning">جارٍ المسح</string>
 
     <plurals name="moviesInLibrary">
         <item quantity="zero">أفلام</item>

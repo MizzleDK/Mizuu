@@ -46,8 +46,6 @@
     <string name="updateCheckBox">Könyvtár megtisztítása frissítéskor</string>
     <string name="stringSearch">Keresés</string>
     <string name="stringNoPlot">A cselekmény nem elérhető.</string>
-    <string name="detailsChangeCover">Borítókép megváltoztatása</string>
-    <string name="detailsChangeCollectionCover">Gyűjtemény borítókép megváltoztatása</string>
     <string name="txtSelectFileSources">Fájl forrás kiválasztása</string>
     <string name="menuFavouriteTitle">Hozzáadás a kedvencekhez</string>
     <string name="menuFavouriteTitleRemove">Eltávolítás a kedvencekből</string>
@@ -80,7 +78,6 @@
     <string name="options">Beállítások</string>
     <string name="cancel">Mégse</string>
     <string name="selectGenre">Műfaj választása</string>
-    <string name="detailsBackdrops">Háttér megváltoztatása</string>
     <string name="trailersTitle">Előzetesek</string>
     <string name="prefsShowGridTitlesTitle">Filmcímek mutatása az áttekintő oldalon</string>
     <string name="prefsShowGridTitles">A filmek és sorozatok címeinek mutatása a könyvtár áttekintő nézetében.</string>
@@ -113,7 +110,6 @@
     <string name="networkPassword">Jelszó</string>
     <string name="networkDomain">Domain név</string>
     <string name="networkLogin">Bejelentkezés a Samba szerverre</string>
-    <string name="actorMoviesInLibrary">A könyvtárban:</string>
     <string name="noConnection">"A csatlakozás nem sikerült. Győződjön meg róla, hogy csatlakozik a hálózathoz!"</string>
     <string name="sortTitle">Cím szerinti rendezés</string>
     <string name="sortNewestEpisode">A legfrissebb epizód szerinti rendezés</string>
@@ -138,8 +134,6 @@
     <string name="areYouSure">Biztos vagy benne?</string>
     <string name="detailsFile">Fájl</string>
     <string name="stringShowAllLanguages">Minden nyelv mutatása</string>
-    <string name="numberOfCovers">borító</string>
-    <string name="numberOfBackdrops">háttér</string>
     <string name="stringMarkAsWatched">Megjelölés megnézettként</string>
     <string name="markedAsWatched">Megnézettként megjelölve!</string>
     <string name="stringMarkAsUnwatched">Megjelölés nem látottként</string>
@@ -154,14 +148,12 @@
     <string name="stringUpcoming">Közelgő</string>
     <string name="stringNowPlaying">A mozikban</string>
     <string name="stringPopular">Népszerű</string>
-    <string name="stringTopRated">Legjobbra értékelt</string>
     <string name="addFileSource">Mappa tartalma</string>
     <string name="fileSourceLocal">Helyi mappa</string>
     <string name="fileSourceNetwork">Hálózati mappa</string>
     <string name="done">Kész</string>
     <string name="discard">Elvetés</string>
     <string name="send">Küldés</string>
-    <string name="openSourceLibraries">Nyílt forráskódú könyvtárak</string>
     <string name="enterAMessage">Adjon meg egy üzenetet!</string>
     <string name="launchingGmail">GMail megnyitása…</string>
     <string name="failedGmailLaunch">"Nem tudom megnyitni a GMail-t"</string>
@@ -173,8 +165,6 @@
     <string name="subject">Tárgy</string>
     <string name="ignorenfotitle">Egyéni film info fájlokat figyelmen kívül hagyja</string>
     <string name="ignorenfo">A helyi .nfo fájlok és képek beolvasásának tiltása.</string>
-    <string name="HQImagesTitle">Jó minőségű képek használata</string>
-    <string name="HQImagesDescription">Ha lehetséges, jó minőségű képek használata.</string>
     <string name="noVideoPlayerFound">Nem található kompatibilis videó lejátszó!</string>
     <string name="originalTitle">Eredeti cím</string>
     <string name="searchIn">Keresés:</string>
@@ -202,9 +192,6 @@
     <string name="episodes">Epizódok</string>
     <string name="openInBrowser">Megnyitás böngészőben</string>
     <string name="deviceNotSupported">Nem támogatott eszköz!</string>
-    <string name="views">Megtekintés</string>
-    <string name="likes">Tetszik</string>
-    <string name="dislikes">Nemtetszik</string>
     <string name="choiceWatchedMovies">Már látott filmek</string>
     <string name="choiceUnwatchedMovies">Még nem látott filmek</string>
     <string name="allGenres">Minden műfaj</string>
@@ -218,8 +205,6 @@
     <string name="browseSources">Források tallózása</string>
     <string name="playPart">A rész lejátszása</string>
     <string name="part">Rész</string>
-    <string name="mizuuSocialServicesSetup">Csatlakozás a közösségi hálózataidhoz.</string>
-    <string name="userAccount">Felhasználói fiók</string>
     <string name="failedToLogin">Nem sikerült bejelentkezni!</string>
     <string name="loginSucceeded">Sikeres bejelentkezés!</string>
     <string name="logIn">Bejelentkezés</string>
@@ -244,11 +229,6 @@
     <string name="ignoredFilesDescription">Korábban eltávolított fájlok a könyvtár frissítésekori figyelmen kívül hagyásának beállítása .</string>
     <string name="includePreviouslyRemovedFilesTitle">Korábban eltávolított fájlok figyelmen kívül hagyása</string>
     <string name="includePreviouslyRemovedFiles">A korábban eltávolított fájlok ne kerüljenek bele a könyvtárfrissítésbe.</string>
-    <string name="stringUpdates">Frissítések</string>
-    <string name="updateMovieLibraryAtLaunchTitle">Film könyvtár frissítése indításkor</string>
-    <string name="updateMovieLibraryAtLaunch">Új filmek keresése az alkalmazás indításakor.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">TV sorozatok frissítése indításkor</string>
-    <string name="updateShowsLibraryAtLaunch">Új TV sorozatok keresése az alkalmazás indításakor.</string>
     <string name="removeFromWatchlist">Eltávolítás a lejátszási listából</string>
     <string name="watchLater">Később nézem meg</string>
     <string name="ignoreSmallFilesDescription">A megadott fájl méretnél kisebb video fájlok kihagyása.</string>
@@ -278,7 +258,6 @@
     <string name="syncTvShows">A sorozatok szinkronizálása a Trakt-tal</string>
     <string name="syncMovies">A filmek szinkronizálása a Trakt-tal</string>
     <string name="calendar">Naptár</string>
-    <string name="upcomingEpisodes">Közelgő epizódok</string>
     <string name="folders">Mappák</string>
     <string name="allFolders">Minden mappa</string>
     <string name="selectFolder">Mappa kijelölése</string>
@@ -297,8 +276,6 @@
     <string name="identify">Azonosítás</string>
     <string name="drawer_open">Navigációs sáv megnyitása</string>
     <string name="drawer_close">Navigációs sáv bezárása</string>
-    <string name="playEpisode">Epizód lejátszása</string>
-    <string name="enterYear">Év megadása</string>
     <string name="moviesWeb">Filmek (web)</string>
     <string name="of">/</string>
     <string name="includeAdultContent">Felnőtt tartalom hozzáadása</string>
@@ -321,12 +298,8 @@
     <string name="tv_shows_start_page_title">Sorozatok kezdőoldala</string>
     <string name="tv_shows_start_page_description">A sorozat információi vagy az epizódjai jelenjenek meg először, ha egy sorozatot megnyitunk.</string>
     <string name="installed_media_apps">Médialejátszók</string>
-    <string name="showMediaAppsNavDrawer">A médialejátszók megjelenítése navigációs menüben</string>
-    <string name="showMediaAppsNavDrawerDesc">A telepített médialejátszók listájának megjelenítése vagy elrejtése a navigációs menüben.</string>
     <string name="searchMoviesFromMizuu">Filmek keresése a Mizuu-ból</string>
     <string name="searchTvShowsFromMizuu">Sorozat keresése a Mizuu-ból</string>
-    <string name="loadImagesWhileScrolling">Képek betöltése görgetés közben</string>
-    <string name="loadImagesWhileScrollingDescription">Akadozást okozhat görgetés közben. Az alklamazás újraindítását igényli.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Sorozatok nem látott részekkel</string>
     <string name="loading_movie_parts">Film részeinek betöltése</string>
     <string name="few_moments">Ez eltarthat néhány másodpercig…</string>

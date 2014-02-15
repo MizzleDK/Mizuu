@@ -46,8 +46,6 @@
     <string name="updateCheckBox">נקה ספרייה בעדכון</string>
     <string name="stringSearch">חיפוש</string>
     <string name="stringNoPlot">תקציר לא זמין.</string>
-    <string name="detailsChangeCover">שנה עטיפה</string>
-    <string name="detailsChangeCollectionCover">שנה אוסף עטיפות/תמונות</string>
     <string name="txtSelectFileSources">בחר מקורות קובץ</string>
     <string name="menuFavouriteTitle">הוסף למועדפים</string>
     <string name="menuFavouriteTitleRemove">הסר ממועדפים</string>
@@ -80,7 +78,6 @@
     <string name="options">אפשרויות</string>
     <string name="cancel">ביטול</string>
     <string name="selectGenre">בחר ז\'אנר</string>
-    <string name="detailsBackdrops">שנה תמונת רקע</string>
     <string name="trailersTitle">טריילרים</string>
     <string name="prefsShowGridTitlesTitle">הצג כותרות בסקירה הכללית</string>
     <string name="prefsShowGridTitles">אפשר הצגת כותרות סרטים ותוכניות בסקירה הכללית של הספרייה.</string>
@@ -113,7 +110,6 @@
     <string name="networkPassword">סיסמה</string>
     <string name="networkDomain">שם תחום/דומיין</string>
     <string name="networkLogin">התחבר לשרת Samba</string>
-    <string name="actorMoviesInLibrary">בספרייה</string>
     <string name="noConnection">"החיבור נכשל. ודא שאתה מחובר לרשת!"</string>
     <string name="sortTitle">מיין לפי כותרת</string>
     <string name="sortNewestEpisode">מיין לפי הפרק החדש ביותר</string>
@@ -138,8 +134,6 @@
     <string name="areYouSure">האם אתה בטוח?</string>
     <string name="detailsFile">קובץ</string>
     <string name="stringShowAllLanguages">הצג את כל השפות</string>
-    <string name="numberOfCovers">עטיפות</string>
-    <string name="numberOfBackdrops">תמונות רקע</string>
     <string name="stringMarkAsWatched">סמן כנצפה</string>
     <string name="markedAsWatched">סומן כנצפה!</string>
     <string name="stringMarkAsUnwatched">סמן כלא נצפה</string>
@@ -154,14 +148,12 @@
     <string name="stringUpcoming">בקרוב</string>
     <string name="stringNowPlaying">בבתי הקולנוע</string>
     <string name="stringPopular">פופולרי</string>
-    <string name="stringTopRated">הכי מדורגים</string>
     <string name="addFileSource">תוכן התיקיה</string>
     <string name="fileSourceLocal">תיקייה מקומית</string>
     <string name="fileSourceNetwork">תיקיית רשת</string>
     <string name="done">בוצע</string>
     <string name="discard">ביטול</string>
     <string name="send">שלח</string>
-    <string name="openSourceLibraries">פתח מקור ספריות</string>
     <string name="enterAMessage">הקלד הודעה!</string>
     <string name="launchingGmail">פותח את Gmail…</string>
     <string name="failedGmailLaunch">"לא ניתן היה לפתוח את Gmail"</string>
@@ -173,8 +165,6 @@
     <string name="subject">נושא</string>
     <string name="ignorenfotitle">התעלם מקבצי נתונים מותאמים אישית של סרט</string>
     <string name="ignorenfo">בטל קריאה של קבצי מידע מקומי ועטיפות מותאמות אישית.</string>
-    <string name="HQImagesTitle">השתמש בתמונות באיכות גבוהה</string>
-    <string name="HQImagesDescription">אם זמין, השתמש בתמונות באיכות גבוהה.</string>
     <string name="noVideoPlayerFound">לא נמצא נגן וידאו נתמך!</string>
     <string name="originalTitle">כותרת מקורית</string>
     <string name="searchIn">חפש ב</string>
@@ -202,9 +192,6 @@
     <string name="episodes">פרקים</string>
     <string name="openInBrowser">פתח בדפדפן</string>
     <string name="deviceNotSupported">התקן לא נתמך!</string>
-    <string name="views">צפיות</string>
-    <string name="likes">סימוני \'אהבתי\'</string>
-    <string name="dislikes">סימוני \'לא אהבתי\'</string>
     <string name="choiceWatchedMovies">סרטים שנצפו</string>
     <string name="choiceUnwatchedMovies">סרטים שלא נצפו</string>
     <string name="allGenres">כל הז\'אנרים</string>
@@ -218,8 +205,6 @@
     <string name="browseSources">עיין במקורות</string>
     <string name="playPart">הפעל חלק</string>
     <string name="part">חלק</string>
-    <string name="mizuuSocialServicesSetup">התחבר לשירותים החברתיים הקיימים שלך.</string>
-    <string name="userAccount">חשבון משתמש</string>
     <string name="failedToLogin">נכשל בהתחברות!</string>
     <string name="loginSucceeded">ההתחברות הצליחה!</string>
     <string name="logIn">כנס</string>
@@ -244,11 +229,6 @@
     <string name="ignoredFilesDescription">הגדר התעלמות מקבצים שהוסרו בעבר בעת עדכון הספרייה.</string>
     <string name="includePreviouslyRemovedFilesTitle">התעלם מקבצים שהוסרו בעבר</string>
     <string name="includePreviouslyRemovedFiles">אל תכלול קבצים שהוסרו בעדכוני ספרייה.</string>
-    <string name="stringUpdates">עדכונים</string>
-    <string name="updateMovieLibraryAtLaunchTitle">עדכן ספריית סרטים בהפעלת היישום</string>
-    <string name="updateMovieLibraryAtLaunch">חפש סרטים חדשים כאשר היישום מופעל.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">עדכן ספריית תוכניות טלוויזיה בהפעלת היישום</string>
-    <string name="updateShowsLibraryAtLaunch">חפש תוכניות טלוויזיה חדשות כאשר היישום מופעל.</string>
     <string name="removeFromWatchlist">הסר מרשימת המעקב</string>
     <string name="watchLater">צפה במועד מאוחר יותר</string>
     <string name="ignoreSmallFilesDescription">התעלם מקבצי וידאו שקטנים מהמגבלה שהוגדרה.</string>
@@ -278,7 +258,6 @@
     <string name="syncTvShows">סינכרון תוכניות טלוויזיה עם Trakt</string>
     <string name="syncMovies">סינכרון סרטים עם Trakt</string>
     <string name="calendar">לוח שנה</string>
-    <string name="upcomingEpisodes">פרקים עתידיים</string>
     <string name="folders">תיקיות</string>
     <string name="allFolders">כל התיקיות</string>
     <string name="selectFolder">בחר תיקייה</string>
@@ -297,8 +276,6 @@
     <string name="identify">זהה</string>
     <string name="drawer_open">פתח מגירת ניווט</string>
     <string name="drawer_close">סגור מגירת ניווט</string>
-    <string name="playEpisode">הפעל פרק</string>
-    <string name="enterYear">הכנס שנה</string>
     <string name="moviesWeb">סרטים (אינטרנט)</string>
     <string name="of">של</string>
     <string name="includeAdultContent">כלול תוכן למבוגרים</string>
@@ -320,7 +297,6 @@
     <string name="tv_shows_start_page_title">דף ראשי של סדרות</string>
     <string name="tv_shows_start_page_description">הצג פרטים או פרקים קודם בעת הצגת תוכנית טלוויזיה.</string>
     <string name="installed_media_apps">ישומיי מדיה</string>
-    <string name="showMediaAppsNavDrawer">הצג יישומי מדיה במגירת הניווט</string>
     <string name="thirdPartyLibraries">ספריות צד שלישי</string>
     <string name="fileToPlay">בחר קובץ לניגון</string>
 

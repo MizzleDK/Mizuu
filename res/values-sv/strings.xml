@@ -46,8 +46,6 @@
     <string name="updateCheckBox">Rensa bibliotek vid uppdatering</string>
     <string name="stringSearch">Sök</string>
     <string name="stringNoPlot">Handling är inte tillgänglig.</string>
-    <string name="detailsChangeCover">Byt omslagsbild</string>
-    <string name="detailsChangeCollectionCover">Byt samlingsbild</string>
     <string name="txtSelectFileSources">Välj filkällor</string>
     <string name="menuFavouriteTitle">Lägg till favorit</string>
     <string name="menuFavouriteTitleRemove">Ta bort favorit</string>
@@ -80,7 +78,6 @@
     <string name="options">Alternativ</string>
     <string name="cancel">Avbryt</string>
     <string name="selectGenre">Välj genre</string>
-    <string name="detailsBackdrops">Ändra bakgrundsbild</string>
     <string name="trailersTitle">Trailers</string>
     <string name="prefsShowGridTitlesTitle">Visa titlar i översiktsvyn</string>
     <string name="prefsShowGridTitles">Aktivera film- och TV-serietitlar i biblioteket.</string>
@@ -113,7 +110,6 @@
     <string name="networkPassword">Lösenord</string>
     <string name="networkDomain">Domännamn</string>
     <string name="networkLogin">Logga in på Samba-server</string>
-    <string name="actorMoviesInLibrary">I biblioteket</string>
     <string name="noConnection">"Anslutning misslyckades. Se till att du är ansluten till ett nätverk!"</string>
     <string name="sortTitle">Sortera efter titel</string>
     <string name="sortNewestEpisode">Sortera efter nyaste avsnitt</string>
@@ -138,8 +134,6 @@
     <string name="areYouSure">Är du säker?</string>
     <string name="detailsFile">Fil</string>
     <string name="stringShowAllLanguages">Visa alla språk</string>
-    <string name="numberOfCovers">omslagsbilder</string>
-    <string name="numberOfBackdrops">bakgrundsbilder</string>
     <string name="stringMarkAsWatched">Markera som sedda</string>
     <string name="markedAsWatched">Markerade som sedda!</string>
     <string name="stringMarkAsUnwatched">Markera som osedda</string>
@@ -154,14 +148,12 @@
     <string name="stringUpcoming">Kommande</string>
     <string name="stringNowPlaying">På bio</string>
     <string name="stringPopular">Populära</string>
-    <string name="stringTopRated">Toppnoterade</string>
     <string name="addFileSource">Mappinnehåll</string>
     <string name="fileSourceLocal">Lokal mapp</string>
     <string name="fileSourceNetwork">Nätverksmapp</string>
     <string name="done">Färdig</string>
     <string name="discard">Släng</string>
     <string name="send">Skicka</string>
-    <string name="openSourceLibraries">Open-source-bibliotek</string>
     <string name="enterAMessage">Skriv ett meddelande!</string>
     <string name="launchingGmail">Öppnar Gmail…</string>
     <string name="failedGmailLaunch">"Kunde inte öppna Gmail"</string>
@@ -173,8 +165,6 @@
     <string name="subject">Ämne</string>
     <string name="ignorenfotitle">Ignorera användardefinierade filer för filminformation</string>
     <string name="ignorenfo">Stäng av läsning av lokala .nfo-filer och egna bilder.</string>
-    <string name="HQImagesTitle">Använd högupplösta bilder</string>
-    <string name="HQImagesDescription">Använd högupplösta bilder om möjligt.</string>
     <string name="noVideoPlayerFound">Hittade ingen kompatibel videospelare!</string>
     <string name="originalTitle">Orginaltitel</string>
     <string name="searchIn">Sök i</string>
@@ -202,9 +192,6 @@
     <string name="episodes">Avsnitt</string>
     <string name="openInBrowser">Öppna i webbläsaren</string>
     <string name="deviceNotSupported">Enheter stöds inte!</string>
-    <string name="views">Vyer</string>
-    <string name="likes">Gillas</string>
-    <string name="dislikes">Ogillas</string>
     <string name="choiceWatchedMovies">Sedda filmer</string>
     <string name="choiceUnwatchedMovies">Osedda filmer</string>
     <string name="allGenres">Alla genrar</string>
@@ -218,8 +205,6 @@
     <string name="browseSources">Bläddra bland källor</string>
     <string name="playPart">Spela upp del</string>
     <string name="part">Del</string>
-    <string name="mizuuSocialServicesSetup">Anslut till din befintliga sociala tjänster.</string>
-    <string name="userAccount">Användarkonto</string>
     <string name="failedToLogin">Det gick inte att logga in!</string>
     <string name="loginSucceeded">Inloggning lyckades!</string>
     <string name="logIn">Logga in</string>
@@ -244,11 +229,6 @@
     <string name="ignoredFilesDescription">Ignorera borttagna filer när biblioteket uppdateras.</string>
     <string name="includePreviouslyRemovedFilesTitle">Ignorera borttagna filer</string>
     <string name="includePreviouslyRemovedFiles">Inkludera inte borttagna filer vid biblioteksuppdateringar.</string>
-    <string name="stringUpdates">Uppdateringar</string>
-    <string name="updateMovieLibraryAtLaunchTitle">Uppdatera filmbiblioteket vid uppstart</string>
-    <string name="updateMovieLibraryAtLaunch">Leta efter nya filmer när appen startar.</string>
-    <string name="updateShowsLibraryAtLaunchTitle">Uppdatera seriebiblioteket vid uppstart</string>
-    <string name="updateShowsLibraryAtLaunch">Leta efter nya serier när appen startar.</string>
     <string name="removeFromWatchlist">Ta bort från \"Se snare\"</string>
     <string name="watchLater">Se senare</string>
     <string name="ignoreSmallFilesDescription">Ignorera videofiler som är mindre än den valda storleken.</string>
@@ -278,7 +258,6 @@
     <string name="syncTvShows">Synkronisera serier med Trakt</string>
     <string name="syncMovies">Synkronisera filmer med Trakt</string>
     <string name="calendar">Kalender</string>
-    <string name="upcomingEpisodes">Kommande avsnitt</string>
     <string name="folders">Mappar</string>
     <string name="allFolders">Alla mappar</string>
     <string name="selectFolder">Välj mapp</string>
@@ -297,8 +276,6 @@
     <string name="identify">Identifiera</string>
     <string name="drawer_open">Öppna menyn</string>
     <string name="drawer_close">Stäng menyn</string>
-    <string name="playEpisode">Spela upp avsnitt</string>
-    <string name="enterYear">Ange år</string>
     <string name="moviesWeb">Filmer (webb)</string>
     <string name="of">av</string>
     <string name="includeAdultContent">Inkludera pornografiskt innehåll</string>
@@ -321,12 +298,8 @@
     <string name="tv_shows_start_page_title">TV-serie startsida</string>
     <string name="tv_shows_start_page_description">Visa detaljer eller avsnitt först när du tittar på en TV-serie.</string>
     <string name="installed_media_apps">Mediaappar</string>
-    <string name="showMediaAppsNavDrawer">Visa mediaappar i sidofältet</string>
-    <string name="showMediaAppsNavDrawerDesc">Aktivera eller inaktivera listan över installerade mediaappar i sidofältet.</string>
     <string name="searchMoviesFromMizuu">Sök filmer från Mizuu</string>
     <string name="searchTvShowsFromMizuu">Sök TV-serier från Mizuu</string>
-    <string name="loadImagesWhileScrolling">Ladda bilder vid scrollning</string>
-    <string name="loadImagesWhileScrollingDescription">Kan resultera i sämre prestanda. Kräver att du startar om appen.</string>
     <string name="tvShowsWithUnwatchedEpisodes">Osedda serier</string>
     <string name="loading_movie_parts">Laddar filmdelar</string>
     <string name="few_moments">Detta kan ta en stund&#8230;</string>
