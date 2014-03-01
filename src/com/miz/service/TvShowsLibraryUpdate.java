@@ -79,7 +79,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		if (mNotificationManager == null)
 			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
+
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
 		showPostUpdateNotification();
@@ -476,7 +476,9 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		// Show the notification
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(POST_UPDATE_NOTIFICATION, updateNotification);
+
+		if (mEpisodeCount > 0)
+			mNotificationManager.notify(POST_UPDATE_NOTIFICATION, updateNotification);
 	}
 
 	private void sendUpdateBroadcast() {

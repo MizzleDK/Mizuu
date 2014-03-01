@@ -123,7 +123,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
-		
+
 		mAdapter = new LoaderAdapter(getActivity());
 	}
 
@@ -334,15 +334,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		public long getItemId(int position) {
 			return position;
 		}
-		
+
 		@Override
 		public int getItemViewType(int position) {
-		    return 0;
+			return 0;
 		}
 
 		@Override
 		public int getViewTypeCount() {
-		    return 1;
+			return 1;
 		}
 
 		@Override
@@ -355,19 +355,19 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-				
+
 				// Check the height matches our calculated column width
 				if (holder.layout.getLayoutParams().height != mItemHeight) {
 					holder.layout.setLayoutParams(mImageViewLayoutParams);
 				}
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
 			holder.text.setText(shownShows.get(position).getTitle());
-			
+
 			if (showGridTitles) {
 				holder.text.setVisibility(TextView.VISIBLE);
 			} else {
@@ -375,7 +375,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			}
 
 			holder.cover.setImageDrawable(gray);
-			
+
 			mPicasso.load(shownShows.get(position).getThumbnail()).config(MizuuApplication.getBitmapConfig()).into(holder);
 
 			return convertView;
@@ -745,8 +745,12 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				case RELEASE:
 					Collections.sort(tempShows, new Comparator<TvShow>() {
 						@Override
-						public int compare(TvShow o1, TvShow o2) {		
-							return o1.getFirstAirdate().compareTo(o2.getFirstAirdate()) * -1;
+						public int compare(TvShow o1, TvShow o2) {	
+							try {
+								return o1.getFirstAirdate().compareTo(o2.getFirstAirdate()) * -1;
+							} catch (Exception e) {
+								return 0;
+							}
 						}
 					});
 
@@ -1036,9 +1040,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
-			
+
 			mGridView.setColumnWidth(mImageThumbSize);
-			
+
 			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 			if (numColumns > 0) {
 				final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;

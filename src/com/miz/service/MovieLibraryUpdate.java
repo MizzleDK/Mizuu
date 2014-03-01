@@ -78,7 +78,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		if (mNotificationManager == null)
 			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
+
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
 		showPostUpdateNotification();
@@ -91,7 +91,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
 		MizLib.scheduleMovieUpdate(this);
-		
+
 		if (MizLib.hasTraktAccount(this) && mSyncLibraries && ((mTotalFiles - mMovieQueue.size()) > 0)) {
 			getApplicationContext().startService(new Intent(getApplicationContext(), TraktMoviesSyncService.class));
 		}
@@ -124,7 +124,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			return;
 
 		log("removeUnidentifiedFiles()");
-		
+
 		// Remove unavailable movies, so we can try to identify them again
 		removeUnidentifiedFiles();
 
@@ -355,10 +355,10 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		while (mMovieQueue.peek() != null) {
 			if (mStopUpdate)
 				break;
-			
+
 			sb.delete(0, sb.length());
 			sb.append(mMovieQueue.pop());
-			
+
 			mCount++;
 
 			if (mIgnoreNfoFiles) {
@@ -369,7 +369,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 				sb2.delete(0, sb2.length());
 				sb2.append(MizLib.convertToGenericNfo(sb.toString()));
-				
+
 				if (mNfoFiles.containsKey(sb1.toString())) {
 					new NfoMovie(sb.toString(), mNfoFiles.get(sb1.toString()), getApplicationContext(), this);
 				} else if (mNfoFiles.containsKey(sb2.toString())) {
@@ -484,7 +484,9 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		// Show the notification
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(POST_UPDATE_NOTIFICATION, updateNotification);
+		
+		if ((mTotalFiles - mMovieQueue.size()) > 0)
+			mNotificationManager.notify(POST_UPDATE_NOTIFICATION, updateNotification);
 	}
 
 	// These variables don't need to be re-initialized

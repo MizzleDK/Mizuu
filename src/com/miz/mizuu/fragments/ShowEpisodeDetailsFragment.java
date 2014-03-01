@@ -276,8 +276,10 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 			break;
 		case R.id.identify:
 			identifyEpisode();
+			break;
 		case R.id.watchOffline:
 			watchOffline(item);
+			break;
 		}
 		return false;
 	}

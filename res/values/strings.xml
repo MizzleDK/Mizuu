@@ -428,5 +428,13 @@
     <string name="traktSyncFailed">Trakt synchronization failed</string>
     <string name="downloadingMovie">Downloading movie</string>
     <string name="downloadingEpisode">Downloading TV show episode</string>
+    <string name="folderContent">Folder content</string>
+    <string name="contentTypeDescription">Which kind of content are you going to add?</string>
+    <string name="contentLocation">Content location</string>
+    <string name="contentLocationDescription">Where is the content located?</string>
+    <string name="contentLocationDevice">On my device</string>
+    <string name="contentLocationSMB">On a SMB network share</string>
+    <string name="contentLocationUPnP">On a DLNA/UPnP network share</string>
+    <string name="continueString">Continue</string>
 
 </resources>

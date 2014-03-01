@@ -46,6 +46,9 @@ public class FileSources extends MizActivity {
 
 		loadSources();
 
+		Intent i = new Intent(this, AddFileSource.class);
+		startActivity(i);
+		
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-filesource-change"));
 	}
 

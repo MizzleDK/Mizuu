@@ -98,7 +98,6 @@ import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
-import com.miz.service.UpdateMovieService;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.apache.OkApacheClient;
 
@@ -1253,9 +1252,15 @@ public class MizLib {
 						name.equalsIgnoreCase("cover.jpg") ||
 						name.equalsIgnoreCase("cover.jpeg") ||
 						name.equalsIgnoreCase("cover.tbn") ||
-						absolutePath.equalsIgnoreCase(filename + ".jpg") ||
-						absolutePath.equalsIgnoreCase(filename + ".jpeg") ||
-						absolutePath.equalsIgnoreCase(filename + ".tbn")) {
+						absolutePath.equalsIgnoreCase(filename + "-poster.jpg") ||
+						absolutePath.equalsIgnoreCase(filename + "-poster.jpeg") ||
+						absolutePath.equalsIgnoreCase(filename + "-poster.tbn") ||
+						absolutePath.equalsIgnoreCase(filename + "-folder.jpg") ||
+						absolutePath.equalsIgnoreCase(filename + "-folder.jpeg") ||
+						absolutePath.equalsIgnoreCase(filename + "-folder.tbn") ||
+						absolutePath.equalsIgnoreCase(filename + "-cover.jpg") ||
+						absolutePath.equalsIgnoreCase(filename + "-cover.jpeg") ||
+						absolutePath.equalsIgnoreCase(filename + "-cover.tbn")) {
 					customCoverArt = absolutePath;
 					continue;
 				}
@@ -2036,7 +2041,7 @@ public class MizLib {
 		List<RunningServiceInfo> services = manager.getRunningServices(Integer.MAX_VALUE);
 		int count = services.size();
 		for (int i = 0; i < count; i++) {
-			if (UpdateMovieService.class.getName().equals(services.get(i).service.getClassName()) || MovieLibraryUpdate.class.getName().equals(services.get(i).service.getClassName())) {
+			if (MovieLibraryUpdate.class.getName().equals(services.get(i).service.getClassName())) {
 				return true;
 			}
 		}
@@ -2438,7 +2443,7 @@ public class MizLib {
 		return output.replaceAll(" +", " ").trim(); // replaceAll() needed to remove all instances of multiple spaces
 	}
 
-	private final static String YEAR_PATTERN = "(19|20)[0-9][0-9]";
+	private final static String YEAR_PATTERN = "(18|19|20)[0-9][0-9]";
 	private final static String WAREZ_PATTERN = "(?i)(dvdscreener|dvdscreen|dvdscr|dvdrip|dvd5|dvd|xvid|divx|m\\-480p|m\\-576p|m\\-720p|m\\-864p|m\\-900p|m\\-1080p|m480p|m576p|m720p|m864p|m900p|m1080p|480p|576p|720p|864p|900p|1080p|1080i|720i|mhd|brrip|bdrip|brscreener|brscreen|brscr|aac|x264|bluray|dts|screener|hdtv|ac3|repack|2\\.1|5\\.1|ac3_6|7\\.1|h264|hdrip|ntsc|proper|readnfo|rerip|subbed|vcd|scvd|pdtv|sdtv|hqts|hdcam|multisubs|650mb|700mb|750mb|webdl|web-dl|bts|korrip|webrip|korsub|1link|sample|tvrip|tvr|extended.editions?|directors cut|tfe|unrated|\\(.*?torrent.*?\\)|\\[.*?\\]|\\(.*?\\)|\\{.*?\\}|part[0-9]|cd[0-9])";
 	private final static String ABBREVIATION_PATTERN = "(?<=(^|[.])[\\S&&\\D])[.](?=[\\S&&\\D]([.]|$))";
 
@@ -2530,7 +2535,7 @@ public class MizLib {
 		int episode = 0, season = 0;
 
 		// ##e##
-		Pattern searchPattern = Pattern.compile("(?i)(\\d){1,2}e(\\d){1,3}");
+		Pattern searchPattern = Pattern.compile("(?i)(\\d){1,4}e(\\d){1,3}");
 		Matcher searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2546,7 +2551,7 @@ public class MizLib {
 		}
 
 		// ##x##
-		searchPattern = Pattern.compile("(?i)(\\d){1,2}x(\\d){1,3}");
+		searchPattern = Pattern.compile("(?i)(\\d){1,4}x(\\d){1,3}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2562,7 +2567,7 @@ public class MizLib {
 		}
 
 		// season ## episode ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,2}((\\s)+)episode((\\s)+)(\\d){1,3}");
+		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,4}((\\s)+)episode((\\s)+)(\\d){1,3}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2622,6 +2627,14 @@ public class MizLib {
 					episode = Integer.valueOf(result.substring(2, 5));
 					season = Integer.valueOf(result.substring(0, 2));
 					break;
+				case 6: // ##### (season [3], episode [3])
+					episode = Integer.valueOf(result.substring(3, 6));
+					season = Integer.valueOf(result.substring(0, 3));
+					break;
+				case 7: // ##### (season [4], episode [3])
+					episode = Integer.valueOf(result.substring(4, 7));
+					season = Integer.valueOf(result.substring(0, 4));
+					break;
 				}
 
 				if (type == SEASON)
@@ -2637,7 +2650,7 @@ public class MizLib {
 		String result = input;
 
 		// s##e##
-		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,2}e(\\d){1,3}");
+		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,4}e(\\d){1,3}");
 		Matcher searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2648,7 +2661,7 @@ public class MizLib {
 		}
 
 		// ##e##
-		searchPattern = Pattern.compile("(?i)(\\d){1,2}e(\\d){1,3}");
+		searchPattern = Pattern.compile("(?i)(\\d){1,4}e(\\d){1,3}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2659,7 +2672,7 @@ public class MizLib {
 		}
 
 		// s##x##
-		searchPattern = Pattern.compile("(?i)s(\\d){1,2}x(\\d){1,3}");
+		searchPattern = Pattern.compile("(?i)s(\\d){1,4}x(\\d){1,3}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2670,7 +2683,7 @@ public class MizLib {
 		}
 
 		// ##x##
-		searchPattern = Pattern.compile("(?i)(\\d){1,2}x(\\d){1,3}");
+		searchPattern = Pattern.compile("(?i)(\\d){1,4}x(\\d){1,3}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2681,7 +2694,7 @@ public class MizLib {
 		}
 
 		// season ## episode ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,2}((\\s)+)episode((\\s)+)(\\d){1,3}");
+		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,4}((\\s)+)episode((\\s)+)(\\d){1,3}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2731,7 +2744,7 @@ public class MizLib {
 		String result = input;
 
 		// s##
-		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,2}");
+		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,4}");
 		Matcher searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2742,7 +2755,7 @@ public class MizLib {
 		}
 
 		// season ## episode ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,2}");
+		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,4}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2759,7 +2772,7 @@ public class MizLib {
 		int season = 0;
 
 		// S##
-		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,2}");
+		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,4}");
 		Matcher searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2772,7 +2785,7 @@ public class MizLib {
 		}
 
 		// season ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,2}");
+		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,4}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2785,7 +2798,7 @@ public class MizLib {
 		}
 
 		// ##
-		searchPattern = Pattern.compile("(\\d){1,2}");
+		searchPattern = Pattern.compile("(\\d){1,4}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -2800,6 +2813,21 @@ public class MizLib {
 				case 2: // ## (episode)
 					season = Integer.valueOf(result);
 					// No information found about the season number, return 0
+					break;
+				case 3: // ### (season [1], episode [2])
+					season = Integer.valueOf(result.substring(0, 1));
+					break;
+				case 4: // #### (season [2], episode [2])
+					season = Integer.valueOf(result.substring(0, 2));
+					break;
+				case 5: // ##### (season [2], episode [3])
+					season = Integer.valueOf(result.substring(0, 2));
+					break;
+				case 6: // ##### (season [3], episode [3])
+					season = Integer.valueOf(result.substring(0, 3));
+					break;
+				case 7: // ##### (season [4], episode [3])
+					season = Integer.valueOf(result.substring(0, 4));
 					break;
 				}
 

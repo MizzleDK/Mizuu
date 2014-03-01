@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="1000"
-    android:versionName="2.7" >
+    android:versionCode="1003"
+    android:versionName="2.7.1.2" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -72,22 +72,9 @@
             </intent-filter>
         </activity>
 
-        <!-- Cancel movie update -->
-        <activity
-            android:name="com.miz.mizuu.CancelUpdateDialog"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:noHistory="true"
-            android:theme="@style/Theme.Transparent" >
-            <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <!-- Splash activity -->
         <activity
             android:name="com.miz.mizuu.SplashScreen"
-            android:excludeFromRecents="true"
             android:hardwareAccelerated="false"
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
@@ -127,7 +114,7 @@
                 android:name="android.app.default_searchable"
                 android:value="com.miz.mizuu.Main" />
         </activity>
-        
+
         <!-- Actor Search Activity. Used as a middle-man to circumvent the issue of having two searchables for one Activity. -->
         <activity
             android:name="com.miz.mizuu.TvShowActorSearchActivity"
@@ -285,8 +272,6 @@
             android:label="@string/settings_name" >
         </activity>
 
-        <service android:name="com.miz.service.UpdateShowsService" />
-        <service android:name="com.miz.service.UpdateMovieService" />
         <service android:name="com.miz.service.TheMovieDB" />
         <service android:name="com.miz.service.TheTVDB" />
         <service android:name="com.miz.service.DeleteFile" />
@@ -364,6 +349,15 @@
             android:exported="false"
             android:icon="@drawable/white_app_icon"
             android:label="@string/identifyEpisodeTitle" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.miz.mizuu.AddFileSource"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:title="@string/addFileSourceTitle" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -519,10 +513,10 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
-        
+
         <receiver android:name="com.miz.functions.StartScheduledUpdatesService" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

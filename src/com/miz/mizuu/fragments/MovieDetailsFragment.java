@@ -132,7 +132,7 @@ public class MovieDetailsFragment extends Fragment {
 		if (db.hasMultipleVersions(thisMovie.getTmdbId()) && !thisMovie.isUnidentified()) {
 			thisMovie.setMultipleVersions(db.getRowIdsForMovie(thisMovie.getTmdbId()));
 		}
-		
+
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
@@ -553,23 +553,25 @@ public class MovieDetailsFragment extends Fragment {
 						s.setStreamSrc(file, MizLib.getDVDFiles(networkFilepath, auth));
 					else
 						s.setStreamSrc(file, MizLib.getSubtitleFiles(networkFilepath, auth));
-					getActivity().runOnUiThread(new Runnable(){
-						public void run(){
-							try{
-								Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
-								startActivity(MizLib.getVideoIntent(uri, useWildcard, thisMovie));
-								checkIn();
-							} catch (Exception e) {
-								try { // Attempt to launch intent based on wildcard MIME type
+
+					if (isAdded())
+						getActivity().runOnUiThread(new Runnable(){
+							public void run(){
+								try{
 									Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
-									startActivity(MizLib.getVideoIntent(uri, "video/*", thisMovie));
+									startActivity(MizLib.getVideoIntent(uri, useWildcard, thisMovie));
 									checkIn();
-								} catch (Exception e2) {
-									Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
+								} catch (Exception e) {
+									try { // Attempt to launch intent based on wildcard MIME type
+										Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
+										startActivity(MizLib.getVideoIntent(uri, "video/*", thisMovie));
+										checkIn();
+									} catch (Exception e2) {
+										Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
+									}
 								}
 							}
-						}
-					});
+						});
 				}
 				catch (MalformedURLException e) {}
 				catch (UnsupportedEncodingException e1) {}

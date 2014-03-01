@@ -950,26 +950,28 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					// Dates are always presented as YYYY-MM-DD, so removing
 					// the hyphens will easily provide a great way of sorting.
 
-					int firstDate = 0, secondDate = 0;
-					String first = "", second = "";
+					try {
+						int firstDate = 0, secondDate = 0;
+						String first = "", second = "";
 
-					if (o1.getReleasedate() != null)
-						first = o1.getReleasedate().replace("-", "").replace(".", "").replace("/", ""); // TODO FIX THIS. It shouldn't be possible to have dates with '/' or '.'
+						if (o1.getReleasedate() != null)
+							first = o1.getReleasedate().replace("-", "").replace(".", "").replace("/", ""); // TODO FIX THIS. It shouldn't be possible to have dates with '/' or '.'
 
-					if (!(first.equals("null") | first.isEmpty()))
-						firstDate = Integer.valueOf(first);
+						if (!(first.equals("null") | first.isEmpty()))
+							firstDate = Integer.valueOf(first);
 
-					if (o2.getReleasedate() != null)
-						second = o2.getReleasedate().replace("-", "").replace("/", "");
+						if (o2.getReleasedate() != null)
+							second = o2.getReleasedate().replace("-", "").replace("/", "");
 
-					if (!(second.equals("null") | second.isEmpty()))
-						secondDate = Integer.valueOf(second);
+						if (!(second.equals("null") | second.isEmpty()))
+							secondDate = Integer.valueOf(second);
 
-					// This part is reversed to get the highest numbers first
-					if (firstDate < secondDate)
-						return 1; // First date is lower than second date - put it second
-					else if (firstDate > secondDate)
-						return -1; // First date is greater than second date - put it first
+						// This part is reversed to get the highest numbers first
+						if (firstDate < secondDate)
+							return 1; // First date is lower than second date - put it second
+						else if (firstDate > secondDate)
+							return -1; // First date is greater than second date - put it first
+					} catch (Exception e) {}
 
 					return 0; // They're equal
 				}
