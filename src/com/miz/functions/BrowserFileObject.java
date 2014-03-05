@@ -13,6 +13,8 @@ public class BrowserFileObject {
 	}
 	
 	public String getName() {
+		if (mName.endsWith("/"))
+			return mName.substring(0, mName.length() - 1);
 		return mName;
 	}
 	

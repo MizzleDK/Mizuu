@@ -24,9 +24,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.miz.abstractclasses.AbstractFileSourceBrowser;
@@ -51,6 +49,7 @@ public class FileSourceBrowserFragment extends Fragment {
 
 	private AbstractFileSourceBrowser<?> mBrowser;
 	private ListView mParent, mCurrent;
+	private View mContent, mProgress;
 	private int mType;
 	private BrowseFolder mBrowseFolder;
 	private CurrentFolderAdapter mCurrentFolderAdapter;
@@ -107,6 +106,9 @@ public class FileSourceBrowserFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
+		mContent = v.findViewById(R.id.content);
+		mProgress = v.findViewById(R.id.progress);
+		
 		mParent = (ListView) v.findViewById(R.id.parentList);
 		mCurrent = (ListView) v.findViewById(R.id.currentList);
 
@@ -261,11 +263,11 @@ public class FileSourceBrowserFragment extends Fragment {
 	private void setLoading(boolean loading) {
 		mIsLoading = loading;
 		if (loading) {
-			//mProgress.setVisibility(View.VISIBLE);
-			//mContent.setVisibility(View.GONE);
+			mProgress.setVisibility(View.VISIBLE);
+			mContent.setVisibility(View.GONE);
 		} else {
-			//mProgress.setVisibility(View.GONE);
-			//mContent.setVisibility(View.VISIBLE);
+			mProgress.setVisibility(View.GONE);
+			mContent.setVisibility(View.VISIBLE);
 		}	
 	}
 }
