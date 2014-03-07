@@ -1,32 +1,7 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/menu_bg_drawable"
-    android:baselineAligned="false" >
-
-    <ListView
-        android:id="@+id/parentList"
-        android:layout_width="0dp"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="24dp"
-        android:layout_weight="1"
-        android:background="@drawable/bg_with_border"
-        android:paddingTop="1dp" >
-    </ListView>
-
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="24dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_weight="2"
-        android:background="@drawable/bg_with_border"
-        android:paddingTop="1dp" >
+        android:background="@drawable/bg" >
 
         <ListView
             android:id="@+id/currentList"
@@ -39,8 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:visibility="gone"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -63,5 +38,3 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
     </FrameLayout>
-
-</LinearLayout>

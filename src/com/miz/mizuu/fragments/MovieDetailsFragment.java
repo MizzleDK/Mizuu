@@ -319,7 +319,7 @@ public class MovieDetailsFragment extends Fragment {
 
 	private void playMovie(String filepath, boolean isNetworkFile) {
 		videoPlaybackStarted = System.currentTimeMillis();
-		if (filepath.matches(".*(cd1|part1).*")) {
+		if (filepath.toLowerCase(Locale.getDefault()).matches(".*(cd1|part1).*")) {
 			new GetSplitFiles(filepath, isNetworkFile).execute();
 		} else {
 			if (isNetworkFile) {

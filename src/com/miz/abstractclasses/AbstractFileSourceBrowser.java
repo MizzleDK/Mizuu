@@ -47,13 +47,14 @@ public abstract class AbstractFileSourceBrowser<T> {
 		mBrowserFiles = list;
 	}
 
-	public void goUp() {
+	public boolean goUp() {
 		if (mParentFolder != null)
-			browse(mParentFolder);
+			return browse(mParentFolder);
+		return false;
 	}
 
-	public abstract List<BrowserFileObject> browse(int index);
+	public abstract boolean browse(int index);
 
-	public abstract List<BrowserFileObject> browse(T folder);
+	public abstract boolean browse(T folder);
 
 }

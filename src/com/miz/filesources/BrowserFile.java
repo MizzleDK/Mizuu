@@ -14,17 +14,17 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 	}
 
 	@Override
-	public List<BrowserFileObject> browse(int index) {
+	public boolean browse(int index) {
 		return browse(getCurrentFiles()[index]);
 	}
 	
 	@Override
-	public List<BrowserFileObject> browse(File folder) {
+	public boolean browse(File folder) {
 		List<BrowserFileObject> list = new ArrayList<BrowserFileObject>();
 		
 		File[] listFiles = folder.listFiles();
 		if (listFiles == null)
-			return null;
+			return false;
 		
 		setParentFolder(folder.getParentFile());
 		setCurrentFolder(folder);
@@ -35,6 +35,6 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 		
 		setBrowserFiles(list);
 		
-		return list;
+		return true;
 	}
 }

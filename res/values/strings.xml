@@ -436,5 +436,8 @@
     <string name="contentLocationSMB">On a SMB network share</string>
     <string name="contentLocationUPnP">On a DLNA/UPnP network share</string>
     <string name="continueString">Continue</string>
+    <string name="couldnt_load_folder">Couldn\'t load folder!</string>
+    <string name="no_content">No content</string>
+    <string name="folder_has_no_files_folders">This folder has no files or folders.</string>
 
 </resources>

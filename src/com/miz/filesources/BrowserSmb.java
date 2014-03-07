@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import jcifs.smb.SmbFile;
 
@@ -18,12 +19,15 @@ public class BrowserSmb extends AbstractFileSourceBrowser<SmbFile> {
 	}
 
 	@Override
-	public List<BrowserFileObject> browse(int index) {
+	public boolean browse(int index) {
 		return browse(getCurrentFiles()[index]);
 	}
 
 	@Override
-	public List<BrowserFileObject> browse(SmbFile folder) {
+	public boolean browse(SmbFile folder) {
+		if (folder.getName().equals("smb://"))
+			return false;
+		
 		List<BrowserFileObject> list = new ArrayList<BrowserFileObject>();
 		List<SmbFile> orderedArray = new ArrayList<SmbFile>();
 		List<SmbFile> temp = new ArrayList<SmbFile>();
@@ -31,7 +35,7 @@ public class BrowserSmb extends AbstractFileSourceBrowser<SmbFile> {
 		try {
 			SmbFile[] listFiles = folder.listFiles();
 			if (listFiles == null)
-				return null;
+				return false;
 
 			for (SmbFile f : listFiles)
 				orderedArray.add(f);
@@ -49,12 +53,12 @@ public class BrowserSmb extends AbstractFileSourceBrowser<SmbFile> {
 						}
 					} catch (Exception ignored) {}
 
-					return f1.getName().compareTo(f2.getName());  
+					return f1.getName().toLowerCase(Locale.getDefault()).compareTo(f2.getName().toLowerCase(Locale.getDefault()));  
 				}
 			});
 
 			for (SmbFile f : orderedArray)
-				if (!(f.getName().startsWith(".") && MizLib.getCharacterCountInString(f.getName(), '.') == 1) && !f.getName().startsWith("._")) {
+				if (MizLib.isValidFilename(f.getName())) {
 					list.add(new BrowserFileObject(f.getName(), f.isDirectory(), f.isDirectory() ? 0 : f.length()));
 					temp.add(f);
 				}
@@ -68,8 +72,10 @@ public class BrowserSmb extends AbstractFileSourceBrowser<SmbFile> {
 			setCurrentFiles(listFiles);
 
 			setBrowserFiles(list);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			return false;
+		}
 
-		return list;
+		return true;
 	}
 }

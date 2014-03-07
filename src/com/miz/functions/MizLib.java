@@ -1306,6 +1306,14 @@ public class MizLib {
 
 	public static String[] subtitleFormats = new String[]{".srt", ".sub", ".ssa", ".ssf", ".smi", ".txt", ".usf", ".ass", ".stp", ".idx", ".aqt", ".cvd", ".dks", ".jss", ".mpl", ".pjs", ".psb", ".rt", ".svcd", ".usf"};
 
+	public static boolean isSubtitleFile(String s) {
+		int count = subtitleFormats.length;
+		for (int i = 0; i < count; i++)
+			if (s.endsWith(subtitleFormats[i]))
+				return true;
+		return false;
+	}
+	
 	public static List<SmbFile> getSubtitleFiles(String filepath, NtlmPasswordAuthentication auth) throws MalformedURLException, UnsupportedEncodingException {
 		ArrayList<SmbFile> subs = new ArrayList<SmbFile>();
 
@@ -3101,5 +3109,9 @@ public class MizLib {
 			extension = path.substring(i+1);
 
 		return extension;
+	}
+	
+	public static boolean isValidFilename(String name) {
+		return !(name.startsWith(".") && MizLib.getCharacterCountInString(name, '.') == 1) && !name.startsWith("._");
 	}
 }

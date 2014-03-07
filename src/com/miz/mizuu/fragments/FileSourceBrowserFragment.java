@@ -26,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.miz.abstractclasses.AbstractFileSourceBrowser;
 import com.miz.filesources.BrowserFile;
@@ -49,7 +50,7 @@ public class FileSourceBrowserFragment extends Fragment {
 
 	private AbstractFileSourceBrowser<?> mBrowser;
 	private ListView mParent, mCurrent;
-	private View mContent, mProgress;
+	private View mProgress, mEmpty;
 	private int mType;
 	private BrowseFolder mBrowseFolder;
 	private CurrentFolderAdapter mCurrentFolderAdapter;
@@ -106,20 +107,19 @@ public class FileSourceBrowserFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		mContent = v.findViewById(R.id.content);
 		mProgress = v.findViewById(R.id.progress);
-		
+		mEmpty = v.findViewById(R.id.no_content);
+
 		mParent = (ListView) v.findViewById(R.id.parentList);
 		mCurrent = (ListView) v.findViewById(R.id.currentList);
 
 		mCurrentFolderAdapter = new CurrentFolderAdapter();
-		mCurrent.setAdapter(mCurrentFolderAdapter);
 		mCurrent.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				browse(arg2);
+				if (mBrowser.getBrowserFiles().get(arg2).isDirectory())
+					browse(arg2);
 			}
-
 		});
 
 		browse(INITIALIZE);
@@ -140,7 +140,7 @@ public class FileSourceBrowserFragment extends Fragment {
 		}
 	}
 
-	private class BrowseFolder extends AsyncTask<Void, Void, Void> {
+	private class BrowseFolder extends AsyncTask<Void, Void, Boolean> {
 
 		private int mIndex;
 
@@ -154,31 +154,43 @@ public class FileSourceBrowserFragment extends Fragment {
 		}
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Boolean doInBackground(Void... params) {
+			boolean result = false;
+
 			if (mIndex == INITIALIZE) {
 				try {
 					loadFilesource();
 				} catch (Exception e) {}
 			} else if (mIndex == GO_BACK) {
-				mBrowser.goUp();
+				result = mBrowser.goUp();
 			} else {
-				mBrowser.browse(mIndex);
+				result = mBrowser.browse(mIndex);
 			}
 
-			return null;
+			return result;
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(Boolean result) {
+			if (mIndex >= GO_BACK && !result)
+				Toast.makeText(getActivity(), R.string.couldnt_load_folder, Toast.LENGTH_SHORT).show();
+
 			setLoading(false);
+			
+			if (mCurrent.getAdapter() == null) {
+				mCurrent.setAdapter(mCurrentFolderAdapter);
+				mCurrent.setEmptyView(mEmpty);
+			}
 			mCurrentFolderAdapter.notifyDataSetChanged();
+
+			mCurrent.setSelectionAfterHeaderView();
 		}
 	}
 
 	private void browse(int index) {
 		if (mIsLoading)
 			return;
-		
+
 		if (mBrowseFolder != null)
 			mBrowseFolder.cancel(true);
 
@@ -233,7 +245,12 @@ public class FileSourceBrowserFragment extends Fragment {
 				holder.size.setText("");
 				holder.size.setVisibility(View.GONE);
 			} else {
-				holder.icon.setImageResource(R.drawable.file);
+				if (MizLib.isVideoFile(mItems.get(position).getName()))
+					holder.icon.setImageResource(R.drawable.ic_action_movie);
+				else if (MizLib.isSubtitleFile(mItems.get(position).getName()))
+					holder.icon.setImageResource(R.drawable.ic_action_font_smaller);
+				else
+					holder.icon.setImageResource(R.drawable.file);
 				holder.size.setText(MizLib.filesizeToString(mItems.get(position).getSize()));
 				holder.size.setVisibility(View.VISIBLE);
 			}
@@ -264,10 +281,14 @@ public class FileSourceBrowserFragment extends Fragment {
 		mIsLoading = loading;
 		if (loading) {
 			mProgress.setVisibility(View.VISIBLE);
-			mContent.setVisibility(View.GONE);
+			mCurrent.setVisibility(View.GONE);
 		} else {
 			mProgress.setVisibility(View.GONE);
-			mContent.setVisibility(View.VISIBLE);
+			mCurrent.setVisibility(View.VISIBLE);
 		}	
+	}
+
+	private boolean hasParentView() {
+		return mParent != null;
 	}
 }

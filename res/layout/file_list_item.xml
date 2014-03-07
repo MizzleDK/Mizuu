@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:background="@drawable/list_selector"
     android:gravity="center"
-    android:padding="5dp" >
+    android:minHeight="48dp"
+    android:padding="8dp" >
 
     <ImageView
         android:id="@+id/icon"

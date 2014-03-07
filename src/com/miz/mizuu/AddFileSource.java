@@ -43,7 +43,7 @@ public class AddFileSource extends MizActivity {
 				final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 				ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
 				//ft.replace(android.R.id.content, FileSourceBrowserFragment.newInstanceFile());
-				ft.replace(android.R.id.content, FileSourceBrowserFragment.newInstanceSmbFile("192.168.1.50", "admin", "Mizzle1", "", true), "test");
+				ft.replace(android.R.id.content, FileSourceBrowserFragment.newInstanceSmbFile("192.168.1.50", "admsin", "Mizzle1", "", true), "test");
 				ft.commit();
 			}
 		});
