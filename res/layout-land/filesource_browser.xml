@@ -4,8 +4,7 @@
     android:background="@drawable/menu_bg_drawable"
     android:baselineAligned="false" >
 
-    <ListView
-        android:id="@+id/parentList"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginBottom="24dp"
@@ -15,7 +14,24 @@
         android:layout_weight="1"
         android:background="@drawable/bg_with_border"
         android:paddingTop="1dp" >
-    </ListView>
+
+        <ListView
+            android:id="@+id/parentList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+
+        <TextView
+            android:id="@+id/no_content_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="@string/no_parent_folder"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </FrameLayout>
 
     <FrameLayout
         android:layout_width="0dp"
@@ -39,8 +55,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:visibility="gone"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:visibility="gone" >
 
             <TextView
                 android:layout_width="wrap_content"

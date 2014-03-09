@@ -50,9 +50,10 @@ public class FileSourceBrowserFragment extends Fragment {
 
 	private AbstractFileSourceBrowser<?> mBrowser;
 	private ListView mParent, mCurrent;
-	private View mProgress, mEmpty;
+	private View mProgress, mEmpty, mEmptyParent;
 	private int mType;
 	private BrowseFolder mBrowseFolder;
+	private ParentFolderAdapter mParentFolderAdapter;
 	private CurrentFolderAdapter mCurrentFolderAdapter;
 	private boolean mIsLoading = false;
 
@@ -61,10 +62,11 @@ public class FileSourceBrowserFragment extends Fragment {
 	 */
 	public FileSourceBrowserFragment() {}
 
-	public static FileSourceBrowserFragment newInstanceFile() {
+	public static FileSourceBrowserFragment newInstanceFile(boolean isMovie) {
 		FileSourceBrowserFragment frag = new FileSourceBrowserFragment();
 		Bundle args = new Bundle();
 		args.putInt(TYPE, FileSource.FILE);
+		args.putBoolean(IS_MOVIE, isMovie);	
 		frag.setArguments(args);
 		return frag;
 	}
@@ -85,6 +87,8 @@ public class FileSourceBrowserFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		setRetainInstance(true);
 
 		mType = getArguments().getInt(TYPE, FileSource.FILE);
 
@@ -109,6 +113,7 @@ public class FileSourceBrowserFragment extends Fragment {
 
 		mProgress = v.findViewById(R.id.progress);
 		mEmpty = v.findViewById(R.id.no_content);
+		mEmptyParent = v.findViewById(R.id.no_content_parent);
 
 		mParent = (ListView) v.findViewById(R.id.parentList);
 		mCurrent = (ListView) v.findViewById(R.id.currentList);
@@ -118,11 +123,21 @@ public class FileSourceBrowserFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				if (mBrowser.getBrowserFiles().get(arg2).isDirectory())
-					browse(arg2);
+					browse(arg2, false);
 			}
 		});
 
-		browse(INITIALIZE);
+		if (hasParentView()) {
+			mParentFolderAdapter = new ParentFolderAdapter();
+			mParent.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+					browse(arg2, true);
+				}
+			});
+		}
+
+		browse(INITIALIZE, false);
 	}
 
 	private void loadFilesource() throws MalformedURLException, UnsupportedEncodingException {
@@ -143,9 +158,11 @@ public class FileSourceBrowserFragment extends Fragment {
 	private class BrowseFolder extends AsyncTask<Void, Void, Boolean> {
 
 		private int mIndex;
+		private boolean mFromParent;
 
-		public BrowseFolder(int index) {
+		public BrowseFolder(int index, boolean fromParent) {
 			mIndex = index;
+			mFromParent = fromParent;
 		}
 
 		@Override
@@ -164,7 +181,7 @@ public class FileSourceBrowserFragment extends Fragment {
 			} else if (mIndex == GO_BACK) {
 				result = mBrowser.goUp();
 			} else {
-				result = mBrowser.browse(mIndex);
+				result = mBrowser.browse(mIndex, mFromParent);
 			}
 
 			return result;
@@ -172,29 +189,41 @@ public class FileSourceBrowserFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Boolean result) {
+			if (!isAdded())
+				return;
+
 			if (mIndex >= GO_BACK && !result)
 				Toast.makeText(getActivity(), R.string.couldnt_load_folder, Toast.LENGTH_SHORT).show();
 
 			setLoading(false);
-			
+
 			if (mCurrent.getAdapter() == null) {
 				mCurrent.setAdapter(mCurrentFolderAdapter);
 				mCurrent.setEmptyView(mEmpty);
 			}
-			mCurrentFolderAdapter.notifyDataSetChanged();
+
+			if (hasParentView())
+				if (mParent.getAdapter() == null) {
+					mParent.setAdapter(mParentFolderAdapter);
+					mParent.setEmptyView(mEmptyParent);
+				}
+
+			notifyDataSetChanged();
+
+			getActivity().getActionBar().setSubtitle(mBrowser.getSubtitle());
 
 			mCurrent.setSelectionAfterHeaderView();
 		}
 	}
 
-	private void browse(int index) {
+	private void browse(int index, boolean fromParent) {
 		if (mIsLoading)
 			return;
 
 		if (mBrowseFolder != null)
 			mBrowseFolder.cancel(true);
 
-		mBrowseFolder = new BrowseFolder(index);
+		mBrowseFolder = new BrowseFolder(index, fromParent);
 		mBrowseFolder.execute();
 	}
 
@@ -266,8 +295,58 @@ public class FileSourceBrowserFragment extends Fragment {
 		}
 	}
 
+	private class ParentFolderAdapter extends BaseAdapter {
+
+		private List<BrowserFileObject> mItems = new ArrayList<BrowserFileObject>();
+		private LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		@Override
+		public int getCount() {
+			return mItems.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder holder;
+
+			if (convertView == null) {
+				convertView = inflater.inflate(R.layout.file_list_item, null);
+				holder = new ViewHolder();
+				holder.name = (TextView) convertView.findViewById(R.id.text1);
+				holder.size = (TextView) convertView.findViewById(R.id.size);
+				holder.size.setVisibility(View.GONE);
+				holder.icon = (ImageView) convertView.findViewById(R.id.icon);
+				holder.icon.setImageResource(R.drawable.folder);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+
+			holder.name.setText(mItems.get(position).getName());
+
+			return convertView;
+		}
+
+		@Override
+		public void notifyDataSetChanged() {
+			mItems = mBrowser.getBrowserParentFiles();
+
+			super.notifyDataSetChanged();
+		}
+	}
+
 	private void onBackPressed() {
-		browse(GO_BACK);
+		browse(GO_BACK, false);
 	}
 
 	@Override
@@ -290,5 +369,11 @@ public class FileSourceBrowserFragment extends Fragment {
 
 	private boolean hasParentView() {
 		return mParent != null;
+	}
+
+	private void notifyDataSetChanged() {
+		mCurrentFolderAdapter.notifyDataSetChanged();
+		if (hasParentView())
+			mParentFolderAdapter.notifyDataSetChanged();
 	}
 }

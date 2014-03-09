@@ -28,19 +28,19 @@
             android:textStyle="italic" />
 
         <RadioGroup
-            android:id="@+id/radioGroup1"
+            android:id="@+id/content_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
             <RadioButton
-                android:id="@+id/radioType1"
+                android:id="@+id/content_movie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="@string/chooserMovies" />
 
             <RadioButton
-                android:id="@+id/radioType2"
+                android:id="@+id/content_tv_show"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/chooserTVShows" />
@@ -65,25 +65,25 @@
             android:textStyle="italic" />
 
         <RadioGroup
-            android:id="@+id/radioGroup2"
+            android:id="@+id/filesource_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
             <RadioButton
-                android:id="@+id/radioLocation1"
+                android:id="@+id/source_device"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="@string/contentLocationDevice" />
 
             <RadioButton
-                android:id="@+id/radioLocation2"
+                android:id="@+id/source_smb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/contentLocationSMB" />
 
             <RadioButton
-                android:id="@+id/radioLocation3"
+                android:id="@+id/source_upnp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/contentLocationUPnP" />

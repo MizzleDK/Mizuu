@@ -8,8 +8,8 @@ import com.miz.functions.BrowserFileObject;
 public abstract class AbstractFileSourceBrowser<T> {
 
 	private T mCurrentFolder, mParentFolder;
-	private T[] mCurrentFiles;
-	private List<BrowserFileObject> mBrowserFiles;
+	private T[] mCurrentFiles, mCurrentParentFiles;
+	private List<BrowserFileObject> mBrowserFiles, mBrowserParentFiles;
 
 	public AbstractFileSourceBrowser(T folder) {
 		mCurrentFolder = folder;
@@ -24,6 +24,10 @@ public abstract class AbstractFileSourceBrowser<T> {
 	public void setParentFolder(T folder) {
 		mParentFolder = folder;
 	}
+	
+	public T getParentFolder() {
+		return mParentFolder;
+	}
 
 	public T getCurrentFolder() {
 		return mCurrentFolder;
@@ -32,9 +36,17 @@ public abstract class AbstractFileSourceBrowser<T> {
 	public void setCurrentFiles(T[] files) {
 		mCurrentFiles = files;
 	}
+	
+	public void setCurrentParentFiles(T[] files) {
+		mCurrentParentFiles = files;
+	}
 
 	public T[] getCurrentFiles() {
 		return mCurrentFiles;
+	}
+	
+	public T[] getCurrentParentFiles() {
+		return mCurrentParentFiles;
 	}
 
 	public List<BrowserFileObject> getBrowserFiles() {
@@ -42,9 +54,19 @@ public abstract class AbstractFileSourceBrowser<T> {
 			mBrowserFiles = new ArrayList<BrowserFileObject>();
 		return mBrowserFiles;
 	}
+	
+	public List<BrowserFileObject> getBrowserParentFiles() {
+		if (mBrowserParentFiles == null)
+			mBrowserParentFiles = new ArrayList<BrowserFileObject>();
+		return mBrowserParentFiles;
+	}
 
 	public void setBrowserFiles(List<BrowserFileObject> list) {
 		mBrowserFiles = list;
+	}
+	
+	public void setBrowserParentFiles(List<BrowserFileObject> list) {
+		mBrowserParentFiles = list;
 	}
 
 	public boolean goUp() {
@@ -53,8 +75,13 @@ public abstract class AbstractFileSourceBrowser<T> {
 		return false;
 	}
 
-	public abstract boolean browse(int index);
+	public boolean browse(int index, boolean fromParent) {
+		return browse(fromParent ? getCurrentParentFiles()[index] : getCurrentFiles()[index]);
+	}
 
 	public abstract boolean browse(T folder);
+	
+	public abstract boolean browseParent();
 
+	public abstract String getSubtitle();
 }

@@ -5,16 +5,6 @@
         android:icon="@drawable/add"
         android:showAsAction="ifRoom"
         android:title="@string/addFileSource">
-        <menu>
-            <item
-                android:id="@+id/addLocalSource"
-                android:onClick="addLocalSource"
-                android:title="@string/fileSourceLocal"/>
-            <item
-                android:id="@+id/addNetworkSource"
-                android:onClick="addNetworkSource"
-                android:title="@string/fileSourceNetwork"/>
-        </menu>
     </item>
 
 </menu>

@@ -8,6 +8,8 @@ import java.util.Locale;
 
 import jcifs.smb.SmbFile;
 
+import android.util.Log;
+
 import com.miz.abstractclasses.AbstractFileSourceBrowser;
 import com.miz.functions.BrowserFileObject;
 import com.miz.functions.MizLib;
@@ -19,15 +21,10 @@ public class BrowserSmb extends AbstractFileSourceBrowser<SmbFile> {
 	}
 
 	@Override
-	public boolean browse(int index) {
-		return browse(getCurrentFiles()[index]);
-	}
-
-	@Override
 	public boolean browse(SmbFile folder) {
 		if (folder.getName().equals("smb://"))
 			return false;
-		
+
 		List<BrowserFileObject> list = new ArrayList<BrowserFileObject>();
 		List<SmbFile> orderedArray = new ArrayList<SmbFile>();
 		List<SmbFile> temp = new ArrayList<SmbFile>();
@@ -73,6 +70,59 @@ public class BrowserSmb extends AbstractFileSourceBrowser<SmbFile> {
 
 			setBrowserFiles(list);
 		} catch (Exception e) {
+			Log.d("Mizuu", e.toString());
+			return false;
+		}
+
+		return browseParent();
+	}
+
+	@Override
+	public String getSubtitle() {
+		return MizLib.transformSmbPath(getCurrentFolder().getCanonicalPath());
+	}
+
+	@Override
+	public boolean browseParent() {
+		SmbFile folder = getParentFolder();
+		List<BrowserFileObject> list = new ArrayList<BrowserFileObject>();
+		List<SmbFile> orderedArray = new ArrayList<SmbFile>();
+		List<SmbFile> temp = new ArrayList<SmbFile>();
+
+		if (folder.getName().equals("smb://")) {
+			setBrowserParentFiles(list);
+			return true;
+		}
+
+		try {
+			SmbFile[] listFiles = folder.listFiles();
+			if (listFiles == null)
+				return false;
+			
+			for (SmbFile f : listFiles)
+				if (f.isDirectory())
+					orderedArray.add(f);
+
+			Collections.sort(orderedArray, new Comparator<SmbFile>() {
+				@Override
+				public int compare(SmbFile f1, SmbFile f2) {
+					return f1.getName().toLowerCase(Locale.getDefault()).compareTo(f2.getName().toLowerCase(Locale.getDefault()));  
+				}
+			});
+
+			for (SmbFile f : orderedArray) {
+				list.add(new BrowserFileObject(f.getName(), true, 0));
+				temp.add(f);
+			}
+
+			listFiles = temp.toArray(new SmbFile[temp.size()]);
+			temp.clear();
+			orderedArray.clear();
+			
+			setCurrentParentFiles(listFiles);
+			setBrowserParentFiles(list);
+		} catch (Exception e) {
+			Log.d("Mizuu", e.toString());
 			return false;
 		}
 

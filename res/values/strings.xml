@@ -439,5 +439,6 @@
     <string name="couldnt_load_folder">Couldn\'t load folder!</string>
     <string name="no_content">No content</string>
     <string name="folder_has_no_files_folders">This folder has no files or folders.</string>
+    <string name="no_parent_folder">No parent folder</string>
 
 </resources>

@@ -246,6 +246,7 @@
             android:name="com.miz.mizuu.AddNetworkFilesourceDialog"
             android:exported="false"
             android:hardwareAccelerated="false"
+            android:icon="@drawable/white_app_icon"
             android:label="@string/networkLogin"
             android:theme="@android:style/Theme.Holo.Dialog" >
             <intent-filter>
@@ -261,6 +262,19 @@
             android:label="@string/lookingForNetworkSources"
             android:theme="@android:style/Theme.Holo.Dialog" >
             <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Directory browser activity -->
+        <activity
+            android:name="com.miz.mizuu.NewFileSourceBrowser"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/fileSources" >
+            <intent-filter>
+                <action android:name="com.miz.mizuu.FileSources" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -513,7 +527,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 

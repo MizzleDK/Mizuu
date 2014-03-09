@@ -31,19 +31,36 @@ import com.miz.db.DbAdapterSources;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 
+import static com.miz.functions.MizLib.DOMAIN;
+import static com.miz.functions.MizLib.USER;
+import static com.miz.functions.MizLib.PASSWORD;
+import static com.miz.functions.MizLib.SERVER;
+import static com.miz.functions.MizLib.TYPE;
+import static com.miz.functions.MizLib.TV_SHOW;
+import static com.miz.functions.MizLib.MOVIE;
+import static com.miz.functions.MizLib.FILESOURCE;
+
 public class AddNetworkFilesourceDialog extends Activity {
 
 	private EditText server, domain, username, password;
 	private CheckBox anonymous, guest;
-	private String DOMAIN, USER, PASS, SERVER;
+	private String mDomain, mUser, mPass, mServer;
 	private boolean isMovie = false, prefsDisableEthernetWiFiCheck;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		if (!MizLib.runsOnTablet(this)) {
+			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsFullscreen", false))
+				setTheme(R.style.Theme_Example_FullScreen);
+			else
+				setTheme(R.style.Theme_Example);
+
+		}
+
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		
+
 		setContentView(R.layout.addnetwork);
 
 		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsDisableEthernetWiFiCheck", false);
@@ -250,10 +267,10 @@ public class AddNetworkFilesourceDialog extends Activity {
 		}
 
 		if (MizLib.isWifiConnected(this, prefsDisableEthernetWiFiCheck)) {
-			DOMAIN = domain.getText().toString();
-			USER = username.getText().toString();
-			PASS = password.getText().toString();
-			SERVER = server.getText().toString();
+			mDomain = domain.getText().toString();
+			mUser = username.getText().toString();
+			mPass = password.getText().toString();
+			mServer = server.getText().toString();
 			attemptLogin();
 		} else
 			Toast.makeText(AddNetworkFilesourceDialog.this, getString(R.string.noConnection), Toast.LENGTH_LONG).show();
@@ -261,12 +278,13 @@ public class AddNetworkFilesourceDialog extends Activity {
 
 	private void attemptLogin() {
 		Intent intent = new Intent();
-		intent.setClass(getApplicationContext(), AddNetworkFileSource.class);
-		intent.putExtra("user", USER);
-		intent.putExtra("pass", PASS);
-		intent.putExtra("domain", DOMAIN);
-		intent.putExtra("server", SERVER);
-		intent.putExtra("isMovie", isMovie);
+		intent.setClass(getApplicationContext(), NewFileSourceBrowser.class);
+		intent.putExtra(USER, mUser);
+		intent.putExtra(PASSWORD, mPass);
+		intent.putExtra(DOMAIN, mDomain);
+		intent.putExtra(SERVER, mServer);
+		intent.putExtra(TYPE, isMovie ? MOVIE : TV_SHOW);
+		intent.putExtra(FILESOURCE, FileSource.SMB);
 		startActivity(intent);
 		finish();
 	}

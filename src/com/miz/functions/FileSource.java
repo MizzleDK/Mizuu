@@ -6,7 +6,7 @@ import com.miz.db.DbAdapterSources;
 
 public class FileSource {
 	
-	public static final int FILE = 0, SMB = 1;
+	public static final int FILE = 0, SMB = 1, UPNP = 2;
 	private long rowId;
 	private String filepath, user, password, domain, type;
 	private int fileSourceType;

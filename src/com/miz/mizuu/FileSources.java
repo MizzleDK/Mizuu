@@ -45,9 +45,6 @@ public class FileSources extends MizActivity {
 		list.setAdapter(new ListAdapter());
 
 		loadSources();
-
-		Intent i = new Intent(this, AddFileSource.class);
-		startActivity(i);
 		
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-filesource-change"));
 	}
@@ -76,9 +73,18 @@ public class FileSources extends MizActivity {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			onBackPressed();
-		default:
-			return super.onOptionsItemSelected(item);
+			break;
+		case R.id.add_source:
+			addFileSource();
+			break;
 		}
+		
+		return super.onOptionsItemSelected(item);
+	}
+	
+	private void addFileSource() {
+		Intent i = new Intent(this, AddFileSource.class);
+		startActivity(i);
 	}
 
 	private void loadSources() {
@@ -108,14 +114,6 @@ public class FileSources extends MizActivity {
 			noFileSources.setVisibility(View.GONE);
 
 		notifyDataSetChanged();
-	}
-
-	public void addLocalSource(MenuItem m) {
-		addSource(true);
-	}
-
-	public void addNetworkSource(MenuItem m) {
-		addSource(false);
 	}
 
 	private void addSource(final boolean isLocalSource) {

@@ -19,7 +19,7 @@ public class FileSourceBrowser extends MizActivity {
 		Fragment frag = getSupportFragmentManager().findFragmentByTag(TAG);
 		if (frag == null) {
 			final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			ft.add(android.R.id.content, FileSourceBrowserFragment.newInstanceFile(), TAG);
+			ft.add(android.R.id.content, FileSourceBrowserFragment.newInstanceFile(true), TAG);
 			ft.commit();
 		}	
 	}
