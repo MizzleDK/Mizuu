@@ -47,6 +47,7 @@ public class NewFileSourceBrowser extends MizActivity {
 				ft.replace(android.R.id.content, FileSourceBrowserFragment.newInstanceSmbFile(extras.getString(SERVER), extras.getString(USER), extras.getString(PASSWORD), extras.getString(DOMAIN), isMovie), TAG);
 				break;
 			case FileSource.UPNP:
+				ft.replace(android.R.id.content, FileSourceBrowserFragment.newInstanceUpnp(isMovie), TAG);
 				break;
 			}
 			ft.commit();
