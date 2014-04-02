@@ -52,11 +52,14 @@ public class AddFileSource extends MizActivity {
 				i.putExtra(TYPE, mContent.getCheckedRadioButtonId() == R.id.content_movie ? MOVIE : TV_SHOW);
 				if (mFilesource.getCheckedRadioButtonId() == R.id.source_smb) {
 					i.setClass(getApplicationContext(), AddNetworkFilesourceDialog.class);
+				} else if (mFilesource.getCheckedRadioButtonId() == R.id.source_upnp) {
+					i.setClass(getApplicationContext(), AddUpnpFilesourceDialog.class);
 				} else {
 					i.setClass(getApplicationContext(), NewFileSourceBrowser.class);
 					i.putExtra(FILESOURCE, mFilesource.getCheckedRadioButtonId() == R.id.source_device ? FileSource.FILE : FileSource.UPNP);
 				}
 				startActivity(i);
+				finish();
 			}
 		});
 	}

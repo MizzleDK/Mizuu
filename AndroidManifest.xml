@@ -255,6 +255,19 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        
+        <!-- Add UPnP file source dialog activity -->
+        <activity
+            android:name="com.miz.mizuu.AddUpnpFilesourceDialog"
+            android:exported="false"
+            android:hardwareAccelerated="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/select_upnp_server"
+            android:theme="@android:style/Theme.Holo.Dialog" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- Search for network shares -->
         <activity
@@ -273,6 +286,7 @@
             android:name="com.miz.mizuu.NewFileSourceBrowser"
             android:exported="false"
             android:icon="@drawable/white_app_icon"
+            android:uiOptions="splitActionBarWhenNarrow"
             android:label="@string/fileSources" >
             <intent-filter>
                 <action android:name="com.miz.mizuu.FileSources" />

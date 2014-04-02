@@ -18,6 +18,7 @@ import static com.miz.functions.MizLib.DOMAIN;
 import static com.miz.functions.MizLib.USER;
 import static com.miz.functions.MizLib.PASSWORD;
 import static com.miz.functions.MizLib.SERVER;
+import static com.miz.functions.MizLib.SERIAL_NUMBER;
 
 public class NewFileSourceBrowser extends MizActivity {
 
@@ -47,7 +48,7 @@ public class NewFileSourceBrowser extends MizActivity {
 				ft.replace(android.R.id.content, FileSourceBrowserFragment.newInstanceSmbFile(extras.getString(SERVER), extras.getString(USER), extras.getString(PASSWORD), extras.getString(DOMAIN), isMovie), TAG);
 				break;
 			case FileSource.UPNP:
-				ft.replace(android.R.id.content, FileSourceBrowserFragment.newInstanceUpnp(isMovie), TAG);
+				ft.replace(android.R.id.content, FileSourceBrowserFragment.newInstanceUpnp(extras.getString(SERVER), extras.getString(SERIAL_NUMBER), isMovie), TAG);
 				break;
 			}
 			ft.commit();

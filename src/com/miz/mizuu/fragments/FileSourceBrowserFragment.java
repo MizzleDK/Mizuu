@@ -4,23 +4,25 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import jcifs.smb.SmbFile;
 
+import static com.miz.functions.MizLib.MOVIE;
+import static com.miz.functions.MizLib.TYPE;
+import static com.miz.functions.MizLib.DOMAIN;
+import static com.miz.functions.MizLib.USER;
+import static com.miz.functions.MizLib.PASSWORD;
+import static com.miz.functions.MizLib.SERVER;
+import static com.miz.functions.MizLib.SERIAL_NUMBER;
+
 import org.teleal.cling.android.AndroidUpnpService;
-import org.teleal.cling.model.action.ActionException;
 import org.teleal.cling.model.action.ActionInvocation;
 import org.teleal.cling.model.message.UpnpResponse;
 import org.teleal.cling.model.meta.Device;
-import org.teleal.cling.model.meta.LocalDevice;
-import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.model.meta.Service;
-import org.teleal.cling.model.types.ErrorCode;
 import org.teleal.cling.model.types.UDAServiceType;
-import org.teleal.cling.registry.DefaultRegistryListener;
-import org.teleal.cling.registry.Registry;
 import org.teleal.cling.support.contentdirectory.callback.Browse;
 import org.teleal.cling.support.model.BrowseFlag;
 import org.teleal.cling.support.model.DIDLContent;
@@ -42,6 +44,9 @@ import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -54,14 +59,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miz.abstractclasses.AbstractFileSourceBrowser;
+import com.miz.db.DbAdapterSources;
 import com.miz.filesources.BrowserFile;
 import com.miz.filesources.BrowserSmb;
 import com.miz.filesources.BrowserUpnp;
 import com.miz.functions.BrowserFileObject;
 import com.miz.functions.ContentItem;
-import com.miz.functions.DeviceItem;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.service.WireUpnpService;
 
@@ -70,13 +76,6 @@ public class FileSourceBrowserFragment extends Fragment {
 	public static final int INITIALIZE = -2;
 	public static final int GO_BACK = -1;
 
-	private final static String TYPE = "type";
-	private final static String SERVER = "server";
-	private final static String USER = "user";
-	private final static String PASS = "pass";
-	private final static String DOMAIN = "domain";
-	private final static String IS_MOVIE = "isMovie";
-
 	private AbstractFileSourceBrowser<?> mBrowser;
 	private ListView mParent, mCurrent;
 	private View mProgress, mEmpty, mEmptyParent;
@@ -84,21 +83,13 @@ public class FileSourceBrowserFragment extends Fragment {
 	private BrowseFolder mBrowseFolder;
 	private ParentFolderAdapter mParentFolderAdapter;
 	private CurrentFolderAdapter mCurrentFolderAdapter;
-	private boolean mIsLoading = false;
+	private boolean mIsLoading = false, mIsMovie = false;
 
 	private AndroidUpnpService upnpService;
-	private DeviceListRegistryListener deviceListRegistryListener;
 
-	private ArrayAdapter<DeviceItem> deviceListAdapter;
 	private ArrayAdapter<ContentItem> contentListAdapter;
 
-	private String mUpnpId;
-	private Device mSelectedDevice;
-	private ContentItem mContentItem;
-	private Container mContainer;
-	private Service<?,?> mService;
-
-	private HashMap<String, String> mParentIds = new HashMap<String, String>();
+	private CountDownLatch latch = new CountDownLatch(1);
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -109,7 +100,7 @@ public class FileSourceBrowserFragment extends Fragment {
 		FileSourceBrowserFragment frag = new FileSourceBrowserFragment();
 		Bundle args = new Bundle();
 		args.putInt(TYPE, FileSource.FILE);
-		args.putBoolean(IS_MOVIE, isMovie);	
+		args.putBoolean(MOVIE, isMovie);	
 		frag.setArguments(args);
 		return frag;
 	}
@@ -120,18 +111,20 @@ public class FileSourceBrowserFragment extends Fragment {
 		args.putInt(TYPE, FileSource.SMB);
 		args.putString(SERVER, server.replace("smb://", ""));
 		args.putString(USER, user);
-		args.putString(PASS, pass);
+		args.putString(PASSWORD, pass);
 		args.putString(DOMAIN, domain);
-		args.putBoolean(IS_MOVIE, isMovie);		
+		args.putBoolean(MOVIE, isMovie);		
 		frag.setArguments(args);
 		return frag;
 	}
 
-	public static FileSourceBrowserFragment newInstanceUpnp(boolean isMovie) {
+	public static FileSourceBrowserFragment newInstanceUpnp(String server, String serialNumber, boolean isMovie) {
 		FileSourceBrowserFragment frag = new FileSourceBrowserFragment();
 		Bundle args = new Bundle();
 		args.putInt(TYPE, FileSource.UPNP);
-		args.putBoolean(IS_MOVIE, isMovie);	
+		args.putString(SERIAL_NUMBER, serialNumber);
+		args.putString(SERVER, server);
+		args.putBoolean(MOVIE, isMovie);	
 		frag.setArguments(args);
 		return frag;
 	}
@@ -141,19 +134,57 @@ public class FileSourceBrowserFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
+		setHasOptionsMenu(true);
 
-		deviceListRegistryListener = new DeviceListRegistryListener();
-
+		mIsMovie = getArguments().getBoolean(MOVIE, false);
 		mType = getArguments().getInt(TYPE, FileSource.FILE);
 
 		if (mType == FileSource.UPNP) {
-			deviceListAdapter = new ArrayAdapter<DeviceItem>(getActivity(),
-					android.R.layout.simple_list_item_1);
 			contentListAdapter = new ArrayAdapter<ContentItem>(getActivity(),
 					android.R.layout.simple_list_item_1);
 		}
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("onBackPressed"));
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);	
+		inflater.inflate(R.menu.add_file_source, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+
+		switch (item.getItemId()) {
+		case R.id.add_source:
+			addFileSource();
+			break;
+		}
+
+		return true;
+	}
+
+	private void addFileSource() {
+
+		String contentType = mIsMovie ? DbAdapterSources.KEY_TYPE_MOVIE : DbAdapterSources.KEY_TYPE_SHOW;
+
+		DbAdapterSources dbHelper = MizuuApplication.getSourcesAdapter();
+		switch (mType) {
+		case FileSource.FILE:
+			dbHelper.createSource(mBrowser.getSubtitle(), contentType, FileSource.FILE, "", "", "");
+			break;
+		case FileSource.SMB:
+			dbHelper.createSource("smb://" + mBrowser.getSubtitle().replace("smb://", ""), contentType, FileSource.SMB, getArguments().getString(USER), getArguments().getString(PASSWORD), getArguments().getString(DOMAIN));
+			break;
+		case FileSource.UPNP:
+
+			break;
+		}
+
+		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-filesource-change"));
+		getActivity().finish();
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -187,14 +218,12 @@ public class FileSourceBrowserFragment extends Fragment {
 					if (mBrowser.getBrowserFiles().get(arg2).isDirectory())
 						browse(arg2, false);
 				} else {
-					ContentItem content = contentListAdapter.getItem(arg2);
-					if (content.isContainer()) {
-						mUpnpId = content.getContainer().getParentID();
-						mContentItem = content;
-						upnpService.getControlPoint().execute(
-								new ContentBrowseCallback(getActivity(),
-										content.getService(), content.getContainer(),
-										contentListAdapter));
+					if (!mIsLoading) {
+						mIsLoading = true;
+						ContentItem content = contentListAdapter.getItem(arg2);
+						if (content.isContainer()) {
+							upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), content.getService(), content.getContainer(), contentListAdapter, true));
+						}
 					}
 				}
 			}
@@ -203,27 +232,9 @@ public class FileSourceBrowserFragment extends Fragment {
 		if (hasParentView()) {
 			mParentFolderAdapter = new ParentFolderAdapter();
 			mParent.setOnItemClickListener(new OnItemClickListener() {
-				protected Container createRootContainer(Service<?, ?> service) {
-					Container rootContainer = new Container();
-					rootContainer.setId("0");
-					rootContainer.setTitle("Content Directory on "
-							+ service.getDevice().getDisplayString());
-					return rootContainer;
-				}
-
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-					if (mType != FileSource.UPNP)
-						browse(arg2, true);
-					else {
-						Device<?, ?, ?> device = deviceListAdapter.getItem(arg2).getDevice();
-						mSelectedDevice = device;
-						Service<?, ?> service = device.findService(new UDAServiceType(
-								"ContentDirectory"));
-						upnpService.getControlPoint().execute(
-								new ContentBrowseCallback(getActivity(), service,
-										createRootContainer(service), contentListAdapter));
-					}
+					browse(arg2, true);
 				}
 			});
 		}
@@ -239,12 +250,16 @@ public class FileSourceBrowserFragment extends Fragment {
 		case FileSource.SMB:
 			mBrowser = new BrowserSmb(new SmbFile(MizLib.createSmbLoginString(URLEncoder.encode(getArguments().getString(DOMAIN), "utf-8"),
 					URLEncoder.encode(getArguments().getString(USER), "utf-8"),
-					URLEncoder.encode(getArguments().getString(PASS), "utf-8"),
+					URLEncoder.encode(getArguments().getString(PASSWORD), "utf-8"),
 					getArguments().getString(SERVER),
 					true)));
 			break;
 		case FileSource.UPNP:
-			mBrowser = new BrowserUpnp(null);
+			if (mBrowser == null)
+				mBrowser = new BrowserUpnp(null, getArguments().getString(SERVER), getArguments().getString(SERIAL_NUMBER));
+			
+			updateSubtitle();
+			
 			break;
 		}
 	}
@@ -309,14 +324,12 @@ public class FileSourceBrowserFragment extends Fragment {
 				if (mParent.getAdapter() == null) {
 					if (mType != FileSource.UPNP)
 						mParent.setAdapter(mParentFolderAdapter);
-					else
-						mParent.setAdapter(deviceListAdapter);
 					mParent.setEmptyView(mEmptyParent);
 				}
 
 			notifyDataSetChanged();
 
-			getActivity().getActionBar().setSubtitle(mBrowser.getSubtitle());
+			updateSubtitle();
 
 			mCurrent.setSelectionAfterHeaderView();
 		}
@@ -456,27 +469,17 @@ public class FileSourceBrowserFragment extends Fragment {
 			browse(GO_BACK, false);
 		else {
 			Container parentContainer = new Container();
-			parentContainer.setId(mParentIds.get(mContainer.getId()));
 
-			upnpService.getControlPoint().execute(
-					new ContentBrowseCallback(getActivity(),
-							mService, parentContainer,
-							contentListAdapter));
-			//}
+			String id = "0";
+			if (((BrowserUpnp) mBrowser).getContainer() != null) {
+				id = ((BrowserUpnp) mBrowser).getParentId(((BrowserUpnp) mBrowser).getContainer().getId());
+			}
 
-			/*Device<?, ?, ?> device = deviceListAdapter.getItem(0).getDevice();
-			Service<?, ?> service = device.findService(new UDAServiceType("ContentDirectory"));
+			parentContainer.setId(id);
 
-			Container parentContainer = new Container();
-			parentContainer.setId(mUpnpId);
-			parentContainer.setTitle("Content Directory on " + service.getDevice().getDisplayString());
+			System.out.println("SERVICE IS NULL: " + (((BrowserUpnp) mBrowser).getService() == null));
 
-			device.getParentDevice().
-
-			upnpService.getControlPoint().execute(
-					new ContentBrowseCallback(getActivity(),
-							service, parentContainer,
-							contentListAdapter));*/
+			upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), ((BrowserUpnp) mBrowser).getService(), parentContainer, contentListAdapter, false));
 		}
 	}
 
@@ -486,11 +489,8 @@ public class FileSourceBrowserFragment extends Fragment {
 
 		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
 
-		if (mType == FileSource.UPNP) {
-			if (upnpService != null)
-				upnpService.getRegistry().removeListener(deviceListRegistryListener);
+		if (mType == FileSource.UPNP)
 			getActivity().getApplicationContext().unbindService(serviceConnection);
-		}
 	}
 
 	private void setLoading(boolean loading) {
@@ -515,89 +515,90 @@ public class FileSourceBrowserFragment extends Fragment {
 				mParentFolderAdapter.notifyDataSetChanged();
 		} else {
 			contentListAdapter.notifyDataSetChanged();
-			if (hasParentView())
-				deviceListAdapter.notifyDataSetChanged();
 		}
+	}
+
+	private void updateSubtitle() {
+		getActivity().getActionBar().setSubtitle(mBrowser.getSubtitle());
 	}
 
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			upnpService = (AndroidUpnpService) service;
 
-			//deviceListAdapter.clear();
+			boolean found = false;
+
 			for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
-				deviceListRegistryListener.deviceAdded(new DeviceItem(device));
+				try {
+					if (device.getDetails().getSerialNumber().equals(((BrowserUpnp) mBrowser).getSerial())) {
+						startBrowse(device);
+						found = true;
+					}
+				} catch (Exception e) {}
 			}
 
-			// Getting ready for future device advertisements
-			upnpService.getRegistry().addListener(deviceListRegistryListener);
-			// Refresh device list
-			upnpService.getControlPoint().search();
+			if (!found)
+				Toast.makeText(getActivity(), getString(R.string.errorSomethingWentWrong), Toast.LENGTH_LONG).show();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
 			upnpService = null;
 		}
+
+		private void startBrowse(Device<?, ?, ?> device) {
+			Service<?, ?> service = device.findService(new UDAServiceType("ContentDirectory"));
+			((BrowserUpnp) mBrowser).setService(service);
+
+			Container rootContainer = new Container();
+			rootContainer.setId("0");
+			rootContainer.setTitle(device.getDetails().getFriendlyName());
+
+			upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), service, rootContainer, contentListAdapter, true));
+		}
 	};
 
-	public class DeviceListRegistryListener extends DefaultRegistryListener {
-		@Override
-		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
-			if (device.getType().getNamespace().equals("schemas-upnp-org")
-					&& device.getType().getType().equals("MediaServer")) {
-				final DeviceItem display = new DeviceItem(device, device
-						.getDetails().getFriendlyName(),
-						device.getDisplayString(), "(REMOTE) "
-								+ device.getType().getDisplayString());
-				deviceAdded(display);
-			}
+	private int mFolderCount = 0, mScannedCount = 0;
+
+	private class TestCallback extends Browse {
+
+		private Service<?, ?> mService;
+
+		public TestCallback(Service<?, ?> service, String containerId, BrowseFlag flag) {
+			super(service, containerId, BrowseFlag.DIRECT_CHILDREN, "*", 0, null, new SortCriterion(true, "dc:title"));
+			mService = service;
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
-		public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
-			final DeviceItem display = new DeviceItem(device,
-					device.getDisplayString());
-			deviceRemoved(display);
-		}
-
-		@Override
-		public void localDeviceAdded(Registry registry, LocalDevice device) {
-			final DeviceItem display = new DeviceItem(device, device
-					.getDetails().getFriendlyName(), device.getDisplayString(),
-					"(REMOTE) " + device.getType().getDisplayString());
-			deviceAdded(display);
-		}
-
-		@Override
-		public void localDeviceRemoved(Registry registry, LocalDevice device) {
-			final DeviceItem display = new DeviceItem(device,
-					device.getDisplayString());
-			deviceRemoved(display);
-		}
-
-		public void deviceAdded(final DeviceItem di) {
-			getActivity().runOnUiThread(new Runnable() {
-				public void run() {
-					int position = deviceListAdapter.getPosition(di);
-					if (position >= 0) {
-						// Device already in the list, re-set new value at same
-						// position
-						deviceListAdapter.remove(di);
-						deviceListAdapter.insert(di, position);
-					} else {
-						deviceListAdapter.add(di);
-					}
+		public void received(ActionInvocation arg0, DIDLContent didl) {
+			try {
+				for (Container childContainer : didl.getContainers()) {
+					mFolderCount++;
+					upnpService.getControlPoint().execute(new TestCallback(mService, childContainer.getId(), null));
+					//System.out.println(childContainer.getTitle() + " " + childContainer.getId() + " " + childContainer.getParentID());
 				}
-			});
+				// Now items
+				for (Item childItem : didl.getItems()) {
+					//System.out.println(childItem.getTitle() + " " + childItem.getFirstResource().getValue() + " " + childItem.getId() + " " + childItem.getParentID());
+				}
+
+				mScannedCount++;
+
+				System.out.println("mFolder: " + mFolderCount + ". " + mScannedCount);
+
+				if (mFolderCount == mScannedCount)
+					latch.countDown();
+
+			} catch (Exception e) {}
 		}
 
-		public void deviceRemoved(final DeviceItem di) {
-			getActivity().runOnUiThread(new Runnable() {
-				public void run() {
-					deviceListAdapter.remove(di);
-				}
-			});
-		}
+		@Override
+		public void updateStatus(Status arg0) {}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		public void failure(ActionInvocation arg0, UpnpResponse arg1, String arg2) {}
+
 	}
 
 	private class ContentBrowseCallback extends Browse {
@@ -605,43 +606,41 @@ public class FileSourceBrowserFragment extends Fragment {
 		private Service<?, ?> service;
 		private ArrayAdapter<ContentItem> listAdapter;
 		private Activity activity;
+		private Container mContainer;
 
 		@SuppressWarnings("rawtypes")
-		public ContentBrowseCallback(Activity activity, Service service, Container container, ArrayAdapter<ContentItem> listadapter) {
+		public ContentBrowseCallback(Activity activity, Service service, Container container, ArrayAdapter<ContentItem> listadapter, boolean addToStack) {
 			super(service, container.getId(), BrowseFlag.DIRECT_CHILDREN, "*", 0, null, new SortCriterion(true, "dc:title"));
 			this.activity = activity;
 			this.service = service;
-			mService = service;
 			this.listAdapter = listadapter;
-			mContainer = container;
 
-			if (!mParentIds.containsKey(container.getId()))
-				mParentIds.put(container.getId(), container.getParentID());
+			mContainer = container;
 		}
 
 		@SuppressWarnings("rawtypes")
 		public void received(final ActionInvocation actionInvocation, final DIDLContent didl) {
-			System.out.println("Received browse action DIDL descriptor, creating tree nodes");
 			activity.runOnUiThread(new Runnable() {
 				public void run() {
 					try {
 						listAdapter.clear();
 						// Containers first
 						for (Container childContainer : didl.getContainers()) {
-							System.out.println("add child container " + childContainer.getTitle());
 							listAdapter.add(new ContentItem(childContainer, service));
 						}
 						// Now items
 						for (Item childItem : didl.getItems()) {
-							System.out.println("add child item" + childItem.getTitle());
 							listAdapter.add(new ContentItem(childItem, service));
 						}
+
+						((BrowserUpnp) mBrowser).setContainer(mContainer);
+
+						((BrowserUpnp) mBrowser).addParentId(mContainer.getId(), mContainer.getParentID());
+
+						mIsLoading = false;
 					} catch (Exception ex) {
+						mIsLoading = false;
 						System.out.println("Creating DIDL tree nodes failed: " + ex);
-						actionInvocation.setFailure(new ActionException(
-								ErrorCode.ACTION_FAILED,
-								"Can't create list childs: " + ex, ex));
-						failure(actionInvocation, null);
 					}
 				}
 			});

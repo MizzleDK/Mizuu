@@ -2,10 +2,8 @@ package com.miz.mizuu;
 
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -116,55 +114,6 @@ public class FileSources extends MizActivity {
 		notifyDataSetChanged();
 	}
 
-	private void addSource(final boolean isLocalSource) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.addFileSource)
-		.setItems(R.array.filesource_picker, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				if (isLocalSource) {
-					if (which == 0)
-						addLocalMovie();
-					else
-						addLocalShow();
-				} else {
-					if (which == 0)
-						addNetworkMovie();
-					else
-						addNetworkShow();
-				}
-			}
-		});
-		builder.show();
-	}
-
-	public void addLocalMovie() {
-		Intent intent = new Intent();
-		intent.setClass(this, AddLocalFileSource.class);
-		intent.putExtra("type", "movie");
-		startActivityForResult(intent, 0); // 0 = movie
-	}
-
-	public void addNetworkMovie() {
-		Intent intent = new Intent();
-		intent.setClass(this, AddNetworkFilesourceDialog.class);
-		intent.putExtra("type", "movie");
-		startActivity(intent);
-	}
-
-	public void addLocalShow() {
-		Intent intent = new Intent();
-		intent.setClass(this, AddLocalFileSource.class);
-		intent.putExtra("type", "tvshow");
-		startActivityForResult(intent, 1); // 1 = show
-	}
-
-	public void addNetworkShow() {
-		Intent intent = new Intent();
-		intent.setClass(this, AddNetworkFilesourceDialog.class);
-		intent.putExtra("type", "tvshow");
-		startActivity(intent);
-	}
-
 	public void removeSelectedSource(final int id) {
 		DbAdapterSources dbHelper = MizuuApplication.getSourcesAdapter();
 		dbHelper.deleteSource(sources.get(id).getRowId());
@@ -182,13 +131,6 @@ public class FileSources extends MizActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.filebrowser, menu);
 		return true;
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		loadSources();
 	}
 
 	private void notifyDataSetChanged() {
