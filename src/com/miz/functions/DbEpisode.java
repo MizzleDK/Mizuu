@@ -47,6 +47,10 @@ public class DbEpisode {
 		return getFilepath().contains("smb:/");
 	}
 	
+	public boolean isUpnpFile() {
+		return getFilepath().startsWith("http://");
+	}
+	
 	public boolean isUnidentified() {
 		return getShowId().equals("invalid");
 	}

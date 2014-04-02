@@ -75,6 +75,10 @@ public class DbMovie {
 	public boolean isNetworkFile() {
 		return getFilepath().contains("smb:/");
 	}
+	
+	public boolean isUpnpFile() {
+		return getFilepath().startsWith("http://");
+	}
 
 	public String getTmdbId() {
 		return tmdbId;

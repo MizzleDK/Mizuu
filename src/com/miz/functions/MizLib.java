@@ -113,7 +113,7 @@ public class MizLib {
 	public static final String DOMAIN = "domain";
 	public static final String SERVER = "server";
 	public static final String SERIAL_NUMBER = "serial_number";
-	
+
 	public static final String tvdbLanguages = "en,sv,no,da,fi,nl,de,it,es,fr,pl,hu,el,tr,ru,he,ja,pt,zh,cs,sl,hr,ko";
 	public static final String allFileTypes = ".3gp.aaf.mp4.ts.webm.m4v.mkv.divx.xvid.rec.avi.flv.f4v.moi.mpeg.mpg.mts.m2ts.ogv.rm.rmvb.mov.wmv.iso.vob.ifo.wtv.pyv.ogm.img";
 	public static final String IMAGE_CACHE_DIR = "thumbs";
@@ -668,6 +668,9 @@ public class MizLib {
 	}
 
 	public static Intent getVideoIntent(String fileUrl, boolean useWildcard, Object videoObject) {
+		if (fileUrl.startsWith("http"))
+			return getVideoIntent(Uri.parse(fileUrl), useWildcard, videoObject);
+
 		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
 		videoIntent.setDataAndType(Uri.fromFile(new File(fileUrl)), getMimeType(fileUrl, useWildcard, false));
 		videoIntent.putExtras(getVideoIntentBundle(videoObject));
@@ -684,6 +687,9 @@ public class MizLib {
 	}
 
 	public static Intent getVideoIntent(String fileUrl, String mimeType, Object videoObject) {
+		if (fileUrl.startsWith("http"))
+			return getVideoIntent(Uri.parse(fileUrl), mimeType, videoObject);
+
 		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
 		videoIntent.setDataAndType(Uri.fromFile(new File(fileUrl)), mimeType);
 		videoIntent.putExtras(getVideoIntentBundle(videoObject));
@@ -1323,7 +1329,7 @@ public class MizLib {
 				return true;
 		return false;
 	}
-	
+
 	public static List<SmbFile> getSubtitleFiles(String filepath, NtlmPasswordAuthentication auth) throws MalformedURLException, UnsupportedEncodingException {
 		ArrayList<SmbFile> subs = new ArrayList<SmbFile>();
 
@@ -1718,7 +1724,7 @@ public class MizLib {
 
 		return false;
 	}
-	
+
 	public static boolean markTvShowAsWatched(TraktTvShow show, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString("traktUsername", "").trim();
@@ -1800,7 +1806,7 @@ public class MizLib {
 
 		return false;
 	}
-	
+
 	public static boolean movieWatchlist(List<Movie> movies, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString("traktUsername", "").trim();
@@ -1900,7 +1906,7 @@ public class MizLib {
 
 		return true;
 	}
-	
+
 	public static boolean addTvShowToLibrary(TraktTvShow show, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString("traktUsername", "").trim();
@@ -2877,7 +2883,7 @@ public class MizLib {
 		options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 		options.inMutable = true;
 		options.inPreferredConfig = Config.RGB_565;
-		
+
 		// Decode bitmap with inSampleSize set
 		options.inJustDecodeBounds = false;
 
@@ -3120,8 +3126,22 @@ public class MizLib {
 
 		return extension;
 	}
-	
+
 	public static boolean isValidFilename(String name) {
 		return !(name.startsWith(".") && MizLib.getCharacterCountInString(name, '.') == 1) && !name.startsWith("._");
+	}
+
+	public static boolean exists(String URLName){
+		try {
+			HttpURLConnection.setFollowRedirects(false);
+			HttpURLConnection con =
+					(HttpURLConnection) new URL(URLName).openConnection();
+			con.setRequestMethod("HEAD");
+			return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

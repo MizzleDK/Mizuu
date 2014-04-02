@@ -278,7 +278,7 @@ public class AddNetworkFilesourceDialog extends Activity {
 
 	private void attemptLogin() {
 		Intent intent = new Intent();
-		intent.setClass(getApplicationContext(), NewFileSourceBrowser.class);
+		intent.setClass(getApplicationContext(), FileSourceBrowser.class);
 		intent.putExtra(USER, mUser);
 		intent.putExtra(PASSWORD, mPass);
 		intent.putExtra(DOMAIN, mDomain);

@@ -37,9 +37,11 @@ public class FileMovie extends MovieFileSource<File> {
 		File temp;
 		int count = dbMovies.size();
 		for (int i = 0; i < count; i++) {
-			temp = new File(dbMovies.get(i).getFilepath());
-			if (temp.exists() && dbMovies.get(i).isUnidentified())
-				db.deleteMovie(dbMovies.get(i).getRowId());
+			if (!dbMovies.get(i).isNetworkFile() && !dbMovies.get(i).isUpnpFile()) {
+				temp = new File(dbMovies.get(i).getFilepath());
+				if (temp.exists() && dbMovies.get(i).isUnidentified())
+					db.deleteMovie(dbMovies.get(i).getRowId());
+			}
 		}
 	}
 

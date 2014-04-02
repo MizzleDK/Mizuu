@@ -892,6 +892,17 @@ public class ShowSeasonsFragment extends Fragment {
 							}
 						} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
 					}
+			} else if (tempEpisodes.get(i).isUpnpFile()) {
+				if (MizLib.exists(tempEpisodes.get(i).getFilepath())) {
+					if (seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason())) == 0) {
+						seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), 1);
+						seasons.add(tempEpisodes.get(i).getSeason());
+					} else {
+						tempCount = seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason()));
+						seasonEpisodeCount.append(Integer.valueOf(tempEpisodes.get(i).getSeason()), tempCount + 1);
+					}
+					shownEpisodes.add(tempEpisodes.get(i));
+				}
 			} else {	
 				if (new File(tempEpisodes.get(i).getFilepath()).exists()) {
 					if (seasonEpisodeCount.get(Integer.valueOf(tempEpisodes.get(i).getSeason())) == 0) {

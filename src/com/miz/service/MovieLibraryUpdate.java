@@ -33,6 +33,7 @@ import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterSources;
 import com.miz.filesources.FileMovie;
 import com.miz.filesources.SmbMovie;
+import com.miz.filesources.UpnpMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 import com.miz.functions.MovieLibraryUpdateCallback;
@@ -126,7 +127,8 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		log("removeUnidentifiedFiles()");
 
 		// Remove unavailable movies, so we can try to identify them again
-		removeUnidentifiedFiles();
+		if (!mClearLibrary)
+			removeUnidentifiedFiles();
 
 		if (mStopUpdate)
 			return;
@@ -219,6 +221,9 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 				break;
 			case FileSource.SMB:
 				mMovieFileSources.add(new SmbMovie(getApplicationContext(), fileSource, mIgnoreRemovedFiles, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck));
+				break;
+			case FileSource.UPNP:
+				mMovieFileSources.add(new UpnpMovie(getApplicationContext(), fileSource, mIgnoreRemovedFiles, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck));
 				break;
 			}
 		}

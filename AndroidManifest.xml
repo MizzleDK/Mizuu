@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="1003"
-    android:versionName="2.7.1.2" >
+    android:versionCode="1004"
+    android:versionName="2.8-beta" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -283,7 +283,7 @@
 
         <!-- Directory browser activity -->
         <activity
-            android:name="com.miz.mizuu.NewFileSourceBrowser"
+            android:name="com.miz.mizuu.FileSourceBrowser"
             android:exported="false"
             android:icon="@drawable/white_app_icon"
             android:uiOptions="splitActionBarWhenNarrow"

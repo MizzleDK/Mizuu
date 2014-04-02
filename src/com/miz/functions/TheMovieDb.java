@@ -42,8 +42,8 @@ public class TheMovieDb {
 		if (isFromManualIdentify)
 			movie = tmdb.getMovie(tmdbId, LOCALE);
 		else {
-			DecryptedMovie mMovie = MizLib.decryptMovie(filepath, settings.getString("ignoredTags", ""));
-			movie = tmdb.searchForMovie(mMovie.getDecryptedFileName(), mMovie.getFileNameYear(), filepath, LOCALE);
+			DecryptedMovie mMovie = MizLib.decryptMovie(filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[0] : filepath, settings.getString("ignoredTags", ""));
+			movie = tmdb.searchForMovie(mMovie.getDecryptedFileName(), mMovie.getFileNameYear(), filepath.contains("<MiZ>") ? filepath.split("<Miz>")[0] : filepath, LOCALE);
 		}
 
 		download();
@@ -59,8 +59,8 @@ public class TheMovieDb {
 		setup();
 
 		TMDb tmdb = new TMDb(context);
-		DecryptedMovie mMovie = MizLib.decryptMovie(filepath, settings.getString("ignoredTags", ""));
-		movie = tmdb.searchForMovie(mMovie.getDecryptedFileName(), mMovie.getFileNameYear(), filepath, LOCALE);
+		DecryptedMovie mMovie = MizLib.decryptMovie(filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[0] : filepath, settings.getString("ignoredTags", ""));		
+		movie = tmdb.searchForMovie(mMovie.getDecryptedFileName(), mMovie.getFileNameYear(), filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[0] : filepath, LOCALE);
 
 		download();
 	}
@@ -111,10 +111,11 @@ public class TheMovieDb {
 	private void addToDatabase() {
 		// Create and open database
 		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
+		
 		if (!isFromManualIdentify)
-			dbHelper.createMovie(filepath, movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
+			dbHelper.createMovie(filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[1] : filepath, movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
 		else
-			dbHelper.updateMovie(rowId, filepath, movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
+			dbHelper.updateMovie(rowId, filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[1] : filepath, movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
 
 		updateNotification();
 	}

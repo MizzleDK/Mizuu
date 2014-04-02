@@ -52,6 +52,18 @@ public class FileSource {
 	public String getDomain() {
 		return domain;
 	}
+	
+	public String getUpnpFolderId() {
+		return domain;
+	}
+	
+	public String getUpnpSerialNumber() {
+		return password;
+	}
+	
+	public String getUpnpName() {
+		return user;
+	}
 
 	public boolean isMovie() {
 		if (type.equals(DbAdapterSources.KEY_TYPE_MOVIE))

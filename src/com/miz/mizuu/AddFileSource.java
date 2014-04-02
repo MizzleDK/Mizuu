@@ -55,7 +55,7 @@ public class AddFileSource extends MizActivity {
 				} else if (mFilesource.getCheckedRadioButtonId() == R.id.source_upnp) {
 					i.setClass(getApplicationContext(), AddUpnpFilesourceDialog.class);
 				} else {
-					i.setClass(getApplicationContext(), NewFileSourceBrowser.class);
+					i.setClass(getApplicationContext(), FileSourceBrowser.class);
 					i.putExtra(FILESOURCE, mFilesource.getCheckedRadioButtonId() == R.id.source_device ? FileSource.FILE : FileSource.UPNP);
 				}
 				startActivity(i);

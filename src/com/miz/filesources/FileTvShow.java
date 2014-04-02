@@ -36,7 +36,7 @@ public class FileTvShow extends TvShowFileSource<File> {
 		File temp;
 		int count = dbEpisodes.size();
 		for (int i = 0; i < count; i++) {
-			if (dbEpisodes.get(i).isUnidentified()) {
+			if (!dbEpisodes.get(i).isNetworkFile() && !dbEpisodes.get(i).isUpnpFile() && dbEpisodes.get(i).isUnidentified()) {
 				temp = new File(dbEpisodes.get(i).getFilepath());
 				if (temp.exists())
 					db.deleteEpisode(dbEpisodes.get(i).getRowId());

@@ -64,7 +64,7 @@ public class AddUpnpFilesourceDialog extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				Intent intent = new Intent();
-				intent.setClass(getApplicationContext(), NewFileSourceBrowser.class);
+				intent.setClass(getApplicationContext(), FileSourceBrowser.class);
 				intent.putExtra(SERIAL_NUMBER, deviceListAdapter.getItem(arg2).getSerialNumber());
 				intent.putExtra(SERVER, deviceListAdapter.getItem(arg2).getName());
 				intent.putExtra(TYPE, isMovie ? MOVIE : TV_SHOW);

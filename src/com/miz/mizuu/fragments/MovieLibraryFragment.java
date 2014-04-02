@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -637,9 +638,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		new Thread() {
 			@Override
 			public void run() {
-
 				ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>();
-
 				ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
 
 				for (int i = 0; i < movies.size(); i++) {
@@ -673,6 +672,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 								} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
 							}
 						}
+					} else if (movies.get(i).isUpnpFile()) {
+						if (MizLib.exists(movies.get(i).getFilepath()))
+							tempMovies.add(movies.get(i));
 					} else {
 						if (new File(movies.get(i).getFilepath()).exists())
 							tempMovies.add(movies.get(i));
@@ -682,7 +684,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				// Check if "Available files" is still selected
 				if (isAdded())
 					if (getActivity().getActionBar().getSelectedNavigationIndex() == 2) {
-
 						shownMovies.addAll(tempMovies);
 
 						// Clean up...
@@ -695,7 +696,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 							@Override
 							public void run() {
 								notifyDataSetChanged();
-
 								hideProgressBar();
 							}	
 						});
@@ -1299,7 +1299,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private class SearchTask extends AsyncTask<String, String, String> {
 
-		// TODO Make a temporary copy of the movie array and search in that instead!!!
 		private String searchQuery = "";
 
 		public SearchTask(String query) {
@@ -1308,7 +1307,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		protected String doInBackground(String... params) {
-			shownMovies.clear();
+			
+			List<MediumMovie> tempMovies = new ArrayList<MediumMovie>();
 
 			if (searchQuery.startsWith("actor:")) {
 				for (int i = 0; i < movies.size(); i++) {
@@ -1316,7 +1316,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 						return null;
 
 					if (movies.get(i).getCast().toLowerCase(Locale.ENGLISH).contains(searchQuery.replace("actor:", "").trim()))
-						shownMovies.add(movies.get(i));
+						tempMovies.add(movies.get(i));
 				}
 			} else if (searchQuery.equalsIgnoreCase("missing_genres")) {
 				for (int i = 0; i < movies.size(); i++) {
@@ -1324,7 +1324,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 						return null;
 
 					if (MizLib.isEmpty(movies.get(i).getGenres()))
-						shownMovies.add(movies.get(i));
+						tempMovies.add(movies.get(i));
 				}
 			} else {
 				String lowerCase = "", filepath; // Reuse String variables
@@ -1338,10 +1338,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					filepath = movies.get(i).getFilepath().toLowerCase(Locale.ENGLISH);
 
 					if (lowerCase.indexOf(searchQuery) != -1 || filepath.indexOf(searchQuery) != -1 || p.matcher(lowerCase).replaceAll("").indexOf(searchQuery) != -1)
-						shownMovies.add(movies.get(i));
+						tempMovies.add(movies.get(i));
 				}
 			}
 
+			shownMovies = new ArrayList<MediumMovie>(tempMovies);
+			
 			sortMovies();
 
 			return null;

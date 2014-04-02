@@ -45,7 +45,7 @@ public class TheTVDbObject {
 		setup();
 
 		tvdb = new TheTVDb(context);
-		thisShow = tvdb.searchForShow(MizLib.decryptEpisode(queue.peek(), ignoredTags), LOCALE);
+		thisShow = tvdb.searchForShow(MizLib.decryptEpisode(queue.peek().contains("<MiZ>") ? queue.peek().split("<MiZ>")[0] : queue.peek(), ignoredTags), LOCALE);
 		createShow();
 	}
 
@@ -54,9 +54,9 @@ public class TheTVDbObject {
 		for (String file : queue) {
 			if (file == null)
 				continue;
-
-			DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file, ignoredTags);
-			downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file);
+			
+			DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file.contains("<MiZ>") ? file.split("<MiZ>")[0] : file, ignoredTags);
+			downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file.contains("<MiZ>") ? file.split("<MiZ>")[1] : file);
 
 			count++;
 		}

@@ -137,6 +137,10 @@ public class TvShowEpisode {
 		return getFilepath().contains("smb:/");
 	}
 	
+	public boolean isUpnpFile() {
+		return getFilepath().startsWith("http://");
+	}
+	
 	public boolean hasWatched() {
 		return (HAS_WATCHED.isEmpty() || HAS_WATCHED.equals("0")) ? false : true;
 	}

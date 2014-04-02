@@ -63,6 +63,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		return getFilepath().contains("smb:/");
 	}
 	
+	public boolean isUpnpFile() {
+		return getFilepath().startsWith("http://");
+	}
+	
 	public String getFilepath() {
 		return MizLib.transformSmbPath(FILEPATH);
 	}

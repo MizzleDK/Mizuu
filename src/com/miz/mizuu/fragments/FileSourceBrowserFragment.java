@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import jcifs.smb.SmbFile;
 
@@ -84,12 +83,8 @@ public class FileSourceBrowserFragment extends Fragment {
 	private ParentFolderAdapter mParentFolderAdapter;
 	private CurrentFolderAdapter mCurrentFolderAdapter;
 	private boolean mIsLoading = false, mIsMovie = false;
-
 	private AndroidUpnpService upnpService;
-
 	private ArrayAdapter<ContentItem> contentListAdapter;
-
-	private CountDownLatch latch = new CountDownLatch(1);
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -167,7 +162,6 @@ public class FileSourceBrowserFragment extends Fragment {
 	}
 
 	private void addFileSource() {
-
 		String contentType = mIsMovie ? DbAdapterSources.KEY_TYPE_MOVIE : DbAdapterSources.KEY_TYPE_SHOW;
 
 		DbAdapterSources dbHelper = MizuuApplication.getSourcesAdapter();
@@ -179,7 +173,11 @@ public class FileSourceBrowserFragment extends Fragment {
 			dbHelper.createSource("smb://" + mBrowser.getSubtitle().replace("smb://", ""), contentType, FileSource.SMB, getArguments().getString(USER), getArguments().getString(PASSWORD), getArguments().getString(DOMAIN));
 			break;
 		case FileSource.UPNP:
-
+			try {
+				dbHelper.createSource("upnp://" + ((BrowserUpnp) mBrowser).getServer() + "/" + ((BrowserUpnp) mBrowser).getContainer().getTitle(), contentType, FileSource.UPNP, getArguments().getString(SERVER), getArguments().getString(SERIAL_NUMBER), ((BrowserUpnp) mBrowser).getContainer().getId());
+			} catch (Exception e) {
+				Toast.makeText(getActivity(), getString(R.string.errorSomethingWentWrong), Toast.LENGTH_SHORT).show();
+			}
 			break;
 		}
 
@@ -257,9 +255,9 @@ public class FileSourceBrowserFragment extends Fragment {
 		case FileSource.UPNP:
 			if (mBrowser == null)
 				mBrowser = new BrowserUpnp(null, getArguments().getString(SERVER), getArguments().getString(SERIAL_NUMBER));
-			
+
 			updateSubtitle();
-			
+
 			break;
 		}
 	}
@@ -474,10 +472,7 @@ public class FileSourceBrowserFragment extends Fragment {
 			if (((BrowserUpnp) mBrowser).getContainer() != null) {
 				id = ((BrowserUpnp) mBrowser).getParentId(((BrowserUpnp) mBrowser).getContainer().getId());
 			}
-
 			parentContainer.setId(id);
-
-			System.out.println("SERVICE IS NULL: " + (((BrowserUpnp) mBrowser).getService() == null));
 
 			upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), ((BrowserUpnp) mBrowser).getService(), parentContainer, contentListAdapter, false));
 		}
@@ -556,50 +551,6 @@ public class FileSourceBrowserFragment extends Fragment {
 			upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), service, rootContainer, contentListAdapter, true));
 		}
 	};
-
-	private int mFolderCount = 0, mScannedCount = 0;
-
-	private class TestCallback extends Browse {
-
-		private Service<?, ?> mService;
-
-		public TestCallback(Service<?, ?> service, String containerId, BrowseFlag flag) {
-			super(service, containerId, BrowseFlag.DIRECT_CHILDREN, "*", 0, null, new SortCriterion(true, "dc:title"));
-			mService = service;
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public void received(ActionInvocation arg0, DIDLContent didl) {
-			try {
-				for (Container childContainer : didl.getContainers()) {
-					mFolderCount++;
-					upnpService.getControlPoint().execute(new TestCallback(mService, childContainer.getId(), null));
-					//System.out.println(childContainer.getTitle() + " " + childContainer.getId() + " " + childContainer.getParentID());
-				}
-				// Now items
-				for (Item childItem : didl.getItems()) {
-					//System.out.println(childItem.getTitle() + " " + childItem.getFirstResource().getValue() + " " + childItem.getId() + " " + childItem.getParentID());
-				}
-
-				mScannedCount++;
-
-				System.out.println("mFolder: " + mFolderCount + ". " + mScannedCount);
-
-				if (mFolderCount == mScannedCount)
-					latch.countDown();
-
-			} catch (Exception e) {}
-		}
-
-		@Override
-		public void updateStatus(Status arg0) {}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public void failure(ActionInvocation arg0, UpnpResponse arg1, String arg2) {}
-
-	}
 
 	private class ContentBrowseCallback extends Browse {
 

@@ -15,8 +15,12 @@ public class DecryptedShowEpisode {
 		
 		mFilepath = filepath;
 		
-		if (mFilepath.contains("/")) {
+		if (mFilepath.contains("/") && mFilepath.contains(".")) {
 			setFileName(mFilepath.substring(mFilepath.lastIndexOf('/') + 1, mFilepath.lastIndexOf('.')).trim());
+		} else if (mFilepath.contains("/") && !mFilepath.contains(".")) {
+			setFileName(mFilepath.substring(mFilepath.lastIndexOf('/') + 1, mFilepath.length()).trim());
+		} else {
+			setFileName(mFilepath.trim());
 		}
 		
 		// Check if the file has a parent folder by checking if the filepath contains more than one forward slash.

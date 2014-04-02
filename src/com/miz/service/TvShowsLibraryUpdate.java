@@ -35,6 +35,7 @@ import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.filesources.FileTvShow;
 import com.miz.filesources.SmbTvShow;
+import com.miz.filesources.UpnpTvShow;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 import com.miz.functions.TheTVDbObject;
@@ -127,7 +128,8 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		log("removeUnidentifiedFiles()");
 
 		// Remove unavailable TV show files, so we can try to identify them again
-		removeUnidentifiedFiles();
+		if (!mClearLibrary)
+			removeUnidentifiedFiles();
 
 		if (mStopUpdate)
 			return;
@@ -214,6 +216,9 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 			case FileSource.SMB:
 				mTvShowFileSources.add(new SmbTvShow(getApplicationContext(), fileSource, mIgnoreRemovedFiles, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck));
 				break;
+			case FileSource.UPNP:
+				mTvShowFileSources.add(new UpnpTvShow(getApplicationContext(), fileSource, mIgnoreRemovedFiles, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck));
+				break;
 			}
 		}
 	}
@@ -253,7 +258,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 			updateTvShowScanningNotification(mTvShowFileSources.get(j).toString());
 			tempList = mTvShowFileSources.get(j).searchFolder();
 			for (int i = 0; i < tempList.size(); i++) {
-				mMap.put(MizLib.decryptEpisode(tempList.get(i), ignoredTags).getDecryptedFileName().toLowerCase(Locale.getDefault()), tempList.get(i));
+				mMap.put(MizLib.decryptEpisode(tempList.get(i).contains("<MiZ>") ? tempList.get(i).split("<MiZ>")[0] : tempList.get(i), ignoredTags).getDecryptedFileName().toLowerCase(Locale.getDefault()), tempList.get(i));
 			}
 		}
 
