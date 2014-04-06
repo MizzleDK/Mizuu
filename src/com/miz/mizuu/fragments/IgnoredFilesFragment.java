@@ -29,7 +29,8 @@ public class IgnoredFilesFragment extends Fragment {
 	private ArrayList<Movie> movies = new ArrayList<Movie>();
 	private ArrayList<TvShowEpisode> episodes = new ArrayList<TvShowEpisode>();
 	private ViewPager awesomePager;
-
+	private IgnoredFilesAdapter mAdapter;
+	
 	public IgnoredFilesFragment() {}
 
 	@Override
@@ -102,7 +103,13 @@ public class IgnoredFilesFragment extends Fragment {
 		cursor2.close();
 		
 		if (awesomePager != null) {
-			awesomePager.setAdapter(new IgnoredFilesAdapter());
+			if (mAdapter == null)
+				mAdapter = new IgnoredFilesAdapter();
+			
+			if (awesomePager.getAdapter() == null)
+				awesomePager.setAdapter(mAdapter);
+			
+			mAdapter.notifyDataSetChanged();
 		}
 	}
 
