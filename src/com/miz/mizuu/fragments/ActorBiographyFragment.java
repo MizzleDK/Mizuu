@@ -69,7 +69,7 @@ public class ActorBiographyFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		if (MizLib.runsInPortraitMode(getActivity()))
+		if (MizLib.isPortrait(getActivity()))
 			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
 		else
 			MizLib.addActionBarMargin(getActivity(), v.findViewById(R.id.linearLayout1));
@@ -79,13 +79,13 @@ public class ActorBiographyFragment extends Fragment {
 		mActorName = (TextView) v.findViewById(R.id.textView3);
 		mActorName.setTypeface(tf);
 		mActorName.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-		if (MizLib.runsOnTablet(getActivity()))
+		if (MizLib.isTablet(getActivity()))
 			mActorName.setTextSize(48f);
 		mActorBio = (TextView) v.findViewById(R.id.textView4);
 		mActorImage = (ImageView) v.findViewById(R.id.traktIcon);
 		mActorImageBackground = (ImageView) v.findViewById(R.id.imageView2);
 
-		if (!MizLib.runsInPortraitMode(getActivity())) {
+		if (!MizLib.isPortrait(getActivity())) {
 			mActorImageBackground.setImageResource(R.drawable.bg);
 		}
 

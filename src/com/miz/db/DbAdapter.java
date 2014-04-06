@@ -129,7 +129,9 @@ public class DbAdapter {
 		String newQuery = actor.replace("'", "''");
 		Cursor cursor = database.query(DATABASE_TABLE, SELECT_ALL,
 				KEY_CAST + " like '%" + newQuery + "%'", null, KEY_TMDBID, null, KEY_TITLE + " ASC");
-		return cursor.getCount();
+		int count = cursor.getCount();
+		cursor.close();
+		return count;
 	}
 
 	public Cursor getAllIgnoredMovies() {
@@ -168,11 +170,16 @@ public class DbAdapter {
 		if (mCursor == null)
 			return false;
 		try {
-			if (mCursor.getCount() == 0)
+			if (mCursor.getCount() == 0) {
+				mCursor.close();
 				return false;
+			}
 		} catch (Exception e) {
+			mCursor.close();
 			return false;
 		}
+		
+		mCursor.close();
 		return true;
 	}
 
@@ -182,7 +189,11 @@ public class DbAdapter {
 		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDBID + "='" + movieId + "'", null, null, null, null, null);
 		if (mCursor == null)
 			return false;
-		return mCursor.getCount() > 1;
+		
+		boolean result = mCursor.getCount() > 1;
+		mCursor.close();
+		
+		return result;
 	}
 
 	public MovieVersion[] getRowIdsForMovie(String movieId) {
@@ -197,6 +208,7 @@ public class DbAdapter {
 					mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)));
 			count++;
 		}
+		mCursor.close();
 
 		return results;
 	}

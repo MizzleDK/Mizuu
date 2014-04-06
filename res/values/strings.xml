@@ -441,5 +441,6 @@
     <string name="folder_has_no_files_folders">This folder has no files or folders.</string>
     <string name="no_parent_folder">No parent folder</string>
     <string name="select_upnp_server">Select UPnP server</string>
+    <string name="playVideo">Play video</string>
 
 </resources>

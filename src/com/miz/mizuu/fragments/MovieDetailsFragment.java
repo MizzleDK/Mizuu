@@ -21,7 +21,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -29,19 +32,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miz.db.DbAdapter;
-import com.miz.functions.AspectRatioImageViewCover;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.functions.MovieVersion;
+import com.miz.functions.ObservableScrollView;
+import com.miz.functions.ObservableScrollView.OnScrollChangedListener;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.squareup.picasso.Callback;
@@ -55,11 +60,11 @@ public class MovieDetailsFragment extends Fragment {
 	private int movieId;
 	private TextView textTitle, textPlot, textSrc, textGenre, textRuntime, textReleaseDate, textRating, textTagline, textCertification;
 	private boolean ignorePrefixes, useWildcard, prefsDisableEthernetWiFiCheck, prefsRemoveMoviesFromWatchlist, ignoreNfo;
-	private AspectRatioImageViewCover cover;
-	private ImageView background, playbutton;
-	private Typeface tf;
+	private ImageView background, cover;
 	private long videoPlaybackStarted, videoPlaybackEnded;
 	private Picasso mPicasso;
+	private Typeface mLight;
+	private Drawable mActionBarBackgroundDrawable;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -79,6 +84,7 @@ public class MovieDetailsFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
+		setHasOptionsMenu(true);
 
 		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnorePrefixesInTitles", false);
 		ignoreNfo = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnoreNfoFiles", true);
@@ -89,7 +95,7 @@ public class MovieDetailsFragment extends Fragment {
 		// Get the database ID of the movie in question
 		movieId = getArguments().getInt("movieId");
 
-		tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Thin.ttf");
+		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
 
 		// Set up database and open it
 		db = MizuuApplication.getMovieAdapter();
@@ -139,6 +145,15 @@ public class MovieDetailsFragment extends Fragment {
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-backdrop-change"));
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.play_video:
+			playMovie();
+		}
+		return false;
+	}
+
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -159,11 +174,29 @@ public class MovieDetailsFragment extends Fragment {
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(final View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		playbutton = (ImageView) view.findViewById(R.id.imageView2);
-		playbutton.requestFocus(); // Google TV goodies
+		if (MizLib.isPortrait(getActivity())) {
+			if (!MizLib.isTablet(getActivity()))
+				MizLib.addActionBarPaddingBottom(getActivity(), view.findViewById(R.id.scrollView1));
+
+			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
+			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+
+			ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.scrollView1);
+			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
+				@Override
+				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+					final int headerHeight = view.findViewById(R.id.imageBackground).getHeight() - getActivity().getActionBar().getHeight();
+					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+					final int newAlpha = (int) (ratio * 255);
+					mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "080808"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "080808") : 0xaa080808});
+					getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+				}
+			});
+		}
+
 		background = (ImageView) view.findViewById(R.id.imageBackground);
 		textTitle = (TextView) view.findViewById(R.id.movieTitle);
 		textPlot = (TextView) view.findViewById(R.id.textView2);
@@ -174,13 +207,21 @@ public class MovieDetailsFragment extends Fragment {
 		textRating = (TextView) view.findViewById(R.id.textView12);
 		textTagline = (TextView) view.findViewById(R.id.textView6);
 		textCertification = (TextView) view.findViewById(R.id.textView11);
-		cover = (AspectRatioImageViewCover) view.findViewById(R.id.traktIcon);
+		cover = (ImageView) view.findViewById(R.id.traktIcon);
 
 		// Set the movie title
 		textTitle.setVisibility(View.VISIBLE);
 		textTitle.setText(thisMovie.getTitle());
-		textTitle.setTypeface(tf);
+		textTitle.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf"));
 		textTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
+		textPlot.setTypeface(mLight);
+		textSrc.setTypeface(mLight);
+		textGenre.setTypeface(mLight);
+		textRuntime.setTypeface(mLight);
+		textReleaseDate.setTypeface(mLight);
+		textRating.setTypeface(mLight);
+		textCertification.setTypeface(mLight);
 
 		// Set the movie plot
 		textPlot.setText(thisMovie.getPlot());
@@ -249,7 +290,12 @@ public class MovieDetailsFragment extends Fragment {
 		// Set the movie rating
 		if (!thisMovie.getRating().equals("0.0/10")) {
 			if (thisMovie.getRating().contains("/")) {
-				textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
+				try {
+					int rating = (int) (Double.parseDouble(thisMovie.getRating().substring(0, thisMovie.getRating().indexOf("/"))) * 10);
+					textRating.setText(Html.fromHtml(rating + "<small> %</small>"));
+				} catch (NumberFormatException e) {
+					textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
+				}
 			} else {
 				textRating.setText(thisMovie.getRating());
 			}
@@ -263,13 +309,6 @@ public class MovieDetailsFragment extends Fragment {
 		} else {
 			textCertification.setText(R.string.stringNA);
 		}
-
-		playbutton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				playMovie();
-			}
-		});
 
 		loadImages();
 	}
@@ -595,7 +634,7 @@ public class MovieDetailsFragment extends Fragment {
 	}
 
 	private void loadImages() {
-		if (!MizLib.runsInPortraitMode(getActivity())) {
+		if (!MizLib.isPortrait(getActivity())) {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
 				int height = (int) (MizLib.getDisplaySize(getActivity(), MizLib.HEIGHT) * 0.6);
 				int width = (int) (height * 0.67);
@@ -607,6 +646,9 @@ public class MovieDetailsFragment extends Fragment {
 			}
 		} else {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
+				int height = (int) (MizLib.getDisplaySize(getActivity(), MizLib.HEIGHT) * 0.6);
+				int width = (int) (height * 0.67);
+				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).resize(width, height).into(cover);
 				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
@@ -617,6 +659,7 @@ public class MovieDetailsFragment extends Fragment {
 					public void onSuccess() {}					
 				});
 			} else {
+				mPicasso.load(thisMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);
 				mPicasso.load(thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {

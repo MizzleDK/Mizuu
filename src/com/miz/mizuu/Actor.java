@@ -45,7 +45,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		if (!MizLib.runsInPortraitMode(this))
+		if (!MizLib.isPortrait(this))
 			if (isFullscreen())
 				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
 			else
@@ -191,7 +191,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 
 		setTitle(null);
 
-		if (!MizLib.runsInPortraitMode(getApplicationContext()))
+		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(0);
 		pbar.setVisibility(View.GONE);
 

@@ -14,6 +14,8 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -52,11 +54,16 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.runsInPortraitMode(this))
+		if (!MizLib.isPortrait(this))
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
+				setTheme(R.style.Theme_Example_Transparent_NoBackGround_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_NoBackGround);
+				setTheme(R.style.Theme_Example_Transparent_NoBackGround);
+		else
+			if (isFullscreen())
+				setTheme(R.style.Theme_Example_Transparent_FullScreen);
+			else
+				setTheme(R.style.Theme_Example_Transparent);
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -67,7 +74,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		// Fetch the database ID of the movie to view
 		movieId = getIntent().getExtras().getString("tmdbid");
 
-		if (!MizLib.runsInPortraitMode(getApplicationContext()))
+		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(R.drawable.bg);
 
 		pbar = (ProgressBar) findViewById(R.id.progressbar);
@@ -270,6 +277,11 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		if (itemPosition == 1)
+			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
+		else
+			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
+		
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
@@ -318,7 +330,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 		setTitle(null);
 
-		if (!MizLib.runsInPortraitMode(getApplicationContext()))
+		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(0);
 		pbar.setVisibility(View.GONE);
 

@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.miz.functions.AspectRatioImageViewBackdrop;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -159,13 +160,13 @@ public class FanartSearchFragmentTv extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 			// Now handle the main ImageView thumbnails
-			ImageView imageView;
+			AspectRatioImageViewBackdrop imageView;
 			if (convertView == null) { // if it's not recycled, instantiate and initialize
-				imageView = new ImageView(mContext);
+				imageView = new AspectRatioImageViewBackdrop(mContext);
 				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				imageView.setLayoutParams(mImageViewLayoutParams);
 			} else { // Otherwise re-use the converted view
-				imageView = (ImageView) convertView;
+				imageView = (AspectRatioImageViewBackdrop) convertView;
 			}
 
 			// Check the height matches our calculated column width

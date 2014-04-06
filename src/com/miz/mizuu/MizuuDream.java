@@ -58,7 +58,7 @@ public class MizuuDream extends DreamService implements ViewFactory {
 		findViewById(R.id.list).setVisibility(View.GONE);
 		
 		title = (TextView) findViewById(R.id.title);
-		if (MizLib.runsOnTablet(this))
+		if (MizLib.isTablet(this))
 			title.setTextSize(26f);
 
 		dbHelper = MizuuApplication.getMovieAdapter();

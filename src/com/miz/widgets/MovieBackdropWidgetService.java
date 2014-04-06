@@ -41,7 +41,7 @@ public class MovieBackdropWidgetService extends RemoteViewsService {
 
 		public BookmarkFactory(Context context, int widgetId) {
 			mContext = context.getApplicationContext();
-			isTablet = MizLib.runsOnTablet(mContext);
+			isTablet = MizLib.isTablet(mContext);
 			ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("prefsIgnorePrefixesInTitles", false);
 			ignoreNfo = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("prefsIgnoreNfoFiles", true);
 		}

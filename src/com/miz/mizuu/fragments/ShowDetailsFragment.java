@@ -9,7 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -19,11 +22,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.miz.db.DbAdapterTvShow;
-import com.miz.functions.AspectRatioImageViewCover;
 import com.miz.functions.MizLib;
+import com.miz.functions.ObservableScrollView;
+import com.miz.functions.ObservableScrollView.OnScrollChangedListener;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
@@ -35,11 +40,11 @@ public class ShowDetailsFragment extends Fragment {
 	private DbAdapterTvShow dbHelper;
 	private TvShow thisShow;
 	private TextView textTitle, textPlot, textGenre, textRuntime, textReleaseDate, textRating, textTagline, textCertification;
-	private AspectRatioImageViewCover cover;
-	private ImageView background;
-	private Typeface tf;
+	private ImageView background, cover;
 	private boolean ignorePrefixes;
 	private Picasso mPicasso;
+	private Typeface mLight;
+	private Drawable mActionBarBackgroundDrawable;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -59,8 +64,8 @@ public class ShowDetailsFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-
-		tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Thin.ttf");
+		
+		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
 
 		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnorePrefixesInTitles", false);
 
@@ -110,8 +115,25 @@ public class ShowDetailsFragment extends Fragment {
 		return inflater.inflate(R.layout.show_details, container, false);
 	}
 	
-	public void onViewCreated(View v, Bundle savedInstanceState) {
+	public void onViewCreated(final View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
+		
+		if (MizLib.isPortrait(getActivity())) {
+			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
+			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+
+			ObservableScrollView sv = (ObservableScrollView) v.findViewById(R.id.scrollView1);
+			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
+				@Override
+				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+					final int headerHeight = v.findViewById(R.id.imageBackground).getHeight() - getActivity().getActionBar().getHeight();
+					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+					final int newAlpha = (int) (ratio * 255);
+					mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "080808"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "080808") : 0xaa080808});
+					getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+				}
+			});
+		}
 		
 		background = (ImageView) v.findViewById(R.id.imageBackground);
 		textTitle = (TextView) v.findViewById(R.id.movieTitle);
@@ -122,14 +144,21 @@ public class ShowDetailsFragment extends Fragment {
 		textRating = (TextView) v.findViewById(R.id.textView12);
 		textTagline = (TextView) v.findViewById(R.id.textView6);
 		textCertification = (TextView) v.findViewById(R.id.textView11);
-		cover = (AspectRatioImageViewCover) v.findViewById(R.id.traktIcon);
+		cover = (ImageView) v.findViewById(R.id.traktIcon);
 
 		// Set the show title
 		textTitle.setVisibility(View.VISIBLE);
 		textTitle.setText(thisShow.getTitle());
-		textTitle.setTypeface(tf);
+		textTitle.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf"));
 		textTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
+		textPlot.setTypeface(mLight);
+		textGenre.setTypeface(mLight);
+		textRuntime.setTypeface(mLight);
+		textReleaseDate.setTypeface(mLight);
+		textRating.setTypeface(mLight);
+		textCertification.setTypeface(mLight);
+		
 		// Set the show plot
 		textPlot.setText(thisShow.getDescription());
 
@@ -180,10 +209,15 @@ public class ShowDetailsFragment extends Fragment {
 			}
 		}
 
-		// Set the show rating		
+		// Set the show rating
 		if (!thisShow.getRating().equals("0.0/10")) {
 			if (thisShow.getRating().contains("/")) {
-				textRating.setText(Html.fromHtml(thisShow.getRating().replace("/", "<small> / ") + "</small>"));
+				try {
+					int rating = (int) (Double.parseDouble(thisShow.getRating().substring(0, thisShow.getRating().indexOf("/"))) * 10);
+					textRating.setText(Html.fromHtml(rating + "<small> %</small>"));
+				} catch (NumberFormatException e) {
+					textRating.setText(Html.fromHtml(thisShow.getRating().replace("/", "<small> / ") + "</small>"));
+				}
 			} else {
 				textRating.setText(thisShow.getRating());
 			}
@@ -202,10 +236,11 @@ public class ShowDetailsFragment extends Fragment {
 	}
 
 	private void loadImages() {
-		if (!MizLib.runsInPortraitMode(getActivity())) {
+		if (!MizLib.isPortrait(getActivity())) {
 			mPicasso.load(thisShow.getCoverPhoto()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);
 			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
 		} else {
+			mPicasso.load(thisShow.getCoverPhoto()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);
 			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 				@Override
 				public void onError() {

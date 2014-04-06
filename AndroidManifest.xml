@@ -255,7 +255,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        
+
         <!-- Add UPnP file source dialog activity -->
         <activity
             android:name="com.miz.mizuu.AddUpnpFilesourceDialog"
@@ -286,8 +286,8 @@
             android:name="com.miz.mizuu.FileSourceBrowser"
             android:exported="false"
             android:icon="@drawable/white_app_icon"
-            android:uiOptions="splitActionBarWhenNarrow"
-            android:label="@string/fileSources" >
+            android:label="@string/fileSources"
+            android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
                 <action android:name="com.miz.mizuu.FileSources" />
 
@@ -329,7 +329,8 @@
         <activity
             android:name="com.miz.mizuu.MovieDetails"
             android:exported="true"
-            android:icon="@drawable/white_app_icon" >
+            android:icon="@drawable/white_app_icon"
+            android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
                 <action android:name="android.intent.action.SEARCH" />
@@ -544,7 +545,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 

@@ -116,7 +116,7 @@ public class ShowSeasonsFragment extends Fragment {
 			useGridView = false;
 
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-		if (!MizLib.runsInPortraitMode(getActivity()) && MizLib.runsOnTablet(getActivity()))
+		if (!MizLib.isPortrait(getActivity()) && MizLib.isTablet(getActivity()))
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 0.75);
 		else
 			mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width);
@@ -162,7 +162,7 @@ public class ShowSeasonsFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		isPortrait = MizLib.runsInPortraitMode(getActivity());
+		isPortrait = MizLib.isPortrait(getActivity());
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class ShowSeasonsFragment extends Fragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (setBackground && !MizLib.runsInPortraitMode(getActivity()) && MizLib.runsOnTablet(getActivity()))
+		if (setBackground && !MizLib.isPortrait(getActivity()) && MizLib.isTablet(getActivity()))
 			view.findViewById(R.id.container).setBackgroundColor(Color.parseColor("#101010"));
 
 		pbar = (ProgressBar) view.findViewById(R.id.progressbar);
@@ -795,7 +795,7 @@ public class ShowSeasonsFragment extends Fragment {
 						mListView.expandGroup(expandedGroup);
 					}
 
-					if (MizLib.runsOnTablet(getActivity()) && !MizLib.runsInPortraitMode(getActivity())) {						
+					if (MizLib.isTablet(getActivity()) && !MizLib.isPortrait(getActivity())) {						
 						if (shownEpisodes.size() > 0) {
 							selectEpisode(shownEpisodes.get(0));
 
@@ -994,7 +994,7 @@ public class ShowSeasonsFragment extends Fragment {
 			mActionMode = null;
 
 			// Unselected the item
-			if (!(!MizLib.runsInPortraitMode(getActivity()) && MizLib.runsOnTablet(getActivity()))) {
+			if (!(!MizLib.isPortrait(getActivity()) && MizLib.isTablet(getActivity()))) {
 				getCollectionView().clearFocus();
 				getCollectionView().clearChoices();
 				getCollectionView().invalidate();

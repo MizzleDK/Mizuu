@@ -98,7 +98,7 @@ public class ActorMoviesFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		if (setBackground && !MizLib.runsInPortraitMode(getActivity()))
+		if (setBackground && !MizLib.isPortrait(getActivity()))
 			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));

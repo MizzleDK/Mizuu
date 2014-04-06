@@ -3,6 +3,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+/**
+ * A custom ImageView class that shows all images in a 2:3 format.
+ * @author Michell
+ *
+ */
 public class GridItemImageView extends ImageView {
 
     public GridItemImageView(Context context) {

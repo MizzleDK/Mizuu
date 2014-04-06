@@ -24,6 +24,7 @@
     <dimen name="actor_details_width">255dp</dimen>
     <dimen name="actor_details_height">375dp</dimen>
     <dimen name="details_text_size">22sp</dimen>
+    <dimen name="tagline_text_size">26sp</dimen>
     <dimen name="large_text_size">26sp</dimen>
     <dimen name="large_text_headline_details">40sp</dimen>
     <dimen name="large_text_headline_details_tv">@dimen/large_text_headline_details</dimen>
@@ -38,5 +39,8 @@
     <dimen name="spinner_title_size">18sp</dimen>
     <dimen name="spinner_subtitle_size">14sp</dimen>
     <dimen name="action_bar_subtitle_top_margin">0dp</dimen>
+    <dimen name="cover_photo_width">192dp</dimen>
+    <dimen name="details_padding">24dp</dimen>
+    <dimen name="details_background_gradient_height">144dp</dimen>
 
 </resources>

@@ -71,12 +71,12 @@ public class ShowEpisodesFragment extends Fragment {
 		mDualPane = v.findViewById(R.id.episode) == null ? false : true;
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
-		if (!MizLib.runsInPortraitMode(getActivity()) && !MizLib.runsOnTablet(getActivity()))
+		if (!MizLib.isPortrait(getActivity()) && !MizLib.isTablet(getActivity()))
 			v.findViewById(R.id.container).setBackgroundColor(Color.parseColor("#101010"));
 
 		fm = getChildFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
-		ft.replace(R.id.seasons, ShowSeasonsFragment.newInstance(showId, !MizLib.runsInPortraitMode(getActivity())));
+		ft.replace(R.id.seasons, ShowSeasonsFragment.newInstance(showId, !MizLib.isPortrait(getActivity())));
 		ft.commit();
 	}
 

@@ -4,7 +4,10 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,12 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.miz.functions.AspectRatioImageViewCover;
 import com.miz.functions.MizLib;
+import com.miz.functions.ObservableScrollView;
 import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
+import com.miz.functions.ObservableScrollView.OnScrollChangedListener;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.squareup.picasso.Callback;
@@ -29,15 +34,15 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 	private String movieId;
 	private TextView textTitle, textPlot, textGenre, textRuntime, textReleaseDate, textRating, textTagline, textCertification;
-	private AspectRatioImageViewCover cover;
-	private ImageView background;
-	private Typeface tf;
+	private ImageView background, cover;
 	private TMDb tmdb;
 	private TMDbMovie thisMovie;
 	private View movieDetailsLayout, progressBar;
 	private FrameLayout container;
 	private boolean isRetained = false;
 	private Picasso mPicasso;
+	private Typeface mLight;
+	private Drawable mActionBarBackgroundDrawable;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -67,12 +72,12 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 		setRetainInstance(true);
 
+		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
+		
 		tmdb = new TMDb(getActivity());
 
 		// Get the database ID of the movie in question
 		movieId = getArguments().getString("movieId");
-
-		tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Thin.ttf");
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 	}
@@ -94,12 +99,11 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		textRating = (TextView) v.findViewById(R.id.textView12);
 		textTagline = (TextView) v.findViewById(R.id.textView6);
 		textCertification = (TextView) v.findViewById(R.id.textView11);
-		cover = (AspectRatioImageViewCover) v.findViewById(R.id.traktIcon);
+		cover = (ImageView) v.findViewById(R.id.traktIcon);
 		cover.setImageResource(R.drawable.loading_image);
 
 		// Get rid of these...
 		v.findViewById(R.id.textView3).setVisibility(View.GONE); // File
-		v.findViewById(R.id.imageView2).setVisibility(View.GONE); // Play button
 
 		if (!isRetained) { // Nothing has been retained - load the data
 			setLoading(true);
@@ -110,6 +114,31 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		}
 
 		return v;
+	}
+	
+	@Override
+	public void onViewCreated(final View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		
+		if (MizLib.isPortrait(getActivity())) {
+			if (!MizLib.isTablet(getActivity()))
+				MizLib.addActionBarPaddingBottom(getActivity(), view.findViewById(R.id.scrollView1));
+
+			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
+			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+			
+			ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.scrollView1);
+			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
+				@Override
+				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+					final int headerHeight = view.findViewById(R.id.imageBackground).getHeight() - getActivity().getActionBar().getHeight();
+					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+					final int newAlpha = (int) (ratio * 255);
+					mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "080808"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "080808") : 0xaa080808});
+					getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+				}
+			});
+		}
 	}
 
 	private class MovieLoader extends AsyncTask<String, Object, Object> {
@@ -130,9 +159,16 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			// Set the movie title
 			textTitle.setVisibility(View.VISIBLE);
 			textTitle.setText(thisMovie.getTitle());
-			textTitle.setTypeface(tf);
+			textTitle.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf"));
 			textTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
+			textPlot.setTypeface(mLight);
+			textGenre.setTypeface(mLight);
+			textRuntime.setTypeface(mLight);
+			textReleaseDate.setTypeface(mLight);
+			textRating.setTypeface(mLight);
+			textCertification.setTypeface(mLight);
+			
 			// Set the movie plot
 			textPlot.setText(thisMovie.getPlot());
 
@@ -188,8 +224,13 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 			// Set the movie rating
 			if (!thisMovie.getRating().equals("0.0")) {
-				thisMovie.setRating(thisMovie.getRating() + "/10");
-				textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
+				try {
+					int rating = (int) (Double.parseDouble(thisMovie.getRating()) * 10);
+					textRating.setText(Html.fromHtml(rating + "<small> %</small>"));
+				} catch (NumberFormatException e) {
+					thisMovie.setRating(thisMovie.getRating() + "/10");
+					textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
+				}
 			} else {
 				textRating.setText(R.string.stringNA);
 			}

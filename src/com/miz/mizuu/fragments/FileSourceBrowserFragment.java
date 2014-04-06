@@ -474,7 +474,8 @@ public class FileSourceBrowserFragment extends Fragment {
 			}
 			parentContainer.setId(id);
 
-			upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), ((BrowserUpnp) mBrowser).getService(), parentContainer, contentListAdapter, false));
+			if (((BrowserUpnp) mBrowser).getService() != null)
+				upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), ((BrowserUpnp) mBrowser).getService(), parentContainer, contentListAdapter, false));
 		}
 	}
 

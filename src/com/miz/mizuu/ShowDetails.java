@@ -9,6 +9,8 @@ import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -45,11 +47,16 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.runsInPortraitMode(this))
+		if (!MizLib.isPortrait(this))
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
+				setTheme(R.style.Theme_Example_Transparent_NoBackGround_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_NoBackGround);
+				setTheme(R.style.Theme_Example_Transparent_NoBackGround);
+		else
+			if (isFullscreen())
+				setTheme(R.style.Theme_Example_Transparent_FullScreen);
+			else
+				setTheme(R.style.Theme_Example_Transparent);
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -167,7 +174,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 			break;
 
 		case 1:
-			if (!MizLib.runsInPortraitMode(this) && MizLib.runsOnTablet(this)) {
+			if (!MizLib.isPortrait(this) && MizLib.isTablet(this)) {
 				getMenuInflater().inflate(R.menu.seasons_tab_landscape, menu);
 			} else {
 				getMenuInflater().inflate(R.menu.seasons_tab, menu);
@@ -318,6 +325,11 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		if (itemPosition == 0)
+			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
+		else
+			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
+		
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}

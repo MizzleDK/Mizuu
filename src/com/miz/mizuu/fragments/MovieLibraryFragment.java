@@ -1326,6 +1326,17 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (MizLib.isEmpty(movies.get(i).getGenres()))
 						tempMovies.add(movies.get(i));
 				}
+			} else if (searchQuery.equalsIgnoreCase("multiple_versions")) {
+				
+				DbAdapter db = MizuuApplication.getMovieAdapter();
+				
+				for (int i = 0; i < movies.size(); i++) {
+					if (isCancelled())
+						return null;
+					
+					if (db.hasMultipleVersions(movies.get(i).getTmdbId()))
+						tempMovies.add(movies.get(i));
+				}
 			} else {
 				String lowerCase = "", filepath; // Reuse String variables
 				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)

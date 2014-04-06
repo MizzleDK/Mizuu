@@ -237,7 +237,7 @@ public class MizLib {
 	 * @param c - Context of the application
 	 * @return True if running on a tablet, false if on a smartphone
 	 */
-	public static boolean runsOnTablet(Context c) {
+	public static boolean isTablet(Context c) {
 		return (c.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
 	}
 
@@ -255,7 +255,7 @@ public class MizLib {
 	 * @param c - Context of the application
 	 * @return True if portrait mode, false if landscape mode
 	 */
-	public static boolean runsInPortraitMode(Context c) {
+	public static boolean isPortrait(Context c) {
 		if (c == null) return false;
 		return (c.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) ? true : false;
 	}
@@ -362,6 +362,22 @@ public class MizLib {
 			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
 
 		v.setPadding(0, mActionBarHeight, 0, 0);
+	}
+	
+	/**
+	 * Add a padding with a height of the ActionBar to the bottom of a given View
+	 * @param c
+	 * @param v
+	 */
+	public static void addActionBarPaddingBottom(Context c, View v) {
+		int mActionBarHeight = 0;
+		TypedValue tv = new TypedValue();
+		if (c.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+			mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, c.getResources().getDisplayMetrics());
+		else
+			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
+
+		v.setPadding(0, 0, 0, mActionBarHeight);
 	}
 
 	/**
@@ -470,7 +486,7 @@ public class MizLib {
 
 	public static int getMenuWidth(Context c) {
 		Resources r = c.getResources();
-		if (MizLib.runsOnTablet(c)) {
+		if (MizLib.isTablet(c)) {
 			return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 320, r.getDisplayMetrics());
 		} else 
 			return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, r.getDisplayMetrics());
@@ -1276,7 +1292,10 @@ public class MizLib {
 						absolutePath.equalsIgnoreCase(filename + "-folder.tbn") ||
 						absolutePath.equalsIgnoreCase(filename + "-cover.jpg") ||
 						absolutePath.equalsIgnoreCase(filename + "-cover.jpeg") ||
-						absolutePath.equalsIgnoreCase(filename + "-cover.tbn")) {
+						absolutePath.equalsIgnoreCase(filename + "-cover.tbn") ||
+						absolutePath.equalsIgnoreCase(filename + ".jpg") ||
+						absolutePath.equalsIgnoreCase(filename + ".jpeg") ||
+						absolutePath.equalsIgnoreCase(filename + ".tbn")) {
 					customCoverArt = absolutePath;
 					continue;
 				}
@@ -3058,6 +3077,15 @@ public class MizLib {
 		}
 		return 0;
 	}
+	
+	public static int getNavigationBarWidth(Context context) {
+		Resources resources = context.getResources();
+		int resourceId = resources.getIdentifier("navigation_bar_width", "dimen", "android");
+		if (resourceId > 0) {
+			return resources.getDimensionPixelSize(resourceId);
+		}
+		return 0;
+	}
 
 	public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
 		Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
@@ -3140,8 +3168,32 @@ public class MizLib {
 			return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	/**
+	 * Determines if the device uses navigation controls as the primary navigation from a number of factors.
+	 * @param context Application Context
+	 * @return True if the device uses navigation controls, false otherwise.
+	 */
+	public static boolean usesNavigationControl(Context context) {
+		Configuration configuration = context.getResources().getConfiguration();
+		if (configuration.navigation == Configuration.NAVIGATION_NONAV) {
+			return false;
+		} else if (configuration.touchscreen == Configuration.TOUCHSCREEN_FINGER) {
+			return false;
+		} else if (configuration.navigation == Configuration.NAVIGATION_DPAD) {
+			return true;
+		} else if (configuration.touchscreen == Configuration.TOUCHSCREEN_NOTOUCH) {
+			return true;
+		} else if (configuration.touchscreen == Configuration.TOUCHSCREEN_UNDEFINED) {
+			return true;
+		} else if (configuration.navigationHidden == Configuration.NAVIGATIONHIDDEN_YES) {
+			return true;
+		} else if (configuration.uiMode == Configuration.UI_MODE_TYPE_TELEVISION) {
+			return true;
+		}
+		return false;
 	}
 }

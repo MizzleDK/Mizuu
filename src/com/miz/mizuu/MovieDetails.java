@@ -17,6 +17,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -66,11 +68,16 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.runsInPortraitMode(this))
+		if (!MizLib.isPortrait(this))
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
+				setTheme(R.style.Theme_Example_Transparent_NoBackGround_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_NoBackGround);
+				setTheme(R.style.Theme_Example_Transparent_NoBackGround);
+		else
+			if (isFullscreen())
+				setTheme(R.style.Theme_Example_Transparent_FullScreen);
+			else
+				setTheme(R.style.Theme_Example_Transparent);
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -192,9 +199,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				menu.findItem(R.id.movie_fav).setIcon(R.drawable.reviews);
 				menu.findItem(R.id.movie_fav).setTitle(R.string.menuFavouriteTitle);
 			}
-
-			if (!MizLib.runsOnTablet(this) && MizLib.runsInPortraitMode(this))
-				menu.findItem(R.id.watch_list).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
 			if (thisMovie.toWatch()) {
 				menu.findItem(R.id.watch_list).setIcon(R.drawable.watchlist_remove);
@@ -764,9 +768,14 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			return 2;
 		}
 	}
-
+	
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		if (itemPosition == 1)
+			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
+		else
+			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
+		
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}

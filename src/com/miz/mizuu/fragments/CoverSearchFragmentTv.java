@@ -34,6 +34,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.miz.functions.AsyncTask;
+import com.miz.functions.GridItemImageView;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -162,14 +163,14 @@ public class CoverSearchFragmentTv extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 			// Now handle the main ImageView thumbnails
-			ImageView imageView;
+			GridItemImageView imageView;
 
 			if (convertView == null) { // if it's not recycled, instantiate and initialize
-				imageView = new ImageView(mContext);
+				imageView = new GridItemImageView(mContext);
 				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				imageView.setLayoutParams(mImageViewLayoutParams);
 			} else { // Otherwise re-use the converted view
-				imageView = (ImageView) convertView;
+				imageView = (GridItemImageView) convertView;
 			}
 
 			// Check the height matches our calculated column width

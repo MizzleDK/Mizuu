@@ -64,6 +64,7 @@ public class Main extends MizActivity {
 	private boolean confirmExit, hasTriedOnce = false;
 	private String startup;
 	private ArrayList<MenuItem> menu = new ArrayList<MenuItem>(), thirdPartyApps = new ArrayList<MenuItem>();
+	private View mDrawerUserInfo;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,10 +86,11 @@ public class Main extends MizActivity {
 
 		setupMenuItems();
 
+		mDrawerUserInfo = findViewById(R.id.drawer_user_info);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_list_shadow, GravityCompat.START);
 
-		if ((!MizLib.runsOnTablet(this) && !MizLib.runsInPortraitMode(this)) || MizLib.isGoogleTV(this)) {
+		if ((!MizLib.isTablet(this) && !MizLib.isPortrait(this)) || MizLib.isGoogleTV(this)) {
 			findViewById(R.id.personalizedArea).setVisibility(View.GONE);
 		} else
 			setupUserDetails();
@@ -238,6 +240,8 @@ public class Main extends MizActivity {
 		String full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("traktFullName", "");
 		if (!MizLib.isEmpty(full_name))
 			((TextView) findViewById(R.id.username)).setText(full_name);
+		else
+			mDrawerUserInfo.setVisibility(View.GONE);
 
 		if (!MizLib.isEmpty(full_name)) {
 			Picasso.with(getApplicationContext()).load("file://" + new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath()).resize(MizLib.convertDpToPixels(getApplicationContext(), 50), MizLib.convertDpToPixels(getApplicationContext(), 50)).into(((ImageView) findViewById(R.id.userPhoto)), new Callback() {
@@ -249,8 +253,6 @@ public class Main extends MizActivity {
 				@Override
 				public void onSuccess() {}
 			});
-		} else {
-			((ImageView) findViewById(R.id.userPhoto)).setImageResource(R.drawable.unknown_user);
 		}
 	}
 
@@ -428,7 +430,7 @@ public class Main extends MizActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.menu_drawer_item, null);
 			TextView title = (TextView) convertView.findViewById(R.id.title);
-			if (MizLib.runsOnTablet(getApplicationContext()))
+			if (MizLib.isTablet(getApplicationContext()))
 				title.setTextSize(22f);
 			TextView description = (TextView) convertView.findViewById(R.id.count);
 
@@ -460,7 +462,7 @@ public class Main extends MizActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (startup.equals("0") && !mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && MizLib.runsOnTablet(this)) { // Welcome screen
+		if (startup.equals("0") && !mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && MizLib.isTablet(this)) { // Welcome screen
 			Intent i = new Intent(Intent.ACTION_VIEW);
 			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			i.setClass(getApplicationContext(), Welcome.class);

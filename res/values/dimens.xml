@@ -26,9 +26,10 @@
     <dimen name="actionbar_home_width">60dp</dimen>
     <dimen name="list_padding">10dp</dimen>
     <dimen name="shadow_width">15dp</dimen>
-    <dimen name="details_text_size">16sp</dimen>
+    <dimen name="details_text_size">18sp</dimen>
     <dimen name="large_text_size">18sp</dimen>
-    <dimen name="large_text_headline_details">24sp</dimen>
+    <dimen name="tagline_text_size">22sp</dimen>
+    <dimen name="large_text_headline_details">28sp</dimen>
     <dimen name="large_text_headline_details_tv">@dimen/large_text_headline_details</dimen>
     <dimen name="movie_details_padding">8dp</dimen>
     <dimen name="widgetColumnWidth">140dip</dimen>
@@ -43,5 +44,8 @@
     <dimen name="spinner_title_size">18sp</dimen>
     <dimen name="spinner_subtitle_size">14sp</dimen>
     <dimen name="action_bar_subtitle_top_margin">-3dp</dimen>
+    <dimen name="cover_photo_width">100dp</dimen>
+    <dimen name="details_padding">16dp</dimen>
+    <dimen name="details_background_gradient_height">128dp</dimen>
 
 </resources>

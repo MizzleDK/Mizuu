@@ -173,7 +173,7 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 
 		setTitle(null);
 
-		if (!MizLib.runsInPortraitMode(getApplicationContext()))
+		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(0);
 		pbar.setVisibility(View.GONE);
 

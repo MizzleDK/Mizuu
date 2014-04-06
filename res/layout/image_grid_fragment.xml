@@ -2,7 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true" >
 
     <GridView
         android:id="@+id/gridView"
@@ -19,7 +21,6 @@
         android:smoothScrollbar="true"
         android:stretchMode="columnWidth"
         android:verticalSpacing="@dimen/image_thumbnail_spacing" >
-
     </GridView>
 
     <ProgressBar

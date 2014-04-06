@@ -138,7 +138,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 		updateLibraryCounts();
 
 		title = (TextView) findViewById(R.id.title);
-		if (MizLib.runsOnTablet(this))
+		if (MizLib.isTablet(this))
 			title.setTextSize(26f);
 		else
 			title.setVisibility(View.GONE);
@@ -314,7 +314,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 			convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row, null);
 			ImageView icon = (ImageView) convertView.findViewById(R.id.row_icon);
 			TextView title = (TextView) convertView.findViewById(R.id.row_title);
-			if (MizLib.runsOnTablet(getApplicationContext()))
+			if (MizLib.isTablet(getApplicationContext()))
 				title.setTextSize(26f);
 			TextView description = (TextView) convertView.findViewById(R.id.local_movie_count);
 

@@ -119,7 +119,12 @@ public class TestMovieFileNames extends AndroidTestCase {
 			"/Look.DVDRip.XviD-TFE.avi", // 107
 			"/Funny.People.Unrated.2009.DVDRip.x264-DiRTY.mkv", // 108
 			"/Frequently Asked Questions About Time Travel 2009 720p HDTV DD5.1 x264-Cache.mkv", // 109
-			"/Enter.The.Void.720p.BluRay.x264.mkv" // 110
+			"/Enter.The.Void.720p.BluRay.x264.mkv", // 110
+			"/Test.This.Shit.mkv", // 111
+			"./Test", // 112
+			"/Hello.Friend/Hello", // 113
+			"/Hello.Friend/Hello.Friend", // 114
+			"/Hello.Friend/Hello.Friend.mkv", // 115
 			
 	};
 	private DecryptedMovie[] d;
@@ -242,6 +247,11 @@ public class TestMovieFileNames extends AndroidTestCase {
 		Assert.assertEquals("Funny People", d[108].getDecryptedFileName());
 		Assert.assertEquals("Frequently Asked Questions About Time Travel", d[109].getDecryptedFileName());
 		Assert.assertEquals("Enter The Void", d[110].getDecryptedFileName());
+		Assert.assertEquals("Test This Shit", d[111].getDecryptedFileName());
+		Assert.assertEquals("Test", d[112].getDecryptedFileName());
+		Assert.assertEquals("Hello", d[113].getDecryptedFileName());
+		Assert.assertEquals("Hello Friend", d[114].getDecryptedFileName());
+		Assert.assertEquals("Hello Friend", d[115].getDecryptedFileName());
 	}
 	
 	public void testDecryptedFilenameYears() {

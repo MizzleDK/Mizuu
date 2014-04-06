@@ -10,6 +10,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
+        android:shadowColor="#000"
+        android:shadowDx="1.0"
+        android:shadowDy="1.0"
+        android:shadowRadius="1.0"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/spinner_title_size" />
@@ -20,7 +24,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/action_bar_subtitle_top_margin"
         android:ellipsize="end"
+        android:shadowColor="#000"
+        android:shadowDx="1.0"
+        android:shadowDy="1.0"
+        android:shadowRadius="1.0"
         android:singleLine="true"
+        android:textColor="#ddd"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="@dimen/spinner_subtitle_size" />
 

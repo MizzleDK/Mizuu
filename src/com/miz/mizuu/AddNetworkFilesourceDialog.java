@@ -51,7 +51,7 @@ public class AddNetworkFilesourceDialog extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.runsOnTablet(this)) {
+		if (!MizLib.isTablet(this)) {
 			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsFullscreen", false))
 				setTheme(R.style.Theme_Example_FullScreen);
 			else

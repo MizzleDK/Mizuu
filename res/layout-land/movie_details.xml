@@ -43,29 +43,18 @@
                     android:id="@+id/coverLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/movie_details_padding" >
+                    android:layout_marginLeft="16dp" >
 
                     <com.miz.functions.AspectRatioImageViewCover
                         android:id="@+id/traktIcon"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/movie_details_padding"
+                        android:layout_marginBottom="16dp"
                         android:adjustViewBounds="false"
                         android:background="@drawable/border"
                         android:cropToPadding="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/loading_image" />
-
-                    <com.miz.functions.AspectRatioImageViewCover
-                        android:id="@+id/imageView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/movie_details_padding"
-                        android:background="@drawable/buttonstyle"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:scaleType="center"
-                        android:src="@drawable/ic_video_play" />
                 </FrameLayout>
 
                 <ScrollView
@@ -74,10 +63,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_alignTop="@+id/imageView3"
-                    android:layout_marginBottom="@dimen/movie_details_padding"
-                    android:layout_marginLeft="@dimen/movie_details_padding"
-                    android:layout_marginRight="@dimen/movie_details_padding"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="16dp"
                     android:layout_toRightOf="@+id/coverLayout" >
 
                     <LinearLayout
@@ -101,7 +90,7 @@
                             android:singleLine="true"
                             android:textAppearance="?android:attr/textAppearanceLarge"
                             android:textIsSelectable="false"
-                            android:textSize="@dimen/large_text_headline_details" />
+                            android:textSize="@dimen/large_text_headline_details_tv" />
 
                         <TextView
                             android:id="@+id/textView6"
@@ -111,8 +100,8 @@
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="#ddd"
                             android:textIsSelectable="false"
-                            android:textSize="@dimen/details_text_size"
-                            android:textStyle="bold" />
+                            android:textSize="@dimen/tagline_text_size"
+                            android:textStyle="italic" />
 
                         <TextView
                             android:id="@+id/textView2"
@@ -139,6 +128,7 @@
                                     android:id="@+id/textView9"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
                                     android:layout_marginRight="@dimen/movie_details_padding"
                                     android:layout_weight="1"
                                     android:drawableLeft="@drawable/ic_action_clock"
@@ -152,6 +142,7 @@
                                     android:id="@+id/textView12"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
                                     android:layout_marginRight="@dimen/movie_details_padding"
                                     android:layout_weight="0.6"
                                     android:drawableLeft="@drawable/ic_action_star_10"
@@ -172,6 +163,7 @@
                                     android:id="@+id/textReleaseDate"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
                                     android:layout_marginRight="@dimen/movie_details_padding"
                                     android:layout_weight="1"
                                     android:drawableLeft="@drawable/ic_action_calendar_day"
@@ -185,6 +177,7 @@
                                     android:id="@+id/textView11"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
                                     android:layout_marginRight="@dimen/movie_details_padding"
                                     android:layout_weight="0.6"
                                     android:drawableLeft="@drawable/ic_action_flag"
@@ -199,6 +192,7 @@
                                 android:id="@+id/textView7"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
                                 android:layout_marginRight="@dimen/movie_details_padding"
                                 android:layout_marginTop="@dimen/movie_details_padding"
                                 android:drawableLeft="@drawable/ic_action_tags"
@@ -212,6 +206,7 @@
                                 android:id="@+id/textView3"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
                                 android:layout_marginRight="@dimen/movie_details_padding"
                                 android:layout_marginTop="@dimen/movie_details_padding"
                                 android:drawableLeft="@drawable/file"

@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.miz.functions.Cover;
+import com.miz.functions.GridItemImageView;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -174,14 +175,14 @@ public class CoverSearchFragment extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 			// Now handle the main ImageView thumbnails
-			ImageView imageView;
+			GridItemImageView imageView;
 
 			if (convertView == null) { // if it's not recycled, instantiate and initialize
-				imageView = new ImageView(mContext);
+				imageView = new GridItemImageView(mContext);
 				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				imageView.setLayoutParams(mImageViewLayoutParams);
 			} else { // Otherwise re-use the converted view
-				imageView = (ImageView) convertView;
+				imageView = (GridItemImageView) convertView;
 			}
 
 			// Check the height matches our calculated column width
@@ -190,8 +191,7 @@ public class CoverSearchFragment extends Fragment {
 			}
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
-			// setting a placeholder image while the background thread runs
-
+			// setting a placeholder image while the background thread runs			
 			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(imageView);
 
 			return imageView;

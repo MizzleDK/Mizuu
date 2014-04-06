@@ -197,7 +197,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 		private Service<?, ?> mService;
 		private String mPrefix;
-		
+
 		public BrowseCallback(String prefix, Service<?, ?> service, String containerId) {
 			super(service, containerId, BrowseFlag.DIRECT_CHILDREN, "*", 0, null, new SortCriterion(true, "dc:title"));
 			mService = service;
@@ -243,10 +243,12 @@ public class UpnpMovie extends MovieFileSource<String> {
 		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
 			if (device.getType().getNamespace().equals("schemas-upnp-org")
 					&& device.getType().getType().equals("MediaServer")) {
-				if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-					found = true;
-					startBrowse(device);
-				}
+				try {
+					if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+						found = true;
+						startBrowse(device);
+					}
+				} catch (NullPointerException ignored) {} // if getDetails() is null
 			}
 		}
 
@@ -255,10 +257,12 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 		@Override
 		public void localDeviceAdded(Registry registry, LocalDevice device) {
-			if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-				found = true;
-				startBrowse(device);
-			}
+			try {
+				if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+					found = true;
+					startBrowse(device);
+				}
+			} catch (NullPointerException ignored) {} // if getDetails() is null
 		}
 
 		@Override
@@ -266,7 +270,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 		private void startBrowse(Device<?, ?, ?> device) {
 			mFolderCount++;
-			
+
 			Service<?, ?> service = device.findService(new UDAServiceType("ContentDirectory"));
 			browse(service, getRootFolder(), mFileSource.getFilepath().substring(mFileSource.getFilepath().lastIndexOf("/") + 1, mFileSource.getFilepath().length()));
 		}
@@ -275,7 +279,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 	private void browse(Service<?, ?> service, String containerId, String title) {		
 		mUpnpService.getControlPoint().execute(new BrowseCallback(title, service, containerId));
 	}
-	
+
 	@Override
 	public void addToResults(String folder, LinkedHashSet<String> results) {}
 }

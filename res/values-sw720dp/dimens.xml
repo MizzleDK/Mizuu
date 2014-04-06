@@ -24,8 +24,12 @@
     <dimen name="actor_details_width">340dp</dimen>
     <dimen name="actor_details_height">500dp</dimen>
     <dimen name="details_text_size">22sp</dimen>
+    <dimen name="tagline_text_size">26sp</dimen>
     <dimen name="large_text_headline_details">48sp</dimen>
     <dimen name="large_text_headline_details_tv">40sp</dimen>
     <dimen name="movie_details_padding">16dp</dimen>
+    <dimen name="cover_photo_width">240dp</dimen>
+    <dimen name="details_padding">32dp</dimen>
+    <dimen name="details_background_gradient_height">160dp</dimen>
 
 </resources>

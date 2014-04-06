@@ -244,7 +244,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if (!(!MizLib.runsInPortraitMode(getActivity()) && MizLib.runsOnTablet(getActivity())) && isVisible())
+		if (!(!MizLib.isPortrait(getActivity()) && MizLib.isTablet(getActivity())) && isVisible())
 			inflater.inflate(R.menu.episode_details, menu);
 
 		try {

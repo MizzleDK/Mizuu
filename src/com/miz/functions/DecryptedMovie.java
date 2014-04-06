@@ -11,9 +11,9 @@ public class DecryptedMovie {
 	public void setFilepath(String filepath) {
 		mFilepath = filepath;
 		
-		if (mFilepath.contains("/") && mFilepath.contains(".")) {
+		if (mFilepath.contains("/") && mFilepath.contains(".") && (mFilepath.lastIndexOf('/') < mFilepath.lastIndexOf('.')) && MizLib.checkFileTypes(mFilepath)) {
 			setFileName(mFilepath.substring(mFilepath.lastIndexOf('/') + 1, mFilepath.lastIndexOf('.')).trim());
-		} else if (mFilepath.contains("/") && !mFilepath.contains(".")) {
+		} else if (mFilepath.contains("/")) {
 			setFileName(mFilepath.substring(mFilepath.lastIndexOf('/') + 1, mFilepath.length()).trim());
 		} else {
 			setFileName(mFilepath.trim());

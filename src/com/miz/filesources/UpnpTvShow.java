@@ -256,10 +256,12 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
 			if (device.getType().getNamespace().equals("schemas-upnp-org")
 					&& device.getType().getType().equals("MediaServer")) {
-				if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-					found = true;
-					startBrowse(device);
-				}
+				try {
+					if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+						found = true;
+						startBrowse(device);
+					}
+				} catch (NullPointerException ignored) {} // if getDetails() is null
 			}
 		}
 
@@ -268,10 +270,12 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 
 		@Override
 		public void localDeviceAdded(Registry registry, LocalDevice device) {
-			if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-				found = true;
-				startBrowse(device);
-			}
+			try {
+				if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+					found = true;
+					startBrowse(device);
+				}
+			} catch (NullPointerException ignored) {} // if getDetails() is null
 		}
 
 		@Override

@@ -12,6 +12,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 
 import com.crashlytics.android.Crashlytics;
 import com.miz.db.DbAdapter;
@@ -36,7 +37,8 @@ public class MizuuApplication extends Application {
 	private static File mMovieThumbFolder;
 	private static Downloader mDownloader;
 	private static ThreadPoolExecutor mThreadPoolExecutor;
-
+	private static HashMap<String, Typeface> mTypefaces = new HashMap<String, Typeface>();
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -148,5 +150,11 @@ public class MizuuApplication extends Application {
 	
 	public static Bitmap.Config getBitmapConfig() {
 		return mBitmapConfig;
+	}
+	
+	public static Typeface getOrCreateTypeface(Context context, String key) {
+		if (!mTypefaces.containsKey(key))
+			mTypefaces.put(key, Typeface.createFromAsset(context.getAssets(), key));
+		return mTypefaces.get(key);
 	}
 }
