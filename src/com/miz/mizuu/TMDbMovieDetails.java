@@ -277,10 +277,10 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		if (itemPosition == 1)
-			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
-		else
+		if (itemPosition == 0)
 			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
+		else
+			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
 		
 		awesomePager.setCurrentItem(itemPosition);
 		return true;

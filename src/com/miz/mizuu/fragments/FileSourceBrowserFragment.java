@@ -592,7 +592,6 @@ public class FileSourceBrowserFragment extends Fragment {
 						mIsLoading = false;
 					} catch (Exception ex) {
 						mIsLoading = false;
-						System.out.println("Creating DIDL tree nodes failed: " + ex);
 					}
 				}
 			});

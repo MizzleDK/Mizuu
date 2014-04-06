@@ -365,7 +365,6 @@ public class MovieDetailsFragment extends Fragment {
 				playNetworkFile(filepath);
 			} else {
 				try { // Attempt to launch intent based on the MIME type
-					System.out.println(filepath);
 					getActivity().startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisMovie));
 					checkIn();
 				} catch (Exception e) {
