@@ -65,7 +65,7 @@ public class AddUpnpFilesourceDialog extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				Intent intent = new Intent();
 				intent.setClass(getApplicationContext(), FileSourceBrowser.class);
-				intent.putExtra(SERIAL_NUMBER, deviceListAdapter.getItem(arg2).getSerialNumber());
+				intent.putExtra(SERIAL_NUMBER, !deviceListAdapter.getItem(arg2).getSerialNumber().isEmpty() ? deviceListAdapter.getItem(arg2).getSerialNumber() : deviceListAdapter.getItem(arg2).getUDNString());
 				intent.putExtra(SERVER, deviceListAdapter.getItem(arg2).getName());
 				intent.putExtra(TYPE, isMovie ? MOVIE : TV_SHOW);
 				intent.putExtra(FILESOURCE, FileSource.UPNP);
@@ -156,15 +156,17 @@ public class AddUpnpFilesourceDialog extends Activity {
 
 	private class UpnpDevice {
 
-		private Device<?, ?, ?> device;
+		private String mFriendlyName, mSerial, mUdn;
 
 		public UpnpDevice(Device<?, ?, ?> device) {
-			this.device = device;
+			mFriendlyName = device.getDetails().getFriendlyName();
+			mSerial = device.getDetails().getSerialNumber();
+			mUdn = device.getIdentity().getUdn().toString();			
 		}
 
 		@Override
 		public String toString() {
-			return device.getDetails().getFriendlyName();
+			return mFriendlyName;
 		}
 
 		private String getName() {
@@ -172,7 +174,13 @@ public class AddUpnpFilesourceDialog extends Activity {
 		}
 
 		private String getSerialNumber() {
-			return device.getDetails().getSerialNumber();
+			if (mSerial == null)
+				return "";
+			return mSerial;
+		}
+		
+		private String getUDNString() {
+			return mUdn;
 		}
 	}
 }

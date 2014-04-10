@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.miz.functions.ActionBarSpinner;
+import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.CoverSearchFragmentTv;
 import com.miz.mizuu.fragments.FanartSearchFragmentTv;
@@ -38,6 +39,7 @@ public class ShowCoverFanartBrowser extends MizActivity implements OnNavigationL
 		
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(2);
+		awesomePager.setPageMargin(MizLib.convertDpToPixels(this, 16));
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {

@@ -82,7 +82,7 @@ public class FileSourceBrowserFragment extends Fragment {
 	private BrowseFolder mBrowseFolder;
 	private ParentFolderAdapter mParentFolderAdapter;
 	private CurrentFolderAdapter mCurrentFolderAdapter;
-	private boolean mIsLoading = false, mIsMovie = false;
+	private boolean mLoading = false, mIsMovie = false;
 	private AndroidUpnpService upnpService;
 	private ArrayAdapter<ContentItem> contentListAdapter;
 
@@ -216,8 +216,8 @@ public class FileSourceBrowserFragment extends Fragment {
 					if (mBrowser.getBrowserFiles().get(arg2).isDirectory())
 						browse(arg2, false);
 				} else {
-					if (!mIsLoading) {
-						mIsLoading = true;
+					if (!mLoading) {
+						mLoading = true;
 						ContentItem content = contentListAdapter.getItem(arg2);
 						if (content.isContainer()) {
 							upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), content.getService(), content.getContainer(), contentListAdapter, true));
@@ -334,7 +334,7 @@ public class FileSourceBrowserFragment extends Fragment {
 	}
 
 	private void browse(int index, boolean fromParent) {
-		if (mIsLoading)
+		if (mLoading)
 			return;
 
 		if (mBrowseFolder != null)
@@ -490,7 +490,7 @@ public class FileSourceBrowserFragment extends Fragment {
 	}
 
 	private void setLoading(boolean loading) {
-		mIsLoading = loading;
+		mLoading = loading;
 		if (loading) {
 			mProgress.setVisibility(View.VISIBLE);
 			mCurrent.setVisibility(View.GONE);
@@ -523,12 +523,19 @@ public class FileSourceBrowserFragment extends Fragment {
 			upnpService = (AndroidUpnpService) service;
 
 			boolean found = false;
-
+			
 			for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
 				try {
-					if (device.getDetails().getSerialNumber().equals(((BrowserUpnp) mBrowser).getSerial())) {
-						startBrowse(device);
-						found = true;
+					if (device.getDetails().getSerialNumber() != null && !device.getDetails().getSerialNumber().isEmpty()) {
+						if (device.getDetails().getSerialNumber().equals(((BrowserUpnp) mBrowser).getSerial())) {
+							startBrowse(device);
+							found = true;
+						}
+					} else {
+						if (device.getIdentity().getUdn().toString().equals(((BrowserUpnp) mBrowser).getSerial())) {
+							startBrowse(device);
+							found = true;
+						}
 					}
 				} catch (Exception e) {}
 			}
@@ -568,39 +575,49 @@ public class FileSourceBrowserFragment extends Fragment {
 			this.listAdapter = listadapter;
 
 			mContainer = container;
+
 		}
 
 		@SuppressWarnings("rawtypes")
 		public void received(final ActionInvocation actionInvocation, final DIDLContent didl) {
-			activity.runOnUiThread(new Runnable() {
-				public void run() {
-					try {
-						listAdapter.clear();
-						// Containers first
-						for (Container childContainer : didl.getContainers()) {
-							listAdapter.add(new ContentItem(childContainer, service));
+			if (activity != null)
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						try {
+							listAdapter.clear();
+							// Containers first
+							for (Container childContainer : didl.getContainers()) {
+								listAdapter.add(new ContentItem(childContainer, service));
+							}
+							// Now items
+							for (Item childItem : didl.getItems()) {
+								listAdapter.add(new ContentItem(childItem, service));
+							}
+
+							((BrowserUpnp) mBrowser).setContainer(mContainer);
+
+							((BrowserUpnp) mBrowser).addParentId(mContainer.getId(), mContainer.getParentID());
+
+							mLoading = false;
+						} catch (Exception ex) {
+							mLoading = false;
 						}
-						// Now items
-						for (Item childItem : didl.getItems()) {
-							listAdapter.add(new ContentItem(childItem, service));
-						}
-
-						((BrowserUpnp) mBrowser).setContainer(mContainer);
-
-						((BrowserUpnp) mBrowser).addParentId(mContainer.getId(), mContainer.getParentID());
-
-						mIsLoading = false;
-					} catch (Exception ex) {
-						mIsLoading = false;
 					}
-				}
-			});
+				});
 		}
 
 		public void updateStatus(final Status status) {}
 
 		@SuppressWarnings("rawtypes")
 		@Override
-		public void failure(ActionInvocation invocation, UpnpResponse operation, final String defaultMsg) {}
+		public void failure(ActionInvocation invocation, final UpnpResponse operation, final String defaultMsg) {
+			if (defaultMsg != null && activity != null)
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(getActivity(), defaultMsg, Toast.LENGTH_LONG).show();
+					}
+				});
+			mLoading = false;
+		}
 	}
 }

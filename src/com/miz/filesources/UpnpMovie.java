@@ -168,9 +168,16 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 			for (Device<?, ?, ?> device : mUpnpService.getRegistry().getDevices()) {
 				try {
-					if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-						startBrowse(device);
-						found = true;
+					if (device.getDetails().getSerialNumber() != null && !device.getDetails().getSerialNumber().isEmpty()) {
+						if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+							startBrowse(device);
+							found = true;
+						}
+					} else {
+						if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
+							startBrowse(device);
+							found = true;
+						}
 					}
 				} catch (Exception e) {}
 			}
@@ -243,12 +250,21 @@ public class UpnpMovie extends MovieFileSource<String> {
 		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
 			if (device.getType().getNamespace().equals("schemas-upnp-org")
 					&& device.getType().getType().equals("MediaServer")) {
-				try {
-					if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-						found = true;
-						startBrowse(device);
-					}
-				} catch (NullPointerException ignored) {} // if getDetails() is null
+				if (!found) {
+					try {
+						if (device.getDetails().getSerialNumber() != null && !device.getDetails().getSerialNumber().isEmpty()) {
+							if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+								startBrowse(device);
+								found = true;
+							}
+						} else {
+							if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
+								startBrowse(device);
+								found = true;
+							}
+						}
+					} catch (Exception e) {}
+				}
 			}
 		}
 
@@ -257,12 +273,21 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 		@Override
 		public void localDeviceAdded(Registry registry, LocalDevice device) {
-			try {
-				if (!found && device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-					found = true;
-					startBrowse(device);
-				}
-			} catch (NullPointerException ignored) {} // if getDetails() is null
+			if (!found) {
+				try {
+					if (device.getDetails().getSerialNumber() != null && !device.getDetails().getSerialNumber().isEmpty()) {
+						if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+							startBrowse(device);
+							found = true;
+						}
+					} else {
+						if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
+							startBrowse(device);
+							found = true;
+						}
+					}
+				} catch (Exception e) {}
+			}
 		}
 
 		@Override

@@ -1,24 +1,26 @@
 package com.miz.mizuu;
 
+import static com.miz.functions.MizLib.DOMAIN;
+import static com.miz.functions.MizLib.FILESOURCE;
+import static com.miz.functions.MizLib.MOVIE;
+import static com.miz.functions.MizLib.PASSWORD;
+import static com.miz.functions.MizLib.SERIAL_NUMBER;
+import static com.miz.functions.MizLib.SERVER;
+import static com.miz.functions.MizLib.TYPE;
+import static com.miz.functions.MizLib.USER;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.miz.base.MizActivity;
 import com.miz.functions.FileSource;
 import com.miz.mizuu.fragments.FileSourceBrowserFragment;
-
-import static com.miz.functions.MizLib.MOVIE;
-import static com.miz.functions.MizLib.TYPE;
-import static com.miz.functions.MizLib.FILESOURCE;
-import static com.miz.functions.MizLib.DOMAIN;
-import static com.miz.functions.MizLib.USER;
-import static com.miz.functions.MizLib.PASSWORD;
-import static com.miz.functions.MizLib.SERVER;
-import static com.miz.functions.MizLib.SERIAL_NUMBER;
 
 public class FileSourceBrowser extends MizActivity {
 
@@ -53,6 +55,16 @@ public class FileSourceBrowser extends MizActivity {
 			}
 			ft.commit();
 		}
+		
+		boolean hasShown = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("hasShownBrowserHelpMessage", false);
+		if (!hasShown) {
+			Toast.makeText(this, R.string.browser_help_message, Toast.LENGTH_LONG).show();
+			
+			Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+			editor.putBoolean("hasShownBrowserHelpMessage", true);
+			editor.commit();
+		}
+		
 	}
 
 	@Override

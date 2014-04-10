@@ -52,6 +52,7 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(2);
+		awesomePager.setPageMargin(MizLib.convertDpToPixels(this, 16));
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
