@@ -635,10 +635,10 @@ public class MizLib {
 
 		Point size = new Point();
 		d.getSize(size);
-
-		final int width = getLowestNumber(size.x, size.y);
-
-		if (width > 1280)
+		
+		final int width = getGreatestNumber(size.x, size.y);
+		
+		if (width > 1280 && isTablet(c)) // We only want to download full size images on tablets, as these are the only devices where you can see the difference
 			return "original";
 		else if (width > 780)
 			return "w1280";
