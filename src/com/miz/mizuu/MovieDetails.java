@@ -28,6 +28,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -218,18 +219,17 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				menu.findItem(R.id.imdb).setVisible(false);
 			}
 
-			if (thisMovie.isNetworkFile()) {
-				menu.findItem(R.id.watchOffline).setVisible(true);
-				
+			if (thisMovie.isNetworkFile() || thisMovie.isUpnpFile()) {
+				menu.findItem(R.id.watchOffline).setVisible(true);				
 				if (thisMovie.hasOfflineCopy())
 					menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
 				else
 					menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
 			}
-			
+
 			if (thisMovie.getTmdbId().isEmpty() || thisMovie.getTmdbId().equals("invalid"))
 				menu.findItem(R.id.change_cover).setVisible(false);
-			
+
 		} catch (Exception e) {} // This can happen if thisMovie is null for whatever reason
 
 		return true;
@@ -276,7 +276,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		View dialogLayout = getLayoutInflater().inflate(R.layout.delete_file_dialog_layout, null);
 		final CheckBox cb = (CheckBox) dialogLayout.findViewById(R.id.deleteFile);
-		cb.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsAlwaysDeleteFile", false));
+		if (thisMovie.isUpnpFile())
+			cb.setEnabled(false);
+		else
+			cb.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsAlwaysDeleteFile", false));
 
 		builder.setTitle(getString(R.string.removeMovie))
 		.setView(dialogLayout)
@@ -371,7 +374,11 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					Intent intent = new Intent();
-					intent.putExtra("fileName", versions[which].getFilepath());
+					
+					String temp2 = versions[which].getFilepath();
+					String temp = temp2.contains("<MiZ>") ? temp2.split("<MiZ>")[0] : temp2;
+					
+					intent.putExtra("fileName", temp);
 					intent.putExtra("rowId", String.valueOf(versions[which].getRowId()));
 					intent.setClass(MovieDetails.this, IdentifyMovie.class);
 					startActivityForResult(intent, 0);
@@ -380,7 +387,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			builder.show();
 		} else {
 			Intent intent = new Intent();
-			intent.putExtra("fileName", thisMovie.getFullFilepath());
+			intent.putExtra("fileName", thisMovie.getManualIdentificationQuery());
 			intent.putExtra("rowId", thisMovie.getRowId());
 			intent.setClass(this, IdentifyMovie.class);
 			startActivityForResult(intent, 0);
@@ -586,10 +593,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			.setCancelable(false)
 			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-					
+
 					if (MizLib.isLocalCopyBeingDownloaded(MovieDetails.this))
 						Toast.makeText(getApplicationContext(), R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
-					
+
 					Intent i = new Intent(MovieDetails.this, MakeAvailableOffline.class);
 					i.putExtra(MakeAvailableOffline.FILEPATH, thisMovie.getFilepath());
 					i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_MOVIE);
@@ -768,15 +775,27 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			return 2;
 		}
 	}
-	
+
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		if (itemPosition == 1)
 			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
 		else
 			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
-		
+
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
+
+	@Override 
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_MEDIA_PLAY:
+		case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("movie-play-button"));
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+
 }

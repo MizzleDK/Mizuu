@@ -2221,6 +2221,12 @@ public class MizLib {
 		f.mkdirs();
 		return f;
 	}
+	
+	public static File getTvShowSeasonFolder(Context c) {
+		File f = new File(c.getExternalFilesDir(null) + "/tvshows-seasons");
+		f.mkdirs();
+		return f;
+	}
 
 	public static File getCacheFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/app_cache");
@@ -3195,5 +3201,19 @@ public class MizLib {
 			return true;
 		}
 		return false;
+	}
+	
+	public static int getFileSize(URL url) {
+	    HttpURLConnection conn = null;
+	    try {
+	        conn = (HttpURLConnection) url.openConnection();
+	        conn.setRequestMethod("HEAD");
+	        conn.getInputStream();
+	        return conn.getContentLength();
+	    } catch (IOException e) {
+	        return -1;
+	    } finally {
+	        conn.disconnect();
+	    }
 	}
 }

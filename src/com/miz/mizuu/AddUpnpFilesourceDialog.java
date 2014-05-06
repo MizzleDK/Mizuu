@@ -22,7 +22,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -44,8 +43,6 @@ public class AddUpnpFilesourceDialog extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		setContentView(R.layout.upnp_list);
 
@@ -141,6 +138,7 @@ public class AddUpnpFilesourceDialog extends Activity {
 					} else {
 						deviceListAdapter.add(di);
 					}
+					mListView.requestFocus();
 				}
 			});
 		}

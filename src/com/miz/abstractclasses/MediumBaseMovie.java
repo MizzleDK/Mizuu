@@ -68,7 +68,13 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getFilepath() {
-		return MizLib.transformSmbPath(FILEPATH);
+		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[1] : FILEPATH;
+		return MizLib.transformSmbPath(temp);
+	}
+	
+	public String getManualIdentificationQuery() {
+		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[0] : FILEPATH;
+		return temp;
 	}
 	
 	public boolean hasWatched() {
@@ -137,6 +143,8 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public File getOfflineCopyFile() {
+		if (FILEPATH.contains("<MiZ>"))
+			return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(getFilepath()) + "." + MizLib.getFileExtension(getFilepath()));
 		return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
 	}
 }

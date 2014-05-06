@@ -7,6 +7,7 @@ public class Tvshow {
 	private String id = "invalid", title = "", description = "", actors = "", genre = "", rating = "",
 	cover_url = "", backdrop_url = "", certification = "", runtime = "", first_aired = "", imdb_id = "";
 	private ArrayList<Episode> episodes = new ArrayList<Episode>();
+	private ArrayList<Season> mSeasons = new ArrayList<Season>();
 
 	public Tvshow() {}
 
@@ -112,5 +113,27 @@ public class Tvshow {
 	
 	public String getImdbId() {
 		return imdb_id;
+	}
+	
+	public void addSeason(Season s) {
+		mSeasons.add(s);
+	}
+	
+	public ArrayList<Season> getSeasons() {
+		return mSeasons;
+	}
+	
+	public boolean hasSeason(int season) {
+		for (Season s : mSeasons)
+			if (s.getSeason() == season)
+				return true;
+		return false;
+	}
+	
+	public Season getSeason(int season) {
+		for (Season s : mSeasons)
+			if (s.getSeason() == season)
+				return s;
+		return new Season();
 	}
 }

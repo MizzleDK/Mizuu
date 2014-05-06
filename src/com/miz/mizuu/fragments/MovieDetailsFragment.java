@@ -143,6 +143,7 @@ public class MovieDetailsFragment extends Fragment {
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-backdrop-change"));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("movie-play-button"));
 	}
 
 	@Override
@@ -157,7 +158,11 @@ public class MovieDetailsFragment extends Fragment {
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			loadImages();
+			if (intent.getAction().equals("movie-play-button")) {
+				playMovie();
+			} else {
+				loadImages();
+			}
 		}
 	};
 

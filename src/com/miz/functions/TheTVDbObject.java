@@ -154,6 +154,15 @@ public class TheTVDbObject {
 			if (!MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile))
 				MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile);
 		}
+		
+		// Download season cover if it hasn't already been downloaded
+		if (thisShow.hasSeason(Integer.valueOf(thisEpisode.getSeason()))) {
+			File seasonFile = new File(MizLib.getTvShowSeasonFolder(context), thisShow.getId() + "_S" + season + ".jpg");
+			if (!seasonFile.exists()) {
+				if (!MizLib.downloadFile(thisShow.getSeason(Integer.valueOf(thisEpisode.getSeason())).getCoverPath(), seasonFile.getAbsolutePath()))
+					MizLib.downloadFile(thisShow.getSeason(Integer.valueOf(thisEpisode.getSeason())).getCoverPath(), seasonFile.getAbsolutePath());
+			}
+		}
 
 		addToDatabase(thisEpisode, filepath);
 	}

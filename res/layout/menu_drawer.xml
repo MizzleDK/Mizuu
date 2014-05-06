@@ -113,9 +113,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:choiceMode="singleChoice"
+            android:clickable="true"
             android:divider="#d8d8d8"
             android:dividerHeight="1dp"
+            android:focusable="true"
             android:drawSelectorOnTop="true" >
+
         </ListView>
     </LinearLayout>
 

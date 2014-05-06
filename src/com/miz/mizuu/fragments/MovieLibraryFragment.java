@@ -530,6 +530,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			spinnerAdapter.notifyDataSetChanged();
 
 		updateTextAndUpdateButton();
+		
+		mGridView.requestFocus();
 	}
 
 	private void updateTextAndUpdateButton() {

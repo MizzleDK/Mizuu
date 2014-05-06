@@ -499,6 +499,73 @@ public class TheTVDb {
 				}
 			}
 		} catch (Exception e) {}
+		
+		try {
+			// Connection set-up
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			URL url = new URL("http://thetvdb.com/api/" + MizLib.TVDBAPI + "/series/" + show.getId() + "/banners.xml");
+
+			URLConnection con = url.openConnection();
+			con.setReadTimeout(60000);
+			con.setConnectTimeout(60000);
+
+			Document doc = db.parse(con.getInputStream());
+			doc.getDocumentElement().normalize();
+
+			NodeList nodeList = doc.getElementsByTagName("Banner");
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Node firstNode = nodeList.item(i);
+				if (firstNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element firstElement = (Element) firstNode;
+					NodeList list;
+					Element element;
+					NodeList tag;
+
+					Season season = new Season();
+
+					String bannerType = "";
+					int seasonNumber = -1;
+					
+					try {
+						list = firstElement.getElementsByTagName("BannerType");
+						element = (Element) list.item(0);
+						tag = element.getChildNodes();
+						bannerType = ((Node) tag.item(0)).getNodeValue();
+					} catch(Exception e) {}
+					
+					if (!bannerType.equals("season"))
+						continue;
+					
+					try {
+						list = firstElement.getElementsByTagName("Season");
+						element = (Element) list.item(0);
+						tag = element.getChildNodes();
+						seasonNumber = Integer.valueOf(((Node) tag.item(0)).getNodeValue());
+					} catch(Exception e) {}
+					
+					if (seasonNumber >= 0 && !show.hasSeason(seasonNumber)) {
+						season.setSeason(seasonNumber);
+						
+						try {
+							list = firstElement.getElementsByTagName("BannerPath");
+							element = (Element) list.item(0);
+							tag = element.getChildNodes();
+							season.setCoverPath("http://thetvdb.com/banners/" + ((Node) tag.item(0)).getNodeValue());
+						} catch (Exception e) {
+							season.setCoverPath("");
+						}
+						
+						show.addSeason(season);
+					}
+				}
+			}
+			
+			for (Season s : show.getSeasons()) {
+				System.out.println("SEASON " + s.getSeason() + ": " + s.getCoverPath());
+			}
+			
+		} catch (Exception e) {}
 
 		return show;
 	}
