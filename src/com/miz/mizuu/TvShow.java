@@ -12,7 +12,8 @@ public class TvShow implements Comparable<TvShow> {
 
 	private Context CONTEXT;
 	private String ID, TITLE, DESCRIPTION, RATING, GENRES, ACTORS, CERTIFICATION, FIRST_AIR_DATE, RUNTIME;
-	private boolean ignorePrefixes, isFavorite;
+	private boolean isFavorite;
+	private String mThumbnail, mTitle;
 
 	public TvShow(Context context, String id, String title, String description, String rating, String genres, String actors, String certification, String firstAirdate, String runtime, boolean ignorePrefixes, String isFavorite) {
 
@@ -27,25 +28,33 @@ public class TvShow implements Comparable<TvShow> {
 		CERTIFICATION = certification;
 		FIRST_AIR_DATE = firstAirdate;
 		RUNTIME = runtime;
-		this.ignorePrefixes = ignorePrefixes;
 		this.isFavorite = !(isFavorite.equals("0") || isFavorite.isEmpty());
-	}
-
-	public String getTitle() {
+		
+		// Thumbnail
+		mThumbnail = MizuuApplication.getTvShowThumbFolderPath(CONTEXT) + "/" + ID + ".jpg";
+		
+		// Title		
 		if (MizLib.isEmpty(TITLE)) {
-			return "";
+			mTitle = "";
 		} else {
 			if (ignorePrefixes) {
 				String temp = TITLE.toLowerCase(Locale.ENGLISH);
 				String[] prefixes = MizLib.getPrefixes(CONTEXT);
 				int count = prefixes.length;
 				for (int i = 0; i < count; i++) {
-					if (temp.startsWith(prefixes[i]))
-						return TITLE.substring(prefixes[i].length());
+					if (temp.startsWith(prefixes[i])) {
+						mTitle = TITLE.substring(prefixes[i].length());
+						break;
+					}
 				}
+			} else {
+				mTitle = TITLE;
 			}
-			return TITLE;
 		}
+	}
+
+	public String getTitle() {
+		return mTitle;
 	}
 
 	/**
@@ -81,7 +90,7 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getThumbnail() {
-		return new File(MizLib.getTvShowThumbFolder(CONTEXT), ID + ".jpg").getAbsolutePath();
+		return mThumbnail;
 	}
 
 	public String getBackdrop() {

@@ -27,7 +27,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -41,7 +41,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -50,7 +49,6 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SectionIndexer;
@@ -89,12 +87,14 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	private ProgressBar pbar;
 	private TextView overviewMessage;
 	private Button updateMovieLibrary;
-	private boolean showGridTitles, ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo;
+	private boolean ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo, mLoading;
 	private ActionBar actionBar;
 	private int type;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private Picasso mPicasso;
+	private Config mConfig;
+	private int mCurrentSort;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -126,7 +126,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
 		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
 		ignoreNfo = settings.getBoolean("prefsIgnoreNfoFiles", true);
 		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
@@ -139,6 +138,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		mAdapter = new LoaderAdapter(getActivity());
 	}
@@ -197,61 +197,79 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+			mLoading = true;
 			return new SQLiteCursorLoader(getActivity(), DbHelper.getHelper(getActivity()), DbAdapter.DATABASE_TABLE, DbAdapter.SELECT_ALL, "NOT(" + DbAdapter.KEY_TITLE + " = 'MIZ_REMOVED_MOVIE')", null, "(CASE WHEN " + DbAdapter.KEY_TMDBID + " = 'invalid' OR " + DbAdapter.KEY_TMDBID + " = '' THEN " + DbAdapter.KEY_FILEPATH + " ELSE " + DbAdapter.KEY_TMDBID + " END)", null, DbAdapter.KEY_TITLE + " ASC");
 		}
 
 		@Override
-		public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
-			movies.clear();
-			shownMovies.clear();
-
-			try {
-				// Do while the cursor can move to the next item in cursor
-				while (cursor.moveToNext()) {
-					boolean add = true;
-
-					if (type == OTHER && cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)).equals("0"))
-						add = false;
-
-					if (add)
-						movies.add(new MediumMovie(getActivity(),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RATING)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_GENRES)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CAST)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_2)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
-								ignorePrefixes,
-								ignoreNfo
-								));
+		public void onLoadFinished(Loader<Cursor> arg0, final Cursor cursor) {
+			AsyncTask<Void, Void, Void> load = new AsyncTask<Void, Void, Void>() {
+				@Override
+				protected void onPreExecute() {
+					movies.clear();
+					shownMovies.clear();
 				}
-			} catch (Exception e) {}
-			finally {
-				cursor.close();
-			}
+				
+				@Override
+				protected Void doInBackground(Void... params) {
+					try {
+						// Do while the cursor can move to the next item in cursor
+						while (cursor.moveToNext()) {
+							boolean add = true;
 
-			if (type == MAIN)
-				shownMovies.addAll(movies);
-			else {
-				int count = movies.size();
-				for (int i = 0; i < count; i++)
-					if (movies.get(i).toWatch())
-						shownMovies.add(movies.get(i));
-			}
+							if (type == OTHER && cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)).equals("0"))
+								add = false;
 
-			showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
+							if (add)
+								movies.add(new MediumMovie(getActivity(),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RATING)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_GENRES)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CAST)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_2)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
+										cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
+										ignorePrefixes,
+										ignoreNfo
+										));
+						}
+					} catch (Exception e) {}
+					finally {
+						cursor.close();
+					}
+					
+					if (type == MAIN)
+						shownMovies.addAll(movies);
+					else {
+						int count = movies.size();
+						for (int i = 0; i < count; i++)
+							if (movies.get(i).toWatch())
+								shownMovies.add(movies.get(i));
+					}
+					return null;
+				}
+				
+				@Override
+				protected void onPostExecute(Void result) {
 
-			updateTextAndUpdateButton();
+
+
+					showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
+					
+					mLoading = false;
+				}
+				
+			};
+			load.execute();
 		}
 
 		@Override
@@ -306,9 +324,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 						if (mAdapter.getNumColumns() == 0) {
 							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
-								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
-								mAdapter.setItemHeight(columnWidth);
 							}
 							if (MizLib.hasJellyBean()) {
 								mGridView.getViewTreeObserver()
@@ -360,12 +376,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private class LoaderAdapter extends BaseAdapter implements SectionIndexer {
 
-		private Drawable gray;
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mItemHeight = 0;
 		private int mNumColumns = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
 		private Object[] sections;
 		private boolean isCollections = false;
 
@@ -373,8 +386,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			gray = getResources().getDrawable(R.drawable.gray);
 		}
 
 		@Override
@@ -404,57 +415,57 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
-
+			
 			CoverItem holder;
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item_cover, container, false);
+				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
-				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
+
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-
-				// Check the height matches our calculated column width
-				if (holder.layout.getLayoutParams().height != mItemHeight) {
-					holder.layout.setLayoutParams(mImageViewLayoutParams);
-				}
+				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-
-			holder.text.setText(shownMovies.get(position).getTitle());
-
-			if (showGridTitles)
-				holder.text.setVisibility(TextView.VISIBLE);
-			else
-				holder.text.setVisibility(TextView.GONE);
-
-			holder.cover.setImageDrawable(gray);
+			
+			holder.cover.setImageResource(android.R.color.transparent);
+			
+			switch (mCurrentSort) {
+			case DURATION:
+				holder.subtext.setText(shownMovies.get(position).getPrettyRuntime());
+				break;
+			case RATING:
+				holder.subtext.setText((int)(shownMovies.get(position).getRawRating() * 10) + "%");
+				break;
+			case WEIGHTED_RATING:
+				holder.subtext.setText(shownMovies.get(position).getWeightedCompatibility());
+				break;
+			case DATE:
+				holder.subtext.setText(shownMovies.get(position).getPrettyDateAdded());
+				break;
+			case RELEASE:
+				holder.subtext.setText(shownMovies.get(position).getPrettyReleaseDate());
+				break;
+			default:
+				holder.subtext.setText(shownMovies.get(position).getReleaseYear());
+				break;
+			}
 
 			if (isCollections) {
-				mPicasso.load(shownMovies.get(position).getCollectionPoster()).config(MizuuApplication.getBitmapConfig()).into(holder);
+				mPicasso.load(shownMovies.get(position).getCollectionPoster()).config(mConfig).into(holder);
 				holder.text.setText(shownMovies.get(position).getCollection());
 			} else { // Movies
+				holder.text.setText(shownMovies.get(position).getTitle());
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
-					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).config(MizuuApplication.getBitmapConfig()).into(holder);
+					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
 				} else {
-					mPicasso.load(shownMovies.get(position).getThumbnail()).config(MizuuApplication.getBitmapConfig()).into(holder);
+					mPicasso.load(shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
 				}
 			}
 
 			return convertView;
-		}
-
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(mItemHeight, (int) (mItemHeight * 1.5));
 		}
 
 		public void setNumColumns(int numColumns) {
@@ -522,7 +533,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		}
 	}
 
-	private void notifyDataSetChanged() {
+	private void notifyDataSetChanged() {		
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
 
@@ -530,7 +541,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			spinnerAdapter.notifyDataSetChanged();
 
 		updateTextAndUpdateButton();
-		
+
 		mGridView.requestFocus();
 	}
 
@@ -562,7 +573,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		showCollectionBasedOnNavigationIndex(itemPosition);
+		if (!mLoading)
+			showCollectionBasedOnNavigationIndex(itemPosition);
 		return true;
 	}
 
@@ -925,6 +937,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortBy(int sort) {
 
+		mCurrentSort = sort;
 		ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>(shownMovies);
 
 		switch (sort) {	
@@ -1309,7 +1322,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		protected String doInBackground(String... params) {
-			
+
 			List<MediumMovie> tempMovies = new ArrayList<MediumMovie>();
 
 			if (searchQuery.startsWith("actor:")) {
@@ -1329,13 +1342,13 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 						tempMovies.add(movies.get(i));
 				}
 			} else if (searchQuery.equalsIgnoreCase("multiple_versions")) {
-				
+
 				DbAdapter db = MizuuApplication.getMovieAdapter();
-				
+
 				for (int i = 0; i < movies.size(); i++) {
 					if (isCancelled())
 						return null;
-					
+
 					if (db.hasMultipleVersions(movies.get(i).getTmdbId()))
 						tempMovies.add(movies.get(i));
 				}
@@ -1356,7 +1369,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 
 			shownMovies = new ArrayList<MediumMovie>(tempMovies);
-			
+
 			sortMovies();
 
 			return null;
@@ -1410,13 +1423,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 			if (numColumns > 0) {
-				final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 				mAdapter.setNumColumns(numColumns);
-				mAdapter.setItemHeight(columnWidth);
 			}
 		}
-
-		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
 
 		sortMovies();
 		notifyDataSetChanged();

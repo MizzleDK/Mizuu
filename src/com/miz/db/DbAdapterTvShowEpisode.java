@@ -1,5 +1,7 @@
 package com.miz.db;
 
+import java.util.HashMap;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -129,6 +131,27 @@ public class DbAdapterTvShowEpisode {
 		return count;
 	}
 
+	public HashMap<String, Integer> getSeasons(String showId) {
+		HashMap<String, Integer> results = new HashMap<String, Integer>();
+		Cursor c = null;
+		try {
+			c = database.query(DATABASE_TABLE, new String[]{KEY_SHOW_ID, KEY_EPISODE_TITLE, KEY_SEASON}, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, null, null, KEY_SEASON + " asc");
+			while (c.moveToNext()) {
+				String season = c.getString(c.getColumnIndex(KEY_SEASON));
+				if (results.containsKey(season)) {
+					results.put(season, results.get(season) + 1);
+				} else {
+					results.put(season, 1);
+				}
+			}
+		} catch (Exception e) {
+		} finally {
+			if (c != null)
+				c.close();
+		}
+		return results;
+	}
+
 	public String getLatestEpisodeAirdate(String showId) {
 		String s = "";
 		Cursor c = database.query(DATABASE_TABLE, allRows, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_EPISODE_AIRDATE + " LIKE '%-%'", null, null, null, KEY_EPISODE_AIRDATE + " desc"); // %-% hack to make sure that the airdate includes a hyphen and is an actual date
@@ -137,12 +160,12 @@ public class DbAdapterTvShowEpisode {
 		c.close();
 		return s;
 	}
-	
+
 	public boolean hasUnwatchedEpisodes(String showId) {
 		Cursor c = database.query(DATABASE_TABLE, allRows, KEY_SHOW_ID + " = '" + showId + "' AND " + KEY_HAS_WATCHED + " = '0'", null, null, null, null);
 		return c.getCount() > 0;
 	}
-	
+
 	public boolean markSeasonAsWatched(String showId, String season) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_HAS_WATCHED, "1");

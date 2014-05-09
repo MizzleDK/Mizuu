@@ -17,10 +17,10 @@
 
 <resources>
 
-    <dimen name="image_thumbnail_size">149dp</dimen>
+    <dimen name="image_thumbnail_size">135dp</dimen>
     <dimen name="image_thumbnail_height">218dp</dimen>
     <dimen name="backdrop_thumbnail_width">225dp</dimen>
-    <dimen name="image_thumbnail_spacing">1dp</dimen>
+    <dimen name="image_thumbnail_spacing">8dp</dimen>
     <dimen name="actor_details_width">255dp</dimen>
     <dimen name="actor_details_height">375dp</dimen>
     <dimen name="details_text_size">22sp</dimen>

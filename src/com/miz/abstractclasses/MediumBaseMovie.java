@@ -2,6 +2,8 @@ package com.miz.abstractclasses;
 
 import java.io.File;
 
+import android.content.Context;
+
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 
@@ -9,7 +11,66 @@ import com.miz.mizuu.R;
 public abstract class MediumBaseMovie extends BaseMovie {
 
 	protected String TO_WATCH, COLLECTION, COLLECTION_ID, RATING, FAVOURITE, HAS_WATCHED, RELEASEDATE, DATE_ADDED, GENRES, CAST, CERTIFICATION, RUNTIME;
-
+	protected String mGetReleaseYear, mGetFilePath, mWeightedCompatibility, mDateAdded, mRuntime, mReleaseDate;
+	protected boolean mIsNetworkFile;
+	
+	public MediumBaseMovie(Context context, String rowId, String filepath, String title, String tmdbId, String rating, String releasedate,
+			String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
+			String date_added, String certification, String runtime, boolean ignorePrefixes, boolean ignoreNfo) {
+		super(context, rowId, filepath, title, tmdbId, ignorePrefixes, ignoreNfo);
+		
+		RATING = rating;
+		RELEASEDATE = releasedate;
+		GENRES = genres;
+		FAVOURITE = favourite;
+		CAST = cast;
+		COLLECTION = collection;
+		COLLECTION_ID = collectionId;
+		TO_WATCH = toWatch;
+		HAS_WATCHED = hasWatched;
+		DATE_ADDED = date_added;
+		CERTIFICATION = certification;
+		RUNTIME = runtime.replace("min", "").trim();
+		
+		// getReleaseYear()
+		if (!MizLib.isEmpty(RELEASEDATE)) {
+			String YEAR = RELEASEDATE.trim();
+			try {
+				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
+					mGetReleaseYear = YEAR.substring(0,4);
+				} else {
+					mGetReleaseYear = CONTEXT.getString(R.string.unknownYear);
+				}
+			} catch (Exception e) {
+				if (YEAR.length() == 4)
+					mGetReleaseYear = YEAR;
+				else
+					mGetReleaseYear = CONTEXT.getString(R.string.unknownYear);
+			}
+		} else {
+			mGetReleaseYear = CONTEXT.getString(R.string.unknownYear);
+		}
+		
+		// getFilePath()		
+		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[1] : FILEPATH;
+		mGetFilePath = MizLib.transformSmbPath(temp);
+		
+		// isNetworkFile()
+		mIsNetworkFile = getFilepath().contains("smb:/");
+		
+		// Weighted compatibility
+		mWeightedCompatibility = (int) (getWeightedRating() * 10) + "% " + CONTEXT.getString(R.string.compatibility);
+		
+		// Date added
+		mDateAdded = MizLib.getPrettyDate(CONTEXT, Long.valueOf(getDateAdded()));
+		
+		// Runtime
+		mRuntime = MizLib.getPrettyTime(CONTEXT, Integer.parseInt(getRuntime()));
+		
+		// Release date
+		mReleaseDate = MizLib.getPrettyDate(CONTEXT, getReleasedate());
+	}
+	
 	public boolean toWatch() {
 		return (TO_WATCH.equals("0")) ? false : true;
 	}
@@ -49,6 +110,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		return (getRawRating() + 5) / 2;
 	}
 	
+	public String getWeightedCompatibility() {
+		return mWeightedCompatibility;
+	}
+	
 	public boolean isFavourite() {
 		if (FAVOURITE.equals("1"))
 			return true;
@@ -56,11 +121,15 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getRuntime() {
-		return RUNTIME.replace("min", "").trim();
+		return RUNTIME;
+	}
+	
+	public String getPrettyRuntime() {
+		return mRuntime;
 	}
 
 	public boolean isNetworkFile() {
-		return getFilepath().contains("smb:/");
+		return mIsNetworkFile;
 	}
 	
 	public boolean isUpnpFile() {
@@ -68,8 +137,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getFilepath() {
-		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[1] : FILEPATH;
-		return MizLib.transformSmbPath(temp);
+		return mGetFilePath;
 	}
 	
 	public String getManualIdentificationQuery() {
@@ -85,27 +153,20 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		return RELEASEDATE;
 	}
 	
+	public String getPrettyReleaseDate() {
+		return mReleaseDate;
+	}
+	
 	public String getReleaseYear() {
-		if (!MizLib.isEmpty(RELEASEDATE)) {
-			String YEAR = RELEASEDATE.trim();
-			try {
-				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
-					return "(" + YEAR.substring(0,4) + ")";
-				} else {
-					return CONTEXT.getString(R.string.unknownYear);
-				}
-			} catch (Exception e) {
-				if (YEAR.length() == 4)
-					return YEAR;
-				return CONTEXT.getString(R.string.unknownYear);
-			}
-		} else {
-			return CONTEXT.getString(R.string.unknownYear);
-		}
+		return mGetReleaseYear;
 	}
 	
 	public String getDateAdded() {
 		return DATE_ADDED;
+	}
+	
+	public String getPrettyDateAdded() {
+		return mDateAdded;
 	}
 	
 	public String getGenres() {

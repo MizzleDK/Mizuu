@@ -76,7 +76,7 @@ public class ShowEpisodesFragment extends Fragment {
 
 		fm = getChildFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
-		ft.replace(R.id.seasons, ShowSeasonsFragment.newInstance(showId, !MizLib.isPortrait(getActivity())));
+		ft.replace(R.id.seasons, TvShowSeasonsFragment.newInstance(showId));
 		ft.commit();
 	}
 

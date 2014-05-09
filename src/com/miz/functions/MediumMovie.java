@@ -9,27 +9,10 @@ public class MediumMovie extends MediumBaseMovie {
 	public MediumMovie(Context context, String rowId, String filepath, String title, String tmdbId, String rating, String releasedate,
 			String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
 			String date_added, String certification, String runtime, boolean ignorePrefixes, boolean ignoreNfo) {
-
-		// Set up movie fields based on constructor
-		CONTEXT = context;
-		ROW_ID = rowId;
-		FILEPATH = filepath;
-		TITLE = title;
-		TMDB_ID = tmdbId;
-		RATING = rating;
-		RELEASEDATE = releasedate;
-		GENRES = genres;
-		FAVOURITE = favourite;
-		CAST = cast;
-		COLLECTION = collection;
-		COLLECTION_ID = collectionId;
-		TO_WATCH = toWatch;
-		HAS_WATCHED = hasWatched;
-		DATE_ADDED = date_added;
-		CERTIFICATION = certification;
-		RUNTIME = runtime;
-		this.ignorePrefixes = ignorePrefixes;
-		this.ignoreNfo = ignoreNfo;
+		
+		super(context, rowId, filepath, title, tmdbId, rating, releasedate,
+				genres, favourite, cast, collection, collectionId, toWatch, hasWatched,
+				date_added, certification, runtime, ignorePrefixes, ignoreNfo);
 	}
 	
 }

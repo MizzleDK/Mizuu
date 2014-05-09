@@ -444,5 +444,6 @@
     <string name="playVideo">Play video</string>
     <string name="browser_help_message">Press the Back-button to navigate up the file system</string>
     <string name="unknown_size">Unknown size</string>
+    <string name="compatibility">compatibility</string>
 
 </resources>

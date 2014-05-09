@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.Bitmap.Config;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -47,6 +48,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 	private SharedPreferences settings;
 	private String type;
 	private Picasso mPicasso;
+	private Config mConfig;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -75,6 +77,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 		
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 		
 		type = getArguments().getString("type");
 		if (type.equals(getString(R.string.choiceYouTube))) {
@@ -212,7 +215,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 
 			holder.text.setText(videos.get(position).getTitle());
 			
-			mPicasso.load(videos.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load(videos.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
 			
 			return convertView;
 		}

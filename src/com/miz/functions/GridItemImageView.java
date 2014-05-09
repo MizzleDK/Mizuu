@@ -1,4 +1,5 @@
 package com.miz.functions;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
  */
 public class GridItemImageView extends ImageView {
 
+	private int mWidth, mHeight;
+	
     public GridItemImageView(Context context) {
         super(context);
     }
@@ -24,8 +27,8 @@ public class GridItemImageView extends ImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    	int width = MeasureSpec.getSize(widthMeasureSpec);
-    	int height = (int) (width * 1.5);
-        setMeasuredDimension(width, height);
+    	mWidth = MeasureSpec.getSize(widthMeasureSpec);
+    	mHeight = (int) (mWidth * 1.5);
+        setMeasuredDimension(mWidth, mHeight);
     }
 }

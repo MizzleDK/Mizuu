@@ -262,7 +262,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 			case 0:
 				return TmdbMovieDetailsFragment.newInstance(movieId, jsonString);
 			case 1:
-				return ActorBrowserFragment.newInstance(movieId, true, jsonString, baseUrl);
+				return ActorBrowserFragment.newInstance(movieId, jsonString, baseUrl);
 			case 2:
 				return RelatedMoviesFragment.newInstance(movieId, true, jsonString, baseUrl);
 			}

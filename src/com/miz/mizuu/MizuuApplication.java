@@ -34,10 +34,11 @@ public class MizuuApplication extends Application {
 	private static HashMap<String, String[]> map = new HashMap<String, String[]>();
 	private static Picasso mPicasso;
 	private static LruCache mLruCache;
-	private static File mMovieThumbFolder;
+	private static File mMovieThumbFolder, mTvShowThumbFolder;
 	private static Downloader mDownloader;
 	private static ThreadPoolExecutor mThreadPoolExecutor;
 	private static HashMap<String, Typeface> mTypefaces = new HashMap<String, Typeface>();
+	private static String mMovieThumbFolderPath, mTvShowThumbFolderPath;
 	
 	@Override
 	public void onCreate() {
@@ -136,6 +137,24 @@ public class MizuuApplication extends Application {
 		if (mMovieThumbFolder == null)
 			mMovieThumbFolder = MizLib.getMovieThumbFolder(context);
 		return mMovieThumbFolder;
+	}
+	
+	public static String getMovieThumbFolderPath(Context context) {
+		if (mMovieThumbFolderPath == null)
+			mMovieThumbFolderPath = getMovieThumbFolder(context).getAbsolutePath();
+		return mMovieThumbFolderPath;
+	}
+	
+	public static File getTvShowThumbFolder(Context context) {
+		if (mTvShowThumbFolder == null)
+			mTvShowThumbFolder = MizLib.getTvShowThumbFolder(context);
+		return mTvShowThumbFolder;
+	}
+	
+	public static String getTvShowThumbFolderPath(Context context) {
+		if (mTvShowThumbFolderPath == null)
+			mTvShowThumbFolderPath = getTvShowThumbFolder(context).getAbsolutePath();
+		return mTvShowThumbFolderPath;
 	}
 
 	public static int calculateMemoryCacheSize(Context context) {

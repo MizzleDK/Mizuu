@@ -139,7 +139,7 @@ public class OkHttpDownloader implements Downloader {
 			boolean fromCache = parseResponseSourceHeader(responseSource);
 
 			return new Response(connection.getInputStream(), fromCache);
-		} else {			
+		} else {
 			return new Response(new FileInputStream(imageUri), localCacheOnly);
 		}
 	}

@@ -12,14 +12,12 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -27,7 +25,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.miz.functions.Actor;
@@ -44,7 +41,6 @@ public class ActorBrowserFragment extends Fragment {
 	private ArrayList<Actor> actors = new ArrayList<Actor>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
-	private boolean setBackground;
 	private String json;
 	private Picasso mPicasso;
 
@@ -53,20 +49,18 @@ public class ActorBrowserFragment extends Fragment {
 	 */
 	public ActorBrowserFragment() {}
 
-	public static ActorBrowserFragment newInstance(String movieId, boolean setBackground) { 
+	public static ActorBrowserFragment newInstance(String movieId) { 
 		ActorBrowserFragment pageFragment = new ActorBrowserFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("movieId", movieId);
-		bundle.putBoolean("setBackground", setBackground);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
 
-	public static ActorBrowserFragment newInstance(String movieId, boolean setBackground, String json, String baseUrl) { 
+	public static ActorBrowserFragment newInstance(String movieId, String json, String baseUrl) { 
 		ActorBrowserFragment pageFragment = new ActorBrowserFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("movieId", movieId);
-		bundle.putBoolean("setBackground", setBackground);
 		bundle.putString("json", json);
 		bundle.putString("baseUrl", baseUrl);
 		pageFragment.setArguments(bundle);
@@ -78,8 +72,6 @@ public class ActorBrowserFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-
-		setBackground = getArguments().getBoolean("setBackground");
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);	
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -103,8 +95,7 @@ public class ActorBrowserFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		if (setBackground && !MizLib.isPortrait(getActivity()))
-			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
+		v.findViewById(R.id.container).setBackgroundResource(R.color.light_background);
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
@@ -125,9 +116,7 @@ public class ActorBrowserFragment extends Fragment {
 							final int numColumns = (int) Math.floor(
 									mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
-								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
-								mAdapter.setItemHeight(columnWidth);
 							}
 						}
 					}
@@ -165,19 +154,14 @@ public class ActorBrowserFragment extends Fragment {
 
 	private class ImageAdapter extends BaseAdapter {
 
-		private Drawable gray;
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mItemHeight = 0;
 		private int mNumColumns = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			gray = getResources().getDrawable(R.drawable.gray);
 		}
 
 		@Override
@@ -210,26 +194,19 @@ public class ActorBrowserFragment extends Fragment {
 			CoverItem holder;
 
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item_cover, container, false);
+				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
-				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
+
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-				holder.text.setVisibility(View.VISIBLE);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				holder.subtext.setVisibility(View.VISIBLE);
-				
-				// Check the height matches our calculated column width
-				if (holder.layout.getLayoutParams().height != mItemHeight) {
-					holder.layout.setLayoutParams(mImageViewLayoutParams);
-				}
 				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-
-			holder.cover.setImageDrawable(gray);
+			
+			holder.cover.setImageBitmap(null);
 			
 			holder.text.setText(actors.get(position).getName());
 			holder.subtext.setText(actors.get(position).getCharacter().equals("null") ? "" : actors.get(position).getCharacter());
@@ -242,17 +219,6 @@ public class ActorBrowserFragment extends Fragment {
 				holder.cover.setImageResource(R.drawable.noactor);
 
 			return convertView;
-		}
-
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 1.5));
 		}
 
 		public void setNumColumns(int numColumns) {

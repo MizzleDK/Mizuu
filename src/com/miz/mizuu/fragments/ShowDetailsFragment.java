@@ -1,9 +1,5 @@
 package com.miz.mizuu.fragments;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -172,42 +168,10 @@ public class ShowDetailsFragment extends Fragment {
 		}
 
 		// Set the show runtime
-		try {
-			int hours = Integer.parseInt(thisShow.getRuntime()) / 60;
-			int minutes = Integer.parseInt(thisShow.getRuntime()) % 60;
-			String hours_string = hours + " " + getResources().getQuantityString(R.plurals.hour, hours, hours);
-			String minutes_string = minutes + " " + getResources().getQuantityString(R.plurals.minute, minutes, minutes);
-			if (hours > 0) {
-				if (minutes == 0)
-					textRuntime.setText(hours_string);
-				else
-					textRuntime.setText(hours_string + " " + minutes_string);
-			} else {
-				textRuntime.setText(minutes_string);
-			}
-		} catch (Exception e) { // Fall back if something goes wrong
-			if (!MizLib.isEmpty(thisShow.getRuntime())) {
-				textRuntime.setText(thisShow.getRuntime() + " " + getString(R.string.minutes));
-			} else {
-				textRuntime.setText(R.string.stringNA);
-			}
-		}
+		textRuntime.setText(MizLib.getPrettyTime(getActivity(), Integer.parseInt(thisShow.getRuntime())));
 
-		// Set the genre first aired date
-		try {
-			String[] date = thisShow.getFirstAirdate().split("-");
-			Calendar cal = Calendar.getInstance();
-			cal.set(Integer.parseInt(date[0]), Integer.parseInt(date[1]) - 1, Integer.parseInt(date[2]));
-
-			textReleaseDate.setText(DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault()).format(cal.getTime()));
-		} catch (Exception e) { // Fall back if something goes wrong
-			if (!MizLib.isEmpty(thisShow.getFirstAirdate())) {
-				textReleaseDate.setText(thisShow.getFirstAirdate());
-			} else {
-				textReleaseDate.setText(R.string.stringNA);
-				
-			}
-		}
+		// Set the first aired date
+		textReleaseDate.setText(MizLib.getPrettyDate(getActivity(), thisShow.getFirstAirdate()));
 
 		// Set the show rating
 		if (!thisShow.getRating().equals("0.0/10")) {

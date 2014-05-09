@@ -16,7 +16,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -3215,5 +3217,59 @@ public class MizLib {
 	    } finally {
 	        conn.disconnect();
 	    }
+	}
+	
+	public static String getPrettyTime(Context context, int minutes) {
+		try {
+			int hours = (minutes / 60);
+			minutes = (minutes % 60);
+			String hours_string = hours + " " + context.getResources().getQuantityString(R.plurals.hour, hours, hours);
+			String minutes_string = minutes + " " + context.getResources().getQuantityString(R.plurals.minute, minutes, minutes);
+			if (hours > 0) {
+				if (minutes == 0)
+					return hours_string;
+				else
+					return hours_string + " " + minutes_string;
+			} else {
+				return minutes_string;
+			}
+		} catch (Exception e) { // Fall back if something goes wrong
+			if (minutes >= 0) {
+				return String.valueOf(minutes);
+			} else {
+				return context.getString(R.string.stringNA);
+			}
+		}
+	}
+	
+	public static String getPrettyDate(Context context, String date) {
+		if (!MizLib.isEmpty(date)) {
+			try {
+				String[] dateArray = date.split("-");
+				Calendar cal = Calendar.getInstance();
+				cal.set(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
+
+				return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault()).format(cal.getTime());
+			} catch (Exception e) { // Fall back if something goes wrong
+				return date;
+			}
+		} else {
+			return context.getString(R.string.stringNA);
+		}
+	}
+	
+	public static String getPrettyDate(Context context, long millis) {
+		if (millis > 0) {
+			try {
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(millis);
+
+				return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault()).format(cal.getTime());
+			} catch (Exception e) { // Fall back if something goes wrong
+				return String.valueOf(millis);
+			}
+		} else {
+			return context.getString(R.string.stringNA);
+		}
 	}
 }

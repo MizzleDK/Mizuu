@@ -19,7 +19,7 @@ public class MizActivity extends FragmentActivity implements OnSharedPreferenceC
 		super.onCreate(savedInstanceState);
 
 		mFullscreen = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false);
-
+		
 		if (isFullscreen())
 			setTheme(R.style.Theme_Example_FullScreen);
 

@@ -48,6 +48,15 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
     </style>
+    
+    <style name="Theme.Example.Light" parent="@style/Theme.Example">
+        <item name="android:windowBackground">@color/light_background</item>
+    </style>
+    
+    <style name="Theme.Example.Light.FullScreen" parent="@style/Theme.Example">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/light_background</item>
+    </style>
 
     <style name="Theme.Example" parent="@android:style/Theme.Holo">
         <item name="android:listSelector">@drawable/list_selector</item>

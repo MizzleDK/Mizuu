@@ -765,7 +765,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			case 0:
 				return MovieDetailsFragment.newInstance(movieId);
 			case 1:
-				return ActorBrowserFragment.newInstance(thisMovie.getTmdbId(), true);
+				return ActorBrowserFragment.newInstance(thisMovie.getTmdbId());
 			}
 			return null;
 		}  

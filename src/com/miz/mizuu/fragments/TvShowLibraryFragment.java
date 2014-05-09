@@ -23,7 +23,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -37,7 +37,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -46,7 +45,6 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SectionIndexer;
@@ -81,12 +79,13 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	private ProgressBar pbar;
 	private TextView overviewMessage;
 	private Button updateMovieLibrary;
-	private boolean showGridTitles, ignorePrefixes;
+	private boolean ignorePrefixes, mLoading;
 	private ActionBar actionBar;
 	private Picasso mPicasso;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private SearchTask mSearch;
+	private Config mConfig;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -112,7 +111,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
 		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
 
 		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
@@ -123,6 +121,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		mAdapter = new LoaderAdapter(getActivity());
 	}
@@ -173,39 +172,56 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+			mLoading = true;
 			return new SQLiteCursorLoader(getActivity(), DbHelperTvShow.getHelper(getActivity()), DbAdapterTvShow.DATABASE_TABLE, DbAdapterTvShow.SELECT_ALL, "NOT(" + DbAdapterTvShow.KEY_SHOW_ID + " = 'invalid')", null, null, null, DbAdapterTvShow.KEY_SHOW_TITLE + " ASC");
 		}
 
 		@Override
-		public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
-			shows.clear();
-			shownShows.clear();
-
-			try {
-				while (cursor.moveToNext()) {
-					shows.add(new TvShow(
-							getActivity(),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
-							ignorePrefixes,
-							cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
-							));
+		public void onLoadFinished(Loader<Cursor> arg0, final Cursor cursor) {
+			AsyncTask<Void, Void, Void> load = new AsyncTask<Void, Void, Void>() {
+				@Override
+				protected void onPreExecute() {
+					shows.clear();
+					shownShows.clear();
 				}
-			} catch (Exception e) {}
-			finally {
-				cursor.close();
-			}
 
-			shownShows.addAll(shows);
+				@Override
+				protected Void doInBackground(Void... params) {
+					try {
+						while (cursor.moveToNext()) {
+							shows.add(new TvShow(
+									getActivity(),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+									ignorePrefixes,
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
+									));
+						}
+					} catch (Exception e) {}
+					finally {
+						cursor.close();
+					}
+					return null;
+				}
 
-			showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
+				@Override
+				protected void onPostExecute(Void result) {
+					shownShows.addAll(shows);
+
+					showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
+
+					mLoading = false;
+				}
+
+			};
+			load.execute();
 		}
 
 		@Override
@@ -255,9 +271,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 						if (mAdapter.getNumColumns() == 0) {
 							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
-								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
-								mAdapter.setItemHeight(columnWidth);
 							}
 							if (MizLib.hasJellyBean()) {
 								mGridView.getViewTreeObserver()
@@ -304,20 +318,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	private class LoaderAdapter extends BaseAdapter implements SectionIndexer {
 
-		private Drawable gray;
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mItemHeight = 0;
 		private int mNumColumns = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
 		private Object[] sections;
 
 		public LoaderAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			gray = getResources().getDrawable(R.drawable.gray);
 		}
 
 		@Override
@@ -350,46 +359,25 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 			CoverItem holder;
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item_cover, container, false);
+				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
-				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
+
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-
-				// Check the height matches our calculated column width
-				if (holder.layout.getLayoutParams().height != mItemHeight) {
-					holder.layout.setLayoutParams(mImageViewLayoutParams);
-				}
+				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
+			holder.cover.setImageBitmap(null);
 			holder.text.setText(shownShows.get(position).getTitle());
+			holder.subtext.setText(shownShows.get(position).getFirstAirdateYear());
 
-			if (showGridTitles) {
-				holder.text.setVisibility(TextView.VISIBLE);
-			} else {
-				holder.text.setVisibility(TextView.GONE);
-			}
-
-			holder.cover.setImageDrawable(gray);
-
-			mPicasso.load(shownShows.get(position).getThumbnail()).config(MizuuApplication.getBitmapConfig()).into(holder);
+			mPicasso.load(shownShows.get(position).getThumbnail()).config(mConfig).into(holder);
 
 			return convertView;
-		}
-
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(mItemHeight, (int) (mItemHeight * 1.5));
 		}
 
 		public void setNumColumns(int numColumns) {
@@ -482,7 +470,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		showCollectionBasedOnNavigationIndex(itemPosition);
+		if (!mLoading)
+			showCollectionBasedOnNavigationIndex(itemPosition);
 		return true;
 	}
 
@@ -722,122 +711,113 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		showProgressBar();
 
-		new Thread() {
-			@Override
-			public void run() {
-				ArrayList<TvShow> tempShows = new ArrayList<TvShow>(shownShows);
+		ArrayList<TvShow> tempShows = new ArrayList<TvShow>(shownShows);
 
-				switch (sort) {	
-				case TITLE:
+		switch (sort) {	
+		case TITLE:
 
-					Collections.sort(tempShows, new Comparator<TvShow>() {
-						@Override
-						public int compare(TvShow o1, TvShow o2) {
-							String s1 = o1.getTitle(), s2 = o2.getTitle();
-							if (s1 != null && s2 != null)
-								return s1.compareToIgnoreCase(s2);
-							return 0;
-						}
-					});
-
-					break;
-
-				case RELEASE:
-					Collections.sort(tempShows, new Comparator<TvShow>() {
-						@Override
-						public int compare(TvShow o1, TvShow o2) {	
-							try {
-								return o1.getFirstAirdate().compareTo(o2.getFirstAirdate()) * -1;
-							} catch (Exception e) {
-								return 0;
-							}
-						}
-					});
-
-					break;
-
-				case RATING:
-
-					Collections.sort(tempShows, new Comparator<TvShow>() {
-						@Override
-						public int compare(TvShow o1, TvShow o2) {
-							try {
-								if (o1.getRawRating() < o2.getRawRating())
-									return 1;
-								else if (o1.getRawRating() > o2.getRawRating())
-									return -1;
-							} catch (Exception e) {}
-							return 0;
-						}
-					});
-
-					break;
-
-				case WEIGHTED_RATING:
-
-					Collections.sort(tempShows, new Comparator<TvShow>() {
-						@Override
-						public int compare(TvShow o1, TvShow o2) {
-							try {
-								if (o1.getWeightedRating() < o2.getWeightedRating()) {
-									return 1;
-								} else if (o1.getWeightedRating() > o2.getWeightedRating())
-									return -1;
-							} catch (Exception e) {}
-							return 0;
-						}
-					});
-
-					break;
-
-				case NEWEST_EPISODE:
-
-					final DbAdapterTvShowEpisode dbTvShowEpisode = MizuuApplication.getTvEpisodeDbAdapter();
-					Collections.sort(tempShows, new Comparator<TvShow>() {
-						@Override
-						public int compare(TvShow o1, TvShow o2) {
-							String first = dbTvShowEpisode.getLatestEpisodeAirdate(o1.getId());
-							String second = dbTvShowEpisode.getLatestEpisodeAirdate(o2.getId());
-							return first.compareTo(second) * -1;
-						}
-					});
-
-					break;
-
-				case DURATION:
-
-					Collections.sort(tempShows, new Comparator<TvShow>() {
-						@Override
-						public int compare(TvShow o1, TvShow o2) {
-
-							int first = Integer.valueOf(o1.getRuntime());
-							int second = Integer.valueOf(o2.getRuntime());
-
-							if (first < second)
-								return 1;
-							else if (first > second)
-								return -1;
-
-							return 0;
-						}
-					});
+			Collections.sort(tempShows, new Comparator<TvShow>() {
+				@Override
+				public int compare(TvShow o1, TvShow o2) {
+					String s1 = o1.getTitle(), s2 = o2.getTitle();
+					if (s1 != null && s2 != null)
+						return s1.compareToIgnoreCase(s2);
+					return 0;
 				}
+			});
 
-				shownShows = new ArrayList<TvShow>(tempShows);
+			break;
 
-				// Clean up on aisle three...
-				tempShows.clear();
+		case RELEASE:
+			Collections.sort(tempShows, new Comparator<TvShow>() {
+				@Override
+				public int compare(TvShow o1, TvShow o2) {	
+					try {
+						return o1.getFirstAirdate().compareTo(o2.getFirstAirdate()) * -1;
+					} catch (Exception e) {
+						return 0;
+					}
+				}
+			});
 
-				if (isAdded())
-					getActivity().runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							hideProgressBar();
-							notifyDataSetChanged();
-						}
-					});
-			}
-		}.start();
+			break;
+
+		case RATING:
+
+			Collections.sort(tempShows, new Comparator<TvShow>() {
+				@Override
+				public int compare(TvShow o1, TvShow o2) {
+					try {
+						if (o1.getRawRating() < o2.getRawRating())
+							return 1;
+						else if (o1.getRawRating() > o2.getRawRating())
+							return -1;
+					} catch (Exception e) {}
+					return 0;
+				}
+			});
+
+			break;
+
+		case WEIGHTED_RATING:
+
+			Collections.sort(tempShows, new Comparator<TvShow>() {
+				@Override
+				public int compare(TvShow o1, TvShow o2) {
+					try {
+						if (o1.getWeightedRating() < o2.getWeightedRating()) {
+							return 1;
+						} else if (o1.getWeightedRating() > o2.getWeightedRating())
+							return -1;
+					} catch (Exception e) {}
+					return 0;
+				}
+			});
+
+			break;
+
+		case NEWEST_EPISODE:
+
+			final DbAdapterTvShowEpisode dbTvShowEpisode = MizuuApplication.getTvEpisodeDbAdapter();
+			Collections.sort(tempShows, new Comparator<TvShow>() {
+				@Override
+				public int compare(TvShow o1, TvShow o2) {
+					String first = dbTvShowEpisode.getLatestEpisodeAirdate(o1.getId());
+					String second = dbTvShowEpisode.getLatestEpisodeAirdate(o2.getId());
+					return first.compareTo(second) * -1;
+				}
+			});
+
+			break;
+
+		case DURATION:
+
+			Collections.sort(tempShows, new Comparator<TvShow>() {
+				@Override
+				public int compare(TvShow o1, TvShow o2) {
+
+					int first = Integer.valueOf(o1.getRuntime());
+					int second = Integer.valueOf(o2.getRuntime());
+
+					if (first < second)
+						return 1;
+					else if (first > second)
+						return -1;
+
+					return 0;
+				}
+			});
+		}
+
+		shownShows = new ArrayList<TvShow>(tempShows);
+
+		// Clean up on aisle three...
+		tempShows.clear();
+
+		hideProgressBar();
+		notifyDataSetChanged();
+
+
 	}
 
 	private void showGenres() {
@@ -1045,13 +1025,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 			if (numColumns > 0) {
-				final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 				mAdapter.setNumColumns(numColumns);
-				mAdapter.setItemHeight(columnWidth);
 			}
 		}
-
-		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
 
 		sortShows();
 		notifyDataSetChanged();

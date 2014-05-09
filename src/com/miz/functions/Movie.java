@@ -12,64 +12,46 @@ public class Movie extends MediumBaseMovie {
 
 	private MovieVersion[] mVersions = new MovieVersion[0];
 	private String PLOT, TAGLINE, IMDB_ID, TRAILER, COVER;
+	
+	private String mGetPlot, mGetTagline;
 
 	public Movie(Context context, String rowId, String filepath, String title, String plot, String tagline, String tmdbId, String imdbId, String rating, String releasedate,
 			String certification, String runtime, String trailer, String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
 			String cover, String date_added, boolean ignorePrefixes, boolean ignoreNfo) {
 
+		super(context, rowId, filepath, title, tmdbId, rating, releasedate,
+				genres, favourite, cast, collection, collectionId, toWatch, hasWatched,
+				date_added, certification, runtime, ignorePrefixes, ignoreNfo);
+		
 		// Set up movie fields based on constructor
-		CONTEXT = context;
-		ROW_ID = rowId;
-		FILEPATH = filepath;
-		TITLE = title;
 		PLOT = plot;
 		TAGLINE = tagline;
 		TMDB_ID = tmdbId;
 		IMDB_ID = imdbId;
-		RATING = rating;
-		RELEASEDATE = releasedate;
-		CERTIFICATION = certification;
-		RUNTIME = runtime;
 		TRAILER = trailer;
-		GENRES = genres;
-		FAVOURITE = favourite;
-		CAST = cast;
-		COLLECTION = collection;
-		COLLECTION_ID = collectionId;
-		TO_WATCH = toWatch;
-		HAS_WATCHED = hasWatched;
 		COVER = cover;
-		DATE_ADDED = date_added;
-		this.ignorePrefixes = ignorePrefixes;
-		this.ignoreNfo = ignoreNfo;
-	}
-
-	/**
-	 * This is only used for the SectionIndexer in the overview
-	 */
-	@Override
-	public String toString() {
-		try {
-			return getTitle().substring(0, 1);
-		} catch (Exception e) {
-			return "";
+		
+		// getPlot()
+		if (PLOT == null || PLOT.isEmpty()) {
+			mGetPlot = CONTEXT.getString(R.string.stringNoPlot);
+		} else {
+			mGetPlot = PLOT;
+		}
+		
+		// getTagline()
+		if (TAGLINE == null) {
+			mGetTagline = "";
+		} else {
+			mGetTagline = TAGLINE;
 		}
 	}
 
 	public String getPlot() {
-		if (PLOT == null || PLOT.isEmpty()) {
-			return CONTEXT.getString(R.string.stringNoPlot);
-		} else {
-			return PLOT;
-		}
+		return mGetPlot;
 	}
 
 	public String getTagline() {
-		if (TAGLINE == null) {
-			return "";
-		} else {
-			return TAGLINE;
-		}
+		return mGetTagline;
 	}
 
 	public String getPoster() {

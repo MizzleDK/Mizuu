@@ -14,26 +14,46 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 	protected String ROW_ID, FILEPATH, TITLE, TMDB_ID;
 	protected boolean ignorePrefixes, ignoreNfo;
 
-	public String getRowId() {
-		return ROW_ID;
-	}
+	protected String mGetThumbnail;
 
-	public String getTitle() {
+	public BaseMovie(Context context, String rowId, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
+		// Set up movie fields based on constructor
+		CONTEXT = context;
+		ROW_ID = rowId;
+		FILEPATH = filepath;
+		TITLE = title;
+		TMDB_ID = tmdbId;
+		this.ignorePrefixes = ignorePrefixes;
+		this.ignoreNfo = ignoreNfo;
+
+		// getTitle()
 		if (TITLE == null || TITLE.isEmpty()) {
 			File fileName = new File(FILEPATH);
-			return fileName.getName().substring(0, fileName.getName().lastIndexOf("."));
+			TITLE = fileName.getName().substring(0, fileName.getName().lastIndexOf("."));
 		} else {
 			if (ignorePrefixes) {
 				String temp = TITLE.toLowerCase(Locale.ENGLISH);
 				String[] prefixes = MizLib.getPrefixes(CONTEXT);
 				int count = prefixes.length;
 				for (int i = 0; i < count; i++) {
-					if (temp.startsWith(prefixes[i]))
-						return TITLE.substring(prefixes[i].length());
+					if (temp.startsWith(prefixes[i])) {
+						TITLE = TITLE.substring(prefixes[i].length());
+						break;
+					}
 				}
 			}
-			return TITLE;
 		}
+		
+		// getThumbnail()
+		mGetThumbnail = MizuuApplication.getMovieThumbFolderPath(CONTEXT) + "/" + TMDB_ID + ".jpg";
+	}
+
+	public String getRowId() {
+		return ROW_ID;
+	}
+
+	public String getTitle() {
+		return TITLE;
 	}
 
 	/**
@@ -94,7 +114,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		}
 
 		// New naming style
-		return new File(MizuuApplication.getMovieThumbFolder(CONTEXT), TMDB_ID + ".jpg").getAbsolutePath();
+		return mGetThumbnail;
 	}
 
 	public String getBackdrop() {

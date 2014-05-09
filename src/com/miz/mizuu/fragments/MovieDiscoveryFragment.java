@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -53,7 +54,8 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	private DbAdapter db;
 	private Picasso mPicasso;
 	private String json, baseUrl;
-
+	private Config mConfig;
+	
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
@@ -86,6 +88,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 	}
 
 	@Override
@@ -236,7 +239,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 			}
 
 			if (!pics_sources.get(position).getUrl().contains("null"))
-				mPicasso.load(pics_sources.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+				mPicasso.load(pics_sources.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
 			else
 				holder.cover.setImageResource(R.drawable.loading_image);
 

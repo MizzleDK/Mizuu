@@ -70,6 +70,11 @@ public class Main extends MizActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false))
+			setTheme(R.style.Theme_Example_Light_FullScreen);
+		else
+			setTheme(R.style.Theme_Example_Light);
+		
 		setContentView(R.layout.menu_drawer);
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);

@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -256,41 +254,10 @@ public class MovieDetailsFragment extends Fragment {
 		}
 
 		// Set the movie runtime
-		try {
-			int hours = Integer.parseInt(thisMovie.getRuntime()) / 60;
-			int minutes = Integer.parseInt(thisMovie.getRuntime()) % 60;
-			String hours_string = hours + " " + getResources().getQuantityString(R.plurals.hour, hours, hours);
-			String minutes_string = minutes + " " + getResources().getQuantityString(R.plurals.minute, minutes, minutes);
-			if (hours > 0) {
-				if (minutes == 0)
-					textRuntime.setText(hours_string);
-				else
-					textRuntime.setText(hours_string + " " + minutes_string);
-			} else {
-				textRuntime.setText(minutes_string);
-			}
-		} catch (Exception e) { // Fall back if something goes wrong
-			if (!MizLib.isEmpty(thisMovie.getRuntime())) {
-				textRuntime.setText(thisMovie.getRuntime());
-			} else {
-				textRuntime.setText(R.string.stringNA);
-			}
-		}
+		textRuntime.setText(MizLib.getPrettyTime(getActivity(), Integer.parseInt(thisMovie.getRuntime())));
 
 		// Set the movie release date
-		if (!MizLib.isEmpty(thisMovie.getReleasedate())) {
-			try {
-				String[] date = thisMovie.getReleasedate().split("-");
-				Calendar cal = Calendar.getInstance();
-				cal.set(Integer.parseInt(date[0]), Integer.parseInt(date[1]) - 1, Integer.parseInt(date[2]));
-
-				textReleaseDate.setText(DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault()).format(cal.getTime()));
-			} catch (Exception e) { // Fall back if something goes wrong
-				textReleaseDate.setText(thisMovie.getReleasedate());
-			}
-		} else {
-			textReleaseDate.setText(R.string.stringNA);
-		}
+		textReleaseDate.setText(MizLib.getPrettyDate(getActivity(), thisMovie.getReleasedate()));
 
 		// Set the movie rating
 		if (!thisMovie.getRating().equals("0.0/10")) {

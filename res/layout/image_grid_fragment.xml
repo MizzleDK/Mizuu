@@ -17,10 +17,12 @@
         android:horizontalSpacing="@dimen/image_thumbnail_spacing"
         android:nextFocusLeft="@android:id/home"
         android:numColumns="auto_fit"
+        android:padding="@dimen/image_thumbnail_spacing"
         android:scrollingCache="false"
         android:smoothScrollbar="true"
         android:stretchMode="columnWidth"
         android:verticalSpacing="@dimen/image_thumbnail_spacing" >
+
     </GridView>
 
     <ProgressBar
