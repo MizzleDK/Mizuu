@@ -15,6 +15,11 @@ Dependencies
 
 Mizuu uses a number of third-party libraries, which are all included in the lib folder of this repo. Additionally, you'll need StickyGridHeaders in your workspace, as Mizuu uses it as a reference: https://github.com/TonicArtos/StickyGridHeaders
 
+Contributing
+------------
+
+If you want to contribute to Mizuu's development, there's plenty of ways to do it. You can read about it in [CONTRIBUTING.md][2].
+
 License
 -------
 
@@ -33,3 +38,4 @@ License
     limitations under the License.
 
   [1]: http://i.imgur.com/mvwzN67.jpg
+  [2]: https://github.com/MizzleDK/Mizuu/blob/master/CONTRIBUTING.md
