@@ -1,9 +1,9 @@
-![image alt][1]
-
 Mizuu - media indexer for Android
 =====
 
 This GitHub repository houses the source code of the Mizuu application for Android.
+
+![image alt][1]
 
 License
 -------
