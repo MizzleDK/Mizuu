@@ -21,9 +21,9 @@
     <string name="removeMovie">Verwijder film</string>
     <string name="removeEpisode">Verwijder aflevering</string>
     <string name="removeShow">Verwijder serie</string>
-    <string name="failedToRemoveMovie">Kon film niet verwijderen! </string>
-    <string name="failedToRemoveShow">Kon TV-serie niet verwijderen!</string>
-    <string name="failedToRemoveEpisode">Kon aflevering niet verwijderen!</string>
+    <string name="failedToRemoveMovie">Kan film niet verwijderen! </string>
+    <string name="failedToRemoveShow">Kan TV-serie niet verwijderen!</string>
+    <string name="failedToRemoveEpisode">Kan aflevering niet verwijderen!</string>
     <string name="identifyMovieTitle">Film identificeren</string>
     <string name="identifyEpisodeTitle">Aflevering identificeren</string>
     <string name="identifyShow">TV-serie identificeren</string>
@@ -159,7 +159,7 @@
     <string name="send">Versturen</string>
     <string name="enterAMessage">Voer een bericht in!</string>
     <string name="launchingGmail">Gmail openen&#8230;</string>
-    <string name="failedGmailLaunch">"Kon Gmail niet openen"</string>
+    <string name="failedGmailLaunch">"Kan Gmail niet openen"</string>
     <string name="problem">Probleem</string>
     <string name="other">Overig</string>
     <string name="suggestion">Suggestie</string>
@@ -341,7 +341,7 @@
     <string name="finishedTvShowsLibraryUpdate">TV-series bijwerken gereed</string>
     <string name="stopFileDownload">Stoppen met downloaden van bestand</string>
     <string name="scanning">Scannen</string>
-    <string name="failedDeleting">Kon bestand niet verwijderen!</string>
+    <string name="failedDeleting">Kan bestand niet verwijderen!</string>
     <string name="alwaysDeleteFileTitle">Bestand altijd verwijderen bij weghalen van de inhoud</string>
     <string name="alwaysDeleteFile">Automatisch de \"Verwijder bestand\"-optie aanvinken bij het verwijderen van een film of TV-aflevering.</string>
     <string name="gettingReady">Gereed maken&#8230;</string>
