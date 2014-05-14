@@ -5,6 +5,11 @@ This GitHub repository houses the source code of the Mizuu application for Andro
 
 ![image alt][1]
 
+Issues and suggestions
+----------------------
+
+Please use this link for issue tracking and suggestions: https://github.com/MizzleDK/MizuuApp/issues
+
 License
 -------
 
