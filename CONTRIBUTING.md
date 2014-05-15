@@ -20,7 +20,7 @@ The repository is made up of two main branches: master (stable) and dev (unstabl
 * **master** has the latest stable code, its tags are released as versions of Mizuu on GitHub, www.mizuu.tv and Google Play.
 * **dev** includes the latest unstable code from contributers (you!).
 
-Since Mizuu was just recently open-sourced, there's still some work to do with branching and the overall structure of the development, but this is on the to-do list. 
+Since Mizuu was just recently open-sourced, there's still some work to do with branching and the overall structure of the development, but this is on the to-do list. For now, use the tagged commits as release versions.
 
 Setup
 -----
