@@ -207,7 +207,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				holder = (CoverItem) convertView.getTag();
 			}
 			
-			holder.cover.setImageResource(android.R.color.transparent);
+			holder.cover.setImageResource(android.R.color.white);
 			holder.text.setText(pics_sources.get(position).getTitle());
 
 			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {

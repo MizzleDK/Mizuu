@@ -13,12 +13,14 @@
             android:key="prefsIgnorePrefixesInTitles"
             android:summary="@string/ignoreMoviePrefixesDescription"
             android:title="@string/ignoreMoviePrefixes" />
-        <!-- <CheckBoxPreference
+        <!--
+             <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/backdrops"
             android:key="prefsLoadImagesWhileScrolling"
             android:summary="@string/loadImagesWhileScrollingDescription"
-            android:title="@string/loadImagesWhileScrolling" /> -->
+            android:title="@string/loadImagesWhileScrolling" />
+        -->
         <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_action_expand"
@@ -30,9 +32,10 @@
             android:defaultValue="@string/normal"
             android:entries="@array/grid_item_size"
             android:entryValues="@array/grid_item_size"
+            android:icon="@drawable/ic_action_tiles_large"
             android:key="prefsGridItemSize"
             android:summary="@string/overviewGridItemSizeDescription"
-            android:title="@string/overviewGridItemSizeTitle" android:icon="@drawable/ic_action_tiles_large"/>
+            android:title="@string/overviewGridItemSizeTitle" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/chooserTVShows" >
         <ListPreference

@@ -80,21 +80,19 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	public static final String ALL = "ALL", AVAILABLE = "AVAILABLE", FAVORITES = "FAVORITES", WATCHLIST = "WATCHLIST", COLLECTIONS = "COLLECTIONS";
 
 	private SharedPreferences settings;
-	private int mImageThumbSize, mImageThumbSpacing;
+	private int mImageThumbSize, mImageThumbSpacing, type, mResizedWidth, mResizedHeight, mCurrentSort;
 	private LoaderAdapter mAdapter;
 	private ArrayList<MediumMovie> movies = new ArrayList<MediumMovie>(), shownMovies = new ArrayList<MediumMovie>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
 	private TextView overviewMessage;
 	private Button updateMovieLibrary;
-	private boolean ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo, mLoading;
+	private boolean ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo, mLoading, mShowTitles;
 	private ActionBar actionBar;
-	private int type;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private Picasso mPicasso;
 	private Config mConfig;
-	private int mCurrentSort;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -129,6 +127,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
 		ignoreNfo = settings.getBoolean("prefsIgnoreNfoFiles", true);
 		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
+		mShowTitles = settings.getBoolean("prefsShowGridTitles", true);
 
 		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
 		if (thumbnailSize.equals(getString(R.string.normal))) 
@@ -209,7 +208,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					movies.clear();
 					shownMovies.clear();
 				}
-				
+
 				@Override
 				protected Void doInBackground(Void... params) {
 					try {
@@ -246,7 +245,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					finally {
 						cursor.close();
 					}
-					
+
 					if (type == MAIN)
 						shownMovies.addAll(movies);
 					else {
@@ -257,17 +256,17 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					}
 					return null;
 				}
-				
+
 				@Override
 				protected void onPostExecute(Void result) {
 
 
 
 					showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
-					
+
 					mLoading = false;
 				}
-				
+
 			};
 			load.execute();
 		}
@@ -325,7 +324,11 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
 								mAdapter.setNumColumns(numColumns);
+								mResizedWidth = (int) (((mGridView.getWidth() - (numColumns * mImageThumbSpacing))
+										/ numColumns) * 1.1); // * 1.1 is a hack to make images look slightly less blurry
+								mResizedHeight = (int) (mResizedWidth * 1.5);
 							}
+
 							if (MizLib.hasJellyBean()) {
 								mGridView.getViewTreeObserver()
 								.removeOnGlobalLayoutListener(this);
@@ -378,7 +381,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0;
+		private int mNumColumns = 0, mSidePadding, mBottomPadding;
 		private Object[] sections;
 		private boolean isCollections = false;
 
@@ -386,6 +389,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
+			mBottomPadding = MizLib.convertDpToPixels(mContext, 2);
 		}
 
 		@Override
@@ -415,7 +420,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
-			
+
 			CoverItem holder;
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
@@ -430,38 +435,51 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder = (CoverItem) convertView.getTag();
 			}
 			
-			holder.cover.setImageResource(android.R.color.transparent);
-			
-			switch (mCurrentSort) {
-			case DURATION:
-				holder.subtext.setText(shownMovies.get(position).getPrettyRuntime());
-				break;
-			case RATING:
-				holder.subtext.setText((int)(shownMovies.get(position).getRawRating() * 10) + "%");
-				break;
-			case WEIGHTED_RATING:
-				holder.subtext.setText(shownMovies.get(position).getWeightedCompatibility());
-				break;
-			case DATE:
-				holder.subtext.setText(shownMovies.get(position).getPrettyDateAdded());
-				break;
-			case RELEASE:
-				holder.subtext.setText(shownMovies.get(position).getPrettyReleaseDate());
-				break;
-			default:
-				holder.subtext.setText(shownMovies.get(position).getReleaseYear());
-				break;
+			if (!mShowTitles) {
+				holder.text.setVisibility(View.GONE);
+				holder.subtext.setVisibility(View.GONE);
+				holder.cover.setPadding(mSidePadding, 0, mSidePadding, mBottomPadding);
+			} else {
+				holder.text.setVisibility(View.VISIBLE);
+				holder.subtext.setVisibility(View.VISIBLE);
 			}
 
+			if (mShowTitles) {
+				switch (mCurrentSort) {
+				case DURATION:
+					holder.subtext.setText(shownMovies.get(position).getPrettyRuntime());
+					break;
+				case RATING:
+					holder.subtext.setText((int)(shownMovies.get(position).getRawRating() * 10) + "%");
+					break;
+				case WEIGHTED_RATING:
+					holder.subtext.setText(shownMovies.get(position).getWeightedCompatibility());
+					break;
+				case DATE:
+					holder.subtext.setText(shownMovies.get(position).getPrettyDateAdded());
+					break;
+				case RELEASE:
+					holder.subtext.setText(shownMovies.get(position).getPrettyReleaseDate());
+					break;
+				default:
+					holder.subtext.setText(shownMovies.get(position).getReleaseYear());
+					break;
+				}
+			}
+
+			holder.cover.setImageResource(android.R.color.white);
+
 			if (isCollections) {
-				mPicasso.load(shownMovies.get(position).getCollectionPoster()).config(mConfig).into(holder);
-				holder.text.setText(shownMovies.get(position).getCollection());
+				mPicasso.load(shownMovies.get(position).getCollectionPoster()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+				if (mShowTitles)
+					holder.text.setText(shownMovies.get(position).getCollection());
 			} else { // Movies
-				holder.text.setText(shownMovies.get(position).getTitle());
+				if (mShowTitles)
+					holder.text.setText(shownMovies.get(position).getTitle());
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
-					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
+					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 				} else {
-					mPicasso.load(shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
+					mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 				}
 			}
 
@@ -1425,10 +1443,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			if (numColumns > 0) {
 				mAdapter.setNumColumns(numColumns);
 			}
+			
+			notifyDataSetChanged();
+		} else if (key.equals("prefsShowGridTitles")) {
+			mShowTitles = sharedPreferences.getBoolean("prefsShowGridTitles", true);
+			notifyDataSetChanged();
 		}
-
-		sortMovies();
-		notifyDataSetChanged();
 	}
 
 	private void forceLoaderLoad() {

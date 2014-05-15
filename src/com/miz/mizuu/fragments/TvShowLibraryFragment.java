@@ -72,14 +72,14 @@ import com.squareup.picasso.Picasso;
 public class TvShowLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
 	private SharedPreferences settings;
-	private int mImageThumbSize, mImageThumbSpacing;
+	private int mImageThumbSize, mImageThumbSpacing, mResizedWidth, mResizedHeight;
 	private LoaderAdapter mAdapter;
 	private ArrayList<TvShow> shows = new ArrayList<TvShow>(), shownShows = new ArrayList<TvShow>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
 	private TextView overviewMessage;
 	private Button updateMovieLibrary;
-	private boolean ignorePrefixes, mLoading;
+	private boolean ignorePrefixes, mLoading, mShowTitles;
 	private ActionBar actionBar;
 	private Picasso mPicasso;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
@@ -112,6 +112,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
+		mShowTitles = settings.getBoolean("prefsShowGridTitles", true);
 
 		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
 		if (thumbnailSize.equals(getString(R.string.normal))) 
@@ -272,6 +273,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
 								mAdapter.setNumColumns(numColumns);
+								mResizedWidth = (int) (((mGridView.getWidth() - (numColumns * mImageThumbSpacing))
+										/ numColumns) * 1.1); // * 1.1 is a hack to make images look slightly less blurry
+								mResizedHeight = (int) (mResizedWidth * 1.5);
 							}
 							if (MizLib.hasJellyBean()) {
 								mGridView.getViewTreeObserver()
@@ -320,13 +324,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0;
+		private int mNumColumns = 0, mSidePadding, mBottomPadding;
 		private Object[] sections;
 
 		public LoaderAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
+			mBottomPadding = MizLib.convertDpToPixels(mContext, 2);
 		}
 
 		@Override
@@ -371,11 +377,21 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.cover.setImageBitmap(null);
-			holder.text.setText(shownShows.get(position).getTitle());
-			holder.subtext.setText(shownShows.get(position).getFirstAirdateYear());
+			if (!mShowTitles) {
+				holder.text.setVisibility(View.GONE);
+				holder.subtext.setVisibility(View.GONE);
+				holder.cover.setPadding(mSidePadding, 0, mSidePadding, mBottomPadding);
+			} else {
+				holder.text.setVisibility(View.VISIBLE);
+				holder.subtext.setVisibility(View.VISIBLE);
+				
+				holder.text.setText(shownShows.get(position).getTitle());
+				holder.subtext.setText(shownShows.get(position).getFirstAirdateYear());
+			}
+			
+			holder.cover.setImageResource(android.R.color.white);
 
-			mPicasso.load(shownShows.get(position).getThumbnail()).config(mConfig).into(holder);
+			mPicasso.load(shownShows.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 
 			return convertView;
 		}
@@ -1027,10 +1043,12 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			if (numColumns > 0) {
 				mAdapter.setNumColumns(numColumns);
 			}
+			
+			notifyDataSetChanged();
+		} else if (key.equals("prefsShowGridTitles")) {
+			mShowTitles = sharedPreferences.getBoolean("prefsShowGridTitles", true);
+			notifyDataSetChanged();
 		}
-
-		sortShows();
-		notifyDataSetChanged();
 	}
 
 	private void forceLoaderLoad() {

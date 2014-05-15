@@ -39,7 +39,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true" >
 
-                    <com.com.miz.views.GridItemImageView
+                    <com.miz.views.GridItemImageView
                         android:id="@+id/traktIcon"
                         android:layout_width="@dimen/cover_photo_width"
                         android:layout_height="wrap_content"

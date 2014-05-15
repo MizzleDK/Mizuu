@@ -164,7 +164,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 				holder = (CoverItem) convertView.getTag();
 			}
 			
-			holder.cover.setImageResource(android.R.color.transparent);
+			holder.cover.setImageResource(android.R.color.white);
 			holder.text.setText(actors.get(position).getName());
 			holder.subtext.setText(actors.get(position).getCharacter());
 
