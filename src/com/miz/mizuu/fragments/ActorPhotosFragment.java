@@ -12,15 +12,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
@@ -35,7 +32,6 @@ public class ActorPhotosFragment extends Fragment {
 	private ImageAdapter mAdapter;
 	private ArrayList<String> pics_sources = new ArrayList<String>();
 	private GridView mGridView = null;
-	private boolean setBackground;
 	private String json, baseUrl;
 	private Picasso mPicasso;
 
@@ -44,12 +40,11 @@ public class ActorPhotosFragment extends Fragment {
 	 */
 	public ActorPhotosFragment() {}
 
-	public static ActorPhotosFragment newInstance(String json, String actorName, boolean setBackground, String baseUrl) { 
+	public static ActorPhotosFragment newInstance(String json, String actorName, String baseUrl) { 
 		ActorPhotosFragment pageFragment = new ActorPhotosFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("json", json);
 		bundle.putString("actorName", actorName);
-		bundle.putBoolean("setBackground", setBackground);
 		bundle.putString("baseUrl", baseUrl);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
@@ -60,8 +55,6 @@ public class ActorPhotosFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-
-		setBackground = getArguments().getBoolean("setBackground");
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -80,8 +73,7 @@ public class ActorPhotosFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		if (setBackground && !MizLib.isPortrait(getActivity()))
-			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
+		v.findViewById(R.id.container).setBackgroundResource(R.color.light_background);
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
@@ -101,9 +93,7 @@ public class ActorPhotosFragment extends Fragment {
 							final int numColumns = (int) Math.floor(
 									mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
-								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
-								mAdapter.setItemHeight(columnWidth);
 							}
 						}
 					}
@@ -138,15 +128,12 @@ public class ActorPhotosFragment extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mItemHeight = 0;
 		private int mNumColumns = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		}
 
 		@Override
@@ -169,17 +156,10 @@ public class ActorPhotosFragment extends Fragment {
 
 			CoverItem holder;
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item_cover, container, false);
+				convertView = inflater.inflate(R.layout.grid_portrait_photo, container, false);
 				holder = new CoverItem();
-				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
-				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
-				holder.text = (TextView) convertView.findViewById(R.id.text);
-				holder.text.setVisibility(View.GONE);
 				
-				// Check the height matches our calculated column width
-				if (holder.layout.getLayoutParams().height != mItemHeight) {
-					holder.layout.setLayoutParams(mImageViewLayoutParams);
-				}
+				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				
 				convertView.setTag(holder);
 			} else {
@@ -188,21 +168,9 @@ public class ActorPhotosFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load(pics_sources.get(position)).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 
 			return convertView;
-		}
-
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 1.5));
-			notifyDataSetChanged();
 		}
 
 		public void setNumColumns(int numColumns) {

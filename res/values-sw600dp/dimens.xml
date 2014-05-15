@@ -19,7 +19,7 @@
 
     <dimen name="image_thumbnail_size">135dp</dimen>
     <dimen name="image_thumbnail_height">218dp</dimen>
-    <dimen name="backdrop_thumbnail_width">225dp</dimen>
+    <dimen name="backdrop_thumbnail_width">195dp</dimen>
     <dimen name="image_thumbnail_spacing">8dp</dimen>
     <dimen name="actor_details_width">255dp</dimen>
     <dimen name="actor_details_height">375dp</dimen>

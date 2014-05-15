@@ -155,7 +155,7 @@ public class TvShowSeasonsFragment extends Fragment {
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
-				holder.cover.setImageBitmap(null);
+				holder.cover.setImageResource(android.R.color.transparent);
 			}
 
 			if (mItems.get(position).getSeason() == 0)

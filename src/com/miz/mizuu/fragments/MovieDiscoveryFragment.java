@@ -2,7 +2,6 @@ package com.miz.mizuu.fragments;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,7 +18,6 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -27,7 +25,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.miz.db.DbAdapter;
@@ -49,7 +46,6 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	private SparseBooleanArray movieMap = new SparseBooleanArray();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
-	private boolean showGridTitles;
 	private SharedPreferences settings;
 	private DbAdapter db;
 	private Picasso mPicasso;
@@ -79,7 +75,6 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
 
 		// Set OnSharedPreferenceChange listener
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
@@ -117,9 +112,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 							final int numColumns = (int) Math.floor(
 									mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
-								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
-								mAdapter.setItemHeight(columnWidth);
 							}
 						}
 					}
@@ -174,15 +167,12 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mItemHeight = 0;
 		private int mNumColumns = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		}
 
 		@Override
@@ -205,56 +195,33 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 			CoverItem holder;
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item_cover, container, false);
+				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
-				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
+				
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 				
-				// Check the height matches our calculated column width
-				if (holder.layout.getLayoutParams().height != mItemHeight) {
-					holder.layout.setLayoutParams(mImageViewLayoutParams);
-				}
-
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
-				holder.cover.setImageBitmap(null);
 			}
-
-			if (showGridTitles || pics_sources.get(position).getUrl().isEmpty() || pics_sources.get(position).getUrl().endsWith("null")) {
-				holder.text.setVisibility(TextView.VISIBLE);
-				holder.subtext.setVisibility(TextView.VISIBLE);
-				holder.subtext.setText("");
-				holder.text.setText(pics_sources.get(position).getTitle());
-			} else {
-				holder.text.setVisibility(TextView.GONE);
-				holder.subtext.setVisibility(TextView.GONE);
-			}
+			
+			holder.cover.setImageResource(android.R.color.transparent);
+			holder.text.setText(pics_sources.get(position).getTitle());
 
 			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {
-				holder.subtext.setVisibility(TextView.VISIBLE);
-				holder.subtext.setText(getString(R.string.inLibrary).toUpperCase(Locale.getDefault()));
+				holder.subtext.setText(pics_sources.get(position).getDate() + " (" + getString(R.string.inLibrary) + ")");
+			} else {
+				holder.subtext.setText(pics_sources.get(position).getDate());
 			}
 
 			if (!pics_sources.get(position).getUrl().contains("null"))
-				mPicasso.load(pics_sources.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
+				mPicasso.load(pics_sources.get(position).getUrl()).config(mConfig).into(holder);
 			else
 				holder.cover.setImageResource(R.drawable.loading_image);
 
 			return convertView;
-		}
-
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 1.5));
 		}
 
 		public void setNumColumns(int numColumns) {
@@ -277,21 +244,17 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				pics_sources.add(new WebMovie(
 						jArray.getJSONObject(i).getString("original_title"),
 						jArray.getJSONObject(i).getString("id"),
-						baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path")));
+						baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
+						MizLib.getPrettyDate(getActivity(), jArray.getJSONObject(i).getString("release_date"))));
 			}
 
-			if (isAdded()) {
-				new MoviesInLibraryCheck(pics_sources).execute();
-			}			
+			new MoviesInLibraryCheck(pics_sources).execute();
 		} catch (Exception e) {}
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals("prefsShowGridTitles")) {
-			showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
-			mAdapter.notifyDataSetChanged();
-		} else if (key.equals("prefsRootAccess")) {
+		if (key.equals("prefsRootAccess")) {
 			if (settings.getBoolean("prefsRootAccess", false)) {
 				try {
 					Runtime.getRuntime().exec("su");

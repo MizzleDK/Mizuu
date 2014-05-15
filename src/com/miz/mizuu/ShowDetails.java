@@ -304,7 +304,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 			case 1:
 				return ShowEpisodesFragment.newInstance(thisShow.getId());
 			default:
-				return ActorBrowserFragmentTv.newInstance(thisShow.getId(), true);
+				return ActorBrowserFragmentTv.newInstance(thisShow.getId());
 			}
 		}  
 

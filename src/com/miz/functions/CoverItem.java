@@ -1,15 +1,15 @@
 package com.miz.functions;
 
-import com.miz.mizuu.R;
-import com.squareup.picasso.Picasso.LoadedFrom;
-import com.squareup.picasso.Target;
-
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.miz.mizuu.R;
+import com.squareup.picasso.Picasso.LoadedFrom;
+import com.squareup.picasso.Target;
 
 public class CoverItem implements Target {
 

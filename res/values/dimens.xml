@@ -18,7 +18,7 @@
 <resources>
 
     <dimen name="image_thumbnail_size">95dp</dimen>
-    <dimen name="backdrop_thumbnail_width">150dp</dimen>
+    <dimen name="backdrop_thumbnail_width">130dp</dimen>
     <dimen name="image_thumbnail_height">147dp</dimen>
     <dimen name="image_thumbnail_spacing">5dp</dimen>
     <dimen name="actor_details_width">170dp</dimen>

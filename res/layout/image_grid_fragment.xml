@@ -19,6 +19,8 @@
         android:numColumns="auto_fit"
         android:padding="@dimen/image_thumbnail_spacing"
         android:scrollingCache="false"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"
         android:smoothScrollbar="true"
         android:stretchMode="columnWidth"
         android:verticalSpacing="@dimen/image_thumbnail_spacing" >

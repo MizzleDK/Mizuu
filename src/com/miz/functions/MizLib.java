@@ -20,6 +20,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -3271,5 +3272,38 @@ public class MizLib {
 		} else {
 			return context.getString(R.string.stringNA);
 		}
+	}
+	
+	public static Comparator<WebMovie> getWebMovieDateComparator() {
+		return new Comparator<WebMovie>() {
+			@Override
+			public int compare(WebMovie o1, WebMovie o2) {
+				// Dates are always presented as YYYY-MM-DD, so removing
+				// the hyphens will easily provide a great way of sorting.
+
+				int firstDate = 0, secondDate = 0;
+				String first = "", second = "";
+
+				if (o1.getDate() != null)
+					first = o1.getDate().replace("-", "");
+
+				if (!(first.equals("null") | first.isEmpty()))
+					firstDate = Integer.valueOf(first);
+
+				if (o2.getDate() != null)
+					second = o2.getDate().replace("-", "");
+
+				if (!(second.equals("null") | second.isEmpty()))
+					secondDate = Integer.valueOf(second);
+
+				// This part is reversed to get the highest numbers first
+				if (firstDate < secondDate)
+					return 1; // First date is lower than second date - put it second
+				else if (firstDate > secondDate)
+					return -1; // First date is greater than second date - put it first
+
+				return 0; // They're equal
+			}
+		};
 	}
 }

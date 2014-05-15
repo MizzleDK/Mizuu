@@ -17,7 +17,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -25,7 +24,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.miz.functions.Actor;
@@ -44,7 +42,6 @@ public class ActorBrowserFragmentTv extends Fragment {
 	private GridView mGridView = null;
 	private String TVDB_ID;
 	private ProgressBar pbar;
-	private boolean setBackground;
 	private Picasso mPicasso;
 
 	/**
@@ -52,11 +49,10 @@ public class ActorBrowserFragmentTv extends Fragment {
 	 */
 	public ActorBrowserFragmentTv() {}
 
-	public static ActorBrowserFragmentTv newInstance(String tvdbId, boolean setBackground) {
+	public static ActorBrowserFragmentTv newInstance(String tvdbId) {
 		ActorBrowserFragmentTv pageFragment = new ActorBrowserFragmentTv();
 		Bundle b = new Bundle();
 		b.putString("tvdbId", tvdbId);
-		b.putBoolean("setBackground", setBackground);
 		pageFragment.setArguments(b);
 		return pageFragment;
 	}
@@ -66,8 +62,6 @@ public class ActorBrowserFragmentTv extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-		
-		setBackground = getArguments().getBoolean("setBackground");
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -87,8 +81,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 		
-		if (setBackground && !MizLib.isPortrait(getActivity()))
-			v.findViewById(R.id.container).setBackgroundResource(R.drawable.bg);
+		v.findViewById(R.id.container).setBackgroundResource(R.color.light_background);
 		
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
@@ -108,8 +101,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 						final int numColumns = (int) Math.floor(
 								mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 						if (numColumns > 0) {
-							final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
-							mAdapter.setItemHeight(columnWidth);
+							mGridView.setNumColumns(numColumns);
 						}
 					}
 				});
@@ -133,15 +125,11 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mItemHeight = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mImageViewLayoutParams = new GridView.LayoutParams(
-					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		}
 
 		@Override
@@ -161,53 +149,32 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
+			
 			CoverItem holder;
-
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item_cover, container, false);
+				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
-				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
+				
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-				holder.text.setVisibility(View.VISIBLE);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				holder.subtext.setVisibility(View.VISIBLE);
-				
-				// Check the height matches our calculated column width
-				if (holder.layout.getLayoutParams().height != mItemHeight) {
-					holder.layout.setLayoutParams(mImageViewLayoutParams);
-				}
 				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-
+			
+			holder.cover.setImageResource(android.R.color.transparent);
 			holder.text.setText(actors.get(position).getName());
-			holder.subtext.setVisibility(View.VISIBLE);
 			holder.subtext.setText(actors.get(position).getCharacter());
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(actors.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load(actors.get(position).getUrl()).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 
 			return convertView;
 		}
 
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			if (height == mItemHeight) {
-				return;
-			}
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 1.5));
-			notifyDataSetChanged();
-		}
 	}
 
 	protected class GetCoverImages extends AsyncTask<String, String, String> {

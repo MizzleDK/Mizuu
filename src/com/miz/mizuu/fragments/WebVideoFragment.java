@@ -18,12 +18,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -33,6 +31,7 @@ import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.miz.functions.AsyncTask;
+import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -114,9 +113,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 									mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							mGridView.setColumnWidth(mImageThumbSize);
 							if (numColumns > 0) {
-								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
-								mAdapter.setItemHeight(columnWidth);
 							}
 						}
 					}
@@ -155,25 +152,16 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 		getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
-	static class CoverItem {
-		TextView text;
-		ImageView cover;
-		FrameLayout layout;
-	}
-
 	private class ImageAdapter extends BaseAdapter {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mItemHeight = 0;
 		private int mNumColumns = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		}
 
 		@Override
@@ -198,38 +186,20 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.webvideo_item, container, false);
 				holder = new CoverItem();
-				holder.layout = (FrameLayout) convertView.findViewById(R.id.layout);
-				holder.cover = (ImageView) convertView.findViewById(R.id.image);
-				holder.text = (TextView) convertView.findViewById(R.id.widgetTitle);
 				
-				// Check the height matches our calculated column width
-				if (holder.layout.getLayoutParams().height != mItemHeight) {
-					holder.layout.setLayoutParams(mImageViewLayoutParams);
-				}
+				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
+				holder.text = (TextView) convertView.findViewById(R.id.text);
 				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
-				holder.cover.setImageBitmap(null);
 			}
 
 			holder.text.setText(videos.get(position).getTitle());
 			
-			mPicasso.load(videos.get(position).getUrl()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
+			mPicasso.load(videos.get(position).getUrl()).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
 			
 			return convertView;
-		}
-
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 0.45));
-			notifyDataSetChanged();
 		}
 
 		public void setNumColumns(int numColumns) {

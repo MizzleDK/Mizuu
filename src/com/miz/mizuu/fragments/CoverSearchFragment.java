@@ -21,7 +21,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -32,7 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.miz.functions.Cover;
-import com.miz.functions.GridItemImageView;
+import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -116,8 +115,7 @@ public class CoverSearchFragment extends Fragment {
 						final int numColumns = (int) Math.floor(
 								mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 						if (numColumns > 0) {
-							final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
-							mAdapter.setItemHeight(columnWidth);
+							mGridView.setNumColumns(numColumns);
 						}
 					}
 				});
@@ -147,14 +145,12 @@ public class CoverSearchFragment extends Fragment {
 	private class ImageAdapter extends BaseAdapter {
 
 		private final Context mContext;
-		private int mItemHeight = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
+		private LayoutInflater inflater;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
-			mImageViewLayoutParams = new GridView.LayoutParams(
-					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
 		@Override
@@ -174,43 +170,23 @@ public class CoverSearchFragment extends Fragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
-			// Now handle the main ImageView thumbnails
-			GridItemImageView imageView;
-
-			if (convertView == null) { // if it's not recycled, instantiate and initialize
-				imageView = new GridItemImageView(mContext);
-				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-				imageView.setLayoutParams(mImageViewLayoutParams);
-			} else { // Otherwise re-use the converted view
-				imageView = (GridItemImageView) convertView;
-			}
-
-			// Check the height matches our calculated column width
-			if (imageView.getLayoutParams().height != mItemHeight) {
-				imageView.setLayoutParams(mImageViewLayoutParams);
+			CoverItem holder;
+			if (convertView == null) {
+				convertView = inflater.inflate(R.layout.grid_portrait_photo, container, false);
+				holder = new CoverItem();
+				
+				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
+				
+				convertView.setTag(holder);
+			} else {
+				holder = (CoverItem) convertView.getTag();
 			}
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
-			// setting a placeholder image while the background thread runs			
-			mPicasso.load(pics_sources.get(position)).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(imageView);
+			// setting a placeholder image while the background thread runs
+			mPicasso.load(pics_sources.get(position)).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 
-			return imageView;
-		}
-
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			if (height == mItemHeight) {
-				return;
-			}
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, (int) (mItemHeight * 1.5));
-
-			notifyDataSetChanged();
+			return convertView;
 		}
 	}
 

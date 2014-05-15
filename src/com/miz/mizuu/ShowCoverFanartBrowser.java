@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
@@ -29,6 +30,11 @@ public class ShowCoverFanartBrowser extends MizActivity implements OnNavigationL
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false))
+			setTheme(R.style.Theme_Example_Light_FullScreen);
+		else
+			setTheme(R.style.Theme_Example_Light);
+		
 		setContentView(R.layout.viewpager);
 
 		tvdbId = getIntent().getExtras().getString("id");
