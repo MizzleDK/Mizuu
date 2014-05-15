@@ -3306,4 +3306,23 @@ public class MizLib {
 			}
 		};
 	}
+	
+	private static String[] mAdultKeywords = new String[]{"adult", "sex", "porn", "explicit", "penis", "vagina", "asshole", "blowjob", "cock", "fuck", "dildo", "kamasutra", "masturbat", "squirt", "slutty", "cum", "cunt"};
+	
+	public static boolean isAdultContent(Context context, String title) {
+		// Check if the user has enabled adult content - if so, nothing should
+		// be blocked and the method should return false regardless of the title
+		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefsIncludeAdultContent", false))
+			return false;
+		
+		String lowerCase = title.toLowerCase(Locale.getDefault());
+		
+		// Run through the keywords and check
+		for (int i = 0; i < mAdultKeywords.length; i++)
+			if (lowerCase.contains(mAdultKeywords[i]))
+				return true;
+		
+		// Certain titles include "XXX" (all caps), so test this against the normal-case title as a last check
+		return title.contains("XXX");
+	}
 }

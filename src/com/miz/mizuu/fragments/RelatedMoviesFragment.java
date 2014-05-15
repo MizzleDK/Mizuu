@@ -198,16 +198,16 @@ public class RelatedMoviesFragment extends Fragment {
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
-				
+
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-			
+
 			holder.cover.setImageResource(android.R.color.white);
 			holder.text.setText(pics_sources.get(position).getTitle());
 
@@ -259,10 +259,12 @@ public class RelatedMoviesFragment extends Fragment {
 
 				pics_sources.clear();
 				for (int i = 0; i < jArray.length(); i++) {
-					pics_sources.add(new WebMovie(
-							jArray.getJSONObject(i).getString("original_title"),
-							jArray.getJSONObject(i).getString("id"),
-							baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path")));
+					if (!MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("original_title"))) {
+						pics_sources.add(new WebMovie(
+								jArray.getJSONObject(i).getString("original_title"),
+								jArray.getJSONObject(i).getString("id"),
+								baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path")));
+					}
 				}
 			} catch (Exception e) { e.printStackTrace(); }
 
@@ -295,7 +297,7 @@ public class RelatedMoviesFragment extends Fragment {
 		} catch (Exception e) {}
 
 		Collections.sort(pics_sources, MizLib.getWebMovieDateComparator());
-		
+
 		new MoviesInLibraryCheck(pics_sources).execute();
 	}
 

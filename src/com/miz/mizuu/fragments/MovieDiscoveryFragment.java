@@ -51,7 +51,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	private Picasso mPicasso;
 	private String json, baseUrl;
 	private Config mConfig;
-	
+
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
@@ -197,16 +197,16 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
-				
+
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-			
+
 			holder.cover.setImageResource(android.R.color.white);
 			holder.text.setText(pics_sources.get(position).getTitle());
 
@@ -241,11 +241,13 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 			pics_sources.clear();
 			for (int i = 0; i < jArray.length(); i++) {
-				pics_sources.add(new WebMovie(
-						jArray.getJSONObject(i).getString("original_title"),
-						jArray.getJSONObject(i).getString("id"),
-						baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
-						MizLib.getPrettyDate(getActivity(), jArray.getJSONObject(i).getString("release_date"))));
+				if (!MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("original_title"))) {
+					pics_sources.add(new WebMovie(
+							jArray.getJSONObject(i).getString("original_title"),
+							jArray.getJSONObject(i).getString("id"),
+							baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
+							MizLib.getPrettyDate(getActivity(), jArray.getJSONObject(i).getString("release_date"))));
+				}
 			}
 
 			new MoviesInLibraryCheck(pics_sources).execute();
