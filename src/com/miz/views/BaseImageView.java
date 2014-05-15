@@ -1,4 +1,4 @@
-package com.miz.functions;
+package com.miz.views;
 
 import java.lang.ref.WeakReference;
 

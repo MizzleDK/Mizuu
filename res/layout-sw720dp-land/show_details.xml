@@ -40,7 +40,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="32dp" >
 
-                <com.miz.functions.AspectRatioImageViewCover
+                <com.miz.views.AspectRatioImageViewCover
                     android:id="@+id/traktIcon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

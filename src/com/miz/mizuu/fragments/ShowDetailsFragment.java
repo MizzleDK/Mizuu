@@ -23,11 +23,11 @@ import android.widget.TextView;
 
 import com.miz.db.DbAdapterTvShow;
 import com.miz.functions.MizLib;
-import com.miz.functions.ObservableScrollView;
-import com.miz.functions.ObservableScrollView.OnScrollChangedListener;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
+import com.miz.views.ObservableScrollView;
+import com.miz.views.ObservableScrollView.OnScrollChangedListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 

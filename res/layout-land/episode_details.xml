@@ -41,7 +41,7 @@
                 android:measureAllChildren="false"
                 android:padding="1dp" >
 
-                <com.miz.functions.AspectRatioImageViewBackdrop
+                <com.miz.views.AspectRatioImageViewBackdrop
                     android:id="@+id/traktIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

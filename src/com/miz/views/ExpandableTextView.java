@@ -1,4 +1,4 @@
-package com.miz.functions;
+package com.miz.views;
 import com.miz.mizuu.R;
 
 import android.content.Context;

@@ -3,7 +3,7 @@
     android:layout_width="@dimen/image_thumbnail_size"
     android:layout_height="@dimen/image_thumbnail_height" >
 
-    <com.miz.functions.GridItemImageView
+    <com.miz.views.GridItemImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
