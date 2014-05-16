@@ -1,12 +1,12 @@
 package com.miz.abstractclasses;
 
+import android.content.Context;
+
 import java.io.File;
 import java.util.Locale;
 
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
-
-import android.content.Context;
 
 public abstract class BaseMovie implements Comparable<BaseMovie> {
 
@@ -28,8 +28,10 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 
 		// getTitle()
 		if (TITLE == null || TITLE.isEmpty()) {
-			File fileName = new File(FILEPATH);
-			TITLE = fileName.getName().substring(0, fileName.getName().lastIndexOf("."));
+			String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[0] : FILEPATH;
+			File fileName = new File(temp);
+			int pointPosition=fileName.getName().lastIndexOf(".");
+			TITLE = pointPosition == -1 ? fileName.getName() : fileName.getName().substring(0, pointPosition);
 		} else {
 			if (ignorePrefixes) {
 				String temp = TITLE.toLowerCase(Locale.ENGLISH);
