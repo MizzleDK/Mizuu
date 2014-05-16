@@ -67,6 +67,7 @@
                     android:layout_marginLeft="32dp"
                     android:layout_marginRight="32dp"
                     android:layout_marginTop="32dp"
+                    android:clipToPadding="false"
                     android:layout_toRightOf="@+id/coverLayout" >
 
                     <LinearLayout

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.functions;
 
 import java.io.BufferedInputStream;
@@ -3221,6 +3237,8 @@ public class MizLib {
 	}
 	
 	public static String getPrettyTime(Context context, int minutes) {
+		if (minutes == 0)
+			return context.getString(R.string.stringNA);;
 		try {
 			int hours = (minutes / 60);
 			minutes = (minutes % 60);
@@ -3235,11 +3253,9 @@ public class MizLib {
 				return minutes_string;
 			}
 		} catch (Exception e) { // Fall back if something goes wrong
-			if (minutes >= 0) {
+			if (minutes > 0)
 				return String.valueOf(minutes);
-			} else {
-				return context.getString(R.string.stringNA);
-			}
+			return context.getString(R.string.stringNA);
 		}
 	}
 	

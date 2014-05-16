@@ -25,7 +25,7 @@
         android:focusable="true"
         android:orientation="vertical" >
 
-        <RelativeLayout
+        <RelativeLayout 
             android:id="@+id/personalizedArea"
             android:layout_width="match_parent"
             android:layout_height="170dp" >
@@ -39,17 +39,17 @@
             <LinearLayout
                 android:id="@+id/drawer_user_info"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="114dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:background="@drawable/gradient_black_to_transparent"
-                android:gravity="center_vertical" >
+                android:gravity="center_horizontal"
+                android:orientation="vertical" >
 
-                <com.miz.views.CircleImageView
+                <com.miz.views.CircularImageView
                     android:id="@+id/userPhoto"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="12dp"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
                     android:src="@drawable/unknown_user" />
 
                 <TextView
@@ -62,6 +62,7 @@
                     android:singleLine="true"
                     android:text="@string/greeting"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
+
             </LinearLayout>
         </RelativeLayout>
 

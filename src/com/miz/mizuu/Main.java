@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.mizuu;
 
 import java.io.File;
@@ -31,6 +47,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -40,6 +57,7 @@ import android.widget.Toast;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterTvShow;
+import com.miz.functions.CoverItem;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.MovieDiscoveryViewPagerFragment;
@@ -54,7 +72,7 @@ public class Main extends MizActivity {
 
 	public static final int MOVIES = 0, SHOWS = 1, WATCHLIST = 2, WEB_MOVIES = 3, WEB_VIDEOS = 4;
 	private int mNumMovies, mNumShows, mNumWatchlist, selectedIndex;
-	private Typeface tf, tfLight;
+	private Typeface tf, tfCondensed, tfLight;
 	private DrawerLayout mDrawerLayout;
 	protected ListView mDrawerList;
 	private TextView tab1, tab2;
@@ -69,12 +87,12 @@ public class Main extends MizActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false))
 			setTheme(R.style.Theme_Example_Light_FullScreen);
 		else
 			setTheme(R.style.Theme_Example_Light);
-		
+
 		setContentView(R.layout.menu_drawer);
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -86,8 +104,10 @@ public class Main extends MizActivity {
 		dbHelper = MizuuApplication.getMovieAdapter();
 		dbHelperTv = MizuuApplication.getTvDbAdapter();
 
-		tf = Typeface.createFromAsset(getAssets(), "Roboto-Thin.ttf");
-		tfLight = Typeface.createFromAsset(getAssets(), "Roboto-Light.ttf");
+
+		tfCondensed = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "RobotoCondensed-Regular.ttf");
+		tf = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "Roboto-Medium.ttf");
+		tfLight = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "Roboto-Light.ttf");
 
 		setupMenuItems();
 
@@ -101,7 +121,7 @@ public class Main extends MizActivity {
 			setupUserDetails();
 
 		((TextView) findViewById(R.id.username)).setTextSize(26f);
-		((TextView) findViewById(R.id.username)).setTypeface(tf);
+		((TextView) findViewById(R.id.username)).setTypeface(tfCondensed);
 
 		tab1 = (TextView) findViewById(R.id.tab1);
 		tab1.setTextSize(12f);
@@ -125,6 +145,16 @@ public class Main extends MizActivity {
 					mDrawerList.setItemChecked(arg2, false);
 				}
 			}
+		});
+		mDrawerList.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {}
 		});
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -150,7 +180,7 @@ public class Main extends MizActivity {
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		
+
 		if (savedInstanceState != null && savedInstanceState.containsKey("tabIndex")) {
 			selectedIndex = savedInstanceState.getInt("selectedIndex");
 			changeTabSelection(savedInstanceState.getInt("tabIndex"));
@@ -249,15 +279,9 @@ public class Main extends MizActivity {
 			mDrawerUserInfo.setVisibility(View.GONE);
 
 		if (!MizLib.isEmpty(full_name)) {
-			Picasso.with(getApplicationContext()).load("file://" + new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath()).resize(MizLib.convertDpToPixels(getApplicationContext(), 50), MizLib.convertDpToPixels(getApplicationContext(), 50)).into(((ImageView) findViewById(R.id.userPhoto)), new Callback() {
-				@Override
-				public void onError() {
-					((ImageView) findViewById(R.id.userPhoto)).setImageResource(R.drawable.unknown_user);
-				}
-
-				@Override
-				public void onSuccess() {}
-			});
+			CoverItem c = new CoverItem();
+			c.cover = ((ImageView) findViewById(R.id.userPhoto));
+			Picasso.with(getApplicationContext()).load("file://" + new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath()).resize(MizLib.convertDpToPixels(getApplicationContext(), 80), MizLib.convertDpToPixels(getApplicationContext(), 80)).error(R.drawable.unknown_user).into(c);
 		}
 	}
 
@@ -442,14 +466,15 @@ public class Main extends MizActivity {
 			description.setTypeface(tfLight);
 			description.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-			title.setTypeface(tfLight);
+			if (position == mDrawerList.getCheckedItemPosition()) {
+				title.setTypeface(tf, Typeface.BOLD);
+			} else {
+				title.setTypeface(tfLight);
+			}
 			title.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-			if (getMenuItem(position).isThirdPartyApp()) {
-				title.setText(getMenuItem(position).getTitle());
-			} else {
-				title.setText(getMenuItem(position).getTitle());
-			}
+			title.setText(getMenuItem(position).getTitle());
+
 			if (getMenuItem(position).getCount() > 0)
 				description.setText(String.valueOf(getMenuItem(position).getCount()));
 			else
