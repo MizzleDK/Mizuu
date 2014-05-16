@@ -20,9 +20,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -60,7 +60,7 @@ import com.miz.service.WireUpnpService;
 
 public class UpnpMovie extends MovieFileSource<String> {
 
-	private LinkedHashSet<String> results = new LinkedHashSet<String>();
+	private TreeSet<String> results = new TreeSet<String>();
 	private HashMap<String, String> existingMovies = new HashMap<String, String>();
 	private CountDownLatch mLatch = new CountDownLatch(1);
 	private AndroidUpnpService mUpnpService;
@@ -135,7 +135,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 	}
 
 	@Override
-	public void recursiveSearch(String folder, LinkedHashSet<String> results) {
+	public void recursiveSearch(String folder, TreeSet<String> results) {
 		mContext.bindService(new Intent(mContext, WireUpnpService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
 		try {
@@ -145,7 +145,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 		}
 	}
 
-	public void addToResults(String file, long size, LinkedHashSet<String> results) {
+	public void addToResults(String file, long size, TreeSet<String> results) {
 		if (MizLib.checkFileTypes(file)) {
 			if (size < getFileSizeLimit())
 				return;
@@ -221,7 +221,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 		private Service<?, ?> mService;
 		private String mPrefix;
 
-		public BrowseCallback(String prefix, Service<?, ?> service, String containerId) {
+		public BrowseCallback(String prefix, Service<?, ?> service, String containerId) {  
 			super(service, containerId, BrowseFlag.DIRECT_CHILDREN, "*", 0, null, new SortCriterion(true, "dc:title"));
 			mService = service;
 			mPrefix = prefix;
@@ -322,5 +322,5 @@ public class UpnpMovie extends MovieFileSource<String> {
 	}
 
 	@Override
-	public void addToResults(String folder, LinkedHashSet<String> results) {}
+	public void addToResults(String folder, TreeSet<String> results) {}
 }

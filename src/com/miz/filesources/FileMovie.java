@@ -22,9 +22,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeSet;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -107,7 +107,7 @@ public class FileMovie extends MovieFileSource<File> {
 			cursor.close(); // Close cursor
 		}
 
-		LinkedHashSet<String> results = new LinkedHashSet<String>();
+		TreeSet<String> results = new TreeSet<String>();
 
 		// Do a recursive search in the file source folder
 		recursiveSearch(getFolder(), results);
@@ -122,7 +122,7 @@ public class FileMovie extends MovieFileSource<File> {
 	}
 
 	@Override
-	public void recursiveSearch(File folder, LinkedHashSet<String> results) {
+	public void recursiveSearch(File folder, TreeSet<String> results) {
 		try {
 			if (searchSubFolders()) {
 				if (folder.isDirectory()) {
@@ -170,7 +170,7 @@ public class FileMovie extends MovieFileSource<File> {
 	}
 
 	@Override
-	public void addToResults(File file, LinkedHashSet<String> results) {
+	public void addToResults(File file, TreeSet<String> results) {
 		if (supportsNfo() && MizLib.isNfoFile(file.getAbsolutePath())) {
 			try {
 				addNfoFile(MizLib.removeExtension(file.getAbsolutePath()), new FileInputStream(file));

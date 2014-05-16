@@ -21,12 +21,11 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
-
 import android.content.Context;
 import android.database.Cursor;
 
@@ -186,7 +185,7 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
 			cursor.close(); // Close cursor
 		}
 
-		LinkedHashSet<String> results = new LinkedHashSet<String>();
+		TreeSet<String> results = new TreeSet<String>();
 
 		// Do a recursive search in the file source folder
 		recursiveSearch(getFolder(), results);
@@ -201,7 +200,7 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
 	}
 
 	@Override
-	public void recursiveSearch(SmbFile folder, LinkedHashSet<String> results) {
+	public void recursiveSearch(SmbFile folder, TreeSet<String> results) {
 		try {
 			if (searchSubFolders()) {
 				if (folder.isDirectory()) {
@@ -227,7 +226,7 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
 	}
 
 	@Override
-	public void addToResults(SmbFile file, LinkedHashSet<String> results) {
+	public void addToResults(SmbFile file, TreeSet<String> results) {
 		if (MizLib.checkFileTypes(file.getCanonicalPath())) {
 			try {
 				if (file.length() < getFileSizeLimit())

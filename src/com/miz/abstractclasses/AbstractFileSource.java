@@ -17,8 +17,8 @@
 package com.miz.abstractclasses;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 import android.content.Context;
 
@@ -79,9 +79,9 @@ public abstract class AbstractFileSource<T> {
 
 	public abstract List<String> searchFolder();
 
-	public abstract void recursiveSearch(T folder, LinkedHashSet<String> results);
+	public abstract void recursiveSearch(T folder, TreeSet<String> results);
 
-	public abstract void addToResults(T folder, LinkedHashSet<String> results);
+	public abstract void addToResults(T folder, TreeSet<String> results);
 
 	public abstract T getRootFolder();
 

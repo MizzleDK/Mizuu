@@ -20,8 +20,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +61,7 @@ import com.miz.service.WireUpnpService;
 
 public class UpnpTvShow extends TvShowFileSource<String> {
 
-	private LinkedHashSet<String> results = new LinkedHashSet<String>();
+	private TreeSet<String> results = new TreeSet<String>();
 	private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
 	private CountDownLatch mLatch = new CountDownLatch(1);
 	private AndroidUpnpService mUpnpService;
@@ -156,7 +156,7 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 	}
 
 	@Override
-	public void recursiveSearch(String folder, LinkedHashSet<String> results) {
+	public void recursiveSearch(String folder, TreeSet<String> results) {
 		mContext.bindService(new Intent(mContext, WireUpnpService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
 		try {
@@ -166,7 +166,7 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 		}
 	}
 
-	public void addToResults(String file, long size, LinkedHashSet<String> results) {
+	public void addToResults(String file, long size, TreeSet<String> results) {
 		if (MizLib.checkFileTypes(file)) {			
 			if (size < getFileSizeLimit())
 				return;
@@ -335,5 +335,5 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 	}
 
 	@Override
-	public void addToResults(String folder, LinkedHashSet<String> results) {}
+	public void addToResults(String folder, TreeSet<String> results) {}
 }
