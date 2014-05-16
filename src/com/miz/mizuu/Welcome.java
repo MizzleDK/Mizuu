@@ -84,7 +84,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 
 		setContentView(R.layout.welcome);
 
-		tf = Typeface.createFromAsset(getAssets(), "Roboto-Thin.ttf");
+		tf = MizuuApplication.getOrCreateTypeface(this, "Roboto-Thin.ttf");
 
 		dbHelper = MizuuApplication.getMovieAdapter();
 		dbHelperTv = MizuuApplication.getTvDbAdapter();

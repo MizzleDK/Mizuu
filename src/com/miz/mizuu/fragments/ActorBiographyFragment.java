@@ -69,7 +69,7 @@ public class ActorBiographyFragment extends Fragment {
 
 		setRetainInstance(true);
 
-		tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Thin.ttf");
+		tf = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Thin.ttf");
 
 		json = getArguments().getString("json");
 		baseUrl = getArguments().getString("baseUrl");

@@ -95,7 +95,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsDisableEthernetWiFiCheck", false);
 		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnoredFilesEnabled", false);
 
-		tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Thin.ttf");
+		tf = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Thin.ttf");
 
 		rowId = getArguments().getString("rowId");
 

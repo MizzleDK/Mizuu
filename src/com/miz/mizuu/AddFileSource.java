@@ -49,7 +49,7 @@ public class AddFileSource extends MizActivity {
 
 		setTitle(R.string.addFileSourceTitle);
 
-		mTypeface = Typeface.createFromAsset(getAssets(), "RobotoCondensed-Regular.ttf");
+		mTypeface = MizuuApplication.getOrCreateTypeface(this, "RobotoCondensed-Regular.ttf");
 
 		mContentType = (TextView) findViewById(R.id.contentType);
 		mContentType.setTypeface(mTypeface);
