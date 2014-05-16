@@ -192,6 +192,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceWatchedMovies), getString(R.string.choiceWatchedMovies)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceUnwatchedMovies), getString(R.string.choiceUnwatchedMovies)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceUnidentifiedMovies), getString(R.string.choiceUnidentifiedMovies)));
+		spinnerItems.add(new SpinnerItem(getString(R.string.choiceOffline), getString(R.string.choiceOffline)));
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -450,7 +451,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-			
+
 			if (!mShowTitles) {
 				holder.text.setVisibility(View.GONE);
 				holder.subtext.setVisibility(View.GONE);
@@ -641,6 +642,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		case 6:
 			showUnidentifiedMovies();
 			break;
+		case 7:
+			showOfflineCopies();
+			break;
 		}
 	}
 
@@ -679,15 +683,22 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	private void showAvailableFiles() {
-		showProgressBar();
-
-		shownMovies.clear();
-
-		new Thread() {
+		new AsyncTask<Void, Void, Void>() {
+			
+			ArrayList<MediumMovie> tempMovies;
+			ArrayList<FileSource> filesources;
+			
 			@Override
-			public void run() {
-				ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>();
-				ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
+			protected void onPreExecute() {
+				showProgressBar();
+
+				shownMovies.clear();
+			}
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				tempMovies = new ArrayList<MediumMovie>();
+				filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
 
 				for (int i = 0; i < movies.size(); i++) {
 					if (movies.get(i).isNetworkFile()) {
@@ -728,28 +739,28 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 							tempMovies.add(movies.get(i));
 					}
 				}
-
-				// Check if "Available files" is still selected
-				if (isAdded())
-					if (getActivity().getActionBar().getSelectedNavigationIndex() == 2) {
-						shownMovies.addAll(tempMovies);
-
-						// Clean up...
-						tempMovies.clear();
-						tempMovies = null;
-
-						sortMovies();
-
-						getActivity().runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								notifyDataSetChanged();
-								hideProgressBar();
-							}	
-						});
-					}
+				
+				return null;
 			}
-		}.start();
+
+			@Override
+			protected void onPostExecute(Void result) {
+				if (isAdded() && getActivity().getActionBar().getSelectedNavigationIndex() == 2) {
+					
+					shownMovies.addAll(tempMovies);
+					
+					// Clean up...
+					tempMovies.clear();
+					tempMovies = null;
+					
+					sortMovies();
+					
+					notifyDataSetChanged();
+
+					hideProgressBar();
+				}
+			}
+		}.execute();
 	}
 
 	private void showCollections() {
@@ -811,6 +822,35 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		notifyDataSetChanged();
 
 		hideProgressBar();
+	}
+
+	private void showOfflineCopies() {
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected void onPreExecute() {
+				showProgressBar();
+
+				shownMovies.clear();
+			}
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				for (int i = 0; i < movies.size(); i++) {
+					if (movies.get(i).hasOfflineCopy())
+						shownMovies.add(movies.get(i));
+				}
+
+				sortMovies();
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				notifyDataSetChanged();
+
+				hideProgressBar();
+			}
+		}.execute();
 	}
 
 	@Override
@@ -1459,7 +1499,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			if (numColumns > 0) {
 				mAdapter.setNumColumns(numColumns);
 			}
-			
+
 			notifyDataSetChanged();
 		} else if (key.equals("prefsShowGridTitles")) {
 			mShowTitles = sharedPreferences.getBoolean("prefsShowGridTitles", true);

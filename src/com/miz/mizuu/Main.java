@@ -94,7 +94,7 @@ public class Main extends MizActivity {
 			setTheme(R.style.Theme_Example_Light);
 
 		setContentView(R.layout.menu_drawer);
-
+		
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		confirmExit = settings.getBoolean("prefsConfirmBackPress", false);
 		startup = settings.getString("prefsStartup", "1");

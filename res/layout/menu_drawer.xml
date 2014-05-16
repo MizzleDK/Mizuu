@@ -25,7 +25,7 @@
         android:focusable="true"
         android:orientation="vertical" >
 
-        <RelativeLayout 
+        <RelativeLayout
             android:id="@+id/personalizedArea"
             android:layout_width="match_parent"
             android:layout_height="170dp" >
@@ -62,7 +62,6 @@
                     android:singleLine="true"
                     android:text="@string/greeting"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
-
             </LinearLayout>
         </RelativeLayout>
 
@@ -115,11 +114,10 @@
             android:layout_height="match_parent"
             android:choiceMode="singleChoice"
             android:clickable="true"
-            android:divider="#d8d8d8"
-            android:dividerHeight="1dp"
-            android:focusable="true"
-            android:drawSelectorOnTop="true" >
-
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:drawSelectorOnTop="true"
+            android:focusable="true" >
         </ListView>
     </LinearLayout>
 

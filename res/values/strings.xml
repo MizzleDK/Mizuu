@@ -160,6 +160,7 @@
     <string name="sortAdded">Sort by date added</string>
     <string name="sortDuration">Sort by duration</string>
     <string name="choiceAllMovies">All movies</string>
+    <string name="choiceOffline">Offline copies</string>
     <string name="choiceFavorites">Favorites</string>
     <string name="choiceGenres">Genres</string>
     <string name="choiceCollections">Collections</string>
