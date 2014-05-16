@@ -88,6 +88,14 @@
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
+            android:title="Apache Commons FilenameUtils" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/FilenameUtils.html" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
             android:summary="GNU Lesser General Public License"
             android:title="Cling by 4thline" >
             <intent

@@ -38,7 +38,7 @@ public class StreamSource {
 	public StreamSource(SmbFile file) throws SmbException{
 		fp = 0;
 		len = file.length();
-		mime = MizLib.getMimeType(file.getName(), false, true);
+		mime = MizLib.getMimeType(file.getName(), false);
 		name = file.getName();
 		this.file = file;
 		bufferSize = 1024*16;
