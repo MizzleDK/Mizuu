@@ -134,7 +134,7 @@ public class TheTVDB extends Service {
 							stopSelf();
 						
 						if (season.isEmpty() && episode.isEmpty()) {
-							DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("ignoredTags", ""));
+							DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file.contains("<MiZ>") ? file.split("<MiZ>")[0] : file, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("ignoredTags", ""));
 							downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file);
 						} else {
 							downloadEpisode(season, episode, file);

@@ -123,7 +123,8 @@ public class IdentifyTvShow extends MizActivity {
 			}
 		});
 
-		DecryptedShowEpisode result = MizLib.decryptEpisode(files[0], settings.getString("ignoredTags", ""));
+		String firstFilename=files[0].contains("<MiZ>") ? files[0].split("<MiZ>")[0] : files[0];
+		DecryptedShowEpisode result = MizLib.decryptEpisode(firstFilename, settings.getString("ignoredTags", ""));
 
 		seasonText = (EditText) findViewById(R.id.seasonText);
 		seasonText.setText(String.valueOf(result.getSeason()));

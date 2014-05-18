@@ -21,12 +21,12 @@ import android.content.Context;
 import java.io.File;
 
 import com.miz.functions.MizLib;
-import com.miz.mizuu.R;
 
 public class TvShowEpisode {
 
 	private Context CONTEXT;
 	private String ROW_ID, FILEPATH, SHOW_ID, TITLE, DESCRIPTION, SEASON, EPISODE, RELEASEDATE, DIRECTOR, WRITER, GUESTSTARS, RATING, HAS_WATCHED, FAVORITE;
+	private String mGetFilepath;
 
 	public TvShowEpisode(Context context, String rowId, String showId, String filepath, String title, String description,
 			String season, String episode, String releasedate, String director, String writer, String gueststars,
@@ -48,6 +48,8 @@ public class TvShowEpisode {
 		RATING = rating;
 		HAS_WATCHED = hasWatched;
 		FAVORITE = favorite;
+		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[1] : FILEPATH;
+		mGetFilepath = MizLib.transformSmbPath(temp);
 	}
 
 	public String getRowId() {
@@ -59,7 +61,7 @@ public class TvShowEpisode {
 	}
 
 	public String getFilepath() {
-		return MizLib.transformSmbPath(FILEPATH);
+		return mGetFilepath;
 	}
 
 	public String getFullFilepath() {
@@ -68,8 +70,10 @@ public class TvShowEpisode {
 	
 	public String getTitle() {
 		if (TITLE == null || TITLE.isEmpty()) {
-			File fileName = new File(FILEPATH);
-			return fileName.getName().substring(0, fileName.getName().lastIndexOf("."));
+			String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[0] : FILEPATH;
+			File fileName = new File(temp);
+			int pointPosition=fileName.getName().lastIndexOf(".");
+			return pointPosition == -1 ? fileName.getName() : fileName.getName().substring(0, pointPosition);
 		} else {
 			return TITLE;
 		}
