@@ -151,7 +151,7 @@ public class DbAdapterTvShowEpisode {
 		HashMap<String, Integer> results = new HashMap<String, Integer>();
 		Cursor c = null;
 		try {
-			c = database.query(DATABASE_TABLE, new String[]{KEY_SHOW_ID, KEY_EPISODE_TITLE, KEY_SEASON}, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, null, null, KEY_SEASON + " asc");
+			c = database.query(DATABASE_TABLE, new String[]{KEY_SHOW_ID, KEY_EPISODE_TITLE, KEY_SEASON}, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc");
 			while (c.moveToNext()) {
 				String season = c.getString(c.getColumnIndex(KEY_SEASON));
 				if (results.containsKey(season)) {

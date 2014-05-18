@@ -610,6 +610,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		if (!mLoading)
 			showCollectionBasedOnNavigationIndex(itemPosition);
+		
 		return true;
 	}
 
@@ -1129,6 +1130,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		// Clean up on aisle three...
 		tempMovies.clear();
 		tempMovies = null;
+		
+		hideProgressBar();
+		notifyDataSetChanged();
 	}
 
 	private void showGenres() {

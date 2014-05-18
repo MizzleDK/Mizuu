@@ -848,8 +848,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		hideProgressBar();
 		notifyDataSetChanged();
-
-
 	}
 
 	private void showGenres() {
