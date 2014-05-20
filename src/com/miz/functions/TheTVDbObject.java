@@ -72,7 +72,7 @@ public class TheTVDbObject {
 				continue;
 			
 			DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file.contains("<MiZ>") ? file.split("<MiZ>")[0] : file, ignoredTags);
-			downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file.contains("<MiZ>") ? file.split("<MiZ>")[1] : file);
+			downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file);
 
 			count++;
 		}
