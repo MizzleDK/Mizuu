@@ -1,6 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <style name="Theme.Example.Transparent.NoBackGround" parent="@style/Theme.Example">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
+    </style>
+
+    <style name="Theme.Example.Transparent.NoBackGround.FullScreen" parent="@style/Theme.Example">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
+    </style>
+
+    <style name="Theme.Example.NoBackGround" parent="@style/Theme.Example">
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="Theme.Example.NoBackGround.FullScreen" parent="@style/Theme.Example">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    
+    <style name="Theme.Example.Transparent" parent="@style/Theme.Example">
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
+    </style>
+
+    <style name="Theme.Example.Transparent.FullScreen" parent="@style/Theme.Example">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
+    </style>
+    
+    <style name="Theme.Example.Light" parent="@style/Theme.Example">
+        <item name="android:windowBackground">@color/light_background</item>
+    </style>
+    
+    <style name="Theme.Example.Light.FullScreen" parent="@style/Theme.Example">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/light_background</item>
+    </style>
+
+    <style name="Theme.Example" parent="@android:style/Theme.Holo">
+        <item name="android:listSelector">@drawable/list_selector</item>
+        <item name="android:windowBackground">@drawable/bg</item>
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_example</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Example</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Example</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Example</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Example</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Example</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_example</item>
+        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_example</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Example</item>
+    </style>
+
+    <style name="Theme.Example.FullScreen" parent="@android:style/Theme.Holo">
+        <item name="android:listSelector">@drawable/list_selector</item>
+        <item name="android:windowBackground">@drawable/bg</item>
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_example</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Example</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Example</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Example</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Example</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Example</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_example</item>
+        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_example</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Example</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="ActionBar.Solid.Example" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">#aa000000</item>
+        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_example</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Example</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Example" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@drawable/transparent_actionbar</item>
+        <item name="android:backgroundSplit">#aa000000</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Example</item>
+    </style>
+
+    <style name="PopupMenu.Example" parent="@android:style/Widget.Holo.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_example</item>
+    </style>
+
+    <style name="DropDownListView.Example" parent="@android:style/Widget.Holo.ListView.DropDown">
+        <item name="android:listSelector">@drawable/selectable_background_example</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Example" parent="@android:style/Widget.Holo.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_example</item>
+    </style>
+
+    <style name="DropDownNav.Example" parent="@android:style/Widget.Holo.Spinner">
+        <item name="android:background">@drawable/spinner_background_ab_example</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_example</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_example</item>
+    </style>
+
+    <style name="ProgressBar.Example" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_example</item>
+    </style>
+
+    <style name="ActionButton.CloseMode.Example" parent="@android:style/Widget.Holo.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_example</item>
+    </style>
+
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Example.Widget" parent="@android:style/Theme.Holo">
+        <item name="android:popupMenuStyle">@style/PopupMenu.Example</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Example</item>
+    </style>
+    
     <style name="MizuuTheme" parent="android:Theme.Holo">
         <item name="android:windowBackground">@drawable/bg</item>
         <item name="android:actionBarStyle">@style/MizuuActionBar</item>

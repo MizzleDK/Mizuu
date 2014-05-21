@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.miz.functions.AspectRatioImageViewBackdrop
+    <com.miz.views.AspectRatioImageViewBackdrop
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

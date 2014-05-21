@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.functions;
 
 import java.io.IOException;
@@ -24,26 +40,8 @@ public class NfoMovie {
 	private MovieLibraryUpdateCallback callback;
 	private TMDbMovie movie;
 	private String filepath;
-	private MizFile file, nfoFile;
 	private Context c;
 	private InputStream is;
-
-	private String getFilepath() {
-		if (file == null) {
-			return filepath;
-		} else {
-			return file.getAbsolutePath();
-		}
-	}
-
-	public NfoMovie(MizFile file, MizFile nfoFile, Context c) {
-		this.file = file;
-		this.nfoFile = nfoFile;
-		this.c = c;
-		is = this.nfoFile.getInputStream();
-
-		readFile();
-	}
 
 	public NfoMovie(String file, InputStream is, Context c, MovieLibraryUpdateCallback callback) {
 		this.filepath = file;
@@ -304,11 +302,11 @@ public class NfoMovie {
 	private void addToDatabase() {
 		// Create and open database
 		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
-		long rowId = dbHelper.createMovie(getFilepath(), movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
+		long rowId = dbHelper.createMovie(filepath, movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
 
 		Movie temp = new Movie(c,
 				String.valueOf(rowId),
-				getFilepath(),
+				filepath,
 				movie.getTitle(),
 				movie.getPlot(),
 				movie.getTagline(),

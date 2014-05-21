@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="1008"
-    android:versionName="2.8.0.3" >
+    android:versionCode="1009"
+    android:versionName="2.8.9" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -178,8 +178,7 @@
         <activity
             android:name="com.miz.mizuu.TMDbMovieDetails"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
-            android:label="@string/trailersTitle" >
+            android:icon="@drawable/white_app_icon" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -545,7 +544,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 

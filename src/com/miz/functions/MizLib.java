@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.functions;
 
 import java.io.BufferedInputStream;
@@ -21,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -83,7 +100,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
@@ -691,7 +707,7 @@ public class MizLib {
 			return getVideoIntent(Uri.parse(fileUrl), useWildcard, videoObject);
 
 		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
-		videoIntent.setDataAndType(Uri.fromFile(new File(fileUrl)), getMimeType(fileUrl, useWildcard, false));
+		videoIntent.setDataAndType(Uri.fromFile(new File(fileUrl)), getMimeType(fileUrl, useWildcard));
 		videoIntent.putExtras(getVideoIntentBundle(videoObject));
 
 		return videoIntent;
@@ -699,7 +715,7 @@ public class MizLib {
 
 	public static Intent getVideoIntent(Uri file, boolean useWildcard, Object videoObject) {
 		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
-		videoIntent.setDataAndType(file, getMimeType(file.getPath(), useWildcard, false));
+		videoIntent.setDataAndType(file, getMimeType(file.getPath(), useWildcard));
 		videoIntent.putExtras(getVideoIntentBundle(videoObject));
 
 		return videoIntent;
@@ -755,27 +771,6 @@ public class MizLib {
 		if (string == null)
 			return true;
 		return string.length() == 0;
-	}
-
-	public static String getMimeType(String url, boolean useWildcard, boolean useCorrectMkvMimeType) {
-		if (useWildcard)
-			return "video/*";
-
-		String type = null;
-		String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-
-		if (extension != null) {
-			if (useCorrectMkvMimeType && url.contains(".mkv"))
-				return "video/x-matroska";
-
-			MimeTypeMap mime = MimeTypeMap.getSingleton();
-			type = mime.getMimeTypeFromExtension(extension);
-
-			if (isEmpty(type))
-				type = "video/*"; // No MIME type found, so use the video wildcard
-		}
-
-		return type;
 	}
 
 	public static boolean checkFileTypes(String file) {
@@ -3174,6 +3169,7 @@ public class MizLib {
 			HttpURLConnection con =
 					(HttpURLConnection) new URL(URLName).openConnection();
 			con.setRequestMethod("HEAD");
+			con.setConnectTimeout(10000);
 			return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
 		}
 		catch (Exception e) {
@@ -3221,6 +3217,8 @@ public class MizLib {
 	}
 	
 	public static String getPrettyTime(Context context, int minutes) {
+		if (minutes == 0)
+			return context.getString(R.string.stringNA);;
 		try {
 			int hours = (minutes / 60);
 			minutes = (minutes % 60);
@@ -3235,11 +3233,9 @@ public class MizLib {
 				return minutes_string;
 			}
 		} catch (Exception e) { // Fall back if something goes wrong
-			if (minutes >= 0) {
+			if (minutes > 0)
 				return String.valueOf(minutes);
-			} else {
-				return context.getString(R.string.stringNA);
-			}
+			return context.getString(R.string.stringNA);
 		}
 	}
 	
@@ -3306,4 +3302,128 @@ public class MizLib {
 			}
 		};
 	}
+	
+	private static String[] mAdultKeywords = new String[]{"adult", "sex", "porn", "explicit", "penis", "vagina", "asshole", "blowjob", "cock", "fuck", "dildo", "kamasutra", "masturbat", "squirt", "slutty", "cum", "cunt"};
+	
+	public static boolean isAdultContent(Context context, String title) {
+		// Check if the user has enabled adult content - if so, nothing should
+		// be blocked and the method should return false regardless of the title
+		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefsIncludeAdultContent", false))
+			return false;
+		
+		String lowerCase = title.toLowerCase(Locale.getDefault());
+		
+		// Run through the keywords and check
+		for (int i = 0; i < mAdultKeywords.length; i++)
+			if (lowerCase.contains(mAdultKeywords[i]))
+				return true;
+		
+		// Certain titles include "XXX" (all caps), so test this against the normal-case title as a last check
+		return title.contains("XXX");
+	}
+	
+	public static String getMimeType(String filepath, boolean useWildcard) {
+		if (useWildcard)
+			return "video/*";
+		
+		HashMap<String, String> mimeTypes = new HashMap<String, String>();
+		mimeTypes.put("3gp",	"video/3gpp");
+		mimeTypes.put("aaf",	"application/octet-stream");
+		mimeTypes.put("mp4",	"video/mp4");
+		mimeTypes.put("ts",		"video/mp2t");
+		mimeTypes.put("webm",	"video/webm");
+		mimeTypes.put("m4v",	"video/x-m4v");
+		mimeTypes.put("mkv",	"video/x-matroska");
+		mimeTypes.put("divx",	"video/x-divx");
+		mimeTypes.put("xvid",	"video/x-xvid");
+		mimeTypes.put("rec",	"application/octet-stream");
+		mimeTypes.put("avi",	"video/avi");
+		mimeTypes.put("flv",	"video/x-flv");
+		mimeTypes.put("f4v",	"video/x-f4v");
+		mimeTypes.put("moi",	"application/octet-stream");
+		mimeTypes.put("mpeg",	"video/mpeg");
+		mimeTypes.put("mpg",	"video/mpeg");
+		mimeTypes.put("mts",	"video/mts");
+		mimeTypes.put("m2ts",	"video/mp2t");
+		mimeTypes.put("ogv",	"video/ogg");
+		mimeTypes.put("rm",		"application/vnd.rn-realmedia");
+		mimeTypes.put("rmvb",	"application/vnd.rn-realmedia-vbr");
+		mimeTypes.put("mov",	"video/quicktime");
+		mimeTypes.put("wmv",	"video/x-ms-wmv");
+		mimeTypes.put("iso",	"application/octet-stream");
+		mimeTypes.put("vob",	"video/dvd");
+		mimeTypes.put("ifo",	"application/octet-stream");
+		mimeTypes.put("wtv",	"video/wtv");
+		mimeTypes.put("pyv",	"video/vnd.ms-playready.media.pyv");
+		mimeTypes.put("ogm",	"video/ogg");
+		mimeTypes.put("img",	"application/octet-stream");
+		
+		String mime = mimeTypes.get(getExtension(filepath));
+		if (mime == null)
+			return "video/*";
+		return mime;
+	}
+	
+	/*
+	 * START OF APACHE COMMONS CODE
+	 * from http://svn.apache.org/repos/asf/commons/proper/io/trunk/src/main/java/org/apache/commons/io/FilenameUtils.java
+	 */
+	
+	/*
+	 * Licensed to the Apache Software Foundation (ASF) under one or more
+	 * contributor license agreements.  See the NOTICE file distributed with
+	 * this work for additional information regarding copyright ownership.
+	 * The ASF licenses this file to You under the Apache License, Version 2.0
+	 * (the "License"); you may not use this file except in compliance with
+	 * the License.  You may obtain a copy of the License at
+	 *
+	 *      http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	
+	
+	private static final int NOT_FOUND = -1;
+	public static final char EXTENSION_SEPARATOR = '.';
+	private static final char UNIX_SEPARATOR = '/';
+    private static final char WINDOWS_SEPARATOR = '\\';
+	
+	public static String getExtension(final String filename) {
+        if (filename == null) {
+            return null;
+        }
+        final int index = indexOfExtension(filename);
+        if (index == NOT_FOUND) {
+            return "";
+        } else {
+            return filename.substring(index + 1);
+        }
+    }
+	
+	public static int indexOfExtension(final String filename) {
+        if (filename == null) {
+            return NOT_FOUND;
+        }
+        final int extensionPos = filename.lastIndexOf(EXTENSION_SEPARATOR);
+        final int lastSeparator = indexOfLastSeparator(filename);
+        return lastSeparator > extensionPos ? NOT_FOUND : extensionPos;
+    }
+	
+	public static int indexOfLastSeparator(final String filename) {
+        if (filename == null) {
+            return NOT_FOUND;
+        }
+        final int lastUnixPos = filename.lastIndexOf(UNIX_SEPARATOR);
+        final int lastWindowsPos = filename.lastIndexOf(WINDOWS_SEPARATOR);
+        return Math.max(lastUnixPos, lastWindowsPos);
+    }
+	
+	/*
+	 * END OF APACHE COMMONS CODE
+	 */
+	
 }

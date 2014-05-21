@@ -14,13 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <com.miz.functions.AspectRatioImageViewBackdropLarge
+            <com.miz.views.AspectRatioImageViewBackdropLarge
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
 
-            <com.miz.functions.AspectRatioImageViewCover
+            <com.miz.views.AspectRatioImageViewCover
                 android:id="@+id/traktIcon"
                 android:layout_width="@dimen/actor_details_width"
                 android:layout_height="match_parent"

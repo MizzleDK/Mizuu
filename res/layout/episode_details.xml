@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <com.miz.functions.AspectRatioImageViewBackdrop
+            <com.miz.views.AspectRatioImageViewBackdrop
                 android:id="@+id/traktIcon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

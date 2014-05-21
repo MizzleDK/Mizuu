@@ -39,17 +39,17 @@
             <LinearLayout
                 android:id="@+id/drawer_user_info"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="114dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:background="@drawable/gradient_black_to_transparent"
-                android:gravity="center_vertical" >
+                android:gravity="center_horizontal"
+                android:orientation="vertical" >
 
-                <com.miz.functions.CircleImageView
+                <com.miz.views.CircularImageView
                     android:id="@+id/userPhoto"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="12dp"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
                     android:src="@drawable/unknown_user" />
 
                 <TextView
@@ -114,11 +114,10 @@
             android:layout_height="match_parent"
             android:choiceMode="singleChoice"
             android:clickable="true"
-            android:divider="#d8d8d8"
-            android:dividerHeight="1dp"
-            android:focusable="true"
-            android:drawSelectorOnTop="true" >
-
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:drawSelectorOnTop="true"
+            android:focusable="true" >
         </ListView>
     </LinearLayout>
 

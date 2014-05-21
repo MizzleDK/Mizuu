@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.mizuu.fragments;
 
 import android.graphics.Color;
@@ -17,12 +33,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.miz.functions.MizLib;
-import com.miz.functions.ObservableScrollView;
 import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
-import com.miz.functions.ObservableScrollView.OnScrollChangedListener;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.views.ObservableScrollView;
+import com.miz.views.ObservableScrollView.OnScrollChangedListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -117,9 +133,6 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		
 		if (MizLib.isPortrait(getActivity())) {
-			if (!MizLib.isTablet(getActivity()))
-				MizLib.addActionBarPaddingBottom(getActivity(), view.findViewById(R.id.scrollView1));
-
 			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
 			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
 			

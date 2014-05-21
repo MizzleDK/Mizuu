@@ -1,11 +1,27 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.filesources;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +61,7 @@ import com.miz.service.WireUpnpService;
 
 public class UpnpTvShow extends TvShowFileSource<String> {
 
-	private LinkedHashSet<String> results = new LinkedHashSet<String>();
+	private TreeSet<String> results = new TreeSet<String>();
 	private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
 	private CountDownLatch mLatch = new CountDownLatch(1);
 	private AndroidUpnpService mUpnpService;
@@ -140,7 +156,7 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 	}
 
 	@Override
-	public void recursiveSearch(String folder, LinkedHashSet<String> results) {
+	public void recursiveSearch(String folder, TreeSet<String> results) {
 		mContext.bindService(new Intent(mContext, WireUpnpService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
 		try {
@@ -150,13 +166,13 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 		}
 	}
 
-	public void addToResults(String file, long size, LinkedHashSet<String> results) {
+	public void addToResults(String file, long size, TreeSet<String> results) {
 		if (MizLib.checkFileTypes(file)) {			
 			if (size < getFileSizeLimit())
 				return;
 
 			if (!clearLibrary())
-				if (existingEpisodes.get(file.split("<MiZ>")[1]) != null) return;
+				if (existingEpisodes.get(file.split("<MiZ>")[1]) != null || existingEpisodes.get(file) != null) return;
 
 			//Add the file if it reaches this point
 			results.add(file);
@@ -319,5 +335,5 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 	}
 
 	@Override
-	public void addToResults(String folder, LinkedHashSet<String> results) {}
+	public void addToResults(String folder, TreeSet<String> results) {}
 }

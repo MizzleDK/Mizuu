@@ -20,4 +20,5 @@
 <resources>
     <color name="pressed_example">#CC336699</color>
     <color name="light_background">#f4f4f4</color>
+    <color name="dark_background">#181818</color>
 </resources>

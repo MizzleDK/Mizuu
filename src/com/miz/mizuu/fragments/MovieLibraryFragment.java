@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.mizuu.fragments;
 
 import java.io.File;
@@ -80,21 +96,19 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	public static final String ALL = "ALL", AVAILABLE = "AVAILABLE", FAVORITES = "FAVORITES", WATCHLIST = "WATCHLIST", COLLECTIONS = "COLLECTIONS";
 
 	private SharedPreferences settings;
-	private int mImageThumbSize, mImageThumbSpacing;
+	private int mImageThumbSize, mImageThumbSpacing, type, mResizedWidth, mResizedHeight, mCurrentSort;
 	private LoaderAdapter mAdapter;
 	private ArrayList<MediumMovie> movies = new ArrayList<MediumMovie>(), shownMovies = new ArrayList<MediumMovie>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
 	private TextView overviewMessage;
 	private Button updateMovieLibrary;
-	private boolean ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo, mLoading;
+	private boolean ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo, mLoading, mShowTitles;
 	private ActionBar actionBar;
-	private int type;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private Picasso mPicasso;
 	private Config mConfig;
-	private int mCurrentSort;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -129,6 +143,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
 		ignoreNfo = settings.getBoolean("prefsIgnoreNfoFiles", true);
 		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
+		mShowTitles = settings.getBoolean("prefsShowGridTitles", true);
 
 		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
 		if (thumbnailSize.equals(getString(R.string.normal))) 
@@ -177,6 +192,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceWatchedMovies), getString(R.string.choiceWatchedMovies)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceUnwatchedMovies), getString(R.string.choiceUnwatchedMovies)));
 		spinnerItems.add(new SpinnerItem(getString(R.string.choiceUnidentifiedMovies), getString(R.string.choiceUnidentifiedMovies)));
+		spinnerItems.add(new SpinnerItem(getString(R.string.choiceOffline), getString(R.string.choiceOffline)));
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -209,7 +225,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					movies.clear();
 					shownMovies.clear();
 				}
-				
+
 				@Override
 				protected Void doInBackground(Void... params) {
 					try {
@@ -246,7 +262,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					finally {
 						cursor.close();
 					}
-					
+
 					if (type == MAIN)
 						shownMovies.addAll(movies);
 					else {
@@ -257,17 +273,17 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					}
 					return null;
 				}
-				
+
 				@Override
 				protected void onPostExecute(Void result) {
 
 
 
 					showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
-					
+
 					mLoading = false;
 				}
-				
+
 			};
 			load.execute();
 		}
@@ -325,7 +341,11 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
 								mAdapter.setNumColumns(numColumns);
+								mResizedWidth = (int) (((mGridView.getWidth() - (numColumns * mImageThumbSpacing))
+										/ numColumns) * 1.1); // * 1.1 is a hack to make images look slightly less blurry
+								mResizedHeight = (int) (mResizedWidth * 1.5);
 							}
+
 							if (MizLib.hasJellyBean()) {
 								mGridView.getViewTreeObserver()
 								.removeOnGlobalLayoutListener(this);
@@ -378,7 +398,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0;
+		private int mNumColumns = 0, mSidePadding, mBottomPadding;
 		private Object[] sections;
 		private boolean isCollections = false;
 
@@ -386,6 +406,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
+			mBottomPadding = MizLib.convertDpToPixels(mContext, 2);
 		}
 
 		@Override
@@ -415,7 +437,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
-			
+
 			CoverItem holder;
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
@@ -429,39 +451,52 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-			
-			holder.cover.setImageResource(android.R.color.transparent);
-			
-			switch (mCurrentSort) {
-			case DURATION:
-				holder.subtext.setText(shownMovies.get(position).getPrettyRuntime());
-				break;
-			case RATING:
-				holder.subtext.setText((int)(shownMovies.get(position).getRawRating() * 10) + "%");
-				break;
-			case WEIGHTED_RATING:
-				holder.subtext.setText(shownMovies.get(position).getWeightedCompatibility());
-				break;
-			case DATE:
-				holder.subtext.setText(shownMovies.get(position).getPrettyDateAdded());
-				break;
-			case RELEASE:
-				holder.subtext.setText(shownMovies.get(position).getPrettyReleaseDate());
-				break;
-			default:
-				holder.subtext.setText(shownMovies.get(position).getReleaseYear());
-				break;
+
+			if (!mShowTitles) {
+				holder.text.setVisibility(View.GONE);
+				holder.subtext.setVisibility(View.GONE);
+				holder.cover.setPadding(mSidePadding, 0, mSidePadding, mBottomPadding);
+			} else {
+				holder.text.setVisibility(View.VISIBLE);
+				holder.subtext.setVisibility(View.VISIBLE);
 			}
 
+			if (mShowTitles) {
+				switch (mCurrentSort) {
+				case DURATION:
+					holder.subtext.setText(shownMovies.get(position).getPrettyRuntime());
+					break;
+				case RATING:
+					holder.subtext.setText((int)(shownMovies.get(position).getRawRating() * 10) + "%");
+					break;
+				case WEIGHTED_RATING:
+					holder.subtext.setText(shownMovies.get(position).getWeightedCompatibility());
+					break;
+				case DATE:
+					holder.subtext.setText(shownMovies.get(position).getPrettyDateAdded());
+					break;
+				case RELEASE:
+					holder.subtext.setText(shownMovies.get(position).getPrettyReleaseDate());
+					break;
+				default:
+					holder.subtext.setText(shownMovies.get(position).getReleaseYear());
+					break;
+				}
+			}
+
+			holder.cover.setImageResource(android.R.color.white);
+
 			if (isCollections) {
-				mPicasso.load(shownMovies.get(position).getCollectionPoster()).config(mConfig).into(holder);
-				holder.text.setText(shownMovies.get(position).getCollection());
+				mPicasso.load(shownMovies.get(position).getCollectionPoster()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+				if (mShowTitles)
+					holder.text.setText(shownMovies.get(position).getCollection());
 			} else { // Movies
-				holder.text.setText(shownMovies.get(position).getTitle());
+				if (mShowTitles)
+					holder.text.setText(shownMovies.get(position).getTitle());
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
-					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
+					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 				} else {
-					mPicasso.load(shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
+					mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 				}
 			}
 
@@ -575,6 +610,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		if (!mLoading)
 			showCollectionBasedOnNavigationIndex(itemPosition);
+		
 		return true;
 	}
 
@@ -606,6 +642,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			break;
 		case 6:
 			showUnidentifiedMovies();
+			break;
+		case 7:
+			showOfflineCopies();
 			break;
 		}
 	}
@@ -645,15 +684,22 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	private void showAvailableFiles() {
-		showProgressBar();
-
-		shownMovies.clear();
-
-		new Thread() {
+		new AsyncTask<Void, Void, Void>() {
+			
+			ArrayList<MediumMovie> tempMovies;
+			ArrayList<FileSource> filesources;
+			
 			@Override
-			public void run() {
-				ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>();
-				ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
+			protected void onPreExecute() {
+				showProgressBar();
+
+				shownMovies.clear();
+			}
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				tempMovies = new ArrayList<MediumMovie>();
+				filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
 
 				for (int i = 0; i < movies.size(); i++) {
 					if (movies.get(i).isNetworkFile()) {
@@ -694,28 +740,28 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 							tempMovies.add(movies.get(i));
 					}
 				}
-
-				// Check if "Available files" is still selected
-				if (isAdded())
-					if (getActivity().getActionBar().getSelectedNavigationIndex() == 2) {
-						shownMovies.addAll(tempMovies);
-
-						// Clean up...
-						tempMovies.clear();
-						tempMovies = null;
-
-						sortMovies();
-
-						getActivity().runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								notifyDataSetChanged();
-								hideProgressBar();
-							}	
-						});
-					}
+				
+				return null;
 			}
-		}.start();
+
+			@Override
+			protected void onPostExecute(Void result) {
+				if (isAdded() && getActivity().getActionBar().getSelectedNavigationIndex() == 2) {
+					
+					shownMovies.addAll(tempMovies);
+					
+					// Clean up...
+					tempMovies.clear();
+					tempMovies = null;
+					
+					sortMovies();
+					
+					notifyDataSetChanged();
+
+					hideProgressBar();
+				}
+			}
+		}.execute();
 	}
 
 	private void showCollections() {
@@ -777,6 +823,35 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		notifyDataSetChanged();
 
 		hideProgressBar();
+	}
+
+	private void showOfflineCopies() {
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected void onPreExecute() {
+				showProgressBar();
+
+				shownMovies.clear();
+			}
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				for (int i = 0; i < movies.size(); i++) {
+					if (movies.get(i).hasOfflineCopy())
+						shownMovies.add(movies.get(i));
+				}
+
+				sortMovies();
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				notifyDataSetChanged();
+
+				hideProgressBar();
+			}
+		}.execute();
 	}
 
 	@Override
@@ -1055,6 +1130,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		// Clean up on aisle three...
 		tempMovies.clear();
 		tempMovies = null;
+		
+		hideProgressBar();
+		notifyDataSetChanged();
 	}
 
 	private void showGenres() {
@@ -1425,10 +1503,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			if (numColumns > 0) {
 				mAdapter.setNumColumns(numColumns);
 			}
-		}
 
-		sortMovies();
-		notifyDataSetChanged();
+			notifyDataSetChanged();
+		} else if (key.equals("prefsShowGridTitles")) {
+			mShowTitles = sharedPreferences.getBoolean("prefsShowGridTitles", true);
+			notifyDataSetChanged();
+		}
 	}
 
 	private void forceLoaderLoad() {

@@ -45,7 +45,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="32dp" >
 
-                    <com.miz.functions.AspectRatioImageViewCover
+                    <com.miz.views.AspectRatioImageViewCover
                         android:id="@+id/traktIcon"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -67,6 +67,7 @@
                     android:layout_marginLeft="32dp"
                     android:layout_marginRight="32dp"
                     android:layout_marginTop="32dp"
+                    android:clipToPadding="false"
                     android:layout_toRightOf="@+id/coverLayout" >
 
                     <LinearLayout

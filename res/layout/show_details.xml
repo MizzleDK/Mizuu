@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.miz.functions.ObservableScrollView
+    <com.miz.views.ObservableScrollView
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
-                <com.miz.functions.AspectRatioImageViewBackdropLarge
+                <com.miz.views.AspectRatioImageViewBackdropLarge
                     android:id="@+id/imageBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true" >
 
-                    <com.miz.functions.GridItemImageView
+                    <com.miz.views.GridItemImageView
                         android:id="@+id/traktIcon"
                         android:layout_width="@dimen/cover_photo_width"
                         android:layout_height="wrap_content"
@@ -49,7 +49,6 @@
                         android:baselineAlignBottom="true"
                         android:scaleType="fitXY"
                         android:src="@drawable/loading_image" />
-
                 </FrameLayout>
 
                 <FrameLayout
@@ -194,10 +193,10 @@
                     android:drawablePadding="@dimen/movie_details_padding"
                     android:focusable="false"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textSize="@dimen/details_text_size"
-                    android:textColor="#ddd" />
+                    android:textColor="#ddd"
+                    android:textSize="@dimen/details_text_size" />
             </LinearLayout>
         </LinearLayout>
-    </com.miz.functions.ObservableScrollView>
+    </com.miz.views.ObservableScrollView>
 
 </FrameLayout>
