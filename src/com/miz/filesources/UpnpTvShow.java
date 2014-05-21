@@ -172,7 +172,7 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 				return;
 
 			if (!clearLibrary())
-				if (existingEpisodes.get(file.split("<MiZ>")[1]) != null) return;
+				if (existingEpisodes.get(file.split("<MiZ>")[1]) != null || existingEpisodes.get(file) != null) return;
 
 			//Add the file if it reaches this point
 			results.add(file);

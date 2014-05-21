@@ -13,3 +13,7 @@ gen/
 .idea/workspace.xml
 .settings/org.eclipse.jdt.core.prefs
 .settings/org.eclipse.ltk.core.refactoring.prefs
+.idea/.name
+.idea/gradle.xml
+local.properties
+res/drawable-hdpi/Thumbs.db

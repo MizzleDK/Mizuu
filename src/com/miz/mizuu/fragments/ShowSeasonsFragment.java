@@ -132,9 +132,9 @@ public class ShowSeasonsFragment extends Fragment {
 			useGridView = false;
 
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-		if (!MizLib.isPortrait(getActivity()) && MizLib.isTablet(getActivity()))
-			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 0.75);
-		else
+		//if (!MizLib.isPortrait(getActivity()) && MizLib.isTablet(getActivity()))
+		//	mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 0.75);
+		//else
 			mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width);
 
 		if (useGridView)

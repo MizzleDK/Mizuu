@@ -379,7 +379,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 			sb.delete(0, sb.length());
 			sb.append(mMovieQueue.pop());
-
+			
 			mCount++;
 
 			if (mIgnoreNfoFiles) {

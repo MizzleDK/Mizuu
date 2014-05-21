@@ -575,12 +575,7 @@ public class TheTVDb {
 						show.addSeason(season);
 					}
 				}
-			}
-			
-			for (Season s : show.getSeasons()) {
-				System.out.println("SEASON " + s.getSeason() + ": " + s.getCoverPath());
-			}
-			
+			}			
 		} catch (Exception e) {}
 
 		return show;

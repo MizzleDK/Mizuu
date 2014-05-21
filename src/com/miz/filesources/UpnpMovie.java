@@ -149,9 +149,9 @@ public class UpnpMovie extends MovieFileSource<String> {
 		if (MizLib.checkFileTypes(file)) {
 			if (size < getFileSizeLimit())
 				return;
-
+			
 			if (!clearLibrary())
-				if (existingMovies.get(file.split("<MiZ>")[1]) != null) return;
+				if (existingMovies.get(file.split("<MiZ>")[1]) != null || existingMovies.get(file) != null) return;
 
 			String tempFileName = file.substring(0, file.lastIndexOf("."));
 			if (tempFileName.toLowerCase(Locale.ENGLISH).matches(".*part[2-9]|cd[2-9]")) return;

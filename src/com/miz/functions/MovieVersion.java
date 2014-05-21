@@ -31,6 +31,8 @@ public class MovieVersion {
 	}
 
 	public String getFilepath() {
+		String temp = filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[1] : filepath;
+		filepath = MizLib.transformSmbPath(temp);
 		return filepath;
 	}
 }
