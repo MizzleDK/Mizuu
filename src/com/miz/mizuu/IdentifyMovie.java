@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -74,6 +75,7 @@ public class IdentifyMovie extends MizActivity {
 	private Locale locale;
 	private DecryptedMovie mMovie;
 	private Picasso mPicasso;
+	private Config mConfig;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -88,12 +90,11 @@ public class IdentifyMovie extends MizActivity {
 		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
 
 		mPicasso = MizuuApplication.getPicasso(this);
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		rowId = Long.valueOf(getIntent().getExtras().getString("rowId"));
 		filename = getIntent().getExtras().getString("fileName");
 		mMovie = MizLib.decryptMovie(filename, settings.getString("ignoredTags", ""));
-
-		mAdapter = new ListAdapter(this);
 
 		locale = Locale.getDefault();
 
@@ -105,13 +106,14 @@ public class IdentifyMovie extends MizActivity {
 			useSystemLanguage.setChecked(true);
 
 		lv = (ListView) findViewById(android.R.id.list);
-		lv.setAdapter(mAdapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				updateMovie(arg2);
 			}
 		});
+		lv.setEmptyView(findViewById(R.id.no_results));
+		findViewById(R.id.no_results).setVisibility(View.GONE);
 
 		searchText = (EditText) findViewById(R.id.search);
 		searchText.setText(mMovie.getDecryptedFileName());
@@ -196,6 +198,11 @@ public class IdentifyMovie extends MizActivity {
 		protected void onPostExecute(String result) {
 			hideProgressBar();
 			if (searchText.getText().toString().length() > 0) {
+				if (lv.getAdapter() == null) {
+					mAdapter = new ListAdapter(getApplicationContext());
+					lv.setAdapter(mAdapter);
+				}
+				
 				mAdapter.notifyDataSetChanged();
 			}
 		}
@@ -280,7 +287,7 @@ public class IdentifyMovie extends MizActivity {
 			holder.orig_title.setText(results.get(position).getOriginalTitle());
 			holder.release.setText(results.get(position).getRelease());
 			
-			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

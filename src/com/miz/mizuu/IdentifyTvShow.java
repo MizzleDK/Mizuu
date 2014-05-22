@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -79,6 +80,7 @@ public class IdentifyTvShow extends MizActivity {
 	private CheckBox useSystemLanguage;
 	private Locale locale;
 	private Picasso mPicasso;
+	private Config mConfig;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -100,10 +102,9 @@ public class IdentifyTvShow extends MizActivity {
 		if (getIntent().getExtras().getString("showName") != null) {
 			oldShowId = getIntent().getExtras().getString("oldShowId");
 		}
-
-		mAdapter = new ListAdapter(this);
 		
 		mPicasso = MizuuApplication.getPicasso(this);
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		locale = Locale.getDefault();
 
@@ -115,13 +116,14 @@ public class IdentifyTvShow extends MizActivity {
 			useSystemLanguage.setChecked(true);
 
 		lv = (ListView) findViewById(android.R.id.list);
-		lv.setAdapter(mAdapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				update(arg2);
 			}
 		});
+		lv.setEmptyView(findViewById(R.id.no_results));
+		findViewById(R.id.no_results).setVisibility(View.GONE);
 
 		String firstFilename=files[0].contains("<MiZ>") ? files[0].split("<MiZ>")[0] : files[0];
 		DecryptedShowEpisode result = MizLib.decryptEpisode(firstFilename, settings.getString("ignoredTags", ""));
@@ -226,6 +228,11 @@ public class IdentifyTvShow extends MizActivity {
 		protected void onPostExecute(String result) {
 			hideProgressBar();
 			if (searchText.getText().toString().length() > 0) {
+				if (lv.getAdapter() == null) {
+					mAdapter = new ListAdapter(getApplicationContext());
+					lv.setAdapter(mAdapter);
+				}
+				
 				mAdapter.notifyDataSetChanged();
 			}
 		}
@@ -332,7 +339,7 @@ public class IdentifyTvShow extends MizActivity {
 			holder.release.setText(results.get(position).getRelease());
 
 			if (!results.get(position).getPic().contains("null"))
-			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
 			else
 				holder.cover.setImageResource(R.drawable.loading_image);
 

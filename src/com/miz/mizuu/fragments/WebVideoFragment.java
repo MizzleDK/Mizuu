@@ -40,6 +40,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -172,12 +173,15 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0;
+		private int mNumColumns = 0, mCard, mCardBackground, mCardTitleColor;;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mCard = MizuuApplication.getCardDrawable(mContext);
+			mCardBackground = MizuuApplication.getCardColor(mContext);
+			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -203,8 +207,13 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 				convertView = inflater.inflate(R.layout.webvideo_item, container, false);
 				holder = new CoverItem();
 				
+				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				
+				holder.mLinearLayout.setBackgroundResource(mCard);
+				holder.text.setBackgroundResource(mCardBackground);
+				holder.text.setTextColor(mCardTitleColor);
 				
 				convertView.setTag(holder);
 			} else {
@@ -213,7 +222,7 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 
 			holder.text.setText(videos.get(position).getTitle());
 			
-			mPicasso.load(videos.get(position).getUrl()).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
+			mPicasso.load(videos.get(position).getUrl()).placeholder(mCardBackground).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
 			
 			return convertView;
 		}

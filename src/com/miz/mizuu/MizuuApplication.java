@@ -28,9 +28,12 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.miz.base.MizActivity;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
@@ -191,5 +194,57 @@ public class MizuuApplication extends Application {
 		if (!mTypefaces.containsKey(key))
 			mTypefaces.put(key, Typeface.createFromAsset(context.getAssets(), key));
 		return mTypefaces.get(key);
+	}
+	
+	public static int getCardDrawable(Context context) {
+		if (usesDarkTheme(context))
+			return R.drawable.card;
+		return R.drawable.card_dark;
+	}
+	
+	public static int getCardColor(Context context) {
+		if (usesDarkTheme(context))
+			return R.color.card_background_dark;
+		return R.color.card_background_light;
+	}
+	
+	public static int getCardTitleColor(Context context) {
+		if (usesDarkTheme(context))
+			return Color.parseColor("#d0d0d0");
+		return Color.parseColor("#101010");
+	}
+	
+	public static int getBackgroundColor(Context context) {
+		if (usesDarkTheme(context))
+			return Color.WHITE;
+		return Color.BLACK;
+	}
+	
+	public static int getBackgroundColorResource(Context context) {
+		if (usesDarkTheme(context))
+			return R.color.dark_background;
+		return R.color.light_background;
+	}
+	
+	public static boolean usesDarkTheme(Context context) {
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefsDarkTheme", true);
+	}
+	
+	public static boolean isFullscreen(Context context) {
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(MizActivity.FULLSCREEN_TAG, false);
+	}
+	
+	public static void setupTheme(Context context) {
+		if (usesDarkTheme(context)) {
+			if (isFullscreen(context))
+				context.setTheme(R.style.Theme_Example_FullScreen);
+			else
+				context.setTheme(R.style.Theme_Example);
+		} else {
+			if (isFullscreen(context))
+				context.setTheme(R.style.Theme_Example_Light_FullScreen);
+			else
+				context.setTheme(R.style.Theme_Example_Light);
+		}
 	}
 }

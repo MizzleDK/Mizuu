@@ -1,7 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card"
+    android:background="@drawable/card_dark"
     android:orientation="vertical" >
 
     <com.miz.views.GridItemImageView
@@ -20,7 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="1dp"
         android:layout_marginRight="1dp"
-        android:background="#fff"
         android:ellipsize="end"
         android:maxLines="1"
         android:paddingLeft="5dp"
@@ -35,7 +35,6 @@
         android:id="@+id/gridCoverSubtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#fff"
         android:ellipsize="end"
         android:maxLines="1"
         android:paddingBottom="2dp"

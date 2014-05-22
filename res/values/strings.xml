@@ -446,5 +446,8 @@
     <string name="browser_help_message">Press the Back-button to navigate up the file system</string>
     <string name="unknown_size">Unknown size</string>
     <string name="compatibility">compatibility</string>
+    <string name="use_dark_theme_title">Use dark application theme</string>
+    <string name="set_dark_theme_description">Sets the application theme to a darker style. Requires application restart.</string>
+    <string name="no_results_found">No results found</string>
 
 </resources>

@@ -36,6 +36,7 @@
             android:key="prefsGridItemSize"
             android:summary="@string/overviewGridItemSizeDescription"
             android:title="@string/overviewGridItemSizeTitle" />
+        <CheckBoxPreference android:title="@string/use_dark_theme_title" android:defaultValue="true" android:key="prefsDarkTheme" android:summary="@string/set_dark_theme_description" android:icon="@drawable/localizedinfo"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/chooserTVShows" >
         <ListPreference

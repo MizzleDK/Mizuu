@@ -28,6 +28,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -66,6 +67,7 @@ public class CoverSearchFragment extends Fragment {
 	private String[] items = new String[]{};
 	private ProgressBar pbar;
 	private Picasso mPicasso;
+	private Config mConfig;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -93,6 +95,7 @@ public class CoverSearchFragment extends Fragment {
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		TMDB_ID = getArguments().getString("tmdbId");
 	}
@@ -162,11 +165,13 @@ public class CoverSearchFragment extends Fragment {
 
 		private final Context mContext;
 		private LayoutInflater inflater;
+		private int mCardBackground;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mCardBackground = MizuuApplication.getCardColor(mContext);
 		}
 
 		@Override
@@ -200,7 +205,7 @@ public class CoverSearchFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(pics_sources.get(position)).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load(pics_sources.get(position)).placeholder(mCardBackground).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

@@ -40,6 +40,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -183,12 +184,15 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0;
+		private int mNumColumns = 0, mCard, mCardBackground, mCardTitleColor;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mCard = MizuuApplication.getCardDrawable(mContext);
+			mCardBackground = MizuuApplication.getCardColor(mContext);
+			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -214,16 +218,22 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
 
+				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 
+				holder.mLinearLayout.setBackgroundResource(mCard);
+				holder.text.setBackgroundResource(mCardBackground);
+				holder.text.setTextColor(mCardTitleColor);
+				holder.subtext.setBackgroundResource(mCardBackground);
+				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.cover.setImageResource(android.R.color.white);
+			holder.cover.setImageResource(mCardBackground);
 			holder.text.setText(pics_sources.get(position).getTitle());
 
 			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {

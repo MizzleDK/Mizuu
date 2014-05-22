@@ -40,7 +40,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -53,15 +53,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SectionIndexer;
@@ -87,18 +86,19 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	public static final String ALL = "ALL", AVAILABLE = "AVAILABLE", FAVORITES = "FAVORITES", WATCHLIST = "WATCHLIST";
 
 	private SharedPreferences settings;
-	private int mImageThumbSize, mImageThumbSpacing;
+	private int mImageThumbSize, mImageThumbSpacing, mResizedWidth, mResizedHeight;
 	private LoaderAdapter mAdapter;
 	private ArrayList<MediumMovie> movies = new ArrayList<MediumMovie>(), shownMovies = new ArrayList<MediumMovie>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
-	private boolean showGridTitles, ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo;
+	private boolean mShowTitles, ignorePrefixes, prefsDisableEthernetWiFiCheck, ignoreNfo;
 	private ActionBar actionBar;
 	private String collectionId;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private SearchTask mSearch;
 	private Picasso mPicasso;
+	private Config mConfig;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -135,7 +135,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
+		mShowTitles = settings.getBoolean("prefsShowGridTitles", false);
 		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
 		ignoreNfo = settings.getBoolean("prefsIgnoreNfoFiles", true);
 		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
@@ -148,6 +148,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		mAdapter = new LoaderAdapter(getActivity());
 	}
@@ -267,10 +268,12 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 						if (mAdapter.getNumColumns() == 0) {
 							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 							if (numColumns > 0) {
-								final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 								mAdapter.setNumColumns(numColumns);
-								mAdapter.setItemHeight(columnWidth);
+								mResizedWidth = (int) (((mGridView.getWidth() - (numColumns * mImageThumbSpacing))
+										/ numColumns) * 1.1); // * 1.1 is a hack to make images look slightly less blurry
+								mResizedHeight = (int) (mResizedWidth * 1.5);
 							}
+
 							if (MizLib.hasJellyBean()) {
 								mGridView.getViewTreeObserver()
 								.removeOnGlobalLayoutListener(this);
@@ -314,20 +317,20 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	private class LoaderAdapter extends BaseAdapter implements SectionIndexer {
 
-		private Drawable gray;
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mItemHeight = 0;
-		private int mNumColumns = 0;
-		private GridView.LayoutParams mImageViewLayoutParams;
+		private int mNumColumns = 0, mSidePadding, mBottomPadding, mCard, mCardBackground, mCardTitleColor;
 		private Object[] sections;
 
 		public LoaderAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			gray = getResources().getDrawable(R.drawable.gray);
+			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
+			mBottomPadding = MizLib.convertDpToPixels(mContext, 2);
+			mCard = MizuuApplication.getCardDrawable(mContext);
+			mCardBackground = MizuuApplication.getCardColor(mContext);
+			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -360,48 +363,42 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 			CoverItem holder;
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item_cover, container, false);
+				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
-				holder.layout = (RelativeLayout) convertView.findViewById(R.id.cover_layout);
+
+				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-				
-				// Check the height matches our calculated column width
-				if (holder.layout.getLayoutParams().height != mItemHeight) {
-					holder.layout.setLayoutParams(mImageViewLayoutParams);
-				}
+				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+
+				holder.mLinearLayout.setBackgroundResource(mCard);
+				holder.text.setBackgroundResource(mCardBackground);
+				holder.text.setTextColor(mCardTitleColor);
+				holder.subtext.setBackgroundResource(mCardBackground);
 				
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.text.setText(shownMovies.get(position).getTitle());
-
-			if (showGridTitles) {
-				holder.text.setVisibility(TextView.VISIBLE);
+			if (!mShowTitles) {
+				holder.text.setVisibility(View.GONE);
+				holder.subtext.setVisibility(View.GONE);
+				holder.cover.setPadding(mSidePadding, 0, mSidePadding, mBottomPadding);
 			} else {
-				holder.text.setVisibility(TextView.GONE);
+				holder.text.setVisibility(View.VISIBLE);
+				holder.subtext.setVisibility(View.VISIBLE);
 			}
 			
-			holder.cover.setImageDrawable(gray);
+			holder.text.setText(shownMovies.get(position).getTitle());
+			
+			holder.cover.setImageResource(mCardBackground);
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mItemHeight, (int) (mItemHeight * 1.5)).config(MizuuApplication.getBitmapConfig()).into(holder);
+			mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 
 			return convertView;
-		}
-
-		/**
-		 * Sets the item height. Useful for when we know the column width so the height can be set
-		 * to match.
-		 *
-		 * @param height
-		 */
-		public void setItemHeight(int height) {
-			mItemHeight = height;
-			mImageViewLayoutParams = new GridView.LayoutParams(mItemHeight, (int) (mItemHeight * 1.5));
 		}
 
 		public void setNumColumns(int numColumns) {
@@ -1064,14 +1061,12 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
 			if (numColumns > 0) {
-				final int columnWidth = (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
 				mAdapter.setNumColumns(numColumns);
-				mAdapter.setItemHeight(columnWidth);
 			}
 		}
 
 
-		showGridTitles = settings.getBoolean("prefsShowGridTitles", false);
+		mShowTitles = settings.getBoolean("prefsShowGridTitles", false);
 
 		sortMovies();
 		notifyDataSetChanged();

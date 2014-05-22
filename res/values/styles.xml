@@ -34,8 +34,7 @@
         <item name="android:windowBackground">@color/light_background</item>
     </style>
     
-    <style name="Theme.Example.Light.FullScreen" parent="@style/Theme.Example">
-        <item name="android:windowFullscreen">true</item>
+    <style name="Theme.Example.Light.FullScreen" parent="@style/Theme.Example.FullScreen">
         <item name="android:windowBackground">@color/light_background</item>
     </style>
 
@@ -53,18 +52,7 @@
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Example</item>
     </style>
 
-    <style name="Theme.Example.FullScreen" parent="@android:style/Theme.Holo">
-        <item name="android:listSelector">@drawable/list_selector</item>
-        <item name="android:windowBackground">@drawable/bg</item>
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_example</item>
-        <item name="android:popupMenuStyle">@style/PopupMenu.Example</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Example</item>
-        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Example</item>
-        <item name="android:actionDropDownStyle">@style/DropDownNav.Example</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Solid.Example</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_example</item>
-        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_example</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Example</item>
+    <style name="Theme.Example.FullScreen" parent="@style/Theme.Example">
         <item name="android:windowFullscreen">true</item>
     </style>
 

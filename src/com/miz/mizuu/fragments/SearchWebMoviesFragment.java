@@ -22,6 +22,7 @@ import java.util.Locale;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -70,6 +71,7 @@ public class SearchWebMoviesFragment extends Fragment {
 	private CheckBox useSystemLanguage;
 	private Locale locale;
 	private Picasso mPicasso;
+	private Config mConfig;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -92,8 +94,7 @@ public class SearchWebMoviesFragment extends Fragment {
 		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
-
-		mAdapter = new ListAdapter(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		locale = Locale.getDefault();
 
@@ -117,13 +118,14 @@ public class SearchWebMoviesFragment extends Fragment {
 			useSystemLanguage.setChecked(true);
 
 		lv = (ListView) v.findViewById(android.R.id.list);
-		lv.setAdapter(mAdapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				showMovie(arg2);
 			}
 		});
+		lv.setEmptyView(v.findViewById(R.id.no_results));
+		v.findViewById(R.id.no_results).setVisibility(View.GONE);
 
 		searchText = (EditText) v.findViewById(R.id.search);
 		searchText.setSelection(searchText.length());
@@ -204,8 +206,15 @@ public class SearchWebMoviesFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(String result) {
+			if (!isAdded())
+				return;
+			
 			hideProgressBar();
 			if (searchText.getText().toString().length() > 0) {
+				if (lv.getAdapter() == null) {
+					mAdapter = new ListAdapter(getActivity());
+					lv.setAdapter(mAdapter);
+				}
 				mAdapter.notifyDataSetChanged();
 			}
 		}
@@ -271,7 +280,7 @@ public class SearchWebMoviesFragment extends Fragment {
 			holder.orig_title.setText(results.get(position).getOriginalTitle());
 			holder.release.setText(results.get(position).getRelease());
 
-			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

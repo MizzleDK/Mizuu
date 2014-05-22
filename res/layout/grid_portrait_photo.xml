@@ -6,7 +6,6 @@
     android:layout_marginLeft="1dp"
     android:layout_marginRight="1dp"
     android:adjustViewBounds="true"
-    android:background="@drawable/card"
     android:cropToPadding="true"
     android:paddingBottom="2dp"
     android:paddingLeft="1dp"

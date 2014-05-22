@@ -60,6 +60,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
@@ -340,7 +341,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0, mSidePadding, mBottomPadding;
+		private int mNumColumns = 0, mSidePadding, mBottomPadding, mCard, mCardBackground, mCardTitleColor;
 		private Object[] sections;
 
 		public LoaderAdapter(Context context) {
@@ -349,6 +350,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
 			mBottomPadding = MizLib.convertDpToPixels(mContext, 2);
+			mCard = MizuuApplication.getCardDrawable(mContext);
+			mCardBackground = MizuuApplication.getCardColor(mContext);
+			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -384,9 +388,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
 
+				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				
+				holder.mLinearLayout.setBackgroundResource(mCard);
+				holder.text.setBackgroundResource(mCardBackground);
+				holder.text.setTextColor(mCardTitleColor);
+				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
 			} else {
@@ -405,7 +415,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.subtext.setText(shownShows.get(position).getFirstAirdateYear());
 			}
 			
-			holder.cover.setImageResource(android.R.color.white);
+			holder.cover.setImageResource(mCardBackground);
 
 			mPicasso.load(shownShows.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 
@@ -1004,13 +1014,12 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				}
 			}
 
-			sortShows();
-
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
+			sortShows();
 			notifyDataSetChanged();
 			hideProgressBar();
 		}

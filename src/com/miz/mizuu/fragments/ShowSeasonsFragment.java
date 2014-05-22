@@ -36,6 +36,7 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Bitmap.Config;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -102,6 +103,7 @@ public class ShowSeasonsFragment extends Fragment {
 	private boolean isPortrait, setBackground;
 	private TvShow thisShow;
 	private Picasso mPicasso;
+	private Config mConfig;
 
 	public static ShowSeasonsFragment newInstance(String showId, boolean setBackground) {
 		ShowSeasonsFragment frag = new ShowSeasonsFragment();
@@ -143,6 +145,7 @@ public class ShowSeasonsFragment extends Fragment {
 			mListAdapter = new SeasonsAdapterList(getActivity());
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		Cursor cursor = MizuuApplication.getTvDbAdapter().getShow(getArguments().getString("showId"));
 		if (cursor.moveToFirst()) {
@@ -439,7 +442,7 @@ public class ShowSeasonsFragment extends Fragment {
 			} else
 				holder.selectedOverlay.setVisibility(View.GONE);
 
-			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(holder);
+			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(mConfig).into(holder);
 
 			return convertView;
 		}
@@ -581,7 +584,7 @@ public class ShowSeasonsFragment extends Fragment {
 			else
 				holder.watched.setVisibility(View.GONE);
 
-			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

@@ -29,7 +29,6 @@ import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
@@ -59,10 +58,7 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false))
-			setTheme(R.style.Theme_Example_Light_FullScreen);
-		else
-			setTheme(R.style.Theme_Example_Light);
+		MizuuApplication.setupTheme(this);
 		
 		setContentView(R.layout.viewpager);
 

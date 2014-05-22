@@ -20,6 +20,7 @@ import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ public class CoverItem implements Target {
 	public TextView text, subtext;
 	public ImageView cover;
 	public RelativeLayout layout;
+	public LinearLayout mLinearLayout;
 	private int animationDuration = 200;
 
 	@Override

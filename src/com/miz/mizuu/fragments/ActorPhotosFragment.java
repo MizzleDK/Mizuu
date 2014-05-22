@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -50,6 +51,7 @@ public class ActorPhotosFragment extends Fragment {
 	private GridView mGridView = null;
 	private String json, baseUrl;
 	private Picasso mPicasso;
+	private Config mConfig;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -79,6 +81,7 @@ public class ActorPhotosFragment extends Fragment {
 		baseUrl = getArguments().getString("baseUrl");
 		
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 	}
 
 	@Override
@@ -89,7 +92,7 @@ public class ActorPhotosFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		v.findViewById(R.id.container).setBackgroundResource(R.color.light_background);
+		v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
@@ -105,12 +108,10 @@ public class ActorPhotosFragment extends Fragment {
 				new ViewTreeObserver.OnGlobalLayoutListener() {
 					@Override
 					public void onGlobalLayout() {
-						if (mAdapter.getNumColumns() == 0) {
-							final int numColumns = (int) Math.floor(
-									mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-							if (numColumns > 0) {
-								mAdapter.setNumColumns(numColumns);
-							}
+						final int numColumns = (int) Math.floor(
+								mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+						if (numColumns > 0) {
+							mGridView.setNumColumns(numColumns);
 						}
 					}
 				});
@@ -144,12 +145,13 @@ public class ActorPhotosFragment extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0;
+		private int mCardBackground;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mCardBackground = MizuuApplication.getCardColor(mContext);
 		}
 
 		@Override
@@ -184,17 +186,9 @@ public class ActorPhotosFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(pics_sources.get(position)).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
+			mPicasso.load(pics_sources.get(position)).placeholder(mCardBackground).config(mConfig).into(holder.cover);
 
 			return convertView;
-		}
-
-		public void setNumColumns(int numColumns) {
-			mNumColumns = numColumns;
-		}
-
-		public int getNumColumns() {
-			return mNumColumns;
 		}
 	}
 

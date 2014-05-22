@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.miz.db.DbAdapter;
@@ -58,6 +60,7 @@ public class ActorMoviesFragment extends Fragment {
 	private GridView mGridView = null;
 	private DbAdapter db;
 	private Picasso mPicasso;
+	private Config mConfig;
 	private String json, baseUrl;
 
 	/**
@@ -86,6 +89,7 @@ public class ActorMoviesFragment extends Fragment {
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mConfig = MizuuApplication.getBitmapConfig();
 
 		json = getArguments().getString("json");
 		baseUrl = getArguments().getString("baseUrl");
@@ -99,7 +103,7 @@ public class ActorMoviesFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		v.findViewById(R.id.container).setBackgroundResource(R.color.light_background);
+		v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
@@ -115,12 +119,10 @@ public class ActorMoviesFragment extends Fragment {
 				new ViewTreeObserver.OnGlobalLayoutListener() {
 					@Override
 					public void onGlobalLayout() {
-						if (mAdapter.getNumColumns() == 0) {
-							final int numColumns = (int) Math.floor(
-									mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-							if (numColumns > 0) {
-								mAdapter.setNumColumns(numColumns);
-							}
+						final int numColumns = (int) Math.floor(
+								mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+						if (numColumns > 0) {
+							mGridView.setNumColumns(numColumns);
 						}
 					}
 				});
@@ -157,12 +159,15 @@ public class ActorMoviesFragment extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0;
+		private int mCard, mCardBackground, mCardTitleColor;
 
 		public ImageAdapter(Context context) {
 			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mCard = MizuuApplication.getCardDrawable(mContext);
+			mCardBackground = MizuuApplication.getCardColor(mContext);
+			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -188,16 +193,23 @@ public class ActorMoviesFragment extends Fragment {
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
 
+				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				
+				holder.mLinearLayout.setBackgroundResource(mCard);
+				holder.text.setBackgroundResource(mCardBackground);
+				holder.text.setTextColor(mCardTitleColor);
+				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.cover.setImageResource(android.R.color.white);
+			holder.cover.setImageResource(mCardBackground);
+			
 			holder.text.setText(pics_sources.get(position).getTitle());
 
 			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {
@@ -207,19 +219,11 @@ public class ActorMoviesFragment extends Fragment {
 			}
 
 			if (!pics_sources.get(position).getUrl().contains("null"))
-				mPicasso.load(pics_sources.get(position).getUrl()).config(MizuuApplication.getBitmapConfig()).into(holder);
+				mPicasso.load(pics_sources.get(position).getUrl()).config(mConfig).into(holder);
 			else
 				holder.cover.setImageResource(R.drawable.loading_image);
 
 			return convertView;
-		}
-
-		public void setNumColumns(int numColumns) {
-			mNumColumns = numColumns;
-		}
-
-		public int getNumColumns() {
-			return mNumColumns;
 		}
 	}
 
