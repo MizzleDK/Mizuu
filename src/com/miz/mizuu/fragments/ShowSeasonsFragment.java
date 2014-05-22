@@ -23,6 +23,10 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import jcifs.smb.SmbFile;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
+
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -36,12 +40,9 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Bitmap.Config;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseIntArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -103,7 +104,6 @@ public class ShowSeasonsFragment extends Fragment {
 	private boolean isPortrait, setBackground;
 	private TvShow thisShow;
 	private Picasso mPicasso;
-	private Config mConfig;
 
 	public static ShowSeasonsFragment newInstance(String showId, boolean setBackground) {
 		ShowSeasonsFragment frag = new ShowSeasonsFragment();
@@ -145,7 +145,6 @@ public class ShowSeasonsFragment extends Fragment {
 			mListAdapter = new SeasonsAdapterList(getActivity());
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
-		mConfig = MizuuApplication.getBitmapConfig();
 
 		Cursor cursor = MizuuApplication.getTvDbAdapter().getShow(getArguments().getString("showId"));
 		if (cursor.moveToFirst()) {
@@ -442,7 +441,7 @@ public class ShowSeasonsFragment extends Fragment {
 			} else
 				holder.selectedOverlay.setVisibility(View.GONE);
 
-			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(mConfig).into(holder);
+			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(holder);
 
 			return convertView;
 		}
@@ -584,7 +583,7 @@ public class ShowSeasonsFragment extends Fragment {
 			else
 				holder.watched.setVisibility(View.GONE);
 
-			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
+			mPicasso.load("file://" + shownEpisodes.get(position).getEpisodePhoto()).placeholder(R.drawable.gray).error(R.drawable.nobackdrop).config(MizuuApplication.getBitmapConfig()).into(holder.cover);
 
 			return convertView;
 		}
@@ -1025,7 +1024,7 @@ public class ShowSeasonsFragment extends Fragment {
 		Intent i = new Intent();
 		i.setClass(getActivity(), IdentifyTvShow.class);
 		i.putExtra("rowId", shownEpisodes.get(selectedEpisodeIndex).getRowId());
-		i.putExtra("files", new String[]{shownEpisodes.get(selectedEpisodeIndex).getFilepath()});
+		i.putExtra("files", new String[]{shownEpisodes.get(selectedEpisodeIndex).getFullFilepath()});
 		i.putExtra("isShow", false);
 		startActivity(i);
 	}
