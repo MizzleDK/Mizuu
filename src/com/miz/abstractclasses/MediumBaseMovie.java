@@ -178,6 +178,8 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getDateAdded() {
+		if (!MizLib.isNumber(DATE_ADDED))
+			return "0";
 		return DATE_ADDED;
 	}
 	

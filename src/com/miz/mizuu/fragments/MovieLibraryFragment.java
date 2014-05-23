@@ -456,7 +456,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
 				holder.subtext.setBackgroundResource(mCardBackground);
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
@@ -504,9 +504,15 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				if (mShowTitles)
 					holder.text.setText(shownMovies.get(position).getTitle());
 				if (!ignoreNfo && shownMovies.get(position).isNetworkFile()) {
-					mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+					if (mResizedWidth > 0)
+						mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+					else
+						mPicasso.load(shownMovies.get(position).getFilepath() + "<MiZ>" + shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
 				} else {
-					mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+					if (mResizedWidth > 0)
+						mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+					else
+						mPicasso.load(shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
 				}
 			}
 
@@ -586,8 +592,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			spinnerAdapter.notifyDataSetChanged();
 
 		updateTextAndUpdateButton();
-
-		mGridView.requestFocus();
 	}
 
 	private void updateTextAndUpdateButton() {
@@ -620,7 +624,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		if (!mLoading)
 			showCollectionBasedOnNavigationIndex(itemPosition);
-		
+
 		return true;
 	}
 
@@ -695,10 +699,10 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private void showAvailableFiles() {
 		new AsyncTask<Void, Void, Void>() {
-			
+
 			ArrayList<MediumMovie> tempMovies;
 			ArrayList<FileSource> filesources;
-			
+
 			@Override
 			protected void onPreExecute() {
 				showProgressBar();
@@ -750,22 +754,22 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 							tempMovies.add(movies.get(i));
 					}
 				}
-				
+
 				return null;
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
 				if (isAdded() && getActivity().getActionBar().getSelectedNavigationIndex() == 2) {
-					
+
 					shownMovies.addAll(tempMovies);
-					
+
 					// Clean up...
 					tempMovies.clear();
 					tempMovies = null;
-					
+
 					sortMovies();
-					
+
 					notifyDataSetChanged();
 
 					hideProgressBar();
@@ -850,13 +854,13 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (movies.get(i).hasOfflineCopy())
 						shownMovies.add(movies.get(i));
 				}
-
-				sortMovies();
 				return null;
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
+				sortMovies();
+
 				notifyDataSetChanged();
 
 				hideProgressBar();
@@ -951,6 +955,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	private void sortMovies() {
+		if (!isAdded())
+			return;
+		
 		String SORT_TYPE = settings.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortTitle");
 
 		if (SORT_TYPE.equals("sortTitle")) {
@@ -1140,7 +1147,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		// Clean up on aisle three...
 		tempMovies.clear();
 		tempMovies = null;
-		
+
 		hideProgressBar();
 		notifyDataSetChanged();
 	}

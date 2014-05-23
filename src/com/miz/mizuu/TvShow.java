@@ -53,6 +53,7 @@ public class TvShow implements Comparable<TvShow> {
 		if (MizLib.isEmpty(TITLE)) {
 			mTitle = "";
 		} else {
+			mTitle = TITLE;
 			if (ignorePrefixes) {
 				String temp = TITLE.toLowerCase(Locale.ENGLISH);
 				String[] prefixes = MizLib.getPrefixes(CONTEXT);
@@ -63,8 +64,6 @@ public class TvShow implements Comparable<TvShow> {
 						break;
 					}
 				}
-			} else {
-				mTitle = TITLE;
 			}
 		}
 	}
@@ -166,6 +165,8 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getRuntime() {
+		if (!MizLib.isNumber(RUNTIME))
+			return "0";
 		return RUNTIME;
 	}
 

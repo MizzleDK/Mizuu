@@ -194,14 +194,12 @@ public class ActorBrowserFragmentTv extends Fragment {
 				holder = (CoverItem) convertView.getTag();
 			}
 			
-			holder.cover.setImageResource(mCardBackground);
-			
 			holder.text.setText(actors.get(position).getName());
 			holder.subtext.setText(actors.get(position).getCharacter());
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(actors.get(position).getUrl()).error(R.drawable.noactor).config(mConfig).into(holder.cover);
+			mPicasso.load(actors.get(position).getUrl()).placeholder(mCardBackground).error(R.drawable.noactor).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

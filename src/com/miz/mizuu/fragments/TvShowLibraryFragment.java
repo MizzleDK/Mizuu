@@ -392,7 +392,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				
+
 				holder.mLinearLayout.setBackgroundResource(mCard);
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
@@ -410,14 +410,17 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			} else {
 				holder.text.setVisibility(View.VISIBLE);
 				holder.subtext.setVisibility(View.VISIBLE);
-				
+
 				holder.text.setText(shownShows.get(position).getTitle());
 				holder.subtext.setText(shownShows.get(position).getFirstAirdateYear());
 			}
-			
+
 			holder.cover.setImageResource(mCardBackground);
 
-			mPicasso.load(shownShows.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+			if (mResizedWidth > 0)
+				mPicasso.load(shownShows.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+			else
+				mPicasso.load(shownShows.get(position).getThumbnail()).config(mConfig).into(holder);
 
 			return convertView;
 		}
@@ -1066,7 +1069,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			if (numColumns > 0) {
 				mAdapter.setNumColumns(numColumns);
 			}
-			
+
 			notifyDataSetChanged();
 		} else if (key.equals("prefsShowGridTitles")) {
 			mShowTitles = sharedPreferences.getBoolean("prefsShowGridTitles", true);

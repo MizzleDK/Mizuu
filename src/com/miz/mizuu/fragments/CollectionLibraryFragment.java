@@ -347,15 +347,15 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		public long getItemId(int position) {
 			return position;
 		}
-		
+
 		@Override
 		public int getItemViewType(int position) {
-		    return 0;
+			return 0;
 		}
 
 		@Override
 		public int getViewTypeCount() {
-		    return 1;
+			return 1;
 		}
 
 		@Override
@@ -375,7 +375,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
 				holder.subtext.setBackgroundResource(mCardBackground);
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
@@ -389,14 +389,17 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 				holder.text.setVisibility(View.VISIBLE);
 				holder.subtext.setVisibility(View.VISIBLE);
 			}
-			
+
 			holder.text.setText(shownMovies.get(position).getTitle());
-			
+
 			holder.cover.setImageResource(mCardBackground);
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+			if (mResizedWidth > 0)
+				mPicasso.load(shownMovies.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+			else
+				mPicasso.load(shownMovies.get(position).getThumbnail()).config(mConfig).into(holder);
 
 			return convertView;
 		}

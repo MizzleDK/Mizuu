@@ -482,6 +482,9 @@ public class FileSourceBrowserFragment extends Fragment {
 		if (mType != FileSource.UPNP)
 			browse(GO_BACK, false);
 		else {
+			if (mBrowser == null)
+				return;
+			
 			Container parentContainer = new Container();
 
 			String id = "0";
@@ -630,7 +633,7 @@ public class FileSourceBrowserFragment extends Fragment {
 			if (defaultMsg != null && activity != null)
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(getActivity(), defaultMsg, Toast.LENGTH_LONG).show();
+						Toast.makeText(activity, defaultMsg, Toast.LENGTH_LONG).show();
 					}
 				});
 			mLoading = false;

@@ -93,6 +93,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
@@ -382,7 +383,7 @@ public class MizLib {
 
 		v.setPadding(0, mActionBarHeight, 0, 0);
 	}
-	
+
 	/**
 	 * Add a padding with a height of the ActionBar to the bottom of a given View
 	 * @param c
@@ -654,9 +655,9 @@ public class MizLib {
 
 		Point size = new Point();
 		d.getSize(size);
-		
+
 		final int width = getGreatestNumber(size.x, size.y);
-		
+
 		if (width > 1280 && isTablet(c)) // We only want to download full size images on tablets, as these are the only devices where you can see the difference
 			return "original";
 		else if (width > 780)
@@ -2219,7 +2220,7 @@ public class MizLib {
 		f.mkdirs();
 		return f;
 	}
-	
+
 	public static File getTvShowSeasonFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/tvshows-seasons");
 		f.mkdirs();
@@ -3081,7 +3082,7 @@ public class MizLib {
 		}
 		return 0;
 	}
-	
+
 	public static int getNavigationBarWidth(Context context) {
 		Resources resources = context.getResources();
 		int resourceId = resources.getIdentifier("navigation_bar_width", "dimen", "android");
@@ -3176,7 +3177,7 @@ public class MizLib {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Determines if the device uses navigation controls as the primary navigation from a number of factors.
 	 * @param context Application Context
@@ -3201,44 +3202,44 @@ public class MizLib {
 		}
 		return false;
 	}
-	
+
 	public static int getFileSize(URL url) {
-	    HttpURLConnection conn = null;
-	    try {
-	        conn = (HttpURLConnection) url.openConnection();
-	        conn.setRequestMethod("HEAD");
-	        conn.getInputStream();
-	        return conn.getContentLength();
-	    } catch (IOException e) {
-	        return -1;
-	    } finally {
-	        conn.disconnect();
-	    }
+		HttpURLConnection conn = null;
+		try {
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("HEAD");
+			conn.getInputStream();
+			return conn.getContentLength();
+		} catch (IOException e) {
+			return -1;
+		} finally {
+			conn.disconnect();
+		}
 	}
-	
+
 	public static String getPrettyTime(Context context, int minutes) {
 		if (minutes == 0)
 			return context.getString(R.string.stringNA);;
-		try {
-			int hours = (minutes / 60);
-			minutes = (minutes % 60);
-			String hours_string = hours + " " + context.getResources().getQuantityString(R.plurals.hour, hours, hours);
-			String minutes_string = minutes + " " + context.getResources().getQuantityString(R.plurals.minute, minutes, minutes);
-			if (hours > 0) {
-				if (minutes == 0)
-					return hours_string;
-				else
-					return hours_string + " " + minutes_string;
-			} else {
-				return minutes_string;
+			try {
+				int hours = (minutes / 60);
+				minutes = (minutes % 60);
+				String hours_string = hours + " " + context.getResources().getQuantityString(R.plurals.hour, hours, hours);
+				String minutes_string = minutes + " " + context.getResources().getQuantityString(R.plurals.minute, minutes, minutes);
+				if (hours > 0) {
+					if (minutes == 0)
+						return hours_string;
+					else
+						return hours_string + " " + minutes_string;
+				} else {
+					return minutes_string;
+				}
+			} catch (Exception e) { // Fall back if something goes wrong
+				if (minutes > 0)
+					return String.valueOf(minutes);
+				return context.getString(R.string.stringNA);
 			}
-		} catch (Exception e) { // Fall back if something goes wrong
-			if (minutes > 0)
-				return String.valueOf(minutes);
-			return context.getString(R.string.stringNA);
-		}
 	}
-	
+
 	public static String getPrettyDate(Context context, String date) {
 		if (!MizLib.isEmpty(date)) {
 			try {
@@ -3254,7 +3255,7 @@ public class MizLib {
 			return context.getString(R.string.stringNA);
 		}
 	}
-	
+
 	public static String getPrettyDate(Context context, long millis) {
 		if (millis > 0) {
 			try {
@@ -3269,7 +3270,7 @@ public class MizLib {
 			return context.getString(R.string.stringNA);
 		}
 	}
-	
+
 	public static Comparator<WebMovie> getWebMovieDateComparator() {
 		return new Comparator<WebMovie>() {
 			@Override
@@ -3302,30 +3303,30 @@ public class MizLib {
 			}
 		};
 	}
-	
+
 	private static String[] mAdultKeywords = new String[]{"adult", "sex", "porn", "explicit", "penis", "vagina", "asshole", "blowjob", "cock", "fuck", "dildo", "kamasutra", "masturbat", "squirt", "slutty", "cum", "cunt"};
-	
+
 	public static boolean isAdultContent(Context context, String title) {
 		// Check if the user has enabled adult content - if so, nothing should
 		// be blocked and the method should return false regardless of the title
 		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefsIncludeAdultContent", false))
 			return false;
-		
+
 		String lowerCase = title.toLowerCase(Locale.getDefault());
-		
+
 		// Run through the keywords and check
 		for (int i = 0; i < mAdultKeywords.length; i++)
 			if (lowerCase.contains(mAdultKeywords[i]))
 				return true;
-		
+
 		// Certain titles include "XXX" (all caps), so test this against the normal-case title as a last check
 		return title.contains("XXX");
 	}
-	
+
 	public static String getMimeType(String filepath, boolean useWildcard) {
 		if (useWildcard)
 			return "video/*";
-		
+
 		HashMap<String, String> mimeTypes = new HashMap<String, String>();
 		mimeTypes.put("3gp",	"video/3gpp");
 		mimeTypes.put("aaf",	"application/octet-stream");
@@ -3357,18 +3358,18 @@ public class MizLib {
 		mimeTypes.put("pyv",	"video/vnd.ms-playready.media.pyv");
 		mimeTypes.put("ogm",	"video/ogg");
 		mimeTypes.put("img",	"application/octet-stream");
-		
+
 		String mime = mimeTypes.get(getExtension(filepath));
 		if (mime == null)
 			return "video/*";
 		return mime;
 	}
-	
+
 	/*
 	 * START OF APACHE COMMONS CODE
 	 * from http://svn.apache.org/repos/asf/commons/proper/io/trunk/src/main/java/org/apache/commons/io/FilenameUtils.java
 	 */
-	
+
 	/*
 	 * Licensed to the Apache Software Foundation (ASF) under one or more
 	 * contributor license agreements.  See the NOTICE file distributed with
@@ -3385,45 +3386,48 @@ public class MizLib {
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	
-	
+
+
 	private static final int NOT_FOUND = -1;
 	public static final char EXTENSION_SEPARATOR = '.';
 	private static final char UNIX_SEPARATOR = '/';
-    private static final char WINDOWS_SEPARATOR = '\\';
-	
+	private static final char WINDOWS_SEPARATOR = '\\';
+
 	public static String getExtension(final String filename) {
-        if (filename == null) {
-            return null;
-        }
-        final int index = indexOfExtension(filename);
-        if (index == NOT_FOUND) {
-            return "";
-        } else {
-            return filename.substring(index + 1);
-        }
-    }
-	
+		if (filename == null) {
+			return null;
+		}
+		final int index = indexOfExtension(filename);
+		if (index == NOT_FOUND) {
+			return "";
+		} else {
+			return filename.substring(index + 1);
+		}
+	}
+
 	public static int indexOfExtension(final String filename) {
-        if (filename == null) {
-            return NOT_FOUND;
-        }
-        final int extensionPos = filename.lastIndexOf(EXTENSION_SEPARATOR);
-        final int lastSeparator = indexOfLastSeparator(filename);
-        return lastSeparator > extensionPos ? NOT_FOUND : extensionPos;
-    }
-	
+		if (filename == null) {
+			return NOT_FOUND;
+		}
+		final int extensionPos = filename.lastIndexOf(EXTENSION_SEPARATOR);
+		final int lastSeparator = indexOfLastSeparator(filename);
+		return lastSeparator > extensionPos ? NOT_FOUND : extensionPos;
+	}
+
 	public static int indexOfLastSeparator(final String filename) {
-        if (filename == null) {
-            return NOT_FOUND;
-        }
-        final int lastUnixPos = filename.lastIndexOf(UNIX_SEPARATOR);
-        final int lastWindowsPos = filename.lastIndexOf(WINDOWS_SEPARATOR);
-        return Math.max(lastUnixPos, lastWindowsPos);
-    }
-	
+		if (filename == null) {
+			return NOT_FOUND;
+		}
+		final int lastUnixPos = filename.lastIndexOf(UNIX_SEPARATOR);
+		final int lastWindowsPos = filename.lastIndexOf(WINDOWS_SEPARATOR);
+		return Math.max(lastUnixPos, lastWindowsPos);
+	}
+
 	/*
 	 * END OF APACHE COMMONS CODE
 	 */
-	
+
+	public static boolean isNumber(String runtime) {
+		return TextUtils.isDigitsOnly(runtime);
+	}
 }
