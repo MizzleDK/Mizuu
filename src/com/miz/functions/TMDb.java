@@ -42,27 +42,55 @@ public class TMDb {
 	public TMDbMovie searchForMovie(String query, String year, String filepath, String language) {
 		TMDbMovie movie = new TMDbMovie();
 
-		try {
-			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + MizLib.TMDB_API + (!MizLib.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : ""));
+		DecryptedMovie dm = MizLib.decryptMovie(filepath, PreferenceManager.getDefaultSharedPreferences(c).getString("ignoredTags", ""));
+		if (dm.hasImdbId()) {
+			try {
+				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/find/" + URLEncoder.encode(dm.getImdbId(), "utf-8") + "?api_key=" + MizLib.TMDB_API + "&external_source=imdb_id" + (includeAdult ? "&include_adult=true" : ""));
 
-			if (jObject.getJSONArray("results").length() > 0) {
-				boolean match = false;
+				if (jObject.getJSONArray("movie_results").length() > 0) {
+					boolean match = false;
 
-				for (int i = 0; i < jObject.getJSONArray("results").length(); i++) {
-					if (!MizLib.isAdultContent(c, jObject.getJSONArray("results").getJSONObject(0).getString("title")) && !MizLib.isAdultContent(c, jObject.getJSONArray("results").getJSONObject(0).getString("original_title"))) {
-						movie.setId(jObject.getJSONArray("results").getJSONObject(0).getString("id"));
-						match = true;
-						break;
+					for (int i = 0; i < jObject.getJSONArray("movie_results").length(); i++) {
+						if (!MizLib.isAdultContent(c, jObject.getJSONArray("movie_results").getJSONObject(0).getString("title")) && !MizLib.isAdultContent(c, jObject.getJSONArray("movie_results").getJSONObject(0).getString("original_title"))) {
+							movie.setId(jObject.getJSONArray("movie_results").getJSONObject(0).getString("id"));
+							match = true;
+							break;
+						}
 					}
-				}
 
-				if (!match)				
+					if (!match)				
+						movie.setId("invalid");
+				} else
 					movie.setId("invalid");
-			} else
-				movie.setId("invalid");
 
-		} catch (Exception e) {
-			movie.setId("invalid");
+			} catch (Exception e) {
+				movie.setId("invalid");
+			}
+		}
+
+		if (movie.getId().equals("invalid") || movie.getId().isEmpty()) {
+			try {
+				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + MizLib.TMDB_API + (!MizLib.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : ""));
+
+				if (jObject.getJSONArray("results").length() > 0) {
+					boolean match = false;
+
+					for (int i = 0; i < jObject.getJSONArray("results").length(); i++) {
+						if (!MizLib.isAdultContent(c, jObject.getJSONArray("results").getJSONObject(0).getString("title")) && !MizLib.isAdultContent(c, jObject.getJSONArray("results").getJSONObject(0).getString("original_title"))) {
+							movie.setId(jObject.getJSONArray("results").getJSONObject(0).getString("id"));
+							match = true;
+							break;
+						}
+					}
+
+					if (!match)				
+						movie.setId("invalid");
+				} else
+					movie.setId("invalid");
+
+			} catch (Exception e) {
+				movie.setId("invalid");
+			}
 		}
 
 		if (!movie.getId().equals("invalid")) {
@@ -74,7 +102,6 @@ public class TMDb {
 			} else {
 				if (!hasTriedParent) {
 					hasTriedParent = true;
-					DecryptedMovie dm = MizLib.decryptMovie(filepath, PreferenceManager.getDefaultSharedPreferences(c).getString("ignoredTags", ""));
 					if (dm.hasParentName()) {
 						movie = searchForMovie(dm.getDecryptedParentName(), dm.getParentNameYear(), filepath, language);
 					}

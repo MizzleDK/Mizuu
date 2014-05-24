@@ -141,7 +141,8 @@ public class TestMovieFileNames extends AndroidTestCase {
 			"/Hello.Friend/Hello", // 113
 			"/Hello.Friend/Hello.Friend", // 114
 			"/Hello.Friend/Hello.Friend.mkv", // 115
-			
+			"/Movies/Avatar (2009) (tt0499549).mkv", // 116
+			"/Test tt0499549.mkv" // 117
 	};
 	private DecryptedMovie[] d;
 	
@@ -268,6 +269,8 @@ public class TestMovieFileNames extends AndroidTestCase {
 		Assert.assertEquals("Hello", d[113].getDecryptedFileName());
 		Assert.assertEquals("Hello Friend", d[114].getDecryptedFileName());
 		Assert.assertEquals("Hello Friend", d[115].getDecryptedFileName());
+		Assert.assertEquals("Avatar", d[116].getDecryptedFileName());
+		Assert.assertEquals("Test", d[117].getDecryptedFileName());
 	}
 	
 	public void testDecryptedFilenameYears() {
@@ -382,6 +385,13 @@ public class TestMovieFileNames extends AndroidTestCase {
 		Assert.assertEquals("2009", d[108].getFileNameYear());
 		Assert.assertEquals("2009", d[109].getFileNameYear());
 		Assert.assertEquals("", d[110].getFileNameYear());
+		Assert.assertEquals("", d[111].getFileNameYear());
+		Assert.assertEquals("", d[112].getFileNameYear());
+		Assert.assertEquals("", d[113].getFileNameYear());
+		Assert.assertEquals("", d[114].getFileNameYear());
+		Assert.assertEquals("", d[115].getFileNameYear());
+		Assert.assertEquals("2009", d[116].getFileNameYear());
+		Assert.assertEquals("", d[117].getFileNameYear());
 	}
 	
 	public void testDecryptedParentNames() {
@@ -496,6 +506,13 @@ public class TestMovieFileNames extends AndroidTestCase {
 		Assert.assertEquals("", d[108].getDecryptedParentName());
 		Assert.assertEquals("", d[109].getDecryptedParentName());
 		Assert.assertEquals("", d[110].getDecryptedParentName());
+		Assert.assertEquals("", d[111].getDecryptedParentName());
+		Assert.assertEquals("", d[112].getDecryptedParentName());
+		Assert.assertEquals("Hello Friend", d[113].getDecryptedParentName());
+		Assert.assertEquals("Hello Friend", d[114].getDecryptedParentName());
+		Assert.assertEquals("Hello Friend", d[115].getDecryptedParentName());
+		Assert.assertEquals("Movies", d[116].getDecryptedParentName());
+		Assert.assertEquals("", d[117].getDecryptedParentName());
 	}
 	
 	public void testDecryptedParentNameYears() {
@@ -610,6 +627,22 @@ public class TestMovieFileNames extends AndroidTestCase {
 		Assert.assertEquals("", d[108].getParentNameYear());
 		Assert.assertEquals("", d[109].getParentNameYear());
 		Assert.assertEquals("", d[110].getParentNameYear());
+		Assert.assertEquals("", d[111].getParentNameYear());
+		Assert.assertEquals("", d[112].getParentNameYear());
+		Assert.assertEquals("", d[113].getParentNameYear());
+		Assert.assertEquals("", d[114].getParentNameYear());
+		Assert.assertEquals("", d[115].getParentNameYear());
+		Assert.assertEquals("", d[116].getParentNameYear());
+		Assert.assertEquals("", d[117].getParentNameYear());
+	}
+	
+	public void testImdbIds() {
+		// 0-115 contain no IMDb ID's
+		for (int i = 0; i < 116; i++)
+			Assert.assertEquals(null, d[i].getImdbId());
+		
+		Assert.assertEquals("tt0499549", d[116].getImdbId());
+		Assert.assertEquals("tt0499549", d[117].getImdbId());
 	}
 	
 	public void testCustomTags() {

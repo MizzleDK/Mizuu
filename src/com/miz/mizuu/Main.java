@@ -80,6 +80,7 @@ public class Main extends MizActivity {
 	private boolean mConfirmExit, mTriedOnce = false;
 	private String mStartup;
 	private ArrayList<MenuItem> mMenuItems = new ArrayList<MenuItem>();
+	private List<ApplicationInfo> mApplicationList;
 	private View mDrawerUserInfo;
 
 	@Override
@@ -103,7 +104,7 @@ public class Main extends MizActivity {
 		mTfMedium = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "Roboto-Medium.ttf");
 		mTfLight = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "Roboto-Light.ttf");
 
-		setupMenuItems();
+		setupMenuItems(true);
 
 		mDrawerUserInfo = findViewById(R.id.drawer_user_info);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -169,7 +170,7 @@ public class Main extends MizActivity {
 		} else {
 			loadFragment(Integer.parseInt(mStartup));
 		}
-		
+
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
@@ -233,19 +234,19 @@ public class Main extends MizActivity {
 	}
 
 	private void setupUserDetails() {
-		
+
 		final String full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("traktFullName", "");
 		if (!MizLib.isEmpty(full_name))
 			((TextView) findViewById(R.id.username)).setText(full_name);
 		else
 			mDrawerUserInfo.setVisibility(View.GONE);
-		
+
 		if (!MizLib.isEmpty(full_name)) {
 			CoverItem c = new CoverItem();
 			c.cover = ((ImageView) findViewById(R.id.userPhoto));
 			Picasso.with(getApplicationContext()).load("file://" + new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath()).resize(MizLib.convertDpToPixels(getApplicationContext(), 80), MizLib.convertDpToPixels(getApplicationContext(), 80)).error(R.drawable.unknown_user).into(c);
 		}
-		
+
 		String filepath = MizLib.getLatestBackdropPath(getApplicationContext());
 
 		if (!filepath.isEmpty())
@@ -265,7 +266,7 @@ public class Main extends MizActivity {
 			((ImageView) findViewById(R.id.userCover)).setImageResource(R.drawable.gray);
 	}
 
-	private void setupMenuItems() {
+	private void setupMenuItems(boolean refreshThirdPartyApps) {
 		mMenuItems.clear();
 
 		// Application sections
@@ -280,17 +281,20 @@ public class Main extends MizActivity {
 
 		// Third party applications
 		final PackageManager pm = getPackageManager();
-		List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-		Collections.sort(packages, new Comparator<ApplicationInfo>() {
-			@Override
-			public int compare(ApplicationInfo o1, ApplicationInfo o2) {
-				return pm.getApplicationLabel(o1).toString().compareToIgnoreCase(pm.getApplicationLabel(o2).toString());
-			}
-		});
+		
+		if (refreshThirdPartyApps) {
+			mApplicationList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+			Collections.sort(mApplicationList, new Comparator<ApplicationInfo>() {
+				@Override
+				public int compare(ApplicationInfo o1, ApplicationInfo o2) {
+					return pm.getApplicationLabel(o1).toString().compareToIgnoreCase(pm.getApplicationLabel(o2).toString());
+				}
+			});
+		}
 
-		for (int i = 0; i < packages.size(); i++) {
-			if (MizLib.isMediaApp(packages.get(i))) {
-				mMenuItems.add(new MenuItem(pm.getApplicationLabel(packages.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, packages.get(i).packageName));
+		for (int i = 0; i < mApplicationList.size(); i++) {
+			if (MizLib.isMediaApp(mApplicationList.get(i))) {
+				mMenuItems.add(new MenuItem(pm.getApplicationLabel(mApplicationList.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, mApplicationList.get(i).packageName));
 			}
 		}
 	}
@@ -330,7 +334,7 @@ public class Main extends MizActivity {
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							setupMenuItems();
+							setupMenuItems(false);
 							((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
 						}
 					});
@@ -382,12 +386,12 @@ public class Main extends MizActivity {
 
 		private boolean mTablet;
 		private LayoutInflater mInflater;
-		
+
 		public MenuAdapter() {
 			mInflater = LayoutInflater.from(getApplicationContext());
 			mTablet = MizLib.isTablet(getApplicationContext());
 		}
-		
+
 		@Override
 		public int getCount() {
 			return mMenuItems.size();
@@ -430,7 +434,7 @@ public class Main extends MizActivity {
 				title.setText(mMenuItems.get(position).getTitle());
 			} else {
 				convertView = mInflater.inflate(R.layout.menu_drawer_item, parent, false);
-				
+
 				// Title
 				TextView title = (TextView) convertView.findViewById(R.id.title);
 				title.setText(mMenuItems.get(position).getTitle());				
@@ -439,16 +443,16 @@ public class Main extends MizActivity {
 				else
 					title.setTypeface(mTfLight);
 				title.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-				
+
 				// Tablets need slightly larger text size :-)
 				if (mTablet)
 					title.setTextSize(22f);
-				
+
 				// Description
 				TextView description = (TextView) convertView.findViewById(R.id.count);
 				description.setTypeface(mTfLight);
 				description.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-				
+
 				if (mMenuItems.get(position).getCount() >= 0)
 					description.setText(String.valueOf(mMenuItems.get(position).getCount()));
 				else

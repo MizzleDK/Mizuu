@@ -18,7 +18,7 @@ package com.miz.functions;
 
 public class DecryptedMovie {
 	
-	private String mFilepath = "", mFileName = "", mParentName = "", mFileNameYear = "", mParentNameYear = "", mDecryptedFileName = "", mDecryptedParentName = "";
+	private String mFilepath = "", mFileName = "", mParentName = "", mFileNameYear = "", mParentNameYear = "", mDecryptedFileName = "", mDecryptedParentName = "", mImdbId;
 
 	public String getFilepath() {
 		return mFilepath;
@@ -76,6 +76,8 @@ public class DecryptedMovie {
 	
 	public void setDecryptedFileName(String decryptedFileName) {
 		mDecryptedFileName = decryptedFileName;
+		if (hasImdbId())
+			mDecryptedFileName = mDecryptedFileName.replace(getImdbId(), "").trim();
 	}
 	
 	public String getDecryptedFileName() {
@@ -102,4 +104,15 @@ public class DecryptedMovie {
 		return !getParentNameYear().isEmpty();
 	}
 
+	public void setImdbId(String id) {
+		mImdbId = id;
+	}
+	
+	public String getImdbId() {
+		return mImdbId;
+	}
+	
+	public boolean hasImdbId() {
+		return getImdbId() != null;
+	}
 }

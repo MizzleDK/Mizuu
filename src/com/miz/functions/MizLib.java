@@ -2440,6 +2440,7 @@ public class MizLib {
 		DecryptedMovie mMovie = new DecryptedMovie();
 		mMovie.setFilepath(filepath);
 		mMovie.setFileNameYear(decryptYear(mMovie.getFileName()));
+		mMovie.setImdbId(decryptImdbId(mMovie.getFileName()));
 		mMovie.setDecryptedFileName(decryptName(mMovie.getFileName(), customTags));
 		if (mMovie.hasParentName()) {
 			mMovie.setParentNameYear(decryptYear(mMovie.getParentName()));
@@ -2447,6 +2448,14 @@ public class MizLib {
 		}
 
 		return mMovie;
+	}
+	
+	public static String decryptImdbId(String filename) {
+		Pattern p = Pattern.compile("(tt\\d{7})");
+		Matcher m = p.matcher(filename);
+		if (m.find())
+			return m.group(1);
+		return null;
 	}
 
 	public static String decryptName(String input, String customTags) {
