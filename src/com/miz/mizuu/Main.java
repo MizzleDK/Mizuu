@@ -47,7 +47,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -72,16 +71,15 @@ public class Main extends MizActivity {
 
 	public static final int MOVIES = 0, SHOWS = 1, WATCHLIST = 2, WEB_MOVIES = 3, WEB_VIDEOS = 4;
 	private int mNumMovies, mNumShows, mNumWatchlist, selectedIndex;
-	private Typeface tf, tfCondensed, tfLight;
+	private Typeface mTfMedium, mTfCondensed, mTfLight;
 	private DrawerLayout mDrawerLayout;
 	protected ListView mDrawerList;
-	private TextView tab1, tab2;
 	private ActionBarDrawerToggle mDrawerToggle;
-	private DbAdapter dbHelper;
-	private DbAdapterTvShow dbHelperTv;
-	private boolean confirmExit, hasTriedOnce = false;
-	private String startup;
-	private ArrayList<MenuItem> menu = new ArrayList<MenuItem>(), thirdPartyApps = new ArrayList<MenuItem>();
+	private DbAdapter mDbHelper;
+	private DbAdapterTvShow mDbHelperTv;
+	private boolean mConfirmExit, mTriedOnce = false;
+	private String mStartup;
+	private ArrayList<MenuItem> mMenuItems = new ArrayList<MenuItem>();
 	private View mDrawerUserInfo;
 
 	@Override
@@ -93,18 +91,17 @@ public class Main extends MizActivity {
 		setContentView(R.layout.menu_drawer);
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		confirmExit = settings.getBoolean("prefsConfirmBackPress", false);
-		startup = settings.getString("prefsStartup", "1");
-		if (startup.equals("0"))
-			startup = "1";
+		mConfirmExit = settings.getBoolean("prefsConfirmBackPress", false);
+		mStartup = settings.getString("prefsStartup", "1");
+		if (mStartup.equals("0"))
+			mStartup = "1";
 
-		dbHelper = MizuuApplication.getMovieAdapter();
-		dbHelperTv = MizuuApplication.getTvDbAdapter();
+		mDbHelper = MizuuApplication.getMovieAdapter();
+		mDbHelperTv = MizuuApplication.getTvDbAdapter();
 
-
-		tfCondensed = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "RobotoCondensed-Regular.ttf");
-		tf = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "Roboto-Medium.ttf");
-		tfLight = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "Roboto-Light.ttf");
+		mTfCondensed = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "RobotoCondensed-Regular.ttf");
+		mTfMedium = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "Roboto-Medium.ttf");
+		mTfLight = MizuuApplication.getOrCreateTypeface(getApplicationContext(), "Roboto-Light.ttf");
 
 		setupMenuItems();
 
@@ -118,40 +115,27 @@ public class Main extends MizActivity {
 			setupUserDetails();
 
 		((TextView) findViewById(R.id.username)).setTextSize(26f);
-		((TextView) findViewById(R.id.username)).setTypeface(tfCondensed);
-
-		tab1 = (TextView) findViewById(R.id.tab1);
-		tab1.setTextSize(12f);
-		tab2 = (TextView) findViewById(R.id.tab2);
-		tab2.setTextSize(12f);
+		((TextView) findViewById(R.id.username)).setTypeface(mTfCondensed);
 
 		mDrawerList = (ListView) findViewById(R.id.listView1);
 		mDrawerList.setAdapter(new MenuAdapter());
 		mDrawerList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (tab1.isSelected()) {
+				switch (mMenuItems.get(arg2).getType()) {
+				case MenuItem.SECTION:
 					loadFragment(arg2 + 1);
-				} else {
+					break;
+				case MenuItem.THIRD_PARTY_APP:
 					final PackageManager pm = getPackageManager();
-					Intent i = pm.getLaunchIntentForPackage(thirdPartyApps.get(arg2).getPackageName());
+					Intent i = pm.getLaunchIntentForPackage(mMenuItems.get(arg2).getPackageName());
 					if (i != null) {
 						i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 						startActivity(i);
 					}
-					mDrawerList.setItemChecked(arg2, false);
+					break;
 				}
 			}
-		});
-		mDrawerList.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {}
 		});
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -177,19 +161,15 @@ public class Main extends MizActivity {
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-		if (savedInstanceState != null && savedInstanceState.containsKey("tabIndex")) {
+		if (savedInstanceState != null && savedInstanceState.containsKey("selectedIndex")) {
 			selectedIndex = savedInstanceState.getInt("selectedIndex");
-			changeTabSelection(savedInstanceState.getInt("tabIndex"));
 			loadFragment(selectedIndex + 1);
 		} else if (getIntent().getExtras() != null && getIntent().getExtras().containsKey("startup")) {
-			tab1.setSelected(true);
 			loadFragment(Integer.parseInt(getIntent().getExtras().getString("startup")));
 		} else {
-			tab1.setSelected(true);
-			loadFragment(Integer.parseInt(startup));
+			loadFragment(Integer.parseInt(mStartup));
 		}
-
+		
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
@@ -249,18 +229,33 @@ public class Main extends MizActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		outState.putInt("tabIndex", tab1.isSelected() ? 0 : 1);
 		outState.putInt("selectedIndex", selectedIndex);
 	}
 
 	private void setupUserDetails() {
+		
+		final String full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("traktFullName", "");
+		if (!MizLib.isEmpty(full_name))
+			((TextView) findViewById(R.id.username)).setText(full_name);
+		else
+			mDrawerUserInfo.setVisibility(View.GONE);
+		
+		if (!MizLib.isEmpty(full_name)) {
+			CoverItem c = new CoverItem();
+			c.cover = ((ImageView) findViewById(R.id.userPhoto));
+			Picasso.with(getApplicationContext()).load("file://" + new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath()).resize(MizLib.convertDpToPixels(getApplicationContext(), 80), MizLib.convertDpToPixels(getApplicationContext(), 80)).error(R.drawable.unknown_user).into(c);
+		}
+		
 		String filepath = MizLib.getLatestBackdropPath(getApplicationContext());
 
 		if (!filepath.isEmpty())
-			Picasso.with(getApplicationContext()).load("file://" + filepath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 170)).into(((ImageView) findViewById(R.id.userCover)), new Callback() {
+			Picasso.with(getApplicationContext()).load("file://" + filepath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 160)).into(((ImageView) findViewById(R.id.userCover)), new Callback() {
 				@Override
 				public void onError() {
-					((ImageView) findViewById(R.id.userCover)).setImageResource(R.drawable.gray);
+					if (MizLib.isEmpty(full_name))
+						findViewById(R.id.personalizedArea).setVisibility(View.GONE);
+					else
+						((ImageView) findViewById(R.id.userCover)).setImageResource(R.drawable.gray);	
 				}
 
 				@Override
@@ -268,73 +263,36 @@ public class Main extends MizActivity {
 			});
 		else
 			((ImageView) findViewById(R.id.userCover)).setImageResource(R.drawable.gray);
-
-		String full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("traktFullName", "");
-		if (!MizLib.isEmpty(full_name))
-			((TextView) findViewById(R.id.username)).setText(full_name);
-		else
-			mDrawerUserInfo.setVisibility(View.GONE);
-
-		if (!MizLib.isEmpty(full_name)) {
-			CoverItem c = new CoverItem();
-			c.cover = ((ImageView) findViewById(R.id.userPhoto));
-			Picasso.with(getApplicationContext()).load("file://" + new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg").getAbsolutePath()).resize(MizLib.convertDpToPixels(getApplicationContext(), 80), MizLib.convertDpToPixels(getApplicationContext(), 80)).error(R.drawable.unknown_user).into(c);
-		}
-	}
-
-	private void changeTabSelection(int index) {
-		if (index == 0) {
-			tab1.setSelected(true);
-			tab2.setSelected(false);
-			((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
-			mDrawerList.setItemChecked(selectedIndex, true);
-		} else {
-			tab1.setSelected(false);
-			tab2.setSelected(true);
-			((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
-			selectedIndex = mDrawerList.getCheckedItemPosition();
-			mDrawerList.setItemChecked(mDrawerList.getCheckedItemPosition(), false);
-		}
-	}
-
-	public void myLibraries(View v) {
-		changeTabSelection(0);
-	}
-
-	public void mediaApps(View v) {
-		changeTabSelection(1);
-	}
-
-	private void setupThirdPartyApps() {
-		thirdPartyApps.clear();
-
-		final PackageManager pm = getPackageManager();
-		List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-
-		for (int i = 0; i < packages.size(); i++) {
-			if (MizLib.isMediaApp(packages.get(i))) {
-				thirdPartyApps.add(new MenuItem(pm.getApplicationLabel(packages.get(i)).toString(), 0, false, packages.get(i).packageName));
-			}
-		}
-
-		Collections.sort(thirdPartyApps, new Comparator<MenuItem>() {
-			@Override
-			public int compare(MenuItem o1, MenuItem o2) {
-				return o1.getTitle().compareToIgnoreCase(o2.getTitle());
-			}
-		});
 	}
 
 	private void setupMenuItems() {
-		menu.clear();
+		mMenuItems.clear();
 
-		menu.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, false));
-		menu.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, false));
-		menu.add(new MenuItem(getString(R.string.chooserWatchList), mNumWatchlist, false));
-		menu.add(new MenuItem(getString(R.string.drawerOnlineMovies), 0, false));
-		menu.add(new MenuItem(getString(R.string.drawerWebVideos), 0, false));
+		// Application sections
+		mMenuItems.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, MenuItem.SECTION, null));
+		mMenuItems.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, MenuItem.SECTION, null));
+		mMenuItems.add(new MenuItem(getString(R.string.chooserWatchList), mNumWatchlist, MenuItem.SECTION, null));
+		mMenuItems.add(new MenuItem(getString(R.string.drawerOnlineMovies), -1, MenuItem.SECTION, null));
+		mMenuItems.add(new MenuItem(getString(R.string.drawerWebVideos), -1, MenuItem.SECTION, null));
 
-		setupThirdPartyApps();
+		// Menu section header
+		mMenuItems.add(new MenuItem(getString(R.string.installed_media_apps), -1, MenuItem.HEADER, null));
+
+		// Third party applications
+		final PackageManager pm = getPackageManager();
+		List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+		Collections.sort(packages, new Comparator<ApplicationInfo>() {
+			@Override
+			public int compare(ApplicationInfo o1, ApplicationInfo o2) {
+				return pm.getApplicationLabel(o1).toString().compareToIgnoreCase(pm.getApplicationLabel(o2).toString());
+			}
+		});
+
+		for (int i = 0; i < packages.size(); i++) {
+			if (MizLib.isMediaApp(packages.get(i))) {
+				mMenuItems.add(new MenuItem(pm.getApplicationLabel(packages.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, packages.get(i).packageName));
+			}
+		}
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -347,7 +305,7 @@ public class Main extends MizActivity {
 	protected void selectListIndex(int index) {
 		if (index == -1)
 			index = 0;
-		if (!menu.get(index).isThirdPartyApp()) {
+		if (mMenuItems.get(index).getType() == MenuItem.SECTION) {
 			selectedIndex = index;
 			mDrawerList.setItemChecked(index, true);
 		}
@@ -365,9 +323,9 @@ public class Main extends MizActivity {
 			@Override
 			public void run() {
 				try {					
-					mNumMovies = dbHelper.count();
-					mNumWatchlist = dbHelper.countWatchlist();
-					mNumShows = dbHelperTv.count();
+					mNumMovies = mDbHelper.count();
+					mNumWatchlist = mDbHelper.countWatchlist();
+					mNumShows = mDbHelperTv.count();
 
 					runOnUiThread(new Runnable() {
 						@Override
@@ -422,9 +380,17 @@ public class Main extends MizActivity {
 
 	public class MenuAdapter extends BaseAdapter {
 
+		private boolean mTablet;
+		private LayoutInflater mInflater;
+		
+		public MenuAdapter() {
+			mInflater = LayoutInflater.from(getApplicationContext());
+			mTablet = MizLib.isTablet(getApplicationContext());
+		}
+		
 		@Override
 		public int getCount() {
-			return tab1.isSelected() ? menu.size() : thirdPartyApps.size();
+			return mMenuItems.size();
 		}
 
 		@Override
@@ -439,57 +405,63 @@ public class Main extends MizActivity {
 
 		@Override
 		public int getViewTypeCount() {
-			return 1;
+			return 2;
 		}
 
 		@Override
 		public int getItemViewType(int position) {
-			return 0;
+			if (mMenuItems.get(position).getType() == MenuItem.HEADER)
+				return 0;
+			return 1;
 		}
 
 		@Override
 		public boolean isEnabled(int position) {
+			if (mMenuItems.get(position).getType() == MenuItem.HEADER)
+				return false;
 			return true;
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.menu_drawer_item, null);
-			TextView title = (TextView) convertView.findViewById(R.id.title);
-			if (MizLib.isTablet(getApplicationContext()))
-				title.setTextSize(22f);
-			TextView description = (TextView) convertView.findViewById(R.id.count);
-
-			description.setTypeface(tfLight);
-			description.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
-			if (position == mDrawerList.getCheckedItemPosition()) {
-				title.setTypeface(tf, Typeface.BOLD);
+			if (mMenuItems.get(position).getType() == MenuItem.HEADER) {	
+				convertView = mInflater.inflate(R.layout.menu_drawer_header, parent, false);
+				TextView title = (TextView) convertView.findViewById(R.id.title);
+				title.setText(mMenuItems.get(position).getTitle());
 			} else {
-				title.setTypeface(tfLight);
+				convertView = mInflater.inflate(R.layout.menu_drawer_item, parent, false);
+				
+				// Title
+				TextView title = (TextView) convertView.findViewById(R.id.title);
+				title.setText(mMenuItems.get(position).getTitle());				
+				if (position == selectedIndex)
+					title.setTypeface(mTfMedium, Typeface.BOLD);
+				else
+					title.setTypeface(mTfLight);
+				title.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+				
+				// Tablets need slightly larger text size :-)
+				if (mTablet)
+					title.setTextSize(22f);
+				
+				// Description
+				TextView description = (TextView) convertView.findViewById(R.id.count);
+				description.setTypeface(mTfLight);
+				description.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+				
+				if (mMenuItems.get(position).getCount() >= 0)
+					description.setText(String.valueOf(mMenuItems.get(position).getCount()));
+				else
+					description.setVisibility(View.GONE);
 			}
-			title.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
-			title.setText(getMenuItem(position).getTitle());
-
-			if (getMenuItem(position).getCount() > 0)
-				description.setText(String.valueOf(getMenuItem(position).getCount()));
-			else
-				description.setVisibility(View.GONE);
 
 			return convertView;
-		}
-
-		private MenuItem getMenuItem(int position) {
-			if (tab1.isSelected())
-				return menu.get(position);
-			return thirdPartyApps.get(position);
 		}
 	}
 
 	@Override
 	public void onBackPressed() {
-		if (startup.equals("0") && !mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && MizLib.isTablet(this)) { // Welcome screen
+		if (mStartup.equals("0") && !mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && MizLib.isTablet(this)) { // Welcome screen
 			Intent i = new Intent(Intent.ACTION_VIEW);
 			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			i.setClass(getApplicationContext(), Welcome.class);
@@ -498,12 +470,12 @@ public class Main extends MizActivity {
 			return;
 		}
 
-		if (!mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && confirmExit) {
-			if (hasTriedOnce) {
+		if (!mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && mConfirmExit) {
+			if (mTriedOnce) {
 				super.onBackPressed();
 			} else {
 				Toast.makeText(this, getString(R.string.pressBackToExit), Toast.LENGTH_SHORT).show();
-				hasTriedOnce = true;
+				mTriedOnce = true;
 			}
 		} else {
 			if (MizLib.isGoogleTV(this))

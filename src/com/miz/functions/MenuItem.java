@@ -18,41 +18,31 @@ package com.miz.functions;
 
 public class MenuItem {
 	
-	private boolean isHeader, isThirdPartyApp;
-	private int count;
-	private String title, packageName;
+	public static final int HEADER = 1000, SECTION = 2000, THIRD_PARTY_APP = 3000;
 	
-	public MenuItem(String title, int count, boolean isHeader) {
-		this.title = title;
-		this.count = count;
-		this.isHeader = isHeader;
-	}
+	private int mType, mCount;
+	private String mTitle, mPackageName;
 	
-	public MenuItem(String title, int count, boolean isHeader, String packageName) {
-		this.title = title;
-		this.count = count;
-		this.isHeader = isHeader;
-		this.packageName = packageName;
-		isThirdPartyApp = true;
+	public MenuItem(String title, int count, int type, String packageName) {
+		mTitle = title;
+		mCount = count;
+		mType = type;
+		mPackageName = packageName;
 	}
 	
 	public String getTitle() {
-		return title;
+		return mTitle;
 	}
 	
 	public int getCount() {
-		return count;
-	}
-	
-	public boolean isHeader() {
-		return isHeader;
-	}
-	
-	public boolean isThirdPartyApp() {
-		return isThirdPartyApp;
+		return mCount;
 	}
 	
 	public String getPackageName() {
-		return packageName;
+		return mPackageName;
+	}
+	
+	public int getType() {
+		return mType;
 	}
 }

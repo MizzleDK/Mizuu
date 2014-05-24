@@ -28,7 +28,7 @@
         <RelativeLayout
             android:id="@+id/personalizedArea"
             android:layout_width="match_parent"
-            android:layout_height="170dp" >
+            android:layout_height="160dp" >
 
             <ImageView
                 android:id="@+id/userCover"
@@ -64,49 +64,6 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
         </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp" >
-
-            <TextView
-                android:id="@+id/tab1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/drawer_tab_selector"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:onClick="myLibraries"
-                android:text="@string/myLibraries"
-                android:textAllCaps="true"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#fff"
-                android:textStyle="bold" />
-
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/tab_indicator" />
-
-            <TextView
-                android:id="@+id/tab2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/drawer_tab_selector"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:onClick="mediaApps"
-                android:text="@string/installed_media_apps"
-                android:textAllCaps="true"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#fff"
-                android:textStyle="bold" />
-        </LinearLayout>
 
         <ListView
             android:id="@+id/listView1"

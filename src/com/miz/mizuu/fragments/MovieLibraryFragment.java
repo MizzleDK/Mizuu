@@ -219,7 +219,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		}
 
 		@Override
-		public void onLoadFinished(Loader<Cursor> arg0, final Cursor cursor) {
+		public void onLoadFinished(Loader<Cursor> arg0, final Cursor cursor) {			
 			AsyncTask<Void, Void, Void> load = new AsyncTask<Void, Void, Void>() {
 				@Override
 				protected void onPreExecute() {
@@ -277,9 +277,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 				@Override
 				protected void onPostExecute(Void result) {
-
-
-
 					showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
 
 					mLoading = false;
@@ -629,9 +626,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	private void showCollectionBasedOnNavigationIndex(int itemPosition) {
-		if (movies.size() == 0)
-			return;
-
 		if (spinnerAdapter != null)
 			spinnerAdapter.notifyDataSetChanged(); // To show "0 movies" when loading
 
@@ -664,6 +658,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	private void showAllMovies() {
+		
 		showProgressBar();
 
 		shownMovies.clear();
