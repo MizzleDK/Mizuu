@@ -1541,6 +1541,56 @@ public class MizLib {
 		}
 	}
 
+	public static boolean checkInMovieTrakt(String tmdbId, Context c) {
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+		String username = settings.getString("traktUsername", "").trim();
+		String password = settings.getString("traktPassword", "");
+
+		if (username.isEmpty() || password.isEmpty())
+			return false;
+
+		// Cancel the current check in to allow this one
+		OkApacheClient httpclient = new OkApacheClient();
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/cancelcheckin/" + MizLib.TRAKT_API);
+		httppost.setHeader("Content-type", "application/json");
+
+		try {
+
+			JSONObject holder = new JSONObject();
+			holder.put("username", username);
+			holder.put("password", password);
+
+			StringEntity se = new StringEntity(holder.toString());
+			se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+			httppost.setEntity(se);
+
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			httpclient.execute(httppost, responseHandler);
+
+		} catch (Exception e) {}
+
+		// Check in with the movie
+		httpclient = new OkApacheClient();
+		httppost = new HttpPost("http://api.trakt.tv/movie/checkin/" + MizLib.TRAKT_API);
+
+		try {
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+			nameValuePairs.add(new BasicNameValuePair("username", username));
+			nameValuePairs.add(new BasicNameValuePair("password", password));
+			nameValuePairs.add(new BasicNameValuePair("tmdb_id", tmdbId));
+			nameValuePairs.add(new BasicNameValuePair("app_version", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName));
+			nameValuePairs.add(new BasicNameValuePair("app_date", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName));
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			httpclient.execute(httppost, responseHandler);
+
+			return true;
+		} catch (Exception e) {}
+
+		return false;
+	}
+	
 	public static boolean checkInMovieTrakt(Movie movie, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString("traktUsername", "").trim();
@@ -1919,6 +1969,8 @@ public class MizLib {
 		String username = settings.getString("traktUsername", "").trim();
 		String password = settings.getString("traktPassword", "");
 
+		System.out.println("USER: " + username + ". PASS: " + password + ".");
+		
 		if (username.isEmpty() || password.isEmpty())
 			return false;
 

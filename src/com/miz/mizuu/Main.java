@@ -240,7 +240,7 @@ public class Main extends MizActivity {
 			((TextView) findViewById(R.id.username)).setText(full_name);
 		else
 			mDrawerUserInfo.setVisibility(View.GONE);
-
+		
 		if (!MizLib.isEmpty(full_name)) {
 			CoverItem c = new CoverItem();
 			c.cover = ((ImageView) findViewById(R.id.userPhoto));
@@ -252,7 +252,7 @@ public class Main extends MizActivity {
 		if (!filepath.isEmpty())
 			Picasso.with(getApplicationContext()).load("file://" + filepath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 160)).into(((ImageView) findViewById(R.id.userCover)), new Callback() {
 				@Override
-				public void onError() {
+				public void onError() {					
 					if (MizLib.isEmpty(full_name))
 						findViewById(R.id.personalizedArea).setVisibility(View.GONE);
 					else
@@ -263,7 +263,7 @@ public class Main extends MizActivity {
 				public void onSuccess() {}
 			});
 		else
-			((ImageView) findViewById(R.id.userCover)).setImageResource(R.drawable.gray);
+			findViewById(R.id.personalizedArea).setVisibility(View.GONE);
 	}
 
 	private void setupMenuItems(boolean refreshThirdPartyApps) {

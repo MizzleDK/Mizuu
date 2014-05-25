@@ -137,7 +137,11 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.detailstrailer, menu);
+		getMenuInflater().inflate(R.menu.details_tmdb_movie, menu);
+		
+		if (!MizLib.hasTraktAccount(this))
+			menu.findItem(R.id.checkIn).setVisible(false);
+		
 		return true;
 	}
 
@@ -151,12 +155,29 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	public void openInBrowser(MenuItem item) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse("http://www.themoviedb.org/movie/" + movieId));
-		startActivity(Intent.createChooser(intent, getString(R.string.shareWith)));
+		startActivity(Intent.createChooser(intent, getString(R.string.openWith)));
 	}
 
 	public void watchTrailer(MenuItem item) {
 		Toast.makeText(this, getString(R.string.searching), Toast.LENGTH_SHORT).show();
 		new TmdbTrailerSearch().execute(movieId);
+	}
+
+	public void checkIn(MenuItem item) {
+		new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				return MizLib.checkInMovieTrakt(movieId, getApplicationContext());
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result)
+					Toast.makeText(getApplicationContext(), getString(R.string.checked_in), Toast.LENGTH_SHORT).show();
+				else
+					Toast.makeText(getApplicationContext(), getString(R.string.errorSomethingWentWrong), Toast.LENGTH_SHORT).show();
+			}
+		}.execute();
 	}
 
 	private class TmdbTrailerSearch extends AsyncTask<String, Integer, String> {
@@ -247,14 +268,19 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			onBackPressed();
-			return true;
+			break;
 		case R.id.share:
 			shareMovie(item);
+			break;
 		case R.id.openInBrowser:
 			openInBrowser(item);
-		default:
-			return super.onOptionsItemSelected(item);
+			break;
+		case R.id.checkIn:
+			checkIn(item);
+			break;
 		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -297,7 +323,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
 		else
 			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
-		
+
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
@@ -315,13 +341,13 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 				JSONObject jObject = new JSONObject(baseUrl);
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-				
+
 				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + MizLib.TMDB_API + "&append_to_response=releases,trailers,images,casts,similar_movies");
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 
 				json = httpclient.execute(httppost, responseHandler);
-				
+
 				return json;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
 
@@ -337,7 +363,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 			}
 		}
 	}
-	
+
 	private void setupActionBarStuff() {
 		actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);

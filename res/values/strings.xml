@@ -449,5 +449,8 @@
     <string name="use_dark_theme_title">Use dark application theme</string>
     <string name="set_dark_theme_description">Sets the application theme to a darker style. Requires application restart.</string>
     <string name="no_results_found">No results found</string>
-
+	<string name="check_in">Check in on Trakt</string>
+	<string name="checked_in">Successfully checked in on Trakt!</string>
+	<string name="openWith">Open with…</string>
+    
 </resources>
