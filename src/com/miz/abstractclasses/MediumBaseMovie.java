@@ -204,13 +204,9 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public boolean isUnidentified() {
-		if (getRuntime().equals("0")
-				&& getReleaseYear().equals(CONTEXT.getString(R.string.unknownYear))
-				&& MizLib.isEmpty(getGenres())
-				&& MizLib.isEmpty(TITLE))
-			return true;
-		
-		return false;
+		return 	getRuntime().equals("0") &&
+				getReleaseYear().equals(CONTEXT.getString(R.string.unknownYear)) &&
+				MizLib.isEmpty(getGenres());
 	}
 	
 	public boolean hasOfflineCopy() {
