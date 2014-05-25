@@ -16,7 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -24,12 +23,9 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap.Config;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,14 +50,13 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.squareup.picasso.Picasso;
 
-public class WebVideoFragment extends Fragment implements OnSharedPreferenceChangeListener {
+public class WebVideoFragment extends Fragment {
 
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
 	private ArrayList<WebVideo> videos = new ArrayList<WebVideo>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
-	private SharedPreferences settings;
 	private String type;
 	private Picasso mPicasso;
 	private Config mConfig;
@@ -82,12 +77,6 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-
-		// Initialize the PreferenceManager variable and preference variable(s)
-		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		
-		// Set OnSharedPreferenceChange listener
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
 
 		mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 1.4);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -155,12 +144,6 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 		super.onResume();
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
 	}
 	
 	@Override
@@ -351,16 +334,5 @@ public class WebVideoFragment extends Fragment implements OnSharedPreferenceChan
 		public String getTitle() { return title; }
 		public String getId() { return id; }
 		public String getUrl() { return url; }
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals("prefsRootAccess")) {
-			if (settings.getBoolean("prefsRootAccess", false)) {
-				try {
-					Runtime.getRuntime().exec("su");
-				} catch (IOException e) {}
-			}
-		}
 	}
 }

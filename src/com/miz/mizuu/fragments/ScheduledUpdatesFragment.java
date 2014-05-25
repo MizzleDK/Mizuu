@@ -36,9 +36,13 @@ import com.miz.functions.MizLib;
 import com.miz.functions.ScheduledUpdatesAlarmManager;
 import com.miz.mizuu.R;
 
+import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
+import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.NEXT_SCHEDULED_MOVIE_UPDATE;
+import static com.miz.functions.PreferenceKeys.NEXT_SCHEDULED_TVSHOWS_UPDATE;
+
 public class ScheduledUpdatesFragment extends Fragment {
 
-	public static final String MOVIE_UPDATE_PREF = "scheduleUpdatesMovies", SHOWS_UPDATE_PREF = "scheduleUpdatesShows";
 	public static final int NOT_ENABLED = 0, AT_LAUNCH = 1, EVERY_HOUR = 2, EVERY_2_HOURS = 3, EVERY_4_HOURS = 4, EVERY_6_HOURS = 5, EVERY_12_HOURS = 6, EVERY_DAY = 7, EVERY_WEEK = 8;
 	private int movieUpdateType = NOT_ENABLED, showsUpdateType = NOT_ENABLED;
 	private SharedPreferences settings;
@@ -74,8 +78,8 @@ public class ScheduledUpdatesFragment extends Fragment {
 		nextMovieUpdate = (TextView) v.findViewById(R.id.nextMovieUpdate);
 		nextShowsUpdate = (TextView) v.findViewById(R.id.nextShowsUpdate);
 
-		movieUpdateType = settings.getInt(MOVIE_UPDATE_PREF, NOT_ENABLED);
-		showsUpdateType = settings.getInt(SHOWS_UPDATE_PREF, NOT_ENABLED);
+		movieUpdateType = settings.getInt(SCHEDULED_UPDATES_MOVIE, NOT_ENABLED);
+		showsUpdateType = settings.getInt(SCHEDULED_UPDATES_TVSHOWS, NOT_ENABLED);
 
 		if (movieUpdateType == NOT_ENABLED) {
 			movies.setChecked(false);
@@ -155,7 +159,7 @@ public class ScheduledUpdatesFragment extends Fragment {
 
 	private void saveMovieSchedule(boolean isDisabled) {
 		editor = settings.edit();
-		editor.putInt(MOVIE_UPDATE_PREF, isDisabled ? NOT_ENABLED : moviesSpinner.getSelectedItemPosition() + 1);
+		editor.putInt(SCHEDULED_UPDATES_MOVIE, isDisabled ? NOT_ENABLED : moviesSpinner.getSelectedItemPosition() + 1);
 		editor.commit();
 
 		if (isAdded()) {
@@ -171,7 +175,7 @@ public class ScheduledUpdatesFragment extends Fragment {
 
 	private void saveShowsSchedule(boolean isDisabled) {
 		editor = settings.edit();
-		editor.putInt(SHOWS_UPDATE_PREF, isDisabled ? NOT_ENABLED : showsSpinner.getSelectedItemPosition() + 1);
+		editor.putInt(SCHEDULED_UPDATES_TVSHOWS, isDisabled ? NOT_ENABLED : showsSpinner.getSelectedItemPosition() + 1);
 		editor.commit();
 
 		if (isAdded()) {
@@ -189,7 +193,7 @@ public class ScheduledUpdatesFragment extends Fragment {
 		if (movies.isChecked() && moviesSpinner.getSelectedItemPosition() > 0) {
 			nextMovieUpdate.setVisibility(View.VISIBLE);
 
-			long nextUpdate = settings.getLong(ScheduledUpdatesAlarmManager.prefNextMovies, 0);
+			long nextUpdate = settings.getLong(NEXT_SCHEDULED_MOVIE_UPDATE, 0);
 			if (nextUpdate > 0) {
 				long timeUntilNext = (nextUpdate - System.currentTimeMillis()) / 1000 / 60;
 
@@ -223,7 +227,7 @@ public class ScheduledUpdatesFragment extends Fragment {
 		if (shows.isChecked() && showsSpinner.getSelectedItemPosition() > 0) {
 			nextShowsUpdate.setVisibility(View.VISIBLE);
 
-			long nextUpdate = settings.getLong(ScheduledUpdatesAlarmManager.prefNextShows, 0);
+			long nextUpdate = settings.getLong(NEXT_SCHEDULED_TVSHOWS_UPDATE, 0);
 			if (nextUpdate > 0) {
 				long timeUntilNext = (nextUpdate - System.currentTimeMillis()) / 1000 / 60;
 

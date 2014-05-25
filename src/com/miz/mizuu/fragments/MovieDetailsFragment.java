@@ -67,6 +67,13 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.test.smbstreamer.variant1.Streamer;
 
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
+import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
+import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
+
 public class MovieDetailsFragment extends Fragment {
 
 	private Movie thisMovie;
@@ -100,11 +107,11 @@ public class MovieDetailsFragment extends Fragment {
 		setRetainInstance(true);
 		setHasOptionsMenu(true);
 
-		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnorePrefixesInTitles", false);
-		ignoreNfo = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnoreNfoFiles", true);
-		useWildcard = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnoreFileType", false);
-		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsDisableEthernetWiFiCheck", false);
-		prefsRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsRemoveMoviesFromWatchlist", true);
+		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_TITLE_PREFIXES, false);
+		ignoreNfo = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_NFO_FILES, true);
+		useWildcard = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
+		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
+		prefsRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
 
 		// Get the database ID of the movie in question
 		movieId = getArguments().getInt("movieId");
@@ -549,7 +556,7 @@ public class MovieDetailsFragment extends Fragment {
 		}
 
 		int bufferSize;
-		String buff = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("prefsBufferSize", getString(R.string._16kb));
+		String buff = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(BUFFER_SIZE, getString(R.string._16kb));
 		if (buff.equals(getString(R.string._16kb)))
 			bufferSize = 8192 * 2; // This appears to be the limit for most video players
 		else bufferSize = 8192;

@@ -47,6 +47,8 @@ import com.miz.views.ObservableScrollView.OnScrollChangedListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+
 public class ShowDetailsFragment extends Fragment {
 
 	private DbAdapterTvShow dbHelper;
@@ -79,7 +81,7 @@ public class ShowDetailsFragment extends Fragment {
 		
 		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
 
-		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnorePrefixesInTitles", false);
+		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_TITLE_PREFIXES, false);
 
 		// Create and open database
 		dbHelper = MizuuApplication.getTvDbAdapter();

@@ -23,6 +23,8 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
+
 public class Prefs extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
 	Preference pref;
@@ -38,14 +40,14 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
 		pref = getPreferenceScreen().findPreference("prefsIgnoredFiles");
 		if (pref != null)
-			pref.setEnabled(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnoredFilesEnabled", false));
+			pref.setEnabled(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_FILES_ENABLED, false));
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals("prefsIgnoredFilesEnabled")) {
+		if (key.equals(IGNORED_FILES_ENABLED)) {
 			if (pref != null)
-				pref.setEnabled(sharedPreferences.getBoolean("prefsIgnoredFilesEnabled", false));
+				pref.setEnabled(sharedPreferences.getBoolean(IGNORED_FILES_ENABLED, false));
 		}
 	}
 

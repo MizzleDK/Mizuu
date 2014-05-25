@@ -27,6 +27,11 @@ import com.miz.mizuu.R;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
+import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
+import static com.miz.functions.PreferenceKeys.MOVIE_RATINGS_SOURCE;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+import static com.miz.functions.PreferenceKeys.TMDB_BASE_URL;
+
 public class TMDb {
 
 	private boolean hasTriedFileNameOnce = false, hasTriedParent = false, includeAdult = false;
@@ -35,14 +40,14 @@ public class TMDb {
 
 	public TMDb(Context c) {
 		this.c = c;
-		ratingsProvider = PreferenceManager.getDefaultSharedPreferences(c).getString("prefsMovieRatingsSource", c.getString(R.string.ratings_option_1));
-		includeAdult = PreferenceManager.getDefaultSharedPreferences(c).getBoolean("prefsIncludeAdultContent", false);
+		ratingsProvider = PreferenceManager.getDefaultSharedPreferences(c).getString(MOVIE_RATINGS_SOURCE, c.getString(R.string.ratings_option_1));
+		includeAdult = PreferenceManager.getDefaultSharedPreferences(c).getBoolean(INCLUDE_ADULT_CONTENT, false);
 	}
 
 	public TMDbMovie searchForMovie(String query, String year, String filepath, String language) {
 		TMDbMovie movie = new TMDbMovie();
 
-		DecryptedMovie dm = MizLib.decryptMovie(filepath, PreferenceManager.getDefaultSharedPreferences(c).getString("ignoredTags", ""));
+		DecryptedMovie dm = MizLib.decryptMovie(filepath, PreferenceManager.getDefaultSharedPreferences(c).getString(IGNORED_FILENAME_TAGS, ""));
 		if (dm.hasImdbId()) {
 			try {
 				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/find/" + URLEncoder.encode(dm.getImdbId(), "utf-8") + "?api_key=" + MizLib.TMDB_API + "&external_source=imdb_id" + (includeAdult ? "&include_adult=true" : ""));
@@ -117,7 +122,7 @@ public class TMDb {
 		ArrayList<TMDbMovie> results = new ArrayList<TMDbMovie>();
 
 		try {
-			String baseImgUrl = PreferenceManager.getDefaultSharedPreferences(c).getString("tmdbBaseUrl", MizLib.TMDB_BASE_URL);
+			String baseImgUrl = PreferenceManager.getDefaultSharedPreferences(c).getString(TMDB_BASE_URL, MizLib.TMDB_BASE_URL);
 			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + MizLib.TMDB_API + (!MizLib.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : ""));
 
 			for (int i = 0; i < jObject.getJSONArray("results").length(); i++) {
@@ -152,7 +157,7 @@ public class TMDb {
 
 		try {
 			// Get the base URL from the preferences
-			String baseUrl = PreferenceManager.getDefaultSharedPreferences(c).getString("tmdbBaseUrl", MizLib.TMDB_BASE_URL);
+			String baseUrl = PreferenceManager.getDefaultSharedPreferences(c).getString(TMDB_BASE_URL, MizLib.TMDB_BASE_URL);
 
 			JSONObject jObject = null;
 			if (json != null)

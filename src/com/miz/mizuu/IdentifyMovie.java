@@ -59,6 +59,9 @@ import com.miz.functions.TMDbMovie;
 import com.miz.service.TheMovieDB;
 import com.squareup.picasso.Picasso;
 
+import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+
 public class IdentifyMovie extends MizActivity {
 
 	public String filename;
@@ -87,14 +90,14 @@ public class IdentifyMovie extends MizActivity {
 
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
-		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
+		localizedInfo = settings.getBoolean(USE_LOCALIZED_DATA, false);
 
 		mPicasso = MizuuApplication.getPicasso(this);
 		mConfig = MizuuApplication.getBitmapConfig();
 
 		rowId = Long.valueOf(getIntent().getExtras().getString("rowId"));
 		filename = getIntent().getExtras().getString("fileName");
-		mMovie = MizLib.decryptMovie(filename, settings.getString("ignoredTags", ""));
+		mMovie = MizLib.decryptMovie(filename, settings.getString(IGNORED_FILENAME_TAGS, ""));
 		
 		locale = Locale.getDefault();
 

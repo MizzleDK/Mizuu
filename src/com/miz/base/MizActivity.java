@@ -22,12 +22,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 
+import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
+
 import com.miz.mizuu.R;
 
 public class MizActivity extends FragmentActivity implements OnSharedPreferenceChangeListener {
 
 	private boolean mFullscreen = true;
-	public static final String FULLSCREEN_TAG = "prefsFullscreen";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

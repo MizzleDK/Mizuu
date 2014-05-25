@@ -24,6 +24,8 @@ import static com.miz.functions.MizLib.SERIAL_NUMBER;
 import static com.miz.functions.MizLib.SERVER;
 import static com.miz.functions.MizLib.TYPE;
 import static com.miz.functions.MizLib.USER;
+import static com.miz.functions.PreferenceKeys.HAS_SHOWN_FILEBROWSER_MESSAGE;
+
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -72,12 +74,12 @@ public class FileSourceBrowser extends MizActivity {
 			ft.commit();
 		}
 		
-		boolean hasShown = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("hasShownBrowserHelpMessage", false);
+		boolean hasShown = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(HAS_SHOWN_FILEBROWSER_MESSAGE, false);
 		if (!hasShown) {
 			Toast.makeText(this, R.string.browser_help_message, Toast.LENGTH_LONG).show();
 			
 			Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-			editor.putBoolean("hasShownBrowserHelpMessage", true);
+			editor.putBoolean(HAS_SHOWN_FILEBROWSER_MESSAGE, true);
 			editor.commit();
 		}
 		

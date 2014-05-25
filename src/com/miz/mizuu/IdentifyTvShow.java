@@ -64,6 +64,9 @@ import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 import com.squareup.picasso.Picasso;
 
+import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+
 public class IdentifyTvShow extends MizActivity {
 
 	private String[] files;
@@ -92,7 +95,7 @@ public class IdentifyTvShow extends MizActivity {
 
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
-		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
+		localizedInfo = settings.getBoolean(USE_LOCALIZED_DATA, false);
 
 		isShow = getIntent().getExtras().getBoolean("isShow");
 		includeShowData = getIntent().getExtras().getBoolean("includeShowData");
@@ -126,7 +129,7 @@ public class IdentifyTvShow extends MizActivity {
 		findViewById(R.id.no_results).setVisibility(View.GONE);
 
 		String firstFilename=files[0].contains("<MiZ>") ? files[0].split("<MiZ>")[0] : files[0];
-		DecryptedShowEpisode result = MizLib.decryptEpisode(firstFilename, settings.getString("ignoredTags", ""));
+		DecryptedShowEpisode result = MizLib.decryptEpisode(firstFilename, settings.getString(IGNORED_FILENAME_TAGS, ""));
 
 		seasonText = (EditText) findViewById(R.id.seasonText);
 		seasonText.setText(String.valueOf(result.getSeason()));

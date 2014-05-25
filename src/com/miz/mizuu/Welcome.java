@@ -56,6 +56,8 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 import com.miz.functions.MizLib;
 
+import static com.miz.functions.PreferenceKeys.CONFIRM_BACK_PRESS;
+
 public class Welcome extends MizActivity implements ViewFactory {
 
 	private long interval = 10000;
@@ -75,7 +77,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		confirmExit = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsConfirmBackPress", false);
+		confirmExit = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(CONFIRM_BACK_PRESS, false);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);

@@ -121,6 +121,13 @@ import com.miz.service.TvShowsLibraryUpdate;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.apache.OkApacheClient;
 
+import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
+import static com.miz.functions.PreferenceKeys.TRAKT_PASSWORD;
+import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
+import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
+import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
+
 @SuppressLint("NewApi")
 public class MizLib {
 
@@ -1543,8 +1550,8 @@ public class MizLib {
 
 	public static boolean checkInMovieTrakt(String tmdbId, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1593,8 +1600,8 @@ public class MizLib {
 	
 	public static boolean checkInMovieTrakt(Movie movie, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1646,8 +1653,8 @@ public class MizLib {
 
 	public static boolean checkInEpisodeTrakt(TvShowEpisode episode, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1700,8 +1707,8 @@ public class MizLib {
 
 	public static boolean markMovieAsWatched(List<Movie> movies, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1746,8 +1753,8 @@ public class MizLib {
 
 	public static boolean markEpisodeAsWatched(List<TvShowEpisode> episodes, Context c, boolean overrideWatched) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1795,8 +1802,8 @@ public class MizLib {
 
 	public static boolean markTvShowAsWatched(TraktTvShow show, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1836,8 +1843,8 @@ public class MizLib {
 
 	public static boolean addMoviesToTraktLibrary(List<Movie> movies, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1877,8 +1884,8 @@ public class MizLib {
 
 	public static boolean movieWatchlist(List<Movie> movies, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1923,8 +1930,8 @@ public class MizLib {
 
 	public static boolean movieFavorite(List<Movie> movies, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -1966,8 +1973,8 @@ public class MizLib {
 
 	public static boolean hasTraktAccount(Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		System.out.println("USER: " + username + ". PASS: " + password + ".");
 		
@@ -1979,8 +1986,8 @@ public class MizLib {
 
 	public static boolean addTvShowToLibrary(TraktTvShow show, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -2020,8 +2027,8 @@ public class MizLib {
 
 	public static boolean tvShowFavorite(List<TvShow> shows, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -2062,8 +2069,8 @@ public class MizLib {
 	public static int WATCHED = 1, RATINGS = 2, WATCHLIST = 3, COLLECTION = 4;
 	public static JSONArray getTraktMovieLibrary(Context c, int type) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return new JSONArray();
@@ -2098,8 +2105,8 @@ public class MizLib {
 
 	public static JSONArray getTraktTvShowLibrary(Context c, int type) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return new JSONArray();
@@ -2180,7 +2187,7 @@ public class MizLib {
 	}
 
 	public static int getFileSizeLimit(Context c) {
-		String limit = PreferenceManager.getDefaultSharedPreferences(c).getString("prefsIgnoreFilesSize", c.getString(R.string.smallFilesOption_1));
+		String limit = PreferenceManager.getDefaultSharedPreferences(c).getString(IGNORE_FILE_SIZE, c.getString(R.string.smallFilesOption_1));
 		if (limit.equals(c.getString(R.string.smallFilesOption_1))) {
 			return 0;
 		} else if (limit.equals(c.getString(R.string.smallFilesOption_2))) {
@@ -2325,14 +2332,14 @@ public class MizLib {
 
 	public static String getTraktUserName(Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		return username;
 	}
 
 	public static JSONArray getTraktCalendar(Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString("traktUsername", "").trim();
-		String password = settings.getString("traktPassword", "");
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
 
 		if (username.isEmpty() || password.isEmpty())
 			return new JSONArray();
@@ -2384,10 +2391,10 @@ public class MizLib {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 
 		// Check if scheduled updates are enabled, and schedule the next update if this is the case
-		if (settings.getInt(ScheduledUpdatesFragment.MOVIE_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED) > ScheduledUpdatesFragment.AT_LAUNCH) {
+		if (settings.getInt(SCHEDULED_UPDATES_MOVIE, ScheduledUpdatesFragment.NOT_ENABLED) > ScheduledUpdatesFragment.AT_LAUNCH) {
 			ScheduledUpdatesAlarmManager.cancelUpdate(ScheduledUpdatesAlarmManager.MOVIES, context);
 			long duration = MizLib.HOUR;
-			switch (settings.getInt(ScheduledUpdatesFragment.MOVIE_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED)) {
+			switch (settings.getInt(SCHEDULED_UPDATES_MOVIE, ScheduledUpdatesFragment.NOT_ENABLED)) {
 			case ScheduledUpdatesFragment.EVERY_2_HOURS:
 				duration = MizLib.HOUR * 2;
 				break;
@@ -2415,10 +2422,10 @@ public class MizLib {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 
 		// Check if scheduled updates are enabled, and schedule the next update if this is the case
-		if (settings.getInt(ScheduledUpdatesFragment.SHOWS_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED) > ScheduledUpdatesFragment.AT_LAUNCH) {
+		if (settings.getInt(SCHEDULED_UPDATES_TVSHOWS, ScheduledUpdatesFragment.NOT_ENABLED) > ScheduledUpdatesFragment.AT_LAUNCH) {
 			ScheduledUpdatesAlarmManager.cancelUpdate(ScheduledUpdatesAlarmManager.SHOWS, context);
 			long duration = MizLib.HOUR;
-			switch (settings.getInt(ScheduledUpdatesFragment.SHOWS_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED)) {
+			switch (settings.getInt(SCHEDULED_UPDATES_TVSHOWS, ScheduledUpdatesFragment.NOT_ENABLED)) {
 			case ScheduledUpdatesFragment.EVERY_2_HOURS:
 				duration = MizLib.HOUR * 2;
 				break;
@@ -3370,7 +3377,7 @@ public class MizLib {
 	public static boolean isAdultContent(Context context, String title) {
 		// Check if the user has enabled adult content - if so, nothing should
 		// be blocked and the method should return false regardless of the title
-		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefsIncludeAdultContent", false))
+		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(INCLUDE_ADULT_CONTENT, false))
 			return false;
 
 		String lowerCase = title.toLowerCase(Locale.getDefault());

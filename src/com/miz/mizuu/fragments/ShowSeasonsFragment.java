@@ -87,6 +87,12 @@ import com.squareup.picasso.Target;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapter;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
+import static com.miz.functions.PreferenceKeys.TVSHOWS_EPISODE_ORDER;
+import static com.miz.functions.PreferenceKeys.TVSHOWS_COLLECTION_LAYOUT;
+import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
+
 public class ShowSeasonsFragment extends Fragment {
 
 	private int mImageThumbSize, mImageThumbSpacing, selectedEpisodeIndex, selectedFilter;
@@ -126,18 +132,15 @@ public class ShowSeasonsFragment extends Fragment {
 
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
-		ignoreDeletedFiles = settings.getBoolean("prefsIgnoredFilesEnabled", false);
-		useGridView = settings.getString("prefsSeasonsLayout", getString(R.string.listView)).equals(getString(R.string.gridView)) ? true : false;
-		showOldestEpisodeFirst = settings.getString("prefsEpisodesOrder", getString(R.string.oldestFirst)).equals(getString(R.string.oldestFirst)) ? true : false;
+		prefsDisableEthernetWiFiCheck = settings.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
+		ignoreDeletedFiles = settings.getBoolean(IGNORED_FILES_ENABLED, false);
+		useGridView = settings.getString(TVSHOWS_COLLECTION_LAYOUT, getString(R.string.listView)).equals(getString(R.string.gridView)) ? true : false;
+		showOldestEpisodeFirst = settings.getString(TVSHOWS_EPISODE_ORDER, getString(R.string.oldestFirst)).equals(getString(R.string.oldestFirst)) ? true : false;
 		if (MizLib.isGoogleTV(getActivity()))
 			useGridView = false;
 
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-		//if (!MizLib.isPortrait(getActivity()) && MizLib.isTablet(getActivity()))
-		//	mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 0.75);
-		//else
-			mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width);
+		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width);
 
 		if (useGridView)
 			mGridAdapter = new SeasonsAdapterGrid(getActivity());
@@ -1034,7 +1037,7 @@ public class ShowSeasonsFragment extends Fragment {
 
 		View dialogLayout = getActivity().getLayoutInflater().inflate(R.layout.delete_file_dialog_layout, null);
 		final CheckBox cb = (CheckBox) dialogLayout.findViewById(R.id.deleteFile);
-		cb.setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsAlwaysDeleteFile", true));
+		cb.setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(ALWAYS_DELETE_FILE, true));
 
 		builder.setTitle(getString(R.string.removeEpisode) + " S" + shownEpisodes.get(selectedEpisodeIndex).getSeason() + "E" + shownEpisodes.get(selectedEpisodeIndex).getEpisode())
 		.setView(dialogLayout)

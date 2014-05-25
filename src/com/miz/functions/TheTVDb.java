@@ -35,6 +35,8 @@ import android.preference.PreferenceManager;
 
 import com.miz.mizuu.R;
 
+import static com.miz.functions.PreferenceKeys.TVSHOWS_RATINGS_SOURCE;
+
 public class TheTVDb {
 
 	private String ratingsProvider;
@@ -42,7 +44,7 @@ public class TheTVDb {
 
 	public TheTVDb(Context c) {
 		this.c = c;
-		ratingsProvider = PreferenceManager.getDefaultSharedPreferences(c).getString("prefsShowsRatingsSource", c.getString(R.string.ratings_option_4));
+		ratingsProvider = PreferenceManager.getDefaultSharedPreferences(c).getString(TVSHOWS_RATINGS_SOURCE, c.getString(R.string.ratings_option_4));
 	}
 
 	public Tvshow searchForShow(DecryptedShowEpisode episode, String language) {

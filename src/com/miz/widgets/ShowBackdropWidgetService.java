@@ -37,6 +37,8 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+
 public class ShowBackdropWidgetService extends RemoteViewsService {
 
 	@Override
@@ -58,7 +60,7 @@ public class ShowBackdropWidgetService extends RemoteViewsService {
 		public BookmarkFactory(Context context, int widgetId) {
 			mContext = context.getApplicationContext();
 			isTablet = MizLib.isTablet(mContext);
-			ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("prefsIgnorePrefixesInTitles", false);
+			ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
 		}
 
 		public void onCreate() {

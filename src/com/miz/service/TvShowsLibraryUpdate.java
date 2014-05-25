@@ -64,6 +64,14 @@ import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
+import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
+import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
+
 public class TvShowsLibraryUpdate extends IntentService implements TvShowLibraryUpdateCallback {
 
 	public static final String STOP_TVSHOW_LIBRARY_UPDATE = "mizuu-stop-tvshow-library-update";
@@ -156,7 +164,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 			// Reset the preference, so it isn't checked the next
 			// time the user wants to update the library
 			mEditor = mSettings.edit();
-			mEditor.putBoolean("prefsClearLibraryTv", false);
+			mEditor.putBoolean(CLEAR_LIBRARY_TVSHOWS, false);
 			mEditor.commit();
 
 			log("removeTvShowsFromDatabase()");
@@ -268,7 +276,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 	private void searchFolders() {
 		// Temporary collection
 		List<String> tempList = null;
-		String ignoredTags = mSettings.getString("ignoredTags", "");
+		String ignoredTags = mSettings.getString(IGNORED_FILENAME_TAGS, "");
 
 		for (int j = 0; j < mTvShowFileSources.size(); j++) {
 			updateTvShowScanningNotification(mTvShowFileSources.get(j).toString());
@@ -323,12 +331,12 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		startForeground(NOTIFICATION_ID, updateNotification);
 
 		mSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		mClearLibrary = mSettings.getBoolean("prefsClearLibraryTv", false);
-		mSearchSubfolders = mSettings.getBoolean("prefsEnableSubFolderSearch", true);
-		mClearUnavailable = mSettings.getBoolean("prefsRemoveUnavailableTv", false);
-		mDisableEthernetWiFiCheck = mSettings.getBoolean("prefsDisableEthernetWiFiCheck", false);
-		mIgnoreRemovedFiles = mSettings.getBoolean("prefsIgnoredFilesEnabled", false);
-		mSyncLibraries = mSettings.getBoolean("syncLibrariesWithTrakt", true);
+		mClearLibrary = mSettings.getBoolean(CLEAR_LIBRARY_TVSHOWS, false);
+		mSearchSubfolders = mSettings.getBoolean(ENABLE_SUBFOLDER_SEARCH, true);
+		mClearUnavailable = mSettings.getBoolean(REMOVE_UNAVAILABLE_FILES_TVSHOWS, false);
+		mDisableEthernetWiFiCheck = mSettings.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
+		mIgnoreRemovedFiles = mSettings.getBoolean(IGNORED_FILES_ENABLED, false);
+		mSyncLibraries = mSettings.getBoolean(SYNC_WITH_TRAKT, true);
 
 		mEditor = mSettings.edit();
 	}

@@ -56,6 +56,11 @@ import com.miz.mizuu.R;
 import com.miz.service.TraktMoviesSyncService;
 import com.miz.service.TraktTvShowsSyncService;
 
+import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
+import static com.miz.functions.PreferenceKeys.TRAKT_PASSWORD;
+import static com.miz.functions.PreferenceKeys.TRAKT_FULL_NAME;
+import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
+
 public class AccountsFragment extends Fragment {
 
 	private SharedPreferences settings;
@@ -110,18 +115,18 @@ public class AccountsFragment extends Fragment {
 		});
 
 		syncTrakt = (CheckBox) v.findViewById(R.id.syncTrakt);
-		syncTrakt.setChecked(settings.getBoolean("syncLibrariesWithTrakt", true));
+		syncTrakt.setChecked(settings.getBoolean(SYNC_WITH_TRAKT, true));
 		syncTrakt.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				Editor editor = settings.edit();
-				editor.putBoolean("syncLibrariesWithTrakt", isChecked);
+				editor.putBoolean(SYNC_WITH_TRAKT, isChecked);
 				editor.commit();
 			}
 		});
 
-		traktUser.setText(settings.getString("traktUsername", ""));
-		if (settings.getString("traktPassword", "").isEmpty()) {
+		traktUser.setText(settings.getString(TRAKT_USERNAME, ""));
+		if (settings.getString(TRAKT_PASSWORD, "").isEmpty()) {
 			traktPass.setText("");
 			traktUser.setEnabled(true);
 			traktPass.setEnabled(true);
@@ -183,8 +188,8 @@ public class AccountsFragment extends Fragment {
 			if (success) {
 
 				Editor editor = settings.edit();
-				editor.putString("traktUsername", username);
-				editor.putString("traktPassword", MizLib.SHA1(password));
+				editor.putString(TRAKT_USERNAME, username);
+				editor.putString(TRAKT_PASSWORD, MizLib.SHA1(password));
 				editor.commit();
 
 				httpclient = new DefaultHttpClient();
@@ -207,7 +212,7 @@ public class AccountsFragment extends Fragment {
 						name = jObject.getString("username");
 					String avatar = jObject.getString("avatar");
 
-					editor.putString("traktFullName", name);
+					editor.putString(TRAKT_FULL_NAME, name);
 					editor.commit();
 
 					if (isAdded() && (avatar.contains("gravatar") || (avatar.contains("trakt") && !avatar.contains("avatar-large.jpg"))))
@@ -251,8 +256,8 @@ public class AccountsFragment extends Fragment {
 	public void traktRemove() {
 		Editor editor = settings.edit();
 
-		editor.putString("traktUsername", "");
-		editor.putString("traktPassword", "");
+		editor.putString(TRAKT_USERNAME, "");
+		editor.putString(TRAKT_PASSWORD, "");
 		editor.commit();
 
 		traktUser.setText("");

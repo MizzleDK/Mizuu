@@ -16,7 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -24,11 +23,8 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -55,7 +51,7 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
 import com.squareup.picasso.Picasso;
 
-public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferenceChangeListener {
+public class MovieDiscoveryFragment extends Fragment {
 
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
@@ -63,7 +59,6 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	private SparseBooleanArray movieMap = new SparseBooleanArray();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
-	private SharedPreferences settings;
 	private DbAdapter db;
 	private Picasso mPicasso;
 	private String json, baseUrl;
@@ -89,12 +84,6 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		super.onCreate(savedInstanceState);
 
 		db = MizuuApplication.getMovieAdapter();
-
-		// Initialize the PreferenceManager variable and preference variable(s)
-		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-		// Set OnSharedPreferenceChange listener
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -166,12 +155,6 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		super.onResume();
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
@@ -278,19 +261,6 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 			new MoviesInLibraryCheck(pics_sources).execute();
 		} catch (Exception e) {}
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals("prefsRootAccess")) {
-			if (settings.getBoolean("prefsRootAccess", false)) {
-				try {
-					Runtime.getRuntime().exec("su");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 
 	private class MoviesInLibraryCheck extends AsyncTask<Void, Void, Void> {

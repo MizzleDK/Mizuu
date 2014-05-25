@@ -63,6 +63,12 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.test.smbstreamer.variant1.Streamer;
 
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
+import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
+import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
+import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
+
 public class ShowEpisodeDetailsFragment extends Fragment {
 
 	private DbAdapterTvShowEpisode dbHelper;
@@ -91,9 +97,9 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 
-		useWildcard = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnoreFileType", false);
-		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsDisableEthernetWiFiCheck", false);
-		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsIgnoredFilesEnabled", false);
+		useWildcard = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
+		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
+		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_FILES_ENABLED, false);
 
 		tf = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Thin.ttf");
 
@@ -363,7 +369,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 
 		View dialogLayout = getActivity().getLayoutInflater().inflate(R.layout.delete_file_dialog_layout, null);
 		final CheckBox cb = (CheckBox) dialogLayout.findViewById(R.id.deleteFile);
-		cb.setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("prefsAlwaysDeleteFile", true));
+		cb.setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(ALWAYS_DELETE_FILE, true));
 
 		builder.setTitle(getString(R.string.removeEpisode) + " S" + thisEpisode.getSeason() + "E" + thisEpisode.getEpisode())
 		.setView(dialogLayout)
@@ -472,7 +478,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 		}
 
 		int bufferSize;
-		String buff = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("prefsBufferSize", getString(R.string._16kb));
+		String buff = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(BUFFER_SIZE, getString(R.string._16kb));
 		if (buff.equals(getString(R.string._16kb)))
 			bufferSize = 8192 * 2; // This appears to be the limit for most video players
 		else bufferSize = 8192;

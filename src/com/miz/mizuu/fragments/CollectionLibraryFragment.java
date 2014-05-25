@@ -81,6 +81,13 @@ import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.squareup.picasso.Picasso;
 
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
+import static com.miz.functions.PreferenceKeys.SORTING_COLLECTIONS;
+
 public class CollectionLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
 	public static final String ALL = "ALL", AVAILABLE = "AVAILABLE", FAVORITES = "FAVORITES", WATCHLIST = "WATCHLIST";
@@ -135,12 +142,12 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		mShowTitles = settings.getBoolean("prefsShowGridTitles", false);
-		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
-		ignoreNfo = settings.getBoolean("prefsIgnoreNfoFiles", true);
-		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
+		mShowTitles = settings.getBoolean(SHOW_TITLES_IN_GRID, false);
+		ignorePrefixes = settings.getBoolean(IGNORED_TITLE_PREFIXES, false);
+		ignoreNfo = settings.getBoolean(IGNORED_NFO_FILES, true);
+		prefsDisableEthernetWiFiCheck = settings.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 
-		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
+		String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
 		if (thumbnailSize.equals(getString(R.string.normal))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 		else
@@ -433,7 +440,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>(shownMovies);
 			sections = new Object[tempMovies.size()];
 
-			String SORT_TYPE = settings.getString("prefsSortingCollections", "sortTitle");
+			String SORT_TYPE = settings.getString(SORTING_COLLECTIONS, "sortTitle");
 			if (SORT_TYPE.equals("sortRating")) {
 				DecimalFormat df = new DecimalFormat("#.#");
 				for (int i = 0; i < sections.length; i++)
@@ -671,7 +678,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	}
 
 	private void sortMovies() {
-		String SORT_TYPE = settings.getString("prefsSortingCollections", "sortTitle");
+		String SORT_TYPE = settings.getString(SORTING_COLLECTIONS, "sortTitle");
 		if (SORT_TYPE.equals("sortTitle")) {
 			sortByTitle();
 		} else if (SORT_TYPE.equals("sortRelease")) {
@@ -691,7 +698,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByTitle() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingCollections", "sortTitle");
+		editor.putString(SORTING_COLLECTIONS, "sortTitle");
 		editor.apply();
 
 		sortBy(TITLE);
@@ -699,7 +706,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByRelease() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingCollections", "sortRelease");
+		editor.putString(SORTING_COLLECTIONS, "sortRelease");
 		editor.apply();
 
 		sortBy(RELEASE);
@@ -707,7 +714,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingCollections", "sortRating");
+		editor.putString(SORTING_COLLECTIONS, "sortRating");
 		editor.apply();
 
 		sortBy(RATING);
@@ -715,7 +722,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByWeightedRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingCollections", "sortWeightedRating");
+		editor.putString(SORTING_COLLECTIONS, "sortWeightedRating");
 		editor.apply();
 
 		sortBy(WEIGHTED_RATING);
@@ -723,7 +730,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByDateAdded() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingCollections", "sortAdded");
+		editor.putString(SORTING_COLLECTIONS, "sortAdded");
 		editor.apply();
 
 		sortBy(DATE);
@@ -731,7 +738,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	public void sortByDuration() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingCollections", "sortDuration");
+		editor.putString(SORTING_COLLECTIONS, "sortDuration");
 		editor.apply();
 
 		sortBy(DURATION);
@@ -1050,11 +1057,11 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals("prefsIgnorePrefixesInTitles")) {
-			ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
+		if (key.equals(IGNORED_TITLE_PREFIXES)) {
+			ignorePrefixes = settings.getBoolean(IGNORED_TITLE_PREFIXES, false);
 			forceLoaderLoad();
-		} else if (key.equals("prefsGridItemSize")) {
-			String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
+		} else if (key.equals(GRID_ITEM_SIZE)) {
+			String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
 			if (thumbnailSize.equals(getString(R.string.normal))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
@@ -1068,8 +1075,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			}
 		}
 
-
-		mShowTitles = settings.getBoolean("prefsShowGridTitles", false);
+		mShowTitles = settings.getBoolean(SHOW_TITLES_IN_GRID, false);
 
 		sortMovies();
 		notifyDataSetChanged();

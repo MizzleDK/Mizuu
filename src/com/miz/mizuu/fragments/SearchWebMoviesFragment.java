@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -57,6 +56,8 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
 import com.squareup.picasso.Picasso;
 
+import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+
 public class SearchWebMoviesFragment extends Fragment {
 
 	public String filename;
@@ -67,7 +68,6 @@ public class SearchWebMoviesFragment extends Fragment {
 	private StartSearch startSearch;
 	private boolean localizedInfo;
 	private ListAdapter mAdapter;
-	private SharedPreferences settings;
 	private CheckBox useSystemLanguage;
 	private Locale locale;
 	private Picasso mPicasso;
@@ -89,9 +89,7 @@ public class SearchWebMoviesFragment extends Fragment {
 		
 		setRetainInstance(true);
 
-		// Initialize the PreferenceManager variable and preference variable(s)
-		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
+		localizedInfo = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(USE_LOCALIZED_DATA, false);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();

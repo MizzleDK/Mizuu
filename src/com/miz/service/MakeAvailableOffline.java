@@ -52,6 +52,8 @@ import com.miz.mizuu.CancelOfflineDownload;
 import com.miz.mizuu.R;
 import com.squareup.okhttp.OkHttpClient;
 
+import static com.miz.functions.PreferenceKeys.IGNORE_FILESIZE_CHECK;
+
 public class MakeAvailableOffline extends IntentService {
 
 	private static final int NOTIFICATION_ID = 20;
@@ -147,7 +149,7 @@ public class MakeAvailableOffline extends IntentService {
 			return;
 		}
 
-		boolean ignoreSizeCheck = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("prefsIgnoreFilesizeCheck", false);
+		boolean ignoreSizeCheck = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORE_FILESIZE_CHECK, false);
 		if (!ignoreSizeCheck) {
 			boolean sizeOK = checkFilesize();
 

@@ -32,6 +32,8 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+
 public class DeleteFile extends IntentService {
 
 	public DeleteFile() {
@@ -43,7 +45,7 @@ public class DeleteFile extends IntentService {
 		String file = intent.getExtras().getString("filepath");
 
 		if (file.startsWith("smb://")) {
-			boolean prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsDisableEthernetWiFiCheck", false);
+			boolean prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 			ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
 
 			if (MizLib.isWifiConnected(this, prefsDisableEthernetWiFiCheck)) {

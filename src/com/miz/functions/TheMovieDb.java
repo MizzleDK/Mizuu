@@ -34,6 +34,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 
+import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+
 public class TheMovieDb {
 
 	private MovieLibraryUpdateCallback callback;
@@ -58,7 +61,7 @@ public class TheMovieDb {
 		if (isFromManualIdentify)
 			movie = tmdb.getMovie(tmdbId, LOCALE);
 		else {
-			DecryptedMovie mMovie = MizLib.decryptMovie(filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[0] : filepath, settings.getString("ignoredTags", ""));
+			DecryptedMovie mMovie = MizLib.decryptMovie(filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[0] : filepath, settings.getString(IGNORED_FILENAME_TAGS, ""));
 			movie = tmdb.searchForMovie(mMovie.getDecryptedFileName(), mMovie.getFileNameYear(), filepath.contains("<MiZ>") ? filepath.split("<Miz>")[0] : filepath, LOCALE);
 		}
 
@@ -75,7 +78,7 @@ public class TheMovieDb {
 		setup();
 
 		TMDb tmdb = new TMDb(context);
-		DecryptedMovie mMovie = MizLib.decryptMovie(filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[0] : filepath, settings.getString("ignoredTags", ""));		
+		DecryptedMovie mMovie = MizLib.decryptMovie(filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[0] : filepath, settings.getString(IGNORED_FILENAME_TAGS, ""));		
 		movie = tmdb.searchForMovie(mMovie.getDecryptedFileName(), mMovie.getFileNameYear(), filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[0] : filepath, LOCALE);
 
 		download();
@@ -83,7 +86,7 @@ public class TheMovieDb {
 
 	private void setup() {
 		settings = PreferenceManager.getDefaultSharedPreferences(context);
-		localizedInfo = settings.getBoolean("prefsUseLocalData", false);
+		localizedInfo = settings.getBoolean(USE_LOCALIZED_DATA, false);
 
 		if (language.isEmpty()) {
 			if (localizedInfo) {

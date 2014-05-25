@@ -34,6 +34,8 @@ import android.view.MenuItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.ShowEpisodeDetailsFragment;
 
+import static com.miz.functions.PreferenceKeys.TVSHOWS_EPISODE_ORDER;
+
 public class EpisodeDetails extends MizActivity {
 
 	private ViewPager awesomePager;
@@ -47,7 +49,7 @@ public class EpisodeDetails extends MizActivity {
 
 		setContentView(R.layout.viewpager);
 
-		showOldestEpisodeFirst = PreferenceManager.getDefaultSharedPreferences(this).getString("prefsEpisodesOrder", getString(R.string.oldestFirst)).equals(getString(R.string.oldestFirst)) ? true : false;
+		showOldestEpisodeFirst = PreferenceManager.getDefaultSharedPreferences(this).getString(TVSHOWS_EPISODE_ORDER, getString(R.string.oldestFirst)).equals(getString(R.string.oldestFirst)) ? true : false;
 		
 		db = MizuuApplication.getTvEpisodeDbAdapter();
 

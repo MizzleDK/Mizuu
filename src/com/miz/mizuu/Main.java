@@ -66,6 +66,10 @@ import com.miz.mizuu.fragments.WebVideosViewPagerFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import static com.miz.functions.PreferenceKeys.TRAKT_FULL_NAME;
+import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
+import static com.miz.functions.PreferenceKeys.CONFIRM_BACK_PRESS;
+
 @SuppressLint("NewApi")
 public class Main extends MizActivity {
 
@@ -92,8 +96,8 @@ public class Main extends MizActivity {
 		setContentView(R.layout.menu_drawer);
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		mConfirmExit = settings.getBoolean("prefsConfirmBackPress", false);
-		mStartup = settings.getString("prefsStartup", "1");
+		mConfirmExit = settings.getBoolean(CONFIRM_BACK_PRESS, false);
+		mStartup = settings.getString(STARTUP_SELECTION, "1");
 		if (mStartup.equals("0"))
 			mStartup = "1";
 
@@ -235,7 +239,7 @@ public class Main extends MizActivity {
 
 	private void setupUserDetails() {
 
-		final String full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("traktFullName", "");
+		final String full_name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(TRAKT_FULL_NAME, "");
 		if (!MizLib.isEmpty(full_name))
 			((TextView) findViewById(R.id.username)).setText(full_name);
 		else

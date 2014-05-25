@@ -63,6 +63,15 @@ import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
 
+import static com.miz.functions.PreferenceKeys.TMDB_BASE_URL;
+import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
+import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
+import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_MOVIES;
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
+
 public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpdateCallback {
 
 	public static final String STOP_MOVIE_LIBRARY_UPDATE = "mizuu-stop-movie-library-update";
@@ -155,7 +164,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			// Reset the preference, so it isn't checked the next
 			// time the user wants to update the library
 			mEditor = mSettings.edit();
-			mEditor.putBoolean("prefsClearLibrary", false);
+			mEditor.putBoolean(CLEAR_LIBRARY_MOVIES, false);
 			mEditor.commit();
 
 			log("removeMoviesFromDatabase()");
@@ -282,7 +291,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			mBaseUrl = MizLib.TMDB_BASE_URL;
 		} finally {
 			mEditor = mSettings.edit();
-			mEditor.putString("tmdbBaseUrl", mBaseUrl);
+			mEditor.putString(TMDB_BASE_URL, mBaseUrl);
 			mEditor.commit();
 		}
 	}
@@ -348,13 +357,13 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		startForeground(NOTIFICATION_ID, updateNotification);
 
 		mSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		mClearLibrary = mSettings.getBoolean("prefsClearLibrary", false);
-		mSearchSubfolders = mSettings.getBoolean("prefsEnableSubFolderSearch", true);
-		mClearUnavailable = mSettings.getBoolean("prefsRemoveUnavailable", false);
-		mIgnoreNfoFiles = mSettings.getBoolean("prefsIgnoreNfoFiles", true);
-		mDisableEthernetWiFiCheck = mSettings.getBoolean("prefsDisableEthernetWiFiCheck", false);
-		mIgnoreRemovedFiles = mSettings.getBoolean("prefsIgnoredFilesEnabled", false);
-		mSyncLibraries = mSettings.getBoolean("syncLibrariesWithTrakt", true);
+		mClearLibrary = mSettings.getBoolean(CLEAR_LIBRARY_MOVIES, false);
+		mSearchSubfolders = mSettings.getBoolean(ENABLE_SUBFOLDER_SEARCH, true);
+		mClearUnavailable = mSettings.getBoolean(REMOVE_UNAVAILABLE_FILES_MOVIES, false);
+		mIgnoreNfoFiles = mSettings.getBoolean(IGNORED_NFO_FILES, true);
+		mDisableEthernetWiFiCheck = mSettings.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
+		mIgnoreRemovedFiles = mSettings.getBoolean(IGNORED_FILES_ENABLED, false);
+		mSyncLibraries = mSettings.getBoolean(SYNC_WITH_TRAKT, true);
 
 		mEditor = mSettings.edit();
 	}

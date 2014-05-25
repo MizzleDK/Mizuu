@@ -90,6 +90,15 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.Update;
 import com.squareup.picasso.Picasso;
 
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
+import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
+import static com.miz.functions.PreferenceKeys.SORTING_COLLECTIONS_OVERVIEW;
+import static com.miz.functions.PreferenceKeys.SORTING_MOVIES;
+
+
 @SuppressLint("NewApi")
 public class MovieLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
@@ -141,12 +150,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
-		ignoreNfo = settings.getBoolean("prefsIgnoreNfoFiles", true);
-		prefsDisableEthernetWiFiCheck = settings.getBoolean("prefsDisableEthernetWiFiCheck", false);
-		mShowTitles = settings.getBoolean("prefsShowGridTitles", true);
+		ignorePrefixes = settings.getBoolean(IGNORED_TITLE_PREFIXES, false);
+		ignoreNfo = settings.getBoolean(IGNORED_NFO_FILES, true);
+		prefsDisableEthernetWiFiCheck = settings.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
+		mShowTitles = settings.getBoolean(SHOW_TITLES_IN_GRID, true);
 
-		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
+		String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
 		if (thumbnailSize.equals(getString(R.string.normal))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 		else
@@ -553,7 +562,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			ArrayList<MediumMovie> tempMovies = new ArrayList<MediumMovie>(shownMovies);
 			sections = new Object[tempMovies.size()];
 
-			String SORT_TYPE = settings.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortTitle");
+			String SORT_TYPE = settings.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortTitle");
 			if (SORT_TYPE.equals("sortRating")) {
 				DecimalFormat df = new DecimalFormat("#.#");
 				for (int i = 0; i < sections.length; i++)
@@ -960,7 +969,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		if (!isAdded())
 			return;
 		
-		String SORT_TYPE = settings.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortTitle");
+		String SORT_TYPE = settings.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortTitle");
 
 		if (SORT_TYPE.equals("sortTitle")) {
 			sortByTitle();
@@ -981,7 +990,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByTitle() {
 		Editor editor = settings.edit();
-		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortTitle");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortTitle");
 		editor.apply();
 
 		sortBy(TITLE);
@@ -989,7 +998,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByRelease() {
 		Editor editor = settings.edit();
-		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortRelease");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortRelease");
 		editor.apply();
 
 		sortBy(RELEASE);
@@ -997,7 +1006,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByRating() {
 		Editor editor = settings.edit();
-		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortRating");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortRating");
 		editor.apply();
 
 		sortBy(RATING);
@@ -1005,7 +1014,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByWeightedRating() {
 		Editor editor = settings.edit();
-		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortWeightedRating");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortWeightedRating");
 		editor.apply();
 
 		sortBy(WEIGHTED_RATING);
@@ -1013,7 +1022,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByDateAdded() {
 		Editor editor = settings.edit();
-		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortAdded");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortAdded");
 		editor.apply();
 
 		sortBy(DATE);
@@ -1021,7 +1030,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	public void sortByDuration() {
 		Editor editor = settings.edit();
-		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? "prefsSortingCollectionsOverview" : "prefsSorting", "sortDuration");
+		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortDuration");
 		editor.apply();
 
 		sortBy(DURATION);
@@ -1505,11 +1514,11 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals("prefsIgnorePrefixesInTitles")) {
-			ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
+		if (key.equals(IGNORED_TITLE_PREFIXES)) {
+			ignorePrefixes = settings.getBoolean(IGNORED_TITLE_PREFIXES, false);
 			forceLoaderLoad();
-		} else if (key.equals("prefsGridItemSize")) {
-			String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
+		} else if (key.equals(GRID_ITEM_SIZE)) {
+			String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
 			if (thumbnailSize.equals(getString(R.string.normal))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
@@ -1523,8 +1532,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 
 			notifyDataSetChanged();
-		} else if (key.equals("prefsShowGridTitles")) {
-			mShowTitles = sharedPreferences.getBoolean("prefsShowGridTitles", true);
+		} else if (key.equals(SHOW_TITLES_IN_GRID)) {
+			mShowTitles = sharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
 			notifyDataSetChanged();
 		}
 	}

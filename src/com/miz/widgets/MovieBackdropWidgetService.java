@@ -37,6 +37,9 @@ import com.miz.functions.SmallMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+
 public class MovieBackdropWidgetService extends RemoteViewsService {
 
 	@Override
@@ -58,8 +61,8 @@ public class MovieBackdropWidgetService extends RemoteViewsService {
 		public BookmarkFactory(Context context, int widgetId) {
 			mContext = context.getApplicationContext();
 			isTablet = MizLib.isTablet(mContext);
-			ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("prefsIgnorePrefixesInTitles", false);
-			ignoreNfo = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("prefsIgnoreNfoFiles", true);
+			ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
+			ignoreNfo = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_NFO_FILES, true);
 		}
 
 		public void onCreate() {

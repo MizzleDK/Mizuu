@@ -37,6 +37,9 @@ import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 
+import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+
 public class TheTVDbObject {
 
 	private TvShowLibraryUpdateCallback callback;
@@ -53,7 +56,7 @@ public class TheTVDbObject {
 		this.context = context;
 		this.language = language;
 		this.callback = callback;
-		this.ignoredTags = PreferenceManager.getDefaultSharedPreferences(context).getString("ignoredTags", "");
+		this.ignoredTags = PreferenceManager.getDefaultSharedPreferences(context).getString(IGNORED_FILENAME_TAGS, "");
 
 		for (String file : files)
 			queue.add(file);
@@ -91,7 +94,7 @@ public class TheTVDbObject {
 	}
 
 	private void setup() {
-		localizedInfo = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefsUseLocalData", false);
+		localizedInfo = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(USE_LOCALIZED_DATA, false);
 
 		if (language == null || language.isEmpty())
 			if (localizedInfo) {

@@ -32,6 +32,11 @@ import com.miz.functions.MizLib;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
 
+import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
+import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_MOVIES;
+
 public class Update extends MizActivity {
 
 	private CheckBox checkBox, checkBox2;
@@ -59,7 +64,7 @@ public class Update extends MizActivity {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				editor.putBoolean(isMovie ? "prefsClearLibrary" : "prefsClearLibraryTv", isChecked);
+				editor.putBoolean(isMovie ? CLEAR_LIBRARY_MOVIES : CLEAR_LIBRARY_TVSHOWS, isChecked);
 				editor.commit();
 			}
 		});
@@ -70,7 +75,7 @@ public class Update extends MizActivity {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				editor.putBoolean(isMovie ? "prefsRemoveUnavailable" : "prefsRemoveUnavailableTv", isChecked);
+				editor.putBoolean(isMovie ? REMOVE_UNAVAILABLE_FILES_MOVIES : REMOVE_UNAVAILABLE_FILES_TVSHOWS, isChecked);
 				editor.commit();
 			}
 		});
@@ -80,8 +85,8 @@ public class Update extends MizActivity {
 	public void onResume() {
 		super.onResume();
 
-		checkBox.setChecked(settings.getBoolean(isMovie ? "prefsClearLibrary" : "prefsClearLibraryTv", false));
-		checkBox2.setChecked(settings.getBoolean(isMovie ? "prefsRemoveUnavailable" : "prefsRemoveUnavailableTv", false));
+		checkBox.setChecked(settings.getBoolean(isMovie ? CLEAR_LIBRARY_MOVIES : CLEAR_LIBRARY_TVSHOWS, false));
+		checkBox2.setChecked(settings.getBoolean(isMovie ? REMOVE_UNAVAILABLE_FILES_MOVIES : REMOVE_UNAVAILABLE_FILES_TVSHOWS, false));
 	}
 
 	public void startUpdate(View v) {

@@ -36,6 +36,8 @@ import android.widget.TextView;
 
 import com.miz.mizuu.R;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+
 public class CustomTagsFragment extends Fragment {
 
 	private ArrayList<String> items = new ArrayList<String>();
@@ -59,7 +61,7 @@ public class CustomTagsFragment extends Fragment {
 		setRetainInstance(true);
 
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		items_string = settings.getString("ignoredTags", "");
+		items_string = settings.getString(IGNORED_FILENAME_TAGS, "");
 
 		if (!items_string.isEmpty()) {
 			String[] split = items_string.split("<MiZ>");
@@ -86,7 +88,7 @@ public class CustomTagsFragment extends Fragment {
 					items_string = items_string.substring(5);
 
 				Editor editor = settings.edit();
-				editor.putString("ignoredTags", items_string);
+				editor.putString(IGNORED_FILENAME_TAGS, items_string);
 				editor.commit();
 
 				items.clear();
@@ -178,7 +180,7 @@ public class CustomTagsFragment extends Fragment {
 		items_string = result;
 
 		Editor editor = settings.edit();
-		editor.putString("ignoredTags", items_string);
+		editor.putString(IGNORED_FILENAME_TAGS, items_string);
 		editor.commit();
 
 		((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();

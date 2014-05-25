@@ -34,6 +34,12 @@ import com.miz.service.MoveFilesService;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
 
+import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
+import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.ROOT_ACCESS;
+import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
+import static com.miz.functions.PreferenceKeys.USE_ENGLISH_LANGUAGE;
+
 public class SplashScreen extends MizActivity {
 
 	@Override
@@ -55,9 +61,9 @@ public class SplashScreen extends MizActivity {
 
 		// Initialize the PreferenceManager variable and preference variable(s)
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		String startup = settings.getString("prefsStartup", "1");
+		String startup = settings.getString(STARTUP_SELECTION, "1");
 
-		if (settings.getBoolean("prefsUseEnglishLanguage", false)) {
+		if (settings.getBoolean(USE_ENGLISH_LANGUAGE, false)) {
 			Locale locale = new Locale("en");
 			Locale.setDefault(locale);
 			Configuration config = new Configuration();
@@ -66,17 +72,17 @@ public class SplashScreen extends MizActivity {
 					getBaseContext().getResources().getDisplayMetrics());
 		}
 
-		boolean rootPref = settings.getBoolean("prefsRootAccess", false);
+		boolean rootPref = settings.getBoolean(ROOT_ACCESS, false);
 		if (rootPref) { // Request root access if preference is enabled
 			try {
 				Runtime.getRuntime().exec("su");
 			} catch (IOException e) {}
 		}
 
-		if (settings.getInt(ScheduledUpdatesFragment.MOVIE_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
+		if (settings.getInt(SCHEDULED_UPDATES_MOVIE, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
 			getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));
 
-		if (settings.getInt(ScheduledUpdatesFragment.SHOWS_UPDATE_PREF, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
+		if (settings.getInt(SCHEDULED_UPDATES_TVSHOWS, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
 			getApplicationContext().startService(new Intent(getApplicationContext(), TvShowsLibraryUpdate.class));
 
 		Intent i = new Intent(Intent.ACTION_VIEW);

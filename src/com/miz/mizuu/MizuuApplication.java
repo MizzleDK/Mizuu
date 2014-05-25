@@ -33,7 +33,6 @@ import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 
 import com.crashlytics.android.Crashlytics;
-import com.miz.base.MizActivity;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
@@ -43,6 +42,9 @@ import com.miz.functions.Utils;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
+
+import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
+import static com.miz.functions.PreferenceKeys.DARK_THEME;
 
 public class MizuuApplication extends Application {
 
@@ -227,11 +229,11 @@ public class MizuuApplication extends Application {
 	}
 	
 	public static boolean usesDarkTheme(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefsDarkTheme", true);
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(DARK_THEME, true);
 	}
 	
 	public static boolean isFullscreen(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(MizActivity.FULLSCREEN_TAG, false);
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FULLSCREEN_TAG, false);
 	}
 	
 	public static void setupTheme(Context context) {

@@ -35,6 +35,8 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+
 public class ShowStackWidgetService extends RemoteViewsService {
 	@Override
 	public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -96,7 +98,7 @@ class StackRemoteViewsFactoryTv implements RemoteViewsService.RemoteViewsFactory
 	private void update() {
 		shows.clear();
 
-		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("prefsIgnorePrefixesInTitles", false);
+		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
 
 		// Create and open database
 		dbHelper = MizuuApplication.getTvDbAdapter();

@@ -86,6 +86,11 @@ import com.miz.mizuu.UnidentifiedFiles;
 import com.miz.mizuu.Update;
 import com.squareup.picasso.Picasso;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
+import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
+import static com.miz.functions.PreferenceKeys.SORTING_TVSHOWS;
+
 public class TvShowLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
 	private SharedPreferences settings;
@@ -128,10 +133,10 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
-		mShowTitles = settings.getBoolean("prefsShowGridTitles", true);
+		ignorePrefixes = settings.getBoolean(IGNORED_TITLE_PREFIXES, false);
+		mShowTitles = settings.getBoolean(SHOW_TITLES_IN_GRID, true);
 
-		String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
+		String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
 		if (thumbnailSize.equals(getString(R.string.normal))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 		else
@@ -453,7 +458,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			ArrayList<TvShow> tempShows = new ArrayList<TvShow>(shownShows);
 			sections = new Object[tempShows.size()];
 
-			String SORT_TYPE = settings.getString("prefsSortingTv", "sortTitle");
+			String SORT_TYPE = settings.getString(SORTING_TVSHOWS, "sortTitle");
 			if (SORT_TYPE.equals("sortRating")) {
 				DecimalFormat df = new DecimalFormat("#.#");
 				for (int i = 0; i < sections.length; i++)
@@ -686,7 +691,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	}
 
 	private void sortShows() {
-		String SORT_TYPE = settings.getString("prefsSortingTv", "sortTitle");
+		String SORT_TYPE = settings.getString(SORTING_TVSHOWS, "sortTitle");
 		if (SORT_TYPE.equals("sortRelease")) {
 			sortByRelease();
 		} else if (SORT_TYPE.equals("sortRating")) {
@@ -704,7 +709,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByTitle() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingTv", "sortTitle");
+		editor.putString(SORTING_TVSHOWS, "sortTitle");
 		editor.apply();
 
 		sortBy(TITLE);
@@ -712,7 +717,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByRelease() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingTv", "sortRelease");
+		editor.putString(SORTING_TVSHOWS, "sortRelease");
 		editor.apply();
 
 		sortBy(RELEASE);
@@ -720,7 +725,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByNewestEpisode() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingTv", "sortNewestEpisode");
+		editor.putString(SORTING_TVSHOWS, "sortNewestEpisode");
 		editor.apply();
 
 		sortBy(NEWEST_EPISODE);
@@ -728,7 +733,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingTv", "sortRating");
+		editor.putString(SORTING_TVSHOWS, "sortRating");
 		editor.apply();
 
 		sortBy(RATING);
@@ -736,7 +741,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByWeightedRating() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingTv", "sortWeightedRating");
+		editor.putString(SORTING_TVSHOWS, "sortWeightedRating");
 		editor.apply();
 
 		sortBy(WEIGHTED_RATING);
@@ -744,7 +749,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	public void sortByDuration() {
 		Editor editor = settings.edit();
-		editor.putString("prefsSortingTv", "sortDuration");
+		editor.putString(SORTING_TVSHOWS, "sortDuration");
 		editor.apply();
 
 		sortBy(DURATION);
@@ -1053,11 +1058,11 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals("prefsIgnorePrefixesInTitles")) {
-			ignorePrefixes = settings.getBoolean("prefsIgnorePrefixesInTitles", false);
+		if (key.equals(IGNORED_TITLE_PREFIXES)) {
+			ignorePrefixes = settings.getBoolean(IGNORED_TITLE_PREFIXES, false);
 			forceLoaderLoad();
-		} else if (key.equals("prefsGridItemSize")) {
-			String thumbnailSize = settings.getString("prefsGridItemSize", getString(R.string.normal));
+		} else if (key.equals(GRID_ITEM_SIZE)) {
+			String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
 			if (thumbnailSize.equals(getString(R.string.normal))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
@@ -1071,8 +1076,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			}
 
 			notifyDataSetChanged();
-		} else if (key.equals("prefsShowGridTitles")) {
-			mShowTitles = sharedPreferences.getBoolean("prefsShowGridTitles", true);
+		} else if (key.equals(SHOW_TITLES_IN_GRID)) {
+			mShowTitles = sharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
 			notifyDataSetChanged();
 		}
 	}

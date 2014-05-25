@@ -70,6 +70,12 @@ import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
+import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
+
 public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
@@ -107,10 +113,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		setTitle(null);
 
-		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsIgnorePrefixesInTitles", false);
-		ignoreNfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsIgnoreNfoFiles", true);
-		prefsRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsRemoveMoviesFromWatchlist", true);
-		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsIgnoredFilesEnabled", false);
+		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_TITLE_PREFIXES, false);
+		ignoreNfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_NFO_FILES, true);
+		prefsRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
+		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_FILES_ENABLED, false);
 
 		// Fetch the database ID of the movie to view
 		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
@@ -295,7 +301,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		if (thisMovie.isUpnpFile())
 			cb.setEnabled(false);
 		else
-			cb.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsAlwaysDeleteFile", false));
+			cb.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(ALWAYS_DELETE_FILE, false));
 
 		builder.setTitle(getString(R.string.removeMovie))
 		.setView(dialogLayout)

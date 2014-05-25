@@ -55,6 +55,8 @@ import static com.miz.functions.MizLib.TYPE;
 import static com.miz.functions.MizLib.TV_SHOW;
 import static com.miz.functions.MizLib.MOVIE;
 import static com.miz.functions.MizLib.FILESOURCE;
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 
 public class AddNetworkFilesourceDialog extends Activity {
 
@@ -68,7 +70,7 @@ public class AddNetworkFilesourceDialog extends Activity {
 		super.onCreate(savedInstanceState);
 
 		if (!MizLib.isTablet(this)) {
-			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsFullscreen", false))
+			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false))
 				setTheme(R.style.Theme_Example_FullScreen);
 			else
 				setTheme(R.style.Theme_Example);
@@ -79,7 +81,7 @@ public class AddNetworkFilesourceDialog extends Activity {
 
 		setContentView(R.layout.addnetwork);
 
-		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsDisableEthernetWiFiCheck", false);
+		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 
 		server = (EditText) findViewById(R.id.server);
 		domain = (EditText) findViewById(R.id.domain);

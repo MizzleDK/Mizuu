@@ -27,9 +27,11 @@ import android.preference.PreferenceManager;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
 
+import static com.miz.functions.PreferenceKeys.NEXT_SCHEDULED_MOVIE_UPDATE;
+import static com.miz.functions.PreferenceKeys.NEXT_SCHEDULED_TVSHOWS_UPDATE;
+
 public class ScheduledUpdatesAlarmManager {
 
-	public static final String prefNextMovies = "nextScheduledMovieUpdate", prefNextShows = "nextScheduledShowsUpdate";
 	public static final int MOVIES = 1, SHOWS = 2;
 
 	public static void cancelUpdate(int type, Context context) {
@@ -45,7 +47,7 @@ public class ScheduledUpdatesAlarmManager {
 			
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 			Editor editor = settings.edit();
-			editor.putLong((type == MOVIES) ? prefNextMovies : prefNextShows, 0);
+			editor.putLong((type == MOVIES) ? NEXT_SCHEDULED_MOVIE_UPDATE : NEXT_SCHEDULED_TVSHOWS_UPDATE, 0);
 			editor.commit();				
 		} catch (Exception ignored) {}
 	}
@@ -71,7 +73,7 @@ public class ScheduledUpdatesAlarmManager {
 			
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 			Editor editor = settings.edit();
-			editor.putLong((type == MOVIES) ? prefNextMovies : prefNextShows, System.currentTimeMillis() + when);
+			editor.putLong((type == MOVIES) ? NEXT_SCHEDULED_MOVIE_UPDATE : NEXT_SCHEDULED_TVSHOWS_UPDATE, System.currentTimeMillis() + when);
 			editor.commit();
 		}
 	}

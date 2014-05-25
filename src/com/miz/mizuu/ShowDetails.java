@@ -50,6 +50,9 @@ import com.miz.mizuu.fragments.ActorBrowserFragmentTv;
 import com.miz.mizuu.fragments.ShowDetailsFragment;
 import com.miz.mizuu.fragments.ShowEpisodesFragment;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.TVSHOWS_START_PAGE;
+
 public class ShowDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
@@ -96,7 +99,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 			}
 		});
 
-		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsIgnorePrefixesInTitles", false);
+		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_TITLE_PREFIXES, false);
 
 		// Create and open database
 		dbHelper = MizuuApplication.getTvDbAdapter();
@@ -145,7 +148,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 		}
 
 		// Set the current page item to 1 (episode page) if the TV show start page setting has been changed from TV show details
-		if (!PreferenceManager.getDefaultSharedPreferences(this).getString("prefsTvShowsStartPage", getString(R.string.showDetails)).equals(getString(R.string.showDetails)))
+		if (!PreferenceManager.getDefaultSharedPreferences(this).getString(TVSHOWS_START_PAGE, getString(R.string.showDetails)).equals(getString(R.string.showDetails)))
 			awesomePager.setCurrentItem(1);
 	}
 

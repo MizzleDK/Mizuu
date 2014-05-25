@@ -45,6 +45,9 @@ import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 
+import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+
 public class TheTVDB extends Service {
 
 	private String LOCALE = "", language = "";
@@ -84,7 +87,7 @@ public class TheTVDB extends Service {
 			public void run() {
 				tvdb = new TheTVDb(getApplicationContext());
 				if (isUpdate) {
-					thisShow = tvdb.searchForShow(MizLib.decryptEpisode(files[0], PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("ignoredTags", "")), LOCALE);
+					thisShow = tvdb.searchForShow(MizLib.decryptEpisode(files[0], PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(IGNORED_FILENAME_TAGS, "")), LOCALE);
 					createShow("", "");
 				} else if (isUnidentifiedIdentify) {
 					thisShow = tvdb.getShow(bundle.getString("tvdbId"), LOCALE);
@@ -134,7 +137,7 @@ public class TheTVDB extends Service {
 							stopSelf();
 						
 						if (season.isEmpty() && episode.isEmpty()) {
-							DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file.contains("<MiZ>") ? file.split("<MiZ>")[0] : file, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("ignoredTags", ""));
+							DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file.contains("<MiZ>") ? file.split("<MiZ>")[0] : file, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(IGNORED_FILENAME_TAGS, ""));
 							downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file);
 						} else {
 							downloadEpisode(season, episode, file);
@@ -149,7 +152,7 @@ public class TheTVDB extends Service {
 	}
 
 	private void setup() {
-		localizedInfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsUseLocalData", false);
+		localizedInfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(USE_LOCALIZED_DATA, false);
 
 		if (language.isEmpty())
 			if (localizedInfo) {
