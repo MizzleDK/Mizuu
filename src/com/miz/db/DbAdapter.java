@@ -84,11 +84,11 @@ public class DbAdapter {
 	/**
 	 * Update the movie
 	 */
-	public boolean updateMovie(long rowId, String filepath, String coverpath, String title,
+	public boolean updateMovie(long rowId, String coverpath, String title,
 			String plot, String tmdbid, String imdbid, String rating, String tagline, String release,
 			String certification, String runtime, String trailer, String genres, String favourite, String watched,
 			String collection, String collectionId, String toWatch, String hasWatched, String date) {
-		ContentValues updateValues = createContentValues(filepath, coverpath, title, plot, tmdbid, imdbid,
+		ContentValues updateValues = createUpdateContentValues(coverpath, title, plot, tmdbid, imdbid,
 				rating, tagline, release, certification, runtime, trailer, genres, favourite, watched, collection, collectionId, toWatch, hasWatched, date);
 		return database.update(DATABASE_TABLE, updateValues, KEY_ROWID + "='" + rowId + "'", null) > 0;
 	}
@@ -245,6 +245,33 @@ public class DbAdapter {
 			String collection, String collectionId, String toWatch, String hasWatched, String date) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_FILEPATH, filepath);
+		values.put(KEY_COVERPATH, coverpath);
+		values.put(KEY_TITLE, title);
+		values.put(KEY_PLOT, plot);
+		values.put(KEY_TMDBID, tmdbid);
+		values.put(KEY_IMDBID, imdbid);
+		values.put(KEY_RATING, rating);
+		values.put(KEY_TAGLINE, tagline);
+		values.put(KEY_RELEASEDATE, release);
+		values.put(KEY_CERTIFICATION, certification);
+		values.put(KEY_RUNTIME, runtime);
+		values.put(KEY_TRAILER, trailer);
+		values.put(KEY_GENRES, genres);
+		values.put(KEY_FAVOURITE, favourite);
+		values.put(KEY_CAST, watched);
+		values.put(KEY_COLLECTION, collection);
+		values.put(KEY_TO_WATCH, toWatch);
+		values.put(KEY_HAS_WATCHED, hasWatched);
+		values.put(KEY_EXTRA_1, date);
+		values.put(KEY_EXTRA_2, collectionId);
+		return values;
+	}
+	
+	private ContentValues createUpdateContentValues(String coverpath, String title,
+			String plot, String tmdbid, String imdbid, String rating, String tagline, String release,
+			String certification, String runtime, String trailer, String genres, String favourite, String watched,
+			String collection, String collectionId, String toWatch, String hasWatched, String date) {
+		ContentValues values = new ContentValues();
 		values.put(KEY_COVERPATH, coverpath);
 		values.put(KEY_TITLE, title);
 		values.put(KEY_PLOT, plot);

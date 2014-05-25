@@ -224,7 +224,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				@Override
 				protected void onPreExecute() {
 					movies.clear();
-					shownMovies.clear();
 				}
 
 				@Override
@@ -263,14 +262,22 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					finally {
 						cursor.close();
 					}
-
-					if (type == MAIN)
+					
+					if (type == MAIN) {
+						shownMovies.clear();
 						shownMovies.addAll(movies);
-					else {
+					} else {
+						List<MediumMovie> temp = new ArrayList<MediumMovie>();
 						int count = movies.size();
 						for (int i = 0; i < count; i++)
 							if (movies.get(i).toWatch())
-								shownMovies.add(movies.get(i));
+								temp.add(movies.get(i));
+						
+						shownMovies.clear();
+						shownMovies.addAll(temp);
+						
+						temp.clear();
+						temp = null;
 					}
 					return null;
 				}

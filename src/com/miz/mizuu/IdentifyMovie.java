@@ -95,7 +95,7 @@ public class IdentifyMovie extends MizActivity {
 		rowId = Long.valueOf(getIntent().getExtras().getString("rowId"));
 		filename = getIntent().getExtras().getString("fileName");
 		mMovie = MizLib.decryptMovie(filename, settings.getString("ignoredTags", ""));
-
+		
 		locale = Locale.getDefault();
 
 		pbar = (ProgressBar) findViewById(R.id.pbar);
