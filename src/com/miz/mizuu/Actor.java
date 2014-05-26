@@ -147,7 +147,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		@Override
 		public Fragment getItem(int index) {
 			switch (index) {
-			case 0: return ActorBiographyFragment.newInstance(json, baseUrl, mActorThumb);
+			case 0: return ActorBiographyFragment.newInstance(json, mActorThumb);
 			case 1: return ActorMoviesFragment.newInstance(json, baseUrl);
 			case 2: return ActorPhotosFragment.newInstance(json, actorName, baseUrl);
 			default: return null;

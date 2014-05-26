@@ -43,7 +43,7 @@ public class ActorBiographyFragment extends Fragment {
 	private TextView mActorName, mActorBio, mActorBirth, mActorBirthday;
 	private ImageView mActorImage, mActorImageBackground;
 	private Typeface tf;
-	private String json, baseUrl;
+	private String json;
 	private Picasso mPicasso;
 
 	/**
@@ -51,11 +51,10 @@ public class ActorBiographyFragment extends Fragment {
 	 */
 	public ActorBiographyFragment() {}
 
-	public static ActorBiographyFragment newInstance(String json, String baseUrl, String thumbUrl) { 
+	public static ActorBiographyFragment newInstance(String json, String thumbUrl) { 
 		ActorBiographyFragment pageFragment = new ActorBiographyFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("json", json);
-		bundle.putString("baseUrl", baseUrl);
 		bundle.putString("thumbUrl", thumbUrl);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
@@ -70,7 +69,6 @@ public class ActorBiographyFragment extends Fragment {
 		tf = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Thin.ttf");
 
 		json = getArguments().getString("json");
-		baseUrl = getArguments().getString("baseUrl");
 		mThumb = getArguments().getString("thumbUrl");
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
@@ -141,11 +139,7 @@ public class ActorBiographyFragment extends Fragment {
 
 			if (mBirthday.equals("null")) mBirthday = "";
 
-			try {
-				mImage = baseUrl + "h632" + jObject.getString("profile_path");
-			} catch (Exception e) {
-				mImage = "";
-			}
+			mImage = mThumb.replace("/w185", "/h632");
 
 			mActorName.setText(mName);
 
