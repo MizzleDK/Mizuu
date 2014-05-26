@@ -91,7 +91,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		// Get the database ID of the movie in question
 		movieId = getArguments().getString("movieId");
 
-		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 	}
 
 	@Override

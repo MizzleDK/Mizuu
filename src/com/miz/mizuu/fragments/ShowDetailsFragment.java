@@ -105,7 +105,7 @@ public class ShowDetailsFragment extends Fragment {
 
 		cursor.close();
 		
-		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-cover-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-backdrop-change"));

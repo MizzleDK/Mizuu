@@ -8,6 +8,8 @@ package com.miz.functions;
  *
  */
 public class PreferenceKeys {
+	
+	private PreferenceKeys() {} // No instantiation
 
 	public static final String FULLSCREEN_TAG = "prefsFullscreen";
 	public static final String TRAKT_USERNAME = "traktUsername";

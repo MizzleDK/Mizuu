@@ -53,14 +53,14 @@ public class MizuuApplication extends Application {
 	private static DbAdapterSources dbSources;
 	private static DbAdapter db;
 	private static HashMap<String, String[]> map = new HashMap<String, String[]>();
-	private static Picasso mPicasso;
+	private static Picasso mPicasso, mPicassoDetailsView;
 	private static LruCache mLruCache;
 	private static File mMovieThumbFolder, mTvShowThumbFolder;
 	private static Downloader mDownloader;
 	private static ThreadPoolExecutor mThreadPoolExecutor;
 	private static HashMap<String, Typeface> mTypefaces = new HashMap<String, Typeface>();
 	private static String mMovieThumbFolderPath, mTvShowThumbFolderPath;
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -113,15 +113,29 @@ public class MizuuApplication extends Application {
 	}
 
 	public static Picasso getPicasso(Context context) {
-		mPicasso = new Picasso.Builder(context).downloader(getDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache(context)).build();
-		
+		if (mPicasso == null)
+			mPicasso = new Picasso.Builder(context).downloader(getDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache(context)).build();
+
 		return mPicasso;
+	}
+
+	/**
+	 * A Picasso instance used in the details view for movies and TV shows
+	 * to load cover art and backdrop images instantly.
+	 * @param context
+	 * @return
+	 */
+	public static Picasso getPicassoDetailsView(Context context) {
+		if (mPicassoDetailsView == null)
+			mPicassoDetailsView = new Picasso.Builder(context).downloader(getDownloader(context)).build();
+			
+			return mPicassoDetailsView;
 	}
 
 	private static ThreadPoolExecutor getThreadPoolExecutor() {
 		if (mThreadPoolExecutor == null)
-			mThreadPoolExecutor = new ThreadPoolExecutor(1, 2, 2, TimeUnit.SECONDS,
-				new LinkedBlockingQueue<Runnable>(), new PicassoThreadFactory());
+			mThreadPoolExecutor = new ThreadPoolExecutor(2, 2, 2, TimeUnit.SECONDS,
+					new LinkedBlockingQueue<Runnable>(), new PicassoThreadFactory());
 		return mThreadPoolExecutor;
 	}
 
@@ -147,7 +161,7 @@ public class MizuuApplication extends Application {
 			mLruCache = new LruCache(calculateMemoryCacheSize(context));
 		return mLruCache;
 	}
-	
+
 	public static Downloader getDownloader(Context context) {
 		if (mDownloader == null)
 			mDownloader = Utils.createDefaultDownloader(context);
@@ -159,19 +173,19 @@ public class MizuuApplication extends Application {
 			mMovieThumbFolder = MizLib.getMovieThumbFolder(context);
 		return mMovieThumbFolder;
 	}
-	
+
 	public static String getMovieThumbFolderPath(Context context) {
 		if (mMovieThumbFolderPath == null)
 			mMovieThumbFolderPath = getMovieThumbFolder(context).getAbsolutePath();
 		return mMovieThumbFolderPath;
 	}
-	
+
 	public static File getTvShowThumbFolder(Context context) {
 		if (mTvShowThumbFolder == null)
 			mTvShowThumbFolder = MizLib.getTvShowThumbFolder(context);
 		return mTvShowThumbFolder;
 	}
-	
+
 	public static String getTvShowThumbFolderPath(Context context) {
 		if (mTvShowThumbFolderPath == null)
 			mTvShowThumbFolderPath = getTvShowThumbFolder(context).getAbsolutePath();
@@ -181,61 +195,61 @@ public class MizuuApplication extends Application {
 	public static int calculateMemoryCacheSize(Context context) {
 		ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
 		int memoryClass = am.getLargeMemoryClass();
-		
+
 		// Target 20% of the available heap.
 		return 1024 * 1024 * memoryClass / 5;
 	}
-	
+
 	private static Bitmap.Config mBitmapConfig = Bitmap.Config.RGB_565;
-	
+
 	public static Bitmap.Config getBitmapConfig() {
 		return mBitmapConfig;
 	}
-	
+
 	public static Typeface getOrCreateTypeface(Context context, String key) {
 		if (!mTypefaces.containsKey(key))
 			mTypefaces.put(key, Typeface.createFromAsset(context.getAssets(), key));
 		return mTypefaces.get(key);
 	}
-	
+
 	public static int getCardDrawable(Context context) {
 		if (usesDarkTheme(context))
 			return R.drawable.card;
 		return R.drawable.card_dark;
 	}
-	
+
 	public static int getCardColor(Context context) {
 		if (usesDarkTheme(context))
 			return R.color.card_background_dark;
 		return R.color.card_background_light;
 	}
-	
+
 	public static int getCardTitleColor(Context context) {
 		if (usesDarkTheme(context))
 			return Color.parseColor("#d0d0d0");
 		return Color.parseColor("#101010");
 	}
-	
+
 	public static int getBackgroundColor(Context context) {
 		if (usesDarkTheme(context))
 			return Color.WHITE;
 		return Color.BLACK;
 	}
-	
+
 	public static int getBackgroundColorResource(Context context) {
 		if (usesDarkTheme(context))
 			return R.color.dark_background;
 		return R.color.light_background;
 	}
-	
+
 	public static boolean usesDarkTheme(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(DARK_THEME, true);
 	}
-	
+
 	public static boolean isFullscreen(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FULLSCREEN_TAG, false);
 	}
-	
+
 	public static void setupTheme(Context context) {
 		if (usesDarkTheme(context)) {
 			if (isFullscreen(context))

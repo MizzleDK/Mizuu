@@ -16,15 +16,13 @@
 
 package com.miz.mizuu.fragments;
 
+import java.io.IOException;
+
 import org.json.JSONObject;
 
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -37,12 +35,11 @@ import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class ActorBiographyFragment extends Fragment {
 
-	private String mName, mBio, mBirth, mBirthday, mImage;
+	private String mName, mBio, mBirth, mBirthday, mImage, mThumb;
 	private TextView mActorName, mActorBio, mActorBirth, mActorBirthday;
 	private ImageView mActorImage, mActorImageBackground;
 	private Typeface tf;
@@ -54,11 +51,12 @@ public class ActorBiographyFragment extends Fragment {
 	 */
 	public ActorBiographyFragment() {}
 
-	public static ActorBiographyFragment newInstance(String json, String baseUrl) { 
+	public static ActorBiographyFragment newInstance(String json, String baseUrl, String thumbUrl) { 
 		ActorBiographyFragment pageFragment = new ActorBiographyFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("json", json);
 		bundle.putString("baseUrl", baseUrl);
+		bundle.putString("thumbUrl", thumbUrl);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
@@ -73,8 +71,9 @@ public class ActorBiographyFragment extends Fragment {
 
 		json = getArguments().getString("json");
 		baseUrl = getArguments().getString("baseUrl");
-		
-		mPicasso = MizuuApplication.getPicasso(getActivity());
+		mThumb = getArguments().getString("thumbUrl");
+
+		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 	}
 
 	@Override
@@ -123,7 +122,7 @@ public class ActorBiographyFragment extends Fragment {
 			}
 
 			if (mBio.equals("null")) mBio = "";
-			
+
 			mBio = MizLib.removeWikipediaNotes(mBio);
 
 			try {
@@ -165,50 +164,55 @@ public class ActorBiographyFragment extends Fragment {
 			else
 				mActorBirthday.setVisibility(View.GONE);
 
-			mPicasso.load(mImage).placeholder(R.drawable.gray).error(R.drawable.noactor).noFade().config(MizuuApplication.getBitmapConfig()).into(mActorImage, new Callback() {
-				@Override
-				public void onError() {
-					mActorImage.setVisibility(View.VISIBLE);
-				}
-
-				@Override
-				public void onSuccess() {
-					mActorImage.setVisibility(View.VISIBLE);
-					new BlurImage().execute();
-				}
-			});
+			if (!mThumb.isEmpty() || !mThumb.contains("null")) {
+				new BlurImage().execute();
+			}
 		} catch (Exception ignored) {}
 	}
 
 	protected class BlurImage extends AsyncTask<String, String, Bitmap> {
-		@Override
-		protected Bitmap doInBackground(String... params) {			
-			Bitmap image = drawableToBitmap(mActorImage.getDrawable());
+		private Bitmap mBitmap;
 
-			if (image != null)
-				return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(image, image.getWidth() / 3, image.getHeight() / 3, false), 4);
+		@Override
+		protected Bitmap doInBackground(String... params) {
+			try {
+				mBitmap = mPicasso.load(mThumb).config(MizuuApplication.getBitmapConfig()).get();
+
+				if (mBitmap != null)
+					return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(mBitmap, mBitmap.getWidth(), mBitmap.getHeight(), false), 4);
+			} catch (IOException e) {}
+
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			if (result != null) {
+				// Set the blurred version as the backdrop image
 				mActorImageBackground.setImageBitmap(result);
 				mActorImageBackground.setColorFilter(Color.parseColor("#AA181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+				
+				// Set the low-quality version of the portrait photo and start loading the HQ version
+				mActorImage.setImageBitmap(mBitmap);
+				new HighQualityImageLoader().execute();
 			}
 		}
 	}
 
-	public static Bitmap drawableToBitmap (Drawable drawable) {
-		if (drawable instanceof BitmapDrawable) {
-			return ((BitmapDrawable)drawable).getBitmap();
+	protected class HighQualityImageLoader extends AsyncTask<Void, Void, Bitmap> {		
+		@Override
+		protected Bitmap doInBackground(Void... params) {
+			try {
+				return mPicasso.load(mImage).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).get();
+			} catch (IOException e) {}
+			
+			return null;
 		}
 
-		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Config.ARGB_8888);
-		Canvas canvas = new Canvas(bitmap); 
-		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-		drawable.draw(canvas);
-
-		return bitmap;
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			if (result != null)
+				mActorImage.setImageBitmap(result);
+		}
 	}
 }

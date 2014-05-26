@@ -29,7 +29,8 @@
                 android:background="@drawable/border"
                 android:cropToPadding="true"
                 android:scaleType="centerCrop"
-                android:visibility="gone" />
+                android:src="@drawable/noactor" />
+
         </FrameLayout>
 
         <LinearLayout

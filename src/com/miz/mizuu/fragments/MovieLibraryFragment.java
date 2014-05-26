@@ -288,6 +288,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 						temp.clear();
 						temp = null;
 					}
+					
 					return null;
 				}
 

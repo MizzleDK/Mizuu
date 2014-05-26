@@ -23,7 +23,7 @@
             android:background="@drawable/border"
             android:cropToPadding="true"
             android:scaleType="centerCrop"
-            android:visibility="gone" />
+            android:src="@drawable/noactor" />
 
         <ScrollView
             android:id="@+id/scrollView1"

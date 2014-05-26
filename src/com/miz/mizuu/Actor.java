@@ -51,7 +51,7 @@ import com.miz.mizuu.R;
 public class Actor extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
-	private String actorId, actorName, json, baseUrl;
+	private String actorId, actorName, json, baseUrl, mActorThumb;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
@@ -78,6 +78,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 
 		actorId = getIntent().getExtras().getString("actorID");
 		actorName = getIntent().getExtras().getString("actorName");
+		mActorThumb = getIntent().getExtras().getString("thumb");
 		
 		setTitle(actorName);
 
@@ -93,6 +94,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		if (savedInstanceState != null) {	
 			json = savedInstanceState.getString("json", "");
 			baseUrl = savedInstanceState.getString("baseUrl");
+			mActorThumb = savedInstanceState.getString("mActorThumb");
 			setupActionBarStuff();
 
 			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
@@ -116,6 +118,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		outState.putInt("tab", awesomePager.getCurrentItem());
 		outState.putString("json", json);
 		outState.putString("baseUrl", baseUrl);
+		outState.putString("mActorThumb", mActorThumb);
 	}
 
 	@Override
@@ -144,7 +147,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		@Override
 		public Fragment getItem(int index) {
 			switch (index) {
-			case 0: return ActorBiographyFragment.newInstance(json, baseUrl);
+			case 0: return ActorBiographyFragment.newInstance(json, baseUrl, mActorThumb);
 			case 1: return ActorMoviesFragment.newInstance(json, baseUrl);
 			case 2: return ActorPhotosFragment.newInstance(json, actorName, baseUrl);
 			default: return null;

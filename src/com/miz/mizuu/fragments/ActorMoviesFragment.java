@@ -18,6 +18,8 @@ package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -197,7 +199,7 @@ public class ActorMoviesFragment extends Fragment {
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				
+
 				holder.mLinearLayout.setBackgroundResource(mCard);
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
@@ -209,7 +211,7 @@ public class ActorMoviesFragment extends Fragment {
 			}
 
 			holder.cover.setImageResource(mCardBackground);
-			
+
 			holder.text.setText(pics_sources.get(position).getTitle());
 
 			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {
@@ -233,16 +235,25 @@ public class ActorMoviesFragment extends Fragment {
 
 			JSONArray jArray = jObject.getJSONObject("credits").getJSONArray("cast");
 
+			Set<String> movieIds = new HashSet<String>();
+
 			for (int i = 0; i < jArray.length(); i++) {
-				if (!isInArray(jArray.getJSONObject(i).getString("id")))
-					if (!MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("original_title"))) {
-						pics_sources.add(new WebMovie(
-								jArray.getJSONObject(i).getString("original_title"),
-								jArray.getJSONObject(i).getString("id"),
-								baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
-								jArray.getJSONObject(i).getString("release_date")));
-					}
+				if (!movieIds.contains(jArray.getJSONObject(i).getString("id"))) {
+					movieIds.add(jArray.getJSONObject(i).getString("id"));
+					
+					if (!isInArray(jArray.getJSONObject(i).getString("id")))
+						if (!MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("original_title"))) {
+							pics_sources.add(new WebMovie(
+									jArray.getJSONObject(i).getString("original_title"),
+									jArray.getJSONObject(i).getString("id"),
+									baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
+									jArray.getJSONObject(i).getString("release_date")));
+						}
+				}
 			}
+
+			movieIds.clear();
+			movieIds = null;
 
 			Collections.sort(pics_sources, MizLib.getWebMovieDateComparator());
 

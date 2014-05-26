@@ -17,6 +17,8 @@
 package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -72,7 +74,7 @@ public class ActorBrowserFragment extends Fragment {
 		ActorBrowserFragment pageFragment = new ActorBrowserFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("movieId", movieId);
-		pageFragment.setArguments(bundle);
+		pageFragment.setArguments(bundle);		
 		return pageFragment;
 	}
 
@@ -149,6 +151,7 @@ public class ActorBrowserFragment extends Fragment {
 				Bundle bundle = new Bundle();
 				bundle.putString("actorName", actors.get(arg2).getName());
 				bundle.putString("actorID", actors.get(arg2).getId());
+				bundle.putString("thumb", actors.get(arg2).getUrl());
 
 				// Create a new Intent with the Bundle
 				intent.putExtras(bundle);
@@ -222,19 +225,19 @@ public class ActorBrowserFragment extends Fragment {
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				
+
 				holder.mLinearLayout.setBackgroundResource(mCard);
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
 				holder.subtext.setBackgroundResource(mCardBackground);
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-			
+
 			holder.cover.setImageResource(mCardBackground);
-			
+
 			holder.text.setText(actors.get(position).getName());
 			holder.subtext.setText(actors.get(position).getCharacter().equals("null") ? "" : actors.get(position).getCharacter());
 
@@ -273,14 +276,23 @@ public class ActorBrowserFragment extends Fragment {
 				JSONArray jArray = jObject.getJSONArray("cast");
 
 				actors.clear();
-				for (int i = 0; i < jArray.length(); i++) {
-					actors.add(new Actor(
-							jArray.getJSONObject(i).getString("name"),
-							jArray.getJSONObject(i).getString("character"),
-							jArray.getJSONObject(i).getString("id"),
-							baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
-				}				
 
+				Set<String> actorIds = new HashSet<String>();
+
+				for (int i = 0; i < jArray.length(); i++) {
+					if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
+						actorIds.add(jArray.getJSONObject(i).getString("id"));
+
+						actors.add(new Actor(
+								jArray.getJSONObject(i).getString("name"),
+								jArray.getJSONObject(i).getString("character"),
+								jArray.getJSONObject(i).getString("id"),
+								baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
+					}
+				}
+				
+				actorIds.clear();
+				actorIds = null;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
 
 			return null;
@@ -295,7 +307,7 @@ public class ActorBrowserFragment extends Fragment {
 		}
 	}
 
-	private void loadJson(String baseUrl) {
+	private void loadJson(String baseUrl) {		
 		try {
 			JSONObject jObject = new JSONObject(json);
 
@@ -303,14 +315,22 @@ public class ActorBrowserFragment extends Fragment {
 
 			actors.clear();
 
+			Set<String> actorIds = new HashSet<String>();
+
 			for (int i = 0; i < jArray.length(); i++) {
-				actors.add(new Actor(
-						jArray.getJSONObject(i).getString("name"),
-						jArray.getJSONObject(i).getString("character"),
-						jArray.getJSONObject(i).getString("id"),
-						baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
+				if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
+					actorIds.add(jArray.getJSONObject(i).getString("id"));
+					
+					actors.add(new Actor(
+							jArray.getJSONObject(i).getString("name"),
+							jArray.getJSONObject(i).getString("character"),
+							jArray.getJSONObject(i).getString("id"),
+							baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
+				}
 			}
 
+			actorIds.clear();
+			actorIds = null;
 		} catch (Exception e) {}
 
 		if (isAdded()) {
