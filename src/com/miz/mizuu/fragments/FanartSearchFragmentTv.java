@@ -137,7 +137,6 @@ public class FanartSearchFragmentTv extends Fragment {
 		private int mCardBackground;
 
 		public ImageAdapter(Context context) {
-			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mCardBackground = MizuuApplication.getCardColor(mContext);

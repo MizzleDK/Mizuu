@@ -16,7 +16,6 @@
 
 package com.miz.contentprovider;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +69,7 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 		try {
 			List<MediumMovie> list = getSearchResults(query);
 			for (int i = 0; i < list.size(); i++) {
-				cursor.addRow(createRow(Integer.valueOf(i), list.get(i).getTitle(), list.get(i).getReleaseYear().replace("(", "").replace(")", ""), Uri.fromFile(new File(list.get(i).getThumbnail())).toString(), list.get(i).getRowId()));
+				cursor.addRow(createRow(Integer.valueOf(i), list.get(i).getTitle(), list.get(i).getReleaseYear().replace("(", "").replace(")", ""), Uri.fromFile(list.get(i).getThumbnail()).toString(), list.get(i).getRowId()));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to lookup " + query, e);

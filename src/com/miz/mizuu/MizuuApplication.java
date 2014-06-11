@@ -16,6 +16,9 @@
 
 package com.miz.mizuu;
 
+import static com.miz.functions.PreferenceKeys.DARK_THEME;
+import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -39,12 +42,10 @@ import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.MizLib;
 import com.miz.functions.Utils;
+import com.squareup.otto.Bus;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
-
-import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
-import static com.miz.functions.PreferenceKeys.DARK_THEME;
 
 public class MizuuApplication extends Application {
 
@@ -60,6 +61,7 @@ public class MizuuApplication extends Application {
 	private static ThreadPoolExecutor mThreadPoolExecutor;
 	private static HashMap<String, Typeface> mTypefaces = new HashMap<String, Typeface>();
 	private static String mMovieThumbFolderPath, mTvShowThumbFolderPath;
+	private static Bus mBus;
 
 	@Override
 	public void onCreate() {
@@ -262,5 +264,12 @@ public class MizuuApplication extends Application {
 			else
 				context.setTheme(R.style.Theme_Example_Light);
 		}
+	}
+	
+	public static Bus getBus() {
+		if (mBus == null)
+			mBus = new Bus();
+		
+		return mBus;
 	}
 }

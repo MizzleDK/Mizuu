@@ -30,7 +30,6 @@
                 android:cropToPadding="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/noactor" />
-
         </FrameLayout>
 
         <LinearLayout
@@ -59,8 +58,8 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textIsSelectable="true"
-                android:textSize="@dimen/details_text_size"
-                android:textStyle="bold" />
+                android:textSize="@dimen/tagline_text_size"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/overviewMessage"
@@ -68,8 +67,8 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textIsSelectable="true"
-                android:textSize="@dimen/details_text_size"
-                android:textStyle="bold" />
+                android:textSize="@dimen/tagline_text_size"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/textView4"

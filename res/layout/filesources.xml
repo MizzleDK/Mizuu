@@ -38,6 +38,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:paddingTop="@dimen/movie_details_padding"
                 android:text="@string/addFileSourcesAbove"
                 android:textAppearance="?android:attr/textAppearanceMedium"

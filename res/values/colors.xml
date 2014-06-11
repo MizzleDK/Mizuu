@@ -6,5 +6,6 @@
     <color name="dark_background">#181818</color>
     <color name="card_background_dark">#292929</color>
     <color name="card_background_light">#fff</color>
+    <color name="gridview_highlight">#88336699</color>
 
 </resources>

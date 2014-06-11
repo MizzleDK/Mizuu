@@ -97,6 +97,16 @@
             </intent-filter>
         </activity>
 
+        <!-- TvShowEpisodes activity -->
+        <activity
+            android:name="com.miz.mizuu.TvShowEpisodes"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <!-- Main activity -->
         <activity
             android:name="com.miz.mizuu.Main"
@@ -174,7 +184,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Trailer details view -->
+        <!-- TMDB movie details view -->
         <activity
             android:name="com.miz.mizuu.TMDbMovieDetails"
             android:exported="false"
@@ -183,12 +193,11 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <!-- Support activity -->
+        
+        <!-- TV show episode details view -->
         <activity
-            android:name="com.miz.mizuu.Support"
+            android:name="com.miz.mizuu.TvShowEpisodeDetails"
             android:exported="false"
-            android:hardwareAccelerated="false"
             android:icon="@drawable/white_app_icon" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -544,7 +553,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 
@@ -578,7 +587,7 @@
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
-        android:label="Mizuu tests"
+        android:label="Mizuu com.miz.tests"
         android:targetPackage="com.miz.mizuu" />
 
 </manifest>

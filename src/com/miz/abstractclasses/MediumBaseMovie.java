@@ -99,10 +99,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		return COLLECTION_ID;
 	}
 	
-	public String getCollectionPoster() {
+	public File getCollectionPoster() {
 		File collectionImage = new File(MizLib.getMovieThumbFolder(CONTEXT), COLLECTION_ID + ".jpg");
 		if (collectionImage.exists() && collectionImage.length() > 0)
-			return collectionImage.getAbsolutePath();
+			return collectionImage;
 		return getThumbnail();
 	}
 	

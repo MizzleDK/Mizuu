@@ -29,7 +29,8 @@ public class TvShow implements Comparable<TvShow> {
 	private Context CONTEXT;
 	private String ID, TITLE, DESCRIPTION, RATING, GENRES, ACTORS, CERTIFICATION, FIRST_AIR_DATE, RUNTIME;
 	private boolean isFavorite;
-	private String mThumbnail, mTitle;
+	private String mTitle;
+	private File mThumbnail;
 
 	public TvShow(Context context, String id, String title, String description, String rating, String genres, String actors, String certification, String firstAirdate, String runtime, boolean ignorePrefixes, String isFavorite) {
 
@@ -47,7 +48,7 @@ public class TvShow implements Comparable<TvShow> {
 		this.isFavorite = !(isFavorite.equals("0") || isFavorite.isEmpty());
 		
 		// Thumbnail
-		mThumbnail = MizuuApplication.getTvShowThumbFolderPath(CONTEXT) + "/" + ID + ".jpg";
+		mThumbnail = new File(MizuuApplication.getTvShowThumbFolderPath(CONTEXT), ID + ".jpg");
 		
 		// Title		
 		if (MizLib.isEmpty(TITLE)) {
@@ -100,11 +101,11 @@ public class TvShow implements Comparable<TvShow> {
 		}
 	}
 
-	public String getCoverPhoto() {
+	public File getCoverPhoto() {
 		return getThumbnail();
 	}
 
-	public String getThumbnail() {
+	public File getThumbnail() {
 		return mThumbnail;
 	}
 

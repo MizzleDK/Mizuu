@@ -16,6 +16,14 @@
 
 package com.miz.functions;
 
+import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
+import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
+import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
+import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.TRAKT_PASSWORD;
+import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
+import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -107,6 +115,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.apache.OkApacheClient;
+
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
@@ -118,15 +129,6 @@ import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.apache.OkApacheClient;
-
-import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
-import static com.miz.functions.PreferenceKeys.TRAKT_PASSWORD;
-import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
-import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
-import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
-import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
 
 @SuppressLint("NewApi")
 public class MizLib {
@@ -157,6 +159,8 @@ public class MizLib {
 	public static final int HOUR = 60 * MINUTE;
 	public static final int DAY = 24 * HOUR;
 	public static final int WEEK = 7 * DAY;
+	
+	private MizLib() {} // No instantiation
 
 	public static String[] getPrefixes(Context c) {
 		ArrayList<String> prefixesArray = new ArrayList<String>();
@@ -756,14 +760,14 @@ public class MizLib {
 			b.putString("plot", ((Movie) videoObject).getPlot());
 			b.putString("date", ((Movie) videoObject).getReleasedate());
 			b.putDouble("rating", ((Movie) videoObject).getRawRating());
-			b.putString("cover", ((Movie) videoObject).getThumbnail());
+			b.putString("cover", ((Movie) videoObject).getThumbnail().getAbsolutePath());
 			b.putString("genres", ((Movie) videoObject).getGenres());
 		} else if (videoObject instanceof TvShowEpisode) {
 			title = ((TvShowEpisode) videoObject).getTitle();
 			b.putString("plot", ((TvShowEpisode) videoObject).getDescription());
 			b.putString("date", ((TvShowEpisode) videoObject).getReleasedate());
 			b.putDouble("rating", ((TvShowEpisode) videoObject).getRawRating());
-			b.putString("cover", ((TvShowEpisode) videoObject).getEpisodePhoto());
+			b.putString("cover", ((TvShowEpisode) videoObject).getEpisodePhoto().getAbsolutePath());
 			b.putString("episode", ((TvShowEpisode) videoObject).getEpisode());
 			b.putString("season", ((TvShowEpisode) videoObject).getSeason());
 		} else {
@@ -1453,13 +1457,13 @@ public class MizLib {
 		if (deleted) {
 			try {
 				// Delete cover art image
-				File coverArt = new File(thisShow.getCoverPhoto());
+				File coverArt = thisShow.getCoverPhoto();
 				if (coverArt.exists() && coverArt.getAbsolutePath().contains("com.miz.mizuu")) {
 					MizLib.deleteFile(coverArt);
 				}
 
 				// Delete thumbnail image
-				File thumbnail = new File(thisShow.getThumbnail());
+				File thumbnail = thisShow.getThumbnail();
 				if (thumbnail.exists() && thumbnail.getAbsolutePath().contains("com.miz.mizuu")) {
 					MizLib.deleteFile(thumbnail);
 				}
@@ -1750,8 +1754,8 @@ public class MizLib {
 
 		return false;
 	}
-
-	public static boolean markEpisodeAsWatched(List<TvShowEpisode> episodes, Context c, boolean overrideWatched) {
+	
+	public static boolean changeSeasonWatchedStatus(String showId, int season, Context c, boolean watched) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
@@ -1759,24 +1763,54 @@ public class MizLib {
 		if (username.isEmpty() || password.isEmpty())
 			return false;
 
-		if (episodes.size() == 0)
-			return false;
-
 		// Mark episode as seen / unseen
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = null;
-
-		if (overrideWatched || episodes.get(0).hasWatched())
-			httppost = new HttpPost("http://api.trakt.tv/show/episode/seen/" + MizLib.TRAKT_API);
-		else
-			httppost = new HttpPost("http://api.trakt.tv/show/episode/unseen/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/season/" + (!watched ? "un" : "") + "seen/" + MizLib.TRAKT_API);
 
 		try {
 			JSONObject json = new JSONObject();
 			json.put("username", username);
 			json.put("password", password);
 			json.put("imdb_id", "");
-			json.put("tvdb_id", episodes.get(0).getShowId());
+			json.put("tvdb_id", showId);
+			json.put("title", "");
+			json.put("year", "");
+			json.put("season", season);
+
+			httppost.setEntity(new StringEntity(json.toString()));
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			httpclient.execute(httppost, responseHandler);
+
+			return true;
+		} catch (Exception e) {}
+
+		return false;
+	}
+
+	public static boolean markEpisodeAsWatched(String showId, List<com.miz.functions.TvShowEpisode> episodes, Context c, boolean watched) {
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+		String username = settings.getString(TRAKT_USERNAME, "").trim();
+		String password = settings.getString(TRAKT_PASSWORD, "");
+
+		if (username.isEmpty() || password.isEmpty())
+			return false;
+		
+		if (!settings.getBoolean(SYNC_WITH_TRAKT, false))
+			return false;
+
+		if (episodes.size() == 0)
+			return false;
+
+		// Mark episodes as seen / unseen
+		OkApacheClient httpclient = new OkApacheClient();
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/" + (!watched ? "un" : "") + "seen/" + MizLib.TRAKT_API);
+
+		try {
+			JSONObject json = new JSONObject();
+			json.put("username", username);
+			json.put("password", password);
+			json.put("imdb_id", "");
+			json.put("tvdb_id", showId);
 			json.put("title", "");
 			json.put("year", "");
 
@@ -1975,8 +2009,6 @@ public class MizLib {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		System.out.println("USER: " + username + ". PASS: " + password + ".");
 		
 		if (username.isEmpty() || password.isEmpty())
 			return false;
@@ -2528,7 +2560,7 @@ public class MizLib {
 			if (output.matches("(?i)^\\[SET .*\\].*?")) {
 				try {
 					after = output.substring(output.indexOf("]") + 1, output.length());
-				} catch (IndexOutOfBoundsException e) {}
+				} catch (Exception e) {}
 			}
 
 			if (!after.isEmpty())
@@ -2575,7 +2607,7 @@ public class MizLib {
 		if (lastIndex > 0)
 			try {
 				return input.substring(0, lastIndex - 4);
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 
 		return input;
 	}
@@ -2593,7 +2625,7 @@ public class MizLib {
 			try {
 				int lastIndex = searchMatcher.end();
 				result = input.substring(lastIndex - 4, lastIndex);
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		return result;
@@ -2663,7 +2695,7 @@ public class MizLib {
 				if (type == SEASON)
 					return season;
 				return episode;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// ##x##
@@ -2679,7 +2711,7 @@ public class MizLib {
 				if (type == SEASON)
 					return season;
 				return episode;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// season ## episode ##
@@ -2695,7 +2727,7 @@ public class MizLib {
 				if (type == SEASON)
 					return season;
 				return episode;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// episode ##
@@ -2711,7 +2743,7 @@ public class MizLib {
 				if (type == SEASON)
 					return season;
 				return episode;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// #####
@@ -2756,7 +2788,7 @@ public class MizLib {
 				if (type == SEASON)
 					return season;
 				return episode;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		return episode;
@@ -2773,7 +2805,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// ##e##
@@ -2784,7 +2816,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// s##x##
@@ -2795,7 +2827,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// ##x##
@@ -2806,7 +2838,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// season ## episode ##
@@ -2817,7 +2849,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// episode ##
@@ -2828,7 +2860,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// e#####
@@ -2839,7 +2871,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// #####
@@ -2850,7 +2882,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		return result;
@@ -2867,7 +2899,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// season ## episode ##
@@ -2878,7 +2910,7 @@ public class MizLib {
 			try {
 				result = input.substring(0, searchMatcher.start());
 				return result;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		return result;
@@ -2897,7 +2929,7 @@ public class MizLib {
 				season = Integer.valueOf(result.replaceAll("(?i)s", "").trim());
 
 				return season;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// season ##
@@ -2910,7 +2942,7 @@ public class MizLib {
 				season = Integer.valueOf(result.replaceAll("(?i)season", "").trim());
 
 				return season;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		// ##
@@ -2948,7 +2980,7 @@ public class MizLib {
 				}
 
 				return season;
-			} catch (IndexOutOfBoundsException e) {}
+			} catch (Exception e) {}
 		}
 
 		return season;
@@ -3349,14 +3381,14 @@ public class MizLib {
 				int firstDate = 0, secondDate = 0;
 				String first = "", second = "";
 
-				if (o1.getDate() != null)
-					first = o1.getDate().replace("-", "");
+				if (o1.getRawDate() != null)
+					first = o1.getRawDate().replace("-", "");
 
 				if (!(first.equals("null") | first.isEmpty()))
 					firstDate = Integer.valueOf(first);
 
-				if (o2.getDate() != null)
-					second = o2.getDate().replace("-", "");
+				if (o2.getRawDate() != null)
+					second = o2.getRawDate().replace("-", "");
 
 				if (!(second.equals("null") | second.isEmpty()))
 					secondDate = Integer.valueOf(second);

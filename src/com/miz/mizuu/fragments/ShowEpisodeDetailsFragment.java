@@ -59,9 +59,9 @@ import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.R;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
+import com.miz.smbstreamer.Streamer;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.test.smbstreamer.variant1.Streamer;
 
 import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
@@ -451,9 +451,9 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 		new Thread() {
 			@Override
 			public void run() {
-				ArrayList<TvShowEpisode> episode = new ArrayList<TvShowEpisode>();
-				episode.add(thisEpisode);
-				MizLib.markEpisodeAsWatched(episode, getActivity(), false);
+				ArrayList<com.miz.functions.TvShowEpisode> episode = new ArrayList<com.miz.functions.TvShowEpisode>();
+				episode.add(new com.miz.functions.TvShowEpisode(thisEpisode.getShowId(), Integer.valueOf(thisEpisode.getEpisode()), Integer.valueOf(thisEpisode.getSeason())));
+				MizLib.markEpisodeAsWatched(thisEpisode.getShowId(), episode, getActivity(), false);
 			}
 		}.start();
 	}

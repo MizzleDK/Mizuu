@@ -346,14 +346,14 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					// We only want to delete movie images, if there are no other versions of the same movie
 					if (!movieExists) {
 						try { // Delete cover art image
-							File coverArt = new File(thisMovie.getPoster());
+							File coverArt = thisMovie.getPoster();
 							if (coverArt.exists() && coverArt.getAbsolutePath().contains("com.miz.mizuu")) {
 								MizLib.deleteFile(coverArt);
 							}
 						} catch (NullPointerException e) {} // No file to delete
 
 						try { // Delete thumbnail image
-							File thumbnail = new File(thisMovie.getThumbnail());
+							File thumbnail = thisMovie.getThumbnail();
 							if (thumbnail.exists() && thumbnail.getAbsolutePath().contains("com.miz.mizuu")) {
 								MizLib.deleteFile(thumbnail);
 							}
@@ -615,7 +615,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			.setCancelable(false)
 			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-
 					if (MizLib.isLocalCopyBeingDownloaded(MovieDetails.this))
 						Toast.makeText(getApplicationContext(), R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
 

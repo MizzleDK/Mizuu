@@ -70,7 +70,7 @@ public class Movie extends MediumBaseMovie {
 		return mGetTagline;
 	}
 
-	public String getPoster() {
+	public File getPoster() {
 		return getThumbnail();
 	}
 

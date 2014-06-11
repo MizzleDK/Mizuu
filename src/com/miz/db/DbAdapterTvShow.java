@@ -36,19 +36,19 @@ public class DbAdapterTvShow {
 	public static final String KEY_SHOW_EXTRA2 = "extra2"; // Not in use
 	public static final String KEY_SHOW_EXTRA3 = "extra3"; // Not in use
 	public static final String KEY_SHOW_EXTRA4 = "extra4"; // Not in use
-	
+
 	public static final String DATABASE_TABLE = "tvshows";
 
 	public static final String[] SELECT_ALL = new String[]{KEY_SHOW_ID, KEY_SHOW_TITLE, KEY_SHOW_PLOT, KEY_SHOW_ACTORS,
-			KEY_SHOW_GENRES, KEY_SHOW_RATING, KEY_SHOW_RATING, KEY_SHOW_CERTIFICATION, KEY_SHOW_RUNTIME,
-			KEY_SHOW_FIRST_AIRDATE, KEY_SHOW_EXTRA1/*, KEY_SHOW_EXTRA2, KEY_SHOW_EXTRA3, KEY_SHOW_EXTRA4*/};
+		KEY_SHOW_GENRES, KEY_SHOW_RATING, KEY_SHOW_RATING, KEY_SHOW_CERTIFICATION, KEY_SHOW_RUNTIME,
+		KEY_SHOW_FIRST_AIRDATE, KEY_SHOW_EXTRA1/*, KEY_SHOW_EXTRA2, KEY_SHOW_EXTRA3, KEY_SHOW_EXTRA4*/};
 
 	private SQLiteDatabase database;
 
 	public DbAdapterTvShow(Context context) {
 		database = DbHelperTvShow.getHelper(context).getWritableDatabase();
 	}
-	
+
 	public void close() {
 		database.close();
 	}
@@ -62,7 +62,7 @@ public class DbAdapterTvShow {
 			return -1;
 		}
 	}
-	
+
 	public boolean updateShowSingleItem(String showId, String table, String value) {
 		ContentValues values = new ContentValues();
 		values.put(table, value);
@@ -71,6 +71,16 @@ public class DbAdapterTvShow {
 
 	public Cursor getShow(String showId) {
 		return database.query(DATABASE_TABLE, SELECT_ALL, KEY_SHOW_ID + " = '" + showId + "'", null, null, null, null);
+	}
+
+	public String getShowTitle(String showId) {
+		Cursor cursor = database.query(DATABASE_TABLE, new String[]{KEY_SHOW_TITLE, KEY_SHOW_ID}, KEY_SHOW_ID + " = '" + showId + "'", null, null, null, null);
+		if (cursor.moveToFirst()) {
+			String showTitle = cursor.getString(cursor.getColumnIndex(KEY_SHOW_TITLE));
+			cursor.close();
+			return showTitle;
+		}
+		return "";
 	}
 
 	public Cursor getAllShows() {
@@ -84,7 +94,7 @@ public class DbAdapterTvShow {
 	public boolean deleteAllShowsInDatabase() {
 		return database.delete(DATABASE_TABLE, null, null) > 0;
 	}
-	
+
 	public boolean deleteAllUnidentifiedShows() {
 		return database.delete(DATABASE_TABLE, KEY_SHOW_ID + "= 'invalid'", null) > 0;
 	}

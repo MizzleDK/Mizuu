@@ -298,7 +298,6 @@ public class IdentifyTvShow extends MizActivity {
 		private GridView.LayoutParams mImageViewLayoutParams;
 
 		public ListAdapter(Context context) {
-			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mImageViewLayoutParams = new ListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);

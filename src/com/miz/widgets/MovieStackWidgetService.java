@@ -78,7 +78,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 		options.inPreferredConfig = Config.RGB_565;
 		options.inPreferQualityOverSpeed = true;
 
-		Bitmap cover = BitmapFactory.decodeFile(movies.get(position).getThumbnail(), options);
+		Bitmap cover = BitmapFactory.decodeFile(movies.get(position).getThumbnail().getAbsolutePath(), options);
 
 		if (cover != null)
 			view.setImageViewBitmap(R.id.widget_item, cover);

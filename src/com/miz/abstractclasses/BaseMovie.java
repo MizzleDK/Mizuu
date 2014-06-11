@@ -30,7 +30,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 	protected String ROW_ID, FILEPATH, TITLE, TMDB_ID;
 	protected boolean ignorePrefixes, ignoreNfo;
 
-	protected String mGetThumbnail;
+	protected File mGetThumbnail;
 
 	public BaseMovie(Context context, String rowId, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
 		// Set up movie fields based on constructor
@@ -63,7 +63,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		}
 		
 		// getThumbnail()
-		mGetThumbnail = MizuuApplication.getMovieThumbFolderPath(CONTEXT) + "/" + TMDB_ID + ".jpg";
+		mGetThumbnail = new File(MizuuApplication.getMovieThumbFolderPath(CONTEXT), TMDB_ID + ".jpg");
 	}
 
 	public String getRowId() {
@@ -86,7 +86,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		}
 	}
 
-	public String getThumbnail() {
+	public File getThumbnail() {
 		if (!ignoreNfo) {
 			try {
 				// Check if there's a custom cover art image
@@ -123,7 +123,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 									absolutePath.equalsIgnoreCase(filename + ".jpg") ||
 									absolutePath.equalsIgnoreCase(filename + ".jpeg") ||
 									absolutePath.equalsIgnoreCase(filename + ".tbn")) {
-								return absolutePath;
+								return list[i];
 							}
 						}
 					}

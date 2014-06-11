@@ -16,16 +16,19 @@
 
 package com.miz.mizuu;
 
+import static com.miz.functions.PreferenceKeys.TVSHOWS_EPISODE_ORDER;
+
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import java.io.File;
 
 import com.miz.functions.MizLib;
 
-public class TvShowEpisode {
+public class TvShowEpisode implements Comparable<TvShowEpisode> {
 
 	private Context CONTEXT;
-	private String ROW_ID, FILEPATH, SHOW_ID, TITLE, DESCRIPTION, SEASON, EPISODE, RELEASEDATE, DIRECTOR, WRITER, GUESTSTARS, RATING, HAS_WATCHED, FAVORITE;
+	private String ROW_ID, FILEPATH, SHOW_ID, TITLE, DESCRIPTION, SEASON, EPISODE, RELEASEDATE, DIRECTOR, WRITER, GUESTSTARS, RATING, HAS_WATCHED, FAVORITE, mSubtitleText;
 	private String mGetFilepath;
 
 	public TvShowEpisode(Context context, String rowId, String showId, String filepath, String title, String description,
@@ -50,6 +53,16 @@ public class TvShowEpisode {
 		FAVORITE = favorite;
 		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[1] : FILEPATH;
 		mGetFilepath = MizLib.transformSmbPath(temp);
+		
+		// Subtitle text
+		StringBuilder sb = new StringBuilder();
+		sb.append(CONTEXT.getString(R.string.showEpisode));
+		sb.append(" ");
+		sb.append(getEpisode());
+		if (!hasWatched())
+			sb.append(" " + CONTEXT.getString(R.string.unwatched));
+		
+		mSubtitleText = sb.toString();
 	}
 
 	public String getRowId() {
@@ -95,8 +108,8 @@ public class TvShowEpisode {
 		return EPISODE;
 	}
 
-	public String getEpisodePhoto() {
-		return new File(MizLib.getTvShowEpisodeFolder(CONTEXT), SHOW_ID +  "_S" + SEASON + "E" + EPISODE + ".jpg").getAbsolutePath();
+	public File getEpisodePhoto() {
+		return new File(MizLib.getTvShowEpisodeFolder(CONTEXT), SHOW_ID +  "_S" + SEASON + "E" + EPISODE + ".jpg");
 	}
 
 	public String getReleasedate() {
@@ -202,5 +215,26 @@ public class TvShowEpisode {
 	 */
 	public String getThumbnail() {
 		return new File(MizLib.getTvShowThumbFolder(CONTEXT), SHOW_ID + ".jpg").getAbsolutePath();
+	}
+	
+	/**
+	 * Returns the path for the TV show thumbnail
+	 * @return
+	 */
+	public File getTvShowBackdrop() {
+		return new File(MizLib.getTvShowBackdropFolder(CONTEXT), SHOW_ID + "_tvbg.jpg");
+	}
+	
+	public String getSubtitleText() {
+		return mSubtitleText;
+	}
+
+	@Override
+	public int compareTo(TvShowEpisode another) {
+		String defaultOrder = CONTEXT.getString(R.string.oldestFirst);
+		boolean oldestFirst = PreferenceManager.getDefaultSharedPreferences(CONTEXT).getString(TVSHOWS_EPISODE_ORDER, defaultOrder).equals(defaultOrder);
+		int multiplier = oldestFirst ? 1 : -1;
+		
+		return getEpisode().compareToIgnoreCase(another.getEpisode()) * multiplier;
 	}
 }

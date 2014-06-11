@@ -254,7 +254,7 @@ public class Main extends MizActivity {
 		String filepath = MizLib.getLatestBackdropPath(getApplicationContext());
 
 		if (!filepath.isEmpty())
-			Picasso.with(getApplicationContext()).load("file://" + filepath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 160)).into(((ImageView) findViewById(R.id.userCover)), new Callback() {
+			Picasso.with(getApplicationContext()).load("file://" + filepath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 180)).into(((ImageView) findViewById(R.id.userCover)), new Callback() {
 				@Override
 				public void onError() {					
 					if (MizLib.isEmpty(full_name))
@@ -288,19 +288,28 @@ public class Main extends MizActivity {
 		
 		if (refreshThirdPartyApps) {
 			mApplicationList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-			Collections.sort(mApplicationList, new Comparator<ApplicationInfo>() {
-				@Override
-				public int compare(ApplicationInfo o1, ApplicationInfo o2) {
-					return pm.getApplicationLabel(o1).toString().compareToIgnoreCase(pm.getApplicationLabel(o2).toString());
-				}
-			});
 		}
 
+		List<MenuItem> temp = new ArrayList<MenuItem>();
 		for (int i = 0; i < mApplicationList.size(); i++) {
 			if (MizLib.isMediaApp(mApplicationList.get(i))) {
-				mMenuItems.add(new MenuItem(pm.getApplicationLabel(mApplicationList.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, mApplicationList.get(i).packageName));
+				temp.add(new MenuItem(pm.getApplicationLabel(mApplicationList.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, mApplicationList.get(i).packageName));
 			}
 		}
+		
+		Collections.sort(temp, new Comparator<MenuItem>() {
+			@Override
+			public int compare(MenuItem lhs, MenuItem rhs) {
+				return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
+			}
+		});
+		
+		for (int i = 0; i < temp.size(); i++) {
+			mMenuItems.add(temp.get(i));
+		}
+		
+		temp.clear();
+		temp = null;
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {

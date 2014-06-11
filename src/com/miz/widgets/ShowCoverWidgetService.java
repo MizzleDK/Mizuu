@@ -98,7 +98,7 @@ public class ShowCoverWidgetService extends RemoteViewsService {
 			else
 				options.inSampleSize = 1;
 
-			Bitmap cover = BitmapFactory.decodeFile(shows.get(position).getThumbnail(), options);
+			Bitmap cover = BitmapFactory.decodeFile(shows.get(position).getThumbnail().getAbsolutePath(), options);
 
 			if (cover != null)
 				view.setImageViewBitmap(R.id.thumb, cover);

@@ -331,7 +331,7 @@ public class NfoMovie {
 				);
 
 		if (callback != null)
-			callback.onMovieAdded(movie.getTitle(), temp.getThumbnail(), temp.getBackdrop());
+			callback.onMovieAdded(movie.getTitle(), temp.getThumbnail().getAbsolutePath(), temp.getBackdrop());
 
 		Intent intent = new Intent("mizuu-movies-object");
 		intent.putExtra("movieName", movie.getTitle());

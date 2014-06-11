@@ -2,7 +2,7 @@
 <resources>
 
     <dimen name="image_thumbnail_size">95dp</dimen>
-    <dimen name="backdrop_thumbnail_width">130dp</dimen>
+    <dimen name="backdrop_thumbnail_width">150dp</dimen>
     <dimen name="image_thumbnail_height">147dp</dimen>
     <dimen name="image_thumbnail_spacing">5dp</dimen>
     <dimen name="actor_details_width">170dp</dimen>
@@ -31,5 +31,6 @@
     <dimen name="cover_photo_width">100dp</dimen>
     <dimen name="details_padding">16dp</dimen>
     <dimen name="details_background_gradient_height">128dp</dimen>
+    <dimen name="season_list_subtitle">15sp</dimen>
 
 </resources>

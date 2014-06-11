@@ -48,7 +48,7 @@ import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragmentTv;
 import com.miz.mizuu.fragments.ShowDetailsFragment;
-import com.miz.mizuu.fragments.ShowEpisodesFragment;
+import com.miz.mizuu.fragments.TvShowSeasonsEpisodesFragment;
 
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.TVSHOWS_START_PAGE;
@@ -85,7 +85,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		if (spinnerAdapter == null)
 			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
-
+		
 		setTitle(null);
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
@@ -155,7 +155,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 	private void setupSpinnerItems() {
 		spinnerItems.clear();
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.overview)));
-		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.episodes)));
+		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.seasons)));
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.detailsActors)));
 
 		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
@@ -193,11 +193,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 			break;
 
 		case 1:
-			if (!MizLib.isPortrait(this) && MizLib.isTablet(this)) {
-				getMenuInflater().inflate(R.menu.seasons_tab_landscape, menu);
-			} else {
-				getMenuInflater().inflate(R.menu.seasons_tab, menu);
-			}
+			getMenuInflater().inflate(R.menu.seasons_tab, menu);
 
 			break;
 		}
@@ -321,7 +317,7 @@ public class ShowDetails extends MizActivity implements OnNavigationListener {
 			case 0:
 				return ShowDetailsFragment.newInstance(thisShow.getId());
 			case 1:
-				return ShowEpisodesFragment.newInstance(thisShow.getId());
+				return TvShowSeasonsEpisodesFragment.newInstance(thisShow.getId());
 			default:
 				return ActorBrowserFragmentTv.newInstance(thisShow.getId());
 			}

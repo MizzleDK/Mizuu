@@ -159,7 +159,6 @@ public class WebVideoFragment extends Fragment {
 		private int mNumColumns = 0, mCard, mCardBackground, mCardTitleColor;;
 
 		public ImageAdapter(Context context) {
-			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mCard = MizuuApplication.getCardDrawable(mContext);
@@ -197,6 +196,7 @@ public class WebVideoFragment extends Fragment {
 				holder.mLinearLayout.setBackgroundResource(mCard);
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
+				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 				
 				convertView.setTag(holder);
 			} else {

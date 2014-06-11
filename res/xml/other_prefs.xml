@@ -144,6 +144,14 @@
         <Preference
             android:icon="@drawable/ic_action_puzzle"
             android:summary="Apache License, Version 2.0"
+            android:title="Otto by Square, Inc." >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://square.github.io/otto/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_action_puzzle"
+            android:summary="Apache License, Version 2.0"
             android:title="Picasso by Square, Inc." >
             <intent
                 android:action="android.intent.action.VIEW"

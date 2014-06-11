@@ -20,6 +20,7 @@
             android:id="@+id/traktIcon"
             android:layout_width="@dimen/actor_details_width"
             android:layout_height="@dimen/actor_details_height"
+            android:layout_gravity="center_vertical"
             android:background="@drawable/border"
             android:cropToPadding="true"
             android:scaleType="centerCrop"
@@ -55,8 +56,8 @@
                     android:focusable="false"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textIsSelectable="true"
-                    android:textSize="@dimen/details_text_size"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/tagline_text_size"
+                    android:textStyle="italic" />
 
                 <TextView
                     android:id="@+id/overviewMessage"
@@ -65,8 +66,8 @@
                     android:focusable="false"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textIsSelectable="true"
-                    android:textSize="@dimen/details_text_size"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/tagline_text_size"
+                    android:textStyle="italic" />
 
                 <TextView
                     android:id="@+id/textView4"

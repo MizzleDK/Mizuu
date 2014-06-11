@@ -42,7 +42,7 @@ public class ActorBiographyFragment extends Fragment {
 	private String mName, mBio, mBirth, mBirthday, mImage, mThumb;
 	private TextView mActorName, mActorBio, mActorBirth, mActorBirthday;
 	private ImageView mActorImage, mActorImageBackground;
-	private Typeface tf;
+	private Typeface mCondensedTypeface, mLightTypeface;
 	private String json;
 	private Picasso mPicasso;
 
@@ -66,7 +66,8 @@ public class ActorBiographyFragment extends Fragment {
 
 		setRetainInstance(true);
 
-		tf = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Thin.ttf");
+		mCondensedTypeface = MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf");
+		mLightTypeface = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
 
 		json = getArguments().getString("json");
 		mThumb = getArguments().getString("thumbUrl");
@@ -90,11 +91,13 @@ public class ActorBiographyFragment extends Fragment {
 		mActorBirthday = (TextView) v.findViewById(R.id.overviewMessage);
 		mActorBirth = (TextView) v.findViewById(R.id.textView2);
 		mActorName = (TextView) v.findViewById(R.id.textView3);
-		mActorName.setTypeface(tf);
+		mActorName.setTypeface(mCondensedTypeface);
 		mActorName.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		if (MizLib.isTablet(getActivity()))
 			mActorName.setTextSize(48f);
 		mActorBio = (TextView) v.findViewById(R.id.textView4);
+		mActorBio.setTypeface(mLightTypeface);
+		mActorBio.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		mActorImage = (ImageView) v.findViewById(R.id.traktIcon);
 		mActorImageBackground = (ImageView) v.findViewById(R.id.imageView2);
 

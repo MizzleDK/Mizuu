@@ -16,26 +16,31 @@
 
 package com.miz.functions;
 
+import android.content.Context;
+
+import com.miz.mizuu.R;
+
 public class WebMovie {
-	
-	private String title, id, url, date;
 
-	public WebMovie(String title, String id, String url) {
-		this.title = title;
-		this.id = id;
-		this.url = url;
-	}
-	
-	public WebMovie(String title, String id, String url, String date) {
-		this.title = title;
-		this.id = id;
-		this.url = url;
-		this.date = date;
+	private String mTitle, mId, mUrl, mDate;
+	private Context mContext;
+
+	public WebMovie(Context context, String title, String id, String url, String date) {
+		mContext = context;
+		mTitle = title;
+		mId = id;
+		mUrl = url;
+		mDate = date;
 	}
 
-	public String getTitle() { return title; }
-	public String getId() { return id; }
-	public String getUrl() { return url; }
-	public String getDate() { return date; }
+	public String getTitle() { return mTitle; }
+	public String getId() { return mId; }
+	public String getUrl() { return mUrl; }
+	public String getRawDate() { return mDate; }
 
+	public String getDate() {
+		if (mDate.equals("null")) 
+			return mContext.getString(R.string.stringNA);
+		return mDate;
+	}
 }

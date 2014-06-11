@@ -29,6 +29,10 @@
         <item quantity="one">minute</item>
         <item quantity="other">minutes</item>
     </plurals>
+    <plurals name="seasons_selected">
+        <item quantity="one">season selected</item>
+        <item quantity="other">seasons selected</item>
+    </plurals>
 
     <string name="app_name">Mizuu</string>
     <string name="app_name_movies">Mizuu - movies</string>
@@ -306,8 +310,6 @@
     <string name="useEnglishLanguage">Use English language instead of the system language. Requires application restart.</string>
     <string name="gridView">Grid view</string>
     <string name="listView">List view</string>
-    <string name="setSeasonsLayout">TV show seasons layout</string>
-    <string name="setSeasonsLayoutDescription">Use a grid or list view to display TV show seasons.</string>
     <string name="deleteFile">Delete file</string>
     <string name="filters">Filters</string>
     <string name="allCertifications">All certifications</string>
@@ -452,5 +454,14 @@
 	<string name="check_in">Check in on Trakt</string>
 	<string name="checked_in">Successfully checked in on Trakt!</string>
 	<string name="openWith">Open with…</string>
+	<string name="seasons">Seasons</string>
+	<string name="unwatchedEpisodesCount">%d unwatched</string>
+	<string name="leftEpisodesCount">%d left</string>
+	<string name="tvShowSeasonsOrderType">TV show seasons order type</string>
+    <string name="tvShowSeasonsOrderTypeDescription">Show newest or oldest seasons first.</string>
+    <string name="unwatched">(unwatched)</string>
+    <string name="sync_error">Error synchronizing with Trakt!</string>
+    <string name="setEpisodesLayoutDescription">Use a grid or list view to display TV show episodes.</string>
+    <string name="setEpisodeLayout">TV show episodes layout</string>
     
 </resources>

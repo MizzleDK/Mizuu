@@ -61,11 +61,11 @@ import com.miz.functions.Movie;
 import com.miz.functions.MovieVersion;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.smbstreamer.Streamer;
 import com.miz.views.ObservableScrollView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.test.smbstreamer.variant1.Streamer;
 
 import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
@@ -454,7 +454,6 @@ public class MovieDetailsFragment extends Fragment {
 		private LayoutInflater inflater;
 
 		public SplitAdapter(Context context, List<SplitFile> files) {
-			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mFiles = files;

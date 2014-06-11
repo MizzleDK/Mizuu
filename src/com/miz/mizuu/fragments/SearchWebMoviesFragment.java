@@ -25,6 +25,8 @@ import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,7 +88,7 @@ public class SearchWebMoviesFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-		
+
 		setRetainInstance(true);
 
 		localizedInfo = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(USE_LOCALIZED_DATA, false);
@@ -127,6 +129,24 @@ public class SearchWebMoviesFragment extends Fragment {
 
 		searchText = (EditText) v.findViewById(R.id.search);
 		searchText.setSelection(searchText.length());
+		searchText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (s.toString().length() > 0)
+					searchForMovies();
+				else {
+					startSearch.cancel(true);
+					results.clear();
+					mAdapter.notifyDataSetChanged();
+				}
+			}
+		});
 		searchText.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -180,12 +200,18 @@ public class SearchWebMoviesFragment extends Fragment {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
+				if (isCancelled())
+					return null;
+
 				TMDb tmdb = new TMDb(getActivity().getApplicationContext());
 				ArrayList<TMDbMovie> movieResults;
 				if (useSystemLanguage.isChecked())
 					movieResults = tmdb.searchForMovies(params[0], "", getLocaleShortcode());
 				else
 					movieResults = tmdb.searchForMovies(params[0], "", "en");
+
+				if (isCancelled())
+					return null;
 
 				int count = movieResults.size();
 				for (int i = 0; i < count; i++) {
@@ -197,6 +223,10 @@ public class SearchWebMoviesFragment extends Fragment {
 							movieResults.get(i).getReleasedate())
 							);
 				}
+
+				if (isCancelled())
+					return null;
+
 				return "";
 			} catch (Exception e) {}
 			return null;
@@ -204,9 +234,9 @@ public class SearchWebMoviesFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(String result) {
-			if (!isAdded())
+			if (!isAdded() || result == null)
 				return;
-			
+
 			hideProgressBar();
 			if (searchText.getText().toString().length() > 0) {
 				if (lv.getAdapter() == null) {
@@ -239,7 +269,6 @@ public class SearchWebMoviesFragment extends Fragment {
 		private GridView.LayoutParams mImageViewLayoutParams;
 
 		public ListAdapter(Context context) {
-			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mImageViewLayoutParams = new ListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -268,7 +297,7 @@ public class SearchWebMoviesFragment extends Fragment {
 				if (holder.layout.getLayoutParams().height != mItemHeight) {
 					holder.layout.setLayoutParams(mImageViewLayoutParams);
 				}
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();

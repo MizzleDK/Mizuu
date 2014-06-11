@@ -16,6 +16,11 @@
 
 package com.miz.mizuu.fragments;
 
+import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
+import static com.miz.functions.PreferenceKeys.SORTING_TVSHOWS;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,11 +90,6 @@ import com.miz.mizuu.TvShowActorSearchActivity;
 import com.miz.mizuu.UnidentifiedFiles;
 import com.miz.mizuu.Update;
 import com.squareup.picasso.Picasso;
-
-import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
-import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
-import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
-import static com.miz.functions.PreferenceKeys.SORTING_TVSHOWS;
 
 public class TvShowLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
@@ -350,7 +350,6 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		private Object[] sections;
 
 		public LoaderAdapter(Context context) {
-			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
@@ -401,6 +400,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.mLinearLayout.setBackgroundResource(mCard);
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
+				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);

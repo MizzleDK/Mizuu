@@ -189,7 +189,6 @@ public class RelatedMoviesFragment extends Fragment {
 		private int mCard, mCardBackground, mCardTitleColor;
 
 		public ImageAdapter(Context context) {
-			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mCard = MizuuApplication.getCardDrawable(mContext);
@@ -228,6 +227,7 @@ public class RelatedMoviesFragment extends Fragment {
 				holder.mLinearLayout.setBackgroundResource(mCard);
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
+				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
@@ -280,10 +280,11 @@ public class RelatedMoviesFragment extends Fragment {
 				pics_sources.clear();
 				for (int i = 0; i < jArray.length(); i++) {
 					if (!MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("original_title"))) {
-						pics_sources.add(new WebMovie(
+						pics_sources.add(new WebMovie(getActivity().getApplicationContext(),
 								jArray.getJSONObject(i).getString("original_title"),
 								jArray.getJSONObject(i).getString("id"),
-								baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path")));
+								baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
+								jArray.getJSONObject(i).getString("release_date")));
 					}
 				}
 			} catch (Exception e) { e.printStackTrace(); }
@@ -308,7 +309,7 @@ public class RelatedMoviesFragment extends Fragment {
 			pics_sources.clear();
 
 			for (int i = 0; i < jArray.length(); i++) {
-				pics_sources.add(new WebMovie(
+				pics_sources.add(new WebMovie(getActivity().getApplicationContext(), 
 						jArray.getJSONObject(i).getString("original_title"),
 						jArray.getJSONObject(i).getString("id"),
 						baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),

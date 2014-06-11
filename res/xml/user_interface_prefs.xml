@@ -36,7 +36,13 @@
             android:key="prefsGridItemSize"
             android:summary="@string/overviewGridItemSizeDescription"
             android:title="@string/overviewGridItemSizeTitle" />
-        <CheckBoxPreference android:title="@string/use_dark_theme_title" android:defaultValue="true" android:key="prefsDarkTheme" android:summary="@string/set_dark_theme_description" android:icon="@drawable/localizedinfo"/>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:icon="@drawable/localizedinfo"
+            android:key="prefsDarkTheme"
+            android:summary="@string/set_dark_theme_description"
+            android:title="@string/use_dark_theme_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/chooserTVShows" >
         <ListPreference
@@ -45,8 +51,8 @@
             android:entryValues="@array/seasonsLayout"
             android:icon="@drawable/startup"
             android:key="prefsSeasonsLayout"
-            android:summary="@string/setSeasonsLayoutDescription"
-            android:title="@string/setSeasonsLayout" />
+            android:summary="@string/setEpisodesLayoutDescription"
+            android:title="@string/setEpisodeLayout" />
         <ListPreference
             android:defaultValue="@string/oldestFirst"
             android:dialogTitle="@string/tvShowEpisodesOrderType"
@@ -56,6 +62,15 @@
             android:key="prefsEpisodesOrder"
             android:summary="@string/tvShowEpisodesOrderTypeDescription"
             android:title="@string/tvShowEpisodesOrderType" />
+        <ListPreference
+            android:defaultValue="@string/oldestFirst"
+            android:dialogTitle="@string/tvShowSeasonsOrderType"
+            android:entries="@array/episodesOrder"
+            android:entryValues="@array/episodesOrder"
+            android:icon="@drawable/sort"
+            android:key="prefsSeasonsOrder"
+            android:summary="@string/tvShowSeasonsOrderTypeDescription"
+            android:title="@string/tvShowSeasonsOrderType" />
         <ListPreference
             android:defaultValue="@string/showDetails"
             android:dialogTitle="@string/tv_shows_start_page_title"

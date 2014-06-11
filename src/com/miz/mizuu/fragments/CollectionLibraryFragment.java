@@ -16,6 +16,13 @@
 
 package com.miz.mizuu.fragments;
 
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
+import static com.miz.functions.PreferenceKeys.SORTING_COLLECTIONS;
+
 import java.io.File;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
@@ -80,13 +87,6 @@ import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.squareup.picasso.Picasso;
-
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
-import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
-import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
-import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
-import static com.miz.functions.PreferenceKeys.SORTING_COLLECTIONS;
 
 public class CollectionLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
@@ -330,7 +330,6 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		private Object[] sections;
 
 		public LoaderAdapter(Context context) {
-			super();
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
@@ -381,6 +380,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 				holder.mLinearLayout.setBackgroundResource(mCard);
 				holder.text.setBackgroundResource(mCardBackground);
 				holder.text.setTextColor(mCardTitleColor);
+				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);

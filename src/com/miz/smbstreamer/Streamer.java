@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.test.smbstreamer.variant1;
+package com.miz.smbstreamer;
 
 import java.io.File;
 import java.io.IOException;

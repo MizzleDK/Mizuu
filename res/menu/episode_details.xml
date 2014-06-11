@@ -1,13 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/play_video"
+        android:icon="@drawable/ic_action_playback_play"
+        android:showAsAction="always"
+        android:title="@string/playVideo">
+    </item>
+    <item
         android:id="@+id/watched"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="never"
         android:title="@string/stringMarkAsWatched"/>
     <item
         android:id="@+id/identify"
         android:icon="@drawable/search"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="never"
         android:title="@string/identifyEpisodeTitle"/>
     <item
         android:id="@+id/watchOffline"
@@ -18,7 +24,7 @@
     <item
         android:id="@+id/menuDeleteEpisode"
         android:icon="@drawable/delete"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="never"
         android:title="@string/removeEpisode"/>
 
 </menu>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package tests;
+package com.miz.tests;
 
 import com.miz.functions.DecryptedMovie;
 import com.miz.functions.MizLib;
