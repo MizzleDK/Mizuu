@@ -95,20 +95,17 @@ public class Welcome extends MizActivity implements ViewFactory {
 		while (cursor.moveToNext()) {
 			try {
 				backdrops.add(new Backdrop(
-						new File(MizLib.getMovieBackdropFolder(this),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)) + "_bg.jpg").getAbsolutePath(),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-								true,
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE))
+						MizLib.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID))).getAbsolutePath(),
+						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
+						true,
+						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE))
 						));
 			} catch (NullPointerException e) {}
 		}
 		cursor = dbHelperTv.getAllShows();
 		while (cursor.moveToNext()) {
 			try {
-				backdrops.add(new Backdrop(
-						new File(MizLib.getTvShowBackdropFolder(this),
-								cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)) + "_tvbg.jpg").getAbsolutePath(),
+				backdrops.add(new Backdrop(MizLib.getTvShowBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID))).getAbsolutePath(),
 								cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
 								false,
 								cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE))

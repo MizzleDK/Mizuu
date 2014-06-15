@@ -56,8 +56,7 @@ import com.miz.mizuu.SearchWebMovies;
 public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavigationListener {
 
 	private ProgressBar pbar;
-	private String baseUrl = "";
-	private String json = "";
+	private String baseUrl = "", json = "", mTmdbApiKey;
 	private ActionBar actionBar;
 	private ViewPager awesomePager;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
@@ -75,6 +74,8 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 
 		setHasOptionsMenu(true);
 		setRetainInstance(true);
+		
+		mTmdbApiKey = MizLib.getTmdbApiKey(getActivity());
 
 		setupSpinnerItems();
 	}
@@ -212,7 +213,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		protected String doInBackground(Object... params) {
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				baseUrl = httpclient.execute(httppost, responseHandler);
@@ -221,7 +222,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie?api_key=" + MizLib.TMDB_API + "&append_to_response=upcoming,now_playing,popular,top_rated");
+				httppost = new HttpGet("https://api.themoviedb.org/3/movie?api_key=" + mTmdbApiKey + "&append_to_response=upcoming,now_playing,popular,top_rated");
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 

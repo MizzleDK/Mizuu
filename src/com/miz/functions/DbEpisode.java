@@ -52,11 +52,11 @@ public class DbEpisode {
 	}
 
 	public String getThumbnail() {
-		return new File(MizLib.getTvShowThumbFolder(context), getShowId() + ".jpg").getAbsolutePath();
+		return MizLib.getTvShowThumb(context, getShowId()).getAbsolutePath();
 	}
 
 	public String getBackdrop() {
-		return new File(MizLib.getTvShowBackdropFolder(context), getShowId() + "_tvbg.jpg").getAbsolutePath();
+		return MizLib.getTvShowBackdrop(context, getShowId()).getAbsolutePath();
 	}
 
 	public boolean isNetworkFile() {

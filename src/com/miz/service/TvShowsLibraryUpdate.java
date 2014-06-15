@@ -265,6 +265,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		MizLib.deleteRecursive(MizLib.getTvShowThumbFolder(this));
 		MizLib.deleteRecursive(MizLib.getTvShowEpisodeFolder(this));
 		MizLib.deleteRecursive(MizLib.getTvShowBackdropFolder(this));
+		MizLib.deleteRecursive(MizLib.getTvShowSeasonFolder(this));
 	}
 
 	private void removeUnavailableFiles() {

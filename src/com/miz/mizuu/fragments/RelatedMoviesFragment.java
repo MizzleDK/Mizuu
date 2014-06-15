@@ -67,7 +67,7 @@ public class RelatedMoviesFragment extends Fragment {
 	private ProgressBar pbar;
 	private Picasso mPicasso;
 	private DbAdapter db;
-	private String json;
+	private String json, mTmdbApiKey;
 	private Config mConfig;
 
 	/**
@@ -106,6 +106,8 @@ public class RelatedMoviesFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
+		mTmdbApiKey = MizLib.getTmdbApiKey(getActivity());
+		
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
 	}
@@ -259,7 +261,7 @@ public class RelatedMoviesFragment extends Fragment {
 		protected String doInBackground(String... params) {
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				String baseUrl = httpclient.execute(httppost, responseHandler);
@@ -268,7 +270,7 @@ public class RelatedMoviesFragment extends Fragment {
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/similar_movies?api_key=" + MizLib.TMDB_API);
+				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/similar_movies?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 				String html = httpclient.execute(httppost, responseHandler);

@@ -109,7 +109,7 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	}
 
 	public File getEpisodePhoto() {
-		return new File(MizLib.getTvShowEpisodeFolder(CONTEXT), SHOW_ID +  "_S" + SEASON + "E" + EPISODE + ".jpg");
+		return MizLib.getTvShowEpisode(CONTEXT, SHOW_ID, SEASON, EPISODE);
 	}
 
 	public String getReleasedate() {
@@ -214,7 +214,7 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	 * @return
 	 */
 	public String getThumbnail() {
-		return new File(MizLib.getTvShowThumbFolder(CONTEXT), SHOW_ID + ".jpg").getAbsolutePath();
+		return MizLib.getTvShowThumb(CONTEXT, SHOW_ID).getAbsolutePath();
 	}
 	
 	/**
@@ -222,7 +222,7 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	 * @return
 	 */
 	public File getTvShowBackdrop() {
-		return new File(MizLib.getTvShowBackdropFolder(CONTEXT), SHOW_ID + "_tvbg.jpg");
+		return MizLib.getTvShowBackdrop(CONTEXT, SHOW_ID);
 	}
 	
 	public String getSubtitleText() {

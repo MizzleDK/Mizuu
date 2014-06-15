@@ -47,7 +47,7 @@ import com.miz.mizuu.fragments.FanartSearchFragment;
 
 public class MovieCoverFanartBrowser extends MizActivity implements OnNavigationListener  {
 
-	private String tmdbId, collectionId, baseUrl = "", json = "", collection = "";
+	private String tmdbId, collectionId, baseUrl = "", json = "", collection = "", mTmdbApiKey;
 	private ViewPager awesomePager;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
@@ -64,6 +64,7 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 
 		tmdbId = getIntent().getExtras().getString("tmdbId");
 		collectionId = getIntent().getExtras().getString("collectionId");
+		mTmdbApiKey = MizLib.getTmdbApiKey(this);
 
 		pbar = (ProgressBar) findViewById(R.id.progressbar);
 		pbar.setVisibility(View.VISIBLE);
@@ -139,7 +140,7 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 		protected String doInBackground(Object... params) {			
 			try {				
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				baseUrl = httpclient.execute(httppost, responseHandler);
@@ -148,14 +149,14 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 				
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/images?api_key=" + MizLib.TMDB_API);
+				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/images?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 
 				json = httpclient.execute(httppost, responseHandler);
 
 				if (!collectionId.equals("null") && !collectionId.isEmpty()) {
-					httppost = new HttpGet("https://api.themoviedb.org/3/collection/" + params[1] + "/images?api_key=" + MizLib.TMDB_API);
+					httppost = new HttpGet("https://api.themoviedb.org/3/collection/" + params[1] + "/images?api_key=" + mTmdbApiKey);
 					httppost.setHeader("Accept", "application/json");
 					responseHandler = new BasicResponseHandler();
 

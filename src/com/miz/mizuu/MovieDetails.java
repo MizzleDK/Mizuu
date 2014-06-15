@@ -86,6 +86,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
+	private String mYouTubeApiKey;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +119,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		prefsRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
 		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_FILES_ENABLED, false);
 
+		mYouTubeApiKey = MizLib.getYouTubeApiKey(this);
+		
 		// Fetch the database ID of the movie to view
 		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
 			movieId = Integer.valueOf(getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY));
@@ -573,7 +576,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		} else {
 			if (!MizLib.isEmpty(thisMovie.getTrailer())) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getApplicationContext()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, MizLib.YOUTUBE_API, MizLib.getYouTubeId(thisMovie.getTrailer()), 0, false, true);
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, mYouTubeApiKey, MizLib.getYouTubeId(thisMovie.getTrailer()), 0, false, true);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -640,7 +643,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + params[0] + "/trailers?api_key=" + MizLib.TMDB_API);
+				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + params[0] + "/trailers?api_key=" + MizLib.getTmdbApiKey(getApplicationContext()));
 				JSONArray trailers = jObject.getJSONArray("youtube");
 
 				if (trailers.length() > 0)
@@ -656,7 +659,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		protected void onPostExecute(String result) {
 			if (result != null) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getApplicationContext()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetails.this, MizLib.YOUTUBE_API, MizLib.getYouTubeId(result), 0, false, true);
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetails.this, mYouTubeApiKey, MizLib.getYouTubeId(result), 0, false, true);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -707,7 +710,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		protected void onPostExecute(String result) {
 			if (result != null) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getApplicationContext()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetails.this, MizLib.YOUTUBE_API, MizLib.getYouTubeId(result), 0, false, true);
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(MovieDetails.this, mYouTubeApiKey, MizLib.getYouTubeId(result), 0, false, true);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(Intent.ACTION_VIEW);

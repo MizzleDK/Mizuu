@@ -20,7 +20,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -31,11 +30,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -140,9 +141,6 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		if (MizLib.isPortrait(getActivity())) {
-			if (!MizLib.isTablet(getActivity()))
-				MizLib.addActionBarPaddingBottom(getActivity(), view.findViewById(R.id.scrollView1));
-
 			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
 			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
 
@@ -150,7 +148,7 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
 				@Override
 				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-					final int headerHeight = view.findViewById(R.id.imageBackground).getHeight() - getActivity().getActionBar().getHeight();
+					final int headerHeight = view.findViewById(R.id.episodePhoto).getHeight() - getActivity().getActionBar().getHeight();
 					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
 					final int newAlpha = (int) (ratio * 255);
 					mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "080808"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "080808") : 0xaa080808});
@@ -159,7 +157,7 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 			});
 		}
 
-		if (!MizLib.isTablet(getActivity()) && !MizLib.isPortrait(getActivity()))
+		if (!MizLib.isPortrait(getActivity()))
 			MizLib.addActionBarMargin(getActivity(), view.findViewById(R.id.episode_relative_layout));
 
 		mBackdrop = (ImageView) view.findViewById(R.id.imageBackground);
@@ -188,7 +186,25 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 		mWriter.setTypeface(mLight);
 		mGuestStars.setTypeface(mLight);
 
+		mDescription.setBackgroundResource(R.drawable.selectable_background_example);
+		mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
+		mDescription.setTag(true); // true = collapsed
+		mDescription.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (((boolean) mDescription.getTag())) {
+					mDescription.setMaxLines(1000);
+					mDescription.setTag(false);
+				} else {
+					mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
+					mDescription.setTag(true);
+				}
+			}
+		});
+		mDescription.setEllipsize(TextUtils.TruncateAt.END);
+		mDescription.setFocusable(true);
 		mDescription.setText(mEpisode.getDescription());
+		
 		mFileSource.setText(mEpisode.getFilepath());
 
 		// Set the episode air date
@@ -255,18 +271,22 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			if (result != null) {
-				// Set the blurred version as the backdrop image
-				mBackdrop.setImageBitmap(result);
 
-				if (!MizLib.isTablet(getActivity()) && !MizLib.isPortrait(getActivity()))
-					mBackdrop.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-				else
-					mBackdrop.setColorFilter(Color.parseColor("#66181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+				if (!MizLib.isPortrait(getActivity())) {
+					// Set the blurred version as the backdrop image
+					mBackdrop.setImageBitmap(result);
+
+					if (!MizLib.isPortrait(getActivity()))
+						mBackdrop.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+					else
+						mBackdrop.setColorFilter(Color.parseColor("#66181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+				}
 
 				// Set the episode photo
 				mEpisodePhoto.setImageBitmap(mBitmap);
 			} else {
-				mBackdrop.setImageResource(R.drawable.bg);
+				if (!MizLib.isPortrait(getActivity()))
+					mBackdrop.setImageResource(R.drawable.bg);
 			}
 		}
 	}
@@ -434,7 +454,7 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 				if (deleted) {
 					try {
 						// Delete episode images
-						File episodePhoto = new File(MizLib.getTvShowEpisodeFolder(getActivity()), mEpisode.getShowId() + "_S" + mEpisode.getSeason() + "E" + mEpisode.getEpisode() + ".jpg");
+						File episodePhoto = MizLib.getTvShowEpisode(getActivity(), mEpisode.getShowId(), mEpisode.getSeason(), mEpisode.getEpisode());
 						if (episodePhoto.exists()) {
 							MizLib.deleteFile(episodePhoto);
 						}
@@ -445,8 +465,8 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 						boolean deletedShow = dbShow.deleteShow(mEpisode.getShowId());
 
 						if (deletedShow) {
-							MizLib.deleteFile(new File(MizLib.getTvShowThumbFolder(getActivity()), mEpisode.getShowId() + ".jpg"));
-							MizLib.deleteFile(new File(MizLib.getTvShowBackdropFolder(getActivity()), mEpisode.getShowId() + "_tvbg.jpg"));
+							MizLib.deleteFile(MizLib.getTvShowThumb(getActivity(), mEpisode.getShowId()));
+							MizLib.deleteFile(MizLib.getTvShowBackdrop(getActivity(), mEpisode.getShowId()));
 						}
 					}
 

@@ -16,7 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -268,7 +267,7 @@ public class CoverSearchFragment extends Fragment {
 					}}
 						);
 
-				MizLib.downloadFile(url, new File(MizLib.getMovieThumbFolder(getActivity()), TMDB_ID + ".jpg").getAbsolutePath());
+				MizLib.downloadFile(url, MizLib.getMovieThumb(getActivity(), TMDB_ID).getAbsolutePath());
 				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-movie-cover-change"));
 
 				updateWidgets();

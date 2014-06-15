@@ -52,7 +52,6 @@ public class TheTVDB extends Service {
 
 	private String LOCALE = "", language = "";
 	private boolean localizedInfo = false, isEpisodeIdentify = false, isShowIdentify = false, isUpdate = false, isUnidentifiedIdentify = false;
-	private File thumbsFolder;
 	private long rowId;
 	private String[] files, rowsToDrop;
 	private TheTVDb tvdb;
@@ -165,8 +164,6 @@ public class TheTVDB extends Service {
 			} else LOCALE = "en";
 		else
 			LOCALE = language;
-
-		thumbsFolder = MizLib.getTvShowThumbFolder(this);
 	}
 
 	private void createShow(String season, String episode) {
@@ -184,8 +181,8 @@ public class TheTVDB extends Service {
 
 		if (downloadCovers) {
 			if (!thisShow.getId().equals("invalid") && !thisShow.getId().isEmpty()) {
-				String thumb_filepath = new File(thumbsFolder, thisShow.getId() + ".jpg").getAbsolutePath();
-				String backdrop_filepath = new File(MizLib.getTvShowBackdropFolder(this), thisShow.getId() + "_tvbg.jpg").getAbsolutePath();
+				String thumb_filepath = MizLib.getTvShowThumb(this, thisShow.getId()).getAbsolutePath();
+				String backdrop_filepath = MizLib.getTvShowBackdrop(this, thisShow.getId()).getAbsolutePath();
 
 				// Download the cover file and try again if it fails
 				if (!thisShow.getCover_url().isEmpty())
@@ -227,7 +224,7 @@ public class TheTVDB extends Service {
 
 		// Download the episode screenshot file and try again if it fails
 		if (!thisEpisode.getScreenshot_url().isEmpty()) {
-			String screenshotFile = new File(MizLib.getTvShowEpisodeFolder(this), thisShow.getId() + "_S" + season + "E" + episode + ".jpg").getAbsolutePath();
+			String screenshotFile = MizLib.getTvShowEpisode(this, thisShow.getId(), season, episode).getAbsolutePath();
 			if (!MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile))
 				MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile);
 		}
@@ -255,11 +252,11 @@ public class TheTVDB extends Service {
 			intent.putExtra("id", thisShow.getId());
 			intent.putExtra("movieName", thisShow.getTitle() + " S" + MizLib.addIndexZero(ep.getSeason()) + "E" + MizLib.addIndexZero(ep.getEpisode()) +
 					(!ep.getTitle().isEmpty() ? " (" + ep.getTitle() + ")" : ""));
-			intent.putExtra("thumbFile", new File(thumbsFolder, thisShow.getId() + ".jpg").getAbsolutePath());
+			intent.putExtra("thumbFile", MizLib.getTvShowThumb(this, thisShow.getId()).getAbsolutePath());
 
-			File backdropFile = new File(MizLib.getTvShowEpisodeFolder(this), thisShow.getId() + "_S" + MizLib.addIndexZero(ep.getSeason()) + "E" + MizLib.addIndexZero(ep.getEpisode()) + ".jpg");
+			File backdropFile = MizLib.getTvShowEpisode(this, thisShow.getId(), MizLib.addIndexZero(ep.getSeason()), MizLib.addIndexZero(ep.getEpisode()));
 			if (!backdropFile.exists())
-				backdropFile = new File(thumbsFolder, thisShow.getId() + ".jpg");
+				backdropFile = MizLib.getTvShowThumb(this, thisShow.getId());
 
 			intent.putExtra("backdrop", backdropFile.getAbsolutePath());
 

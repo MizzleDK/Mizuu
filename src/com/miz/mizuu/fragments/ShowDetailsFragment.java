@@ -30,9 +30,11 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -175,6 +177,23 @@ public class ShowDetailsFragment extends Fragment {
 		
 		// Set the show plot
 		textPlot.setText(thisShow.getDescription());
+		textPlot.setBackgroundResource(R.drawable.selectable_background_example);
+		textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
+		textPlot.setTag(true); // true = collapsed
+		textPlot.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (((boolean) textPlot.getTag())) {
+					textPlot.setMaxLines(1000);
+					textPlot.setTag(false);
+				} else {
+					textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
+					textPlot.setTag(true);
+				}
+			}
+		});
+		textPlot.setEllipsize(TextUtils.TruncateAt.END);
+		textPlot.setFocusable(true);
 
 		textTagline.setVisibility(TextView.GONE);
 

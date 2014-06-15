@@ -16,7 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -251,7 +250,7 @@ public class FanartSearchFragment extends Fragment {
 					}}
 						);
 
-				MizLib.downloadFile(url, new File(MizLib.getMovieBackdropFolder(getActivity()), TMDB_ID + "_bg.jpg").getAbsolutePath());
+				MizLib.downloadFile(url, MizLib.getMovieBackdrop(getActivity(), TMDB_ID).getAbsolutePath());
 				
 				updateWidgets();
 

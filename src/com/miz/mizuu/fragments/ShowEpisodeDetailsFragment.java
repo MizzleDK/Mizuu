@@ -217,7 +217,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 				@Override
 				public void onError() {
 					if (isAdded())
-						mPicasso.load(MizLib.getTvShowThumbFolder(getActivity()) + "/" + thisEpisode.getShowId() + ".jpg").skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.nobackdrop).into(cover);
+						mPicasso.load(MizLib.getTvShowThumb(getActivity(), thisEpisode.getShowId())).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.nobackdrop).into(cover);
 				}
 
 				@Override
@@ -387,7 +387,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 				if (deleted) {
 					try {
 						// Delete episode images
-						File episodePhoto = new File(MizLib.getTvShowEpisodeFolder(getActivity()), thisEpisode.getShowId() + "_S" + thisEpisode.getSeason() + "E" + thisEpisode.getEpisode() + ".jpg");
+						File episodePhoto = MizLib.getTvShowEpisode(getActivity(), thisEpisode.getShowId(), thisEpisode.getSeason(), thisEpisode.getEpisode());
 						if (episodePhoto.exists()) {
 							MizLib.deleteFile(episodePhoto);
 						}
@@ -398,8 +398,8 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 						boolean deletedShow = dbShow.deleteShow(thisEpisode.getShowId());
 
 						if (deletedShow) {
-							MizLib.deleteFile(new File(MizLib.getTvShowThumbFolder(getActivity()), thisEpisode.getShowId() + ".jpg"));
-							MizLib.deleteFile(new File(MizLib.getTvShowBackdropFolder(getActivity()), thisEpisode.getShowId() + "_tvbg.jpg"));
+							MizLib.deleteFile(MizLib.getTvShowThumb(getActivity(), thisEpisode.getShowId()));
+							MizLib.deleteFile(MizLib.getTvShowBackdrop(getActivity(), thisEpisode.getShowId()));
 						}
 					}
 

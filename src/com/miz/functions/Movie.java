@@ -42,14 +42,14 @@ public class Movie extends MediumBaseMovie {
 		// Set up movie fields based on constructor
 		PLOT = plot;
 		TAGLINE = tagline;
-		TMDB_ID = tmdbId;
+		mTmdbId = tmdbId;
 		IMDB_ID = imdbId;
 		TRAILER = trailer;
 		COVER = cover;
 		
 		// getPlot()
 		if (PLOT == null || PLOT.isEmpty()) {
-			mGetPlot = CONTEXT.getString(R.string.stringNoPlot);
+			mGetPlot = mContext.getString(R.string.stringNoPlot);
 		} else {
 			mGetPlot = PLOT;
 		}
@@ -140,8 +140,8 @@ public class Movie extends MediumBaseMovie {
 	public String getLocalTrailer() {
 		try {
 			// Check if there's a custom cover art image
-			String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
-			File parentFolder = new File(FILEPATH).getParentFile();
+			String filename = mFilepath.substring(0, mFilepath.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
+			File parentFolder = new File(mFilepath).getParentFile();
 
 			if (parentFolder != null) {
 				File[] list = parentFolder.listFiles();

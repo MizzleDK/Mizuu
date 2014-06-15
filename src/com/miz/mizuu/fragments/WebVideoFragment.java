@@ -128,7 +128,7 @@ public class WebVideoFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(getActivity(), MizLib.YOUTUBE_API, videos.get(arg2).getId(), 0, false, true);
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(getActivity(), MizLib.getYouTubeApiKey(getActivity()), videos.get(arg2).getId(), 0, false, true);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(Intent.ACTION_VIEW);

@@ -20,9 +20,9 @@ import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
 import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
+import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 import static com.miz.functions.PreferenceKeys.TRAKT_PASSWORD;
 import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
-import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -115,9 +115,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.apache.OkApacheClient;
-
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
@@ -129,6 +126,8 @@ import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.apache.OkApacheClient;
 
 @SuppressLint("NewApi")
 public class MizLib {
@@ -147,10 +146,6 @@ public class MizLib {
 	public static final String allFileTypes = ".3gp.aaf.mp4.ts.webm.m4v.mkv.divx.xvid.rec.avi.flv.f4v.moi.mpeg.mpg.mts.m2ts.ogv.rm.rmvb.mov.wmv.iso.vob.ifo.wtv.pyv.ogm.img";
 	public static final String IMAGE_CACHE_DIR = "thumbs";
 	public static final String TMDB_BASE_URL = "http://image.tmdb.org/t/p/";
-	public static final String TMDB_API = "8f5f9f44983b8af692aae5f9974500f8";
-	public static final String TVDBAPI = "1CB9725D261FAF38";
-	public static final String YOUTUBE_API = "AIzaSyACKcfmngguy_PhREycetiispyMZ4fLPDY";
-	public static final String TRAKT_API = "b85f6110fd2522022bc53614965415bf";
 	public static final String CHARACTER_REGEX = "[^\\w\\s]";
 	public static final String[] prefixes = new String[]{"the ", "a ", "an "};
 
@@ -161,6 +156,22 @@ public class MizLib {
 	public static final int WEEK = 7 * DAY;
 	
 	private MizLib() {} // No instantiation
+	
+	public static String getTmdbApiKey(Context context) {
+		return context.getString(R.string.tmdb_api_key);
+	}
+	
+	public static String getTraktApiKey(Context context) {
+		return context.getString(R.string.trakt_api_key);
+	}
+	
+	public static String getTvdbApiKey(Context context) {
+		return context.getString(R.string.tvdb_api_key);
+	}
+	
+	public static String getYouTubeApiKey(Context context) {
+		return context.getString(R.string.youtube_api_key);
+	}
 
 	public static String[] getPrefixes(Context c) {
 		ArrayList<String> prefixesArray = new ArrayList<String>();
@@ -1562,7 +1573,7 @@ public class MizLib {
 
 		// Cancel the current check in to allow this one
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/cancelcheckin/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/cancelcheckin/" + getTraktApiKey(c));
 		httppost.setHeader("Content-type", "application/json");
 
 		try {
@@ -1582,7 +1593,7 @@ public class MizLib {
 
 		// Check in with the movie
 		httpclient = new OkApacheClient();
-		httppost = new HttpPost("http://api.trakt.tv/movie/checkin/" + MizLib.TRAKT_API);
+		httppost = new HttpPost("http://api.trakt.tv/movie/checkin/" + getTraktApiKey(c));
 
 		try {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
@@ -1612,7 +1623,7 @@ public class MizLib {
 
 		// Cancel the current check in to allow this one
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/cancelcheckin/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/cancelcheckin/" + getTraktApiKey(c));
 		httppost.setHeader("Content-type", "application/json");
 
 		try {
@@ -1632,7 +1643,7 @@ public class MizLib {
 
 		// Check in with the movie
 		httpclient = new OkApacheClient();
-		httppost = new HttpPost("http://api.trakt.tv/movie/checkin/" + MizLib.TRAKT_API);
+		httppost = new HttpPost("http://api.trakt.tv/movie/checkin/" + getTraktApiKey(c));
 
 		try {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
@@ -1665,7 +1676,7 @@ public class MizLib {
 
 		// Cancel the current check in to allow this one
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/cancelcheckin/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/cancelcheckin/" + getTraktApiKey(c));
 		httppost.setHeader("Content-type", "application/json");
 
 		try {
@@ -1685,7 +1696,7 @@ public class MizLib {
 
 		// Check in with the movie
 		httpclient = new OkApacheClient();
-		httppost = new HttpPost("http://api.trakt.tv/show/checkin/" + MizLib.TRAKT_API);
+		httppost = new HttpPost("http://api.trakt.tv/show/checkin/" + getTraktApiKey(c));
 
 		try {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
@@ -1724,9 +1735,9 @@ public class MizLib {
 		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 		if (movies.get(0).hasWatched())
-			httppost = new HttpPost("http://api.trakt.tv/movie/seen/" + MizLib.TRAKT_API);
+			httppost = new HttpPost("http://api.trakt.tv/movie/seen/" + getTraktApiKey(c));
 		else
-			httppost = new HttpPost("http://api.trakt.tv/movie/unseen/" + MizLib.TRAKT_API);
+			httppost = new HttpPost("http://api.trakt.tv/movie/unseen/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -1765,7 +1776,7 @@ public class MizLib {
 
 		// Mark episode as seen / unseen
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/season/" + (!watched ? "un" : "") + "seen/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/season/" + (!watched ? "un" : "") + "seen/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -1803,7 +1814,7 @@ public class MizLib {
 
 		// Mark episodes as seen / unseen
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/" + (!watched ? "un" : "") + "seen/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/" + (!watched ? "un" : "") + "seen/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -1844,7 +1855,7 @@ public class MizLib {
 
 		// Mark episode as seen / unseen
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/seen/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/seen/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -1887,7 +1898,7 @@ public class MizLib {
 			return false;
 
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/library/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/library/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -1931,9 +1942,9 @@ public class MizLib {
 		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 		if (movies.get(0).toWatch())
-			httppost = new HttpPost("http://api.trakt.tv/movie/watchlist/" + MizLib.TRAKT_API);
+			httppost = new HttpPost("http://api.trakt.tv/movie/watchlist/" + getTraktApiKey(c));
 		else
-			httppost = new HttpPost("http://api.trakt.tv/movie/unwatchlist/" + MizLib.TRAKT_API);
+			httppost = new HttpPost("http://api.trakt.tv/movie/unwatchlist/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -1975,7 +1986,7 @@ public class MizLib {
 
 		// Mark as seen / unseen
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/rate/movies/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/rate/movies/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -2026,7 +2037,7 @@ public class MizLib {
 
 		// Mark as seen / unseen
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/library/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/library/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -2070,7 +2081,7 @@ public class MizLib {
 
 		// Mark as seen / unseen
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/rate/shows/" + MizLib.TRAKT_API);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/rate/shows/" + getTraktApiKey(c));
 
 		try {
 			JSONObject json = new JSONObject();
@@ -2111,13 +2122,13 @@ public class MizLib {
 		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 		if (type == WATCHED) {
-			httppost = new HttpPost("http://api.trakt.tv/user/library/movies/watched.json/" + MizLib.TRAKT_API + "/" + username);
+			httppost = new HttpPost("http://api.trakt.tv/user/library/movies/watched.json/" + getTraktApiKey(c) + "/" + username);
 		} else if (type == RATINGS) {
-			httppost = new HttpPost("http://api.trakt.tv/user/ratings/movies.json/" + MizLib.TRAKT_API + "/" + username + "/love");
+			httppost = new HttpPost("http://api.trakt.tv/user/ratings/movies.json/" + getTraktApiKey(c) + "/" + username + "/love");
 		} else if (type == WATCHLIST) {
-			httppost = new HttpPost("http://api.trakt.tv/user/watchlist/movies.json/" + MizLib.TRAKT_API + "/" + username);
+			httppost = new HttpPost("http://api.trakt.tv/user/watchlist/movies.json/" + getTraktApiKey(c) + "/" + username);
 		} else if (type == COLLECTION) {
-			httppost = new HttpPost("http://api.trakt.tv/user/library/movies/collection.json/" + MizLib.TRAKT_API + "/" + username);
+			httppost = new HttpPost("http://api.trakt.tv/user/library/movies/collection.json/" + getTraktApiKey(c) + "/" + username);
 		}
 
 		try {
@@ -2147,11 +2158,11 @@ public class MizLib {
 		OkApacheClient httpclient = new OkApacheClient();
 		HttpPost httppost = null;
 		if (type == WATCHED) {
-			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/watched.json/" + MizLib.TRAKT_API + "/" + username);
+			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/watched.json/" + getTraktApiKey(c) + "/" + username);
 		} else if (type == RATINGS) {
-			httppost = new HttpPost("http://api.trakt.tv/user/ratings/shows.json/" + MizLib.TRAKT_API + "/" + username + "/love");
+			httppost = new HttpPost("http://api.trakt.tv/user/ratings/shows.json/" + getTraktApiKey(c) + "/" + username + "/love");
 		} else if (type == COLLECTION) {
-			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/collection.json/" + MizLib.TRAKT_API + "/" + username);
+			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/collection.json/" + getTraktApiKey(c) + "/" + username);
 		}
 
 		try {
@@ -2282,40 +2293,82 @@ public class MizLib {
 		return f;
 	}
 
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
 	public static File getMovieThumbFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/movie-thumbs");
 		f.mkdirs();
 		return f;
 	}
+	
+	public static File getMovieThumb(Context c, String movieId) {
+		return new File(getMovieThumbFolder(c), movieId + ".jpg");
+	}
 
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
 	public static File getMovieBackdropFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/movie-backdrops");
 		f.mkdirs();
 		return f;
 	}
+	
+	public static File getMovieBackdrop(Context c, String movieId) {
+		return new File(getMovieBackdropFolder(c), movieId + "_bg.jpg");
+	}
 
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
 	public static File getTvShowThumbFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/tvshows-thumbs");
 		f.mkdirs();
 		return f;
 	}
+	
+	public static File getTvShowThumb(Context c, String showId) {
+		return new File(getTvShowThumbFolder(c), showId + ".jpg");
+	}
 
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
 	public static File getTvShowBackdropFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/tvshows-backdrops");
 		f.mkdirs();
 		return f;
 	}
+	
+	public static File getTvShowBackdrop(Context c, String showId) {
+		return new File(getTvShowBackdropFolder(c), showId + "_tvbg.jpg");
+	}
 
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
 	public static File getTvShowEpisodeFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/tvshows-episodes");
 		f.mkdirs();
 		return f;
 	}
+	
+	public static File getTvShowEpisode(Context c, String showId, String season, String episode) {
+		return new File(getTvShowEpisodeFolder(c), showId + "_S" + season + "E" + episode + ".jpg");
+	}
 
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
 	public static File getTvShowSeasonFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/tvshows-seasons");
 		f.mkdirs();
 		return f;
+	}
+	
+	public static File getTvShowSeason(Context c, String showId, String season) {
+		return new File(getTvShowSeasonFolder(c), showId + "_S" + season + ".jpg");
 	}
 
 	public static File getCacheFolder(Context c) {
@@ -2378,7 +2431,7 @@ public class MizLib {
 
 		// Cancel the current check in to allow this one
 		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/user/calendar/shows.json/" + MizLib.TRAKT_API + "/" + username);
+		HttpPost httppost = new HttpPost("http://api.trakt.tv/user/calendar/shows.json/" + getTraktApiKey(c) + "/" + username);
 		httppost.setHeader("Content-type", "application/json");
 
 		try {

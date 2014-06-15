@@ -16,7 +16,6 @@
 
 package com.miz.mizuu;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -83,9 +82,7 @@ public class MizuuDream extends DreamService implements ViewFactory {
 		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
 		while (cursor.moveToNext()) {
 			try {
-				backdrops.add(new Backdrop(
-						new File(MizLib.getMovieBackdropFolder(this),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)) + "_bg.jpg").getAbsolutePath(),
+				backdrops.add(new Backdrop(MizLib.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID))).getAbsolutePath(),
 								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE))
 						));
 			} catch (NullPointerException e) {}
@@ -93,9 +90,7 @@ public class MizuuDream extends DreamService implements ViewFactory {
 		cursor = dbHelperTv.getAllShows();
 		while (cursor.moveToNext()) {
 			try {
-				backdrops.add(new Backdrop(
-						new File(MizLib.getTvShowBackdropFolder(this),
-								cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)) + "_tvbg.jpg").getAbsolutePath(),
+				backdrops.add(new Backdrop(MizLib.getTvShowBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID))).getAbsolutePath(),
 								cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE))
 						));
 			} catch (NullPointerException e) {}

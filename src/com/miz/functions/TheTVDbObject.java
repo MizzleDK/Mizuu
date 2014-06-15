@@ -46,7 +46,6 @@ public class TheTVDbObject {
 	private Context context;
 	private String LOCALE = "", language = "", ignoredTags = "";
 	private boolean localizedInfo = false;
-	private File thumbsFolder;
 	private TheTVDb tvdb;
 	private Tvshow thisShow;
 	private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
@@ -82,8 +81,8 @@ public class TheTVDbObject {
 
 		updateWidgets();
 
-		File coverFile = new File(thumbsFolder, thisShow.getId() + ".jpg");
-		File backdropFile = new File(MizLib.getTvShowBackdropFolder(context), thisShow.getId() + "_tvbg.jpg");
+		File coverFile = MizLib.getTvShowThumb(context, thisShow.getId());
+		File backdropFile = MizLib.getTvShowBackdrop(context, thisShow.getId());
 		if (!backdropFile.exists())
 			backdropFile = coverFile;
 		
@@ -107,8 +106,6 @@ public class TheTVDbObject {
 			} else LOCALE = "en";
 		else
 			LOCALE = language;
-
-		thumbsFolder = MizLib.getTvShowThumbFolder(context);
 	}
 
 	private void createShow() {
@@ -126,8 +123,8 @@ public class TheTVDbObject {
 
 		if (downloadCovers) {
 			if (!thisShow.getId().equals("invalid") && !thisShow.getId().isEmpty()) {
-				String thumb_filepath = new File(thumbsFolder, thisShow.getId() + ".jpg").getAbsolutePath();
-				String backdrop_filepath = new File(MizLib.getTvShowBackdropFolder(context), thisShow.getId() + "_tvbg.jpg").getAbsolutePath();
+				String thumb_filepath = MizLib.getTvShowThumb(context, thisShow.getId()).getAbsolutePath();
+				String backdrop_filepath = MizLib.getTvShowBackdrop(context, thisShow.getId()).getAbsolutePath();
 
 				// Download the cover file and try again if it fails
 				if (!thisShow.getCover_url().isEmpty())
@@ -169,14 +166,14 @@ public class TheTVDbObject {
 
 		// Download the episode screenshot file and try again if it fails
 		if (!thisEpisode.getScreenshot_url().isEmpty()) {
-			String screenshotFile = new File(MizLib.getTvShowEpisodeFolder(context), thisShow.getId() + "_S" + season + "E" + episode + ".jpg").getAbsolutePath();
+			String screenshotFile = MizLib.getTvShowEpisode(context, thisShow.getId(), season, episode).getAbsolutePath();
 			if (!MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile))
 				MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile);
 		}
 		
 		// Download season cover if it hasn't already been downloaded
 		if (thisShow.hasSeason(Integer.valueOf(thisEpisode.getSeason()))) {
-			File seasonFile = new File(MizLib.getTvShowSeasonFolder(context), thisShow.getId() + "_S" + season + ".jpg");
+			File seasonFile = MizLib.getTvShowSeason(context, thisShow.getId(), season);
 			if (!seasonFile.exists()) {
 				if (!MizLib.downloadFile(thisShow.getSeason(Integer.valueOf(thisEpisode.getSeason())).getCoverPath(), seasonFile.getAbsolutePath()))
 					MizLib.downloadFile(thisShow.getSeason(Integer.valueOf(thisEpisode.getSeason())).getCoverPath(), seasonFile.getAbsolutePath());
@@ -195,8 +192,8 @@ public class TheTVDbObject {
 	}
 
 	private void updateNotification(Episode ep, String filepath) {
-		File coverFile = new File(thumbsFolder, thisShow.getId() + ".jpg");
-		File backdropFile = new File(MizLib.getTvShowEpisodeFolder(context), thisShow.getId() + "_S" + MizLib.addIndexZero(ep.getSeason()) + "E" + MizLib.addIndexZero(ep.getEpisode()) + ".jpg");
+		File coverFile = MizLib.getTvShowThumb(context, thisShow.getId());
+		File backdropFile = MizLib.getTvShowEpisode(context, thisShow.getId(), MizLib.addIndexZero(ep.getSeason()), MizLib.addIndexZero(ep.getEpisode()));
 		if (!backdropFile.exists())
 			backdropFile = coverFile;
 

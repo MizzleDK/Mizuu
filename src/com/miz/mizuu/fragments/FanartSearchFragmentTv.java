@@ -16,7 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -62,7 +61,7 @@ public class FanartSearchFragmentTv extends Fragment {
 	private ArrayList<String> pics_sources = new ArrayList<String>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
-	private String TVDB_ID;
+	private String TVDB_ID, mTvdbApiKey;
 	private Picasso mPicasso;
 	private Config mConfig;
 	
@@ -87,6 +86,8 @@ public class FanartSearchFragmentTv extends Fragment {
 		setRetainInstance(true);
 
 		TVDB_ID = getArguments().getString("tvdbId");
+		
+		mTvdbApiKey = MizLib.getTvdbApiKey(getActivity());
 		
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
@@ -185,7 +186,7 @@ public class FanartSearchFragmentTv extends Fragment {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				Document doc = db.parse("http://thetvdb.com/api/" + MizLib.TVDBAPI + "/series/" + params[0] + "/banners.xml");
+				Document doc = db.parse("http://thetvdb.com/api/" + mTvdbApiKey + "/series/" + params[0] + "/banners.xml");
 				doc.getDocumentElement().normalize();
 				NodeList nodeList = doc.getElementsByTagName("Banners");
 				if (nodeList.getLength() > 0) {
@@ -248,7 +249,7 @@ public class FanartSearchFragmentTv extends Fragment {
 					}}
 						);
 
-				MizLib.downloadFile(url, new File(MizLib.getTvShowBackdropFolder(getActivity()), TVDB_ID + "_tvbg.jpg").getAbsolutePath());
+				MizLib.downloadFile(url, MizLib.getTvShowBackdrop(getActivity(), TVDB_ID).getAbsolutePath());
 
 				updateWidgets();
 

@@ -61,7 +61,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 	private ViewPager awesomePager;
 	private ProgressBar pbar;
-	private String movieId, baseUrl = "", json = "";
+	private String movieId, baseUrl = "", json = "", mTmdbApiKey, mYouTubeApiKey;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
@@ -89,6 +89,8 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 		// Fetch the database ID of the movie to view
 		movieId = getIntent().getExtras().getString("tmdbid");
+		mTmdbApiKey = MizLib.getTmdbApiKey(this);
+		mYouTubeApiKey = MizLib.getYouTubeApiKey(this);
 
 		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(R.drawable.bg);
@@ -184,7 +186,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + params[0] + "/trailers?api_key=" + MizLib.TMDB_API);
+				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + params[0] + "/trailers?api_key=" + mTmdbApiKey);
 				JSONArray trailers = jObject.getJSONArray("youtube");
 
 				if (trailers.length() > 0)
@@ -200,7 +202,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		protected void onPostExecute(String result) {
 			if (result != null) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getApplicationContext()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(TMDbMovieDetails.this, MizLib.YOUTUBE_API, MizLib.getYouTubeId(result), 0, false, true);
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(TMDbMovieDetails.this, mYouTubeApiKey, MizLib.getYouTubeId(result), 0, false, true);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -251,7 +253,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		protected void onPostExecute(String result) {
 			if (result != null) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getApplicationContext()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(TMDbMovieDetails.this, MizLib.YOUTUBE_API, MizLib.getYouTubeId(result), 0, false, true);
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(TMDbMovieDetails.this, mYouTubeApiKey, MizLib.getYouTubeId(result), 0, false, true);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -333,7 +335,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		protected String doInBackground(Object... params) {
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				baseUrl = httpclient.execute(httppost, responseHandler);
@@ -342,7 +344,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + MizLib.TMDB_API + "&append_to_response=releases,trailers,images,casts,similar_movies");
+				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=releases,trailers,images,casts,similar_movies");
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 

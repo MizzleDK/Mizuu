@@ -280,7 +280,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		String mBaseUrl = "";
 		try {
 			if (MizLib.isOnline(getApplicationContext())) {
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.getTmdbApiKey(getApplicationContext()));
 				try {
 					mBaseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) {

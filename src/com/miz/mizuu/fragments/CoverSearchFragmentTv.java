@@ -16,7 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -64,7 +63,7 @@ public class CoverSearchFragmentTv extends Fragment {
 	private ImageAdapter mAdapter;
 	private ArrayList<String> pics_sources = new ArrayList<String>();
 	private GridView mGridView = null;
-	private String TVDB_ID;
+	private String TVDB_ID, mTvdbApiKey;
 	private ProgressBar pbar;
 	private Picasso mPicasso;
 	private Config mConfig;
@@ -94,6 +93,8 @@ public class CoverSearchFragmentTv extends Fragment {
 
 		TVDB_ID = getArguments().getString("tvdbId");
 
+		mTvdbApiKey = MizLib.getTvdbApiKey(getActivity());
+		
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
 
@@ -204,7 +205,7 @@ public class CoverSearchFragmentTv extends Fragment {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				Document doc = db.parse("http://thetvdb.com/api/" + MizLib.TVDBAPI + "/series/" + params[0] + "/banners.xml");
+				Document doc = db.parse("http://thetvdb.com/api/" + mTvdbApiKey + "/series/" + params[0] + "/banners.xml");
 				doc.getDocumentElement().normalize();
 				NodeList nodeList = doc.getElementsByTagName("Banners");
 				if (nodeList.getLength() > 0) {
@@ -266,7 +267,7 @@ public class CoverSearchFragmentTv extends Fragment {
 					}}
 						);
 
-				String path = new File(MizLib.getTvShowThumbFolder(getActivity()), TVDB_ID + ".jpg").getAbsolutePath();
+				String path = MizLib.getTvShowThumb(getActivity(), TVDB_ID).getAbsolutePath();
 				
 				MizLib.downloadFile(url, path);
 

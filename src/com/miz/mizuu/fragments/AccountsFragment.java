@@ -67,12 +67,14 @@ public class AccountsFragment extends Fragment {
 	private EditText traktUser, traktPass;
 	private Button traktLogIn, traktRemoveAccount, traktSyncNow;
 	private CheckBox syncTrakt;
+	private String mTraktApiKey;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		mTraktApiKey = MizLib.getTraktApiKey(getActivity());
 	}
 
 	@Override
@@ -164,7 +166,7 @@ public class AccountsFragment extends Fragment {
 			boolean success = false;
 
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://api.trakt.tv/account/test/" + MizLib.TRAKT_API);
+			HttpPost httppost = new HttpPost("http://api.trakt.tv/account/test/" + mTraktApiKey);
 
 			try {
 				// Add your data
@@ -193,7 +195,7 @@ public class AccountsFragment extends Fragment {
 				editor.commit();
 
 				httpclient = new DefaultHttpClient();
-				httppost = new HttpPost("http://api.trakt.tv/user/profile.json/" + MizLib.TRAKT_API + "/" + username);
+				httppost = new HttpPost("http://api.trakt.tv/user/profile.json/" + mTraktApiKey + "/" + username);
 
 				try {
 					// Add your data

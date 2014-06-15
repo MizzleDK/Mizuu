@@ -51,7 +51,7 @@ import com.miz.mizuu.R;
 public class Actor extends MizActivity implements OnNavigationListener {
 
 	private ViewPager awesomePager;
-	private String actorId, actorName, json, baseUrl, mActorThumb;
+	private String actorId, actorName, json, baseUrl, mActorThumb, mTmdbApiKey;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
@@ -79,6 +79,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		actorId = getIntent().getExtras().getString("actorID");
 		actorName = getIntent().getExtras().getString("actorName");
 		mActorThumb = getIntent().getExtras().getString("thumb");
+		mTmdbApiKey = MizLib.getTmdbApiKey(this);
 		
 		setTitle(actorName);
 
@@ -171,7 +172,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		protected String doInBackground(Object... params) {
 			try {				
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.TMDB_API);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				baseUrl = httpclient.execute(httppost, responseHandler);
@@ -180,7 +181,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
-				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + MizLib.TMDB_API + "&append_to_response=credits,images");
+				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=credits,images");
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 

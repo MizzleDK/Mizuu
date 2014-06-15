@@ -55,36 +55,36 @@ public abstract class MediumBaseMovie extends BaseMovie {
 				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
 					mGetReleaseYear = YEAR.substring(0,4);
 				} else {
-					mGetReleaseYear = CONTEXT.getString(R.string.unknownYear);
+					mGetReleaseYear = mContext.getString(R.string.unknownYear);
 				}
 			} catch (Exception e) {
 				if (YEAR.length() == 4)
 					mGetReleaseYear = YEAR;
 				else
-					mGetReleaseYear = CONTEXT.getString(R.string.unknownYear);
+					mGetReleaseYear = mContext.getString(R.string.unknownYear);
 			}
 		} else {
-			mGetReleaseYear = CONTEXT.getString(R.string.unknownYear);
+			mGetReleaseYear = mContext.getString(R.string.unknownYear);
 		}
 		
 		// getFilePath()		
-		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[1] : FILEPATH;
+		String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[1] : mFilepath;
 		mGetFilePath = MizLib.transformSmbPath(temp);
 		
 		// isNetworkFile()
 		mIsNetworkFile = getFilepath().contains("smb:/");
 		
 		// Weighted compatibility
-		mWeightedCompatibility = (int) (getWeightedRating() * 10) + "% " + CONTEXT.getString(R.string.compatibility);
+		mWeightedCompatibility = (int) (getWeightedRating() * 10) + "% " + mContext.getString(R.string.compatibility);
 		
 		// Date added
-		mDateAdded = MizLib.getPrettyDate(CONTEXT, Long.valueOf(getDateAdded()));
+		mDateAdded = MizLib.getPrettyDate(mContext, Long.valueOf(getDateAdded()));
 		
 		// Runtime
-		mRuntime = MizLib.getPrettyTime(CONTEXT, Integer.parseInt(getRuntime()));
+		mRuntime = MizLib.getPrettyTime(mContext, Integer.parseInt(getRuntime()));
 		
 		// Release date
-		mReleaseDate = MizLib.getPrettyDate(CONTEXT, getReleasedate());
+		mReleaseDate = MizLib.getPrettyDate(mContext, getReleasedate());
 	}
 	
 	public boolean toWatch() {
@@ -100,14 +100,14 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public File getCollectionPoster() {
-		File collectionImage = new File(MizLib.getMovieThumbFolder(CONTEXT), COLLECTION_ID + ".jpg");
+		File collectionImage = MizLib.getMovieThumb(mContext, COLLECTION_ID);
 		if (collectionImage.exists() && collectionImage.length() > 0)
 			return collectionImage;
 		return getThumbnail();
 	}
 	
 	public String getFullFilepath() {
-		return FILEPATH;
+		return mFilepath;
 	}
 	
 	public double getRawRating() {
@@ -157,7 +157,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getManualIdentificationQuery() {
-		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[0] : FILEPATH;
+		String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[0] : mFilepath;
 		return temp;
 	}
 	
@@ -196,7 +196,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getTmdbId() {
-		return TMDB_ID;
+		return mTmdbId;
 	}
 	
 	public String getCertification() {
@@ -205,7 +205,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	
 	public boolean isUnidentified() {
 		return 	getRuntime().equals("0") &&
-				getReleaseYear().equals(CONTEXT.getString(R.string.unknownYear)) &&
+				getReleaseYear().equals(mContext.getString(R.string.unknownYear)) &&
 				MizLib.isEmpty(getGenres());
 	}
 	
@@ -218,8 +218,8 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public File getOfflineCopyFile() {
-		if (FILEPATH.contains("<MiZ>"))
-			return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(getFilepath()) + "." + MizLib.getFileExtension(getFilepath()));
-		return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
+		if (mFilepath.contains("<MiZ>"))
+			return new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(getFilepath()) + "." + MizLib.getFileExtension(getFilepath()));
+		return new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
 	}
 }

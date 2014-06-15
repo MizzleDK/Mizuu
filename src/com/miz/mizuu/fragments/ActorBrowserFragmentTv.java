@@ -58,7 +58,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 	private ImageAdapter mAdapter;
 	private ArrayList<Actor> actors = new ArrayList<Actor>();
 	private GridView mGridView = null;
-	private String TVDB_ID;
+	private String TVDB_ID, mTvdbApiKey;
 	private ProgressBar pbar;
 	private Picasso mPicasso;
 	private Config mConfig;
@@ -86,6 +86,8 @@ public class ActorBrowserFragmentTv extends Fragment {
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 		
 		TVDB_ID = getArguments().getString("tvdbId");
+		
+		mTvdbApiKey = MizLib.getTvdbApiKey(getActivity());
 		
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
@@ -212,7 +214,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				Document doc = db.parse("http://thetvdb.com/api/" + MizLib.TVDBAPI + "/series/" + params[0] + "/actors.xml");
+				Document doc = db.parse("http://thetvdb.com/api/" + mTvdbApiKey + "/series/" + params[0] + "/actors.xml");
 				doc.getDocumentElement().normalize();
 				NodeList nodeList = doc.getElementsByTagName("Actors");
 				if (nodeList.getLength() > 0) {

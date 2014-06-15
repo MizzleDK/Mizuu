@@ -27,5 +27,8 @@
     <dimen name="details_padding">24dp</dimen>
     <dimen name="details_background_gradient_height">144dp</dimen>
     <dimen name="episode_details_background_overlay_height">300dp</dimen>
+    <dimen name="episode_details_background_overlay_width">510dp</dimen>
+    <dimen name="episode_details_small_margin">32dp</dimen>
+    <dimen name="episode_details_large_margin">48dp</dimen>
 
 </resources>

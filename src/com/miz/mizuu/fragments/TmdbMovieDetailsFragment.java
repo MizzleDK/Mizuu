@@ -24,9 +24,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -179,6 +181,29 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			textCertification.setTypeface(mLight);
 			
 			// Set the movie plot
+			textPlot.setBackgroundResource(R.drawable.selectable_background_example);
+			if (!thisMovie.getTagline().isEmpty())
+				textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.movie_details_max_lines));
+			else
+				textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
+			textPlot.setTag(true); // true = collapsed
+			textPlot.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (((boolean) textPlot.getTag())) {
+						textPlot.setMaxLines(1000);
+						textPlot.setTag(false);
+					} else {
+						if (!thisMovie.getTagline().isEmpty())
+							textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.movie_details_max_lines));
+						else
+							textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
+						textPlot.setTag(true);
+					}
+				}
+			});
+			textPlot.setEllipsize(TextUtils.TruncateAt.END);
+			textPlot.setFocusable(true);
 			textPlot.setText(thisMovie.getPlot());
 
 			// Set movie tag line

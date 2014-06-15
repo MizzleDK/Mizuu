@@ -198,10 +198,9 @@ public class DbAdapterTvShowEpisode {
 			
 			File temp;
 			while (cursor.moveToNext()) {
-				temp = new File(MizLib.getTvShowEpisodeFolder(context), showId +  "_S" + cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON))
-						+ "E" + cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)) + ".jpg");
+				temp = MizLib.getTvShowEpisode(context, showId, cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON)), cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)));
 				if (!temp.exists())
-					temp = new File(MizLib.getTvShowBackdropFolder(context).getAbsolutePath(), showId + "_tvbg.jpg");
+					temp = MizLib.getTvShowBackdrop(context, showId);
 					
 				episodes.add(new GridEpisode(context,
 						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_TITLE)),

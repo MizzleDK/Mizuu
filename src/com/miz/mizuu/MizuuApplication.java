@@ -19,7 +19,6 @@ package com.miz.mizuu;
 import static com.miz.functions.PreferenceKeys.DARK_THEME;
 import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -40,7 +39,6 @@ import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
-import com.miz.functions.MizLib;
 import com.miz.functions.Utils;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Downloader;
@@ -49,19 +47,17 @@ import com.squareup.picasso.Picasso;
 
 public class MizuuApplication extends Application {
 
-	private static DbAdapterTvShow dbTvShow;
-	private static DbAdapterTvShowEpisode dbTvShowEpisode;
-	private static DbAdapterSources dbSources;
-	private static DbAdapter db;
-	private static HashMap<String, String[]> map = new HashMap<String, String[]>();
-	private static Picasso mPicasso, mPicassoDetailsView;
-	private static LruCache mLruCache;
-	private static File mMovieThumbFolder, mTvShowThumbFolder;
-	private static Downloader mDownloader;
-	private static ThreadPoolExecutor mThreadPoolExecutor;
-	private static HashMap<String, Typeface> mTypefaces = new HashMap<String, Typeface>();
-	private static String mMovieThumbFolderPath, mTvShowThumbFolderPath;
-	private static Bus mBus;
+	private static DbAdapterTvShow sDbTvShow;
+	private static DbAdapterTvShowEpisode sDbTvShowEpisode;
+	private static DbAdapterSources sDbSources;
+	private static DbAdapter sDb;
+	private static HashMap<String, String[]> sMap = new HashMap<String, String[]>();
+	private static Picasso sPicasso, sPicassoDetailsView;
+	private static LruCache sLruCache;
+	private static Downloader sDownloader;
+	private static ThreadPoolExecutor sThreadPoolExecutor;
+	private static HashMap<String, Typeface> sTypefaces = new HashMap<String, Typeface>();
+	private static Bus sBus;
 
 	@Override
 	public void onCreate() {
@@ -73,52 +69,51 @@ public class MizuuApplication extends Application {
 			Crashlytics.start(this);
 
 		// Database setup
-		dbTvShow = new DbAdapterTvShow(this);
-		dbTvShowEpisode = new DbAdapterTvShowEpisode(this);
-		dbSources = new DbAdapterSources(this);
-		db = new DbAdapter(this);
+		sDbTvShow = new DbAdapterTvShow(this);
+		sDbTvShowEpisode = new DbAdapterTvShowEpisode(this);
+		sDbSources = new DbAdapterSources(this);
+		sDb = new DbAdapter(this);
 	}
 
 	@Override
 	public void onTerminate() {
 		super.onTerminate();
 
-		dbTvShow.close();
-		dbTvShowEpisode.close();
-		dbSources.close();
-		db.close();
+		sDbTvShow.close();
+		sDbTvShowEpisode.close();
+		sDbSources.close();
+		sDb.close();
 	}
 
 	public static DbAdapterTvShow getTvDbAdapter() {
-		return dbTvShow;
+		return sDbTvShow;
 	}
 
 	public static DbAdapterTvShowEpisode getTvEpisodeDbAdapter() {
-		return dbTvShowEpisode;
+		return sDbTvShowEpisode;
 	}
 
 	public static DbAdapterSources getSourcesAdapter() {
-		return dbSources;
+		return sDbSources;
 	}
 
 	public static DbAdapter getMovieAdapter() {
-		return db;
+		return sDb;
 	}
 
 	public static String[] getCifsFilesList(String parentPath) {
-		return map.get(parentPath);
+		return sMap.get(parentPath);
 	}
 
 	public static void putCifsFilesList(String parentPath, String[] list) {
-		if (!map.containsKey(parentPath))
-			map.put(parentPath, list);
+		if (!sMap.containsKey(parentPath))
+			sMap.put(parentPath, list);
 	}
 
 	public static Picasso getPicasso(Context context) {
-		if (mPicasso == null)
-			mPicasso = new Picasso.Builder(context).downloader(getDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache(context)).build();
-
-		return mPicasso;
+		if (sPicasso == null)
+			sPicasso = new Picasso.Builder(context).downloader(getDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache(context)).build();
+		return sPicasso;
 	}
 
 	/**
@@ -128,17 +123,16 @@ public class MizuuApplication extends Application {
 	 * @return
 	 */
 	public static Picasso getPicassoDetailsView(Context context) {
-		if (mPicassoDetailsView == null)
-			mPicassoDetailsView = new Picasso.Builder(context).downloader(getDownloader(context)).build();
-			
-			return mPicassoDetailsView;
+		if (sPicassoDetailsView == null)
+			sPicassoDetailsView = new Picasso.Builder(context).downloader(getDownloader(context)).build();
+		return sPicassoDetailsView;
 	}
 
 	private static ThreadPoolExecutor getThreadPoolExecutor() {
-		if (mThreadPoolExecutor == null)
-			mThreadPoolExecutor = new ThreadPoolExecutor(2, 2, 2, TimeUnit.SECONDS,
+		if (sThreadPoolExecutor == null)
+			sThreadPoolExecutor = new ThreadPoolExecutor(2, 2, 2, TimeUnit.SECONDS,
 					new LinkedBlockingQueue<Runnable>(), new PicassoThreadFactory());
-		return mThreadPoolExecutor;
+		return sThreadPoolExecutor;
 	}
 
 	static class PicassoThreadFactory implements ThreadFactory {
@@ -159,39 +153,15 @@ public class MizuuApplication extends Application {
 	}
 
 	public static LruCache getLruCache(Context context) {
-		if (mLruCache == null)
-			mLruCache = new LruCache(calculateMemoryCacheSize(context));
-		return mLruCache;
+		if (sLruCache == null)
+			sLruCache = new LruCache(calculateMemoryCacheSize(context));
+		return sLruCache;
 	}
 
 	public static Downloader getDownloader(Context context) {
-		if (mDownloader == null)
-			mDownloader = Utils.createDefaultDownloader(context);
-		return mDownloader;
-	}
-
-	public static File getMovieThumbFolder(Context context) {
-		if (mMovieThumbFolder == null)
-			mMovieThumbFolder = MizLib.getMovieThumbFolder(context);
-		return mMovieThumbFolder;
-	}
-
-	public static String getMovieThumbFolderPath(Context context) {
-		if (mMovieThumbFolderPath == null)
-			mMovieThumbFolderPath = getMovieThumbFolder(context).getAbsolutePath();
-		return mMovieThumbFolderPath;
-	}
-
-	public static File getTvShowThumbFolder(Context context) {
-		if (mTvShowThumbFolder == null)
-			mTvShowThumbFolder = MizLib.getTvShowThumbFolder(context);
-		return mTvShowThumbFolder;
-	}
-
-	public static String getTvShowThumbFolderPath(Context context) {
-		if (mTvShowThumbFolderPath == null)
-			mTvShowThumbFolderPath = getTvShowThumbFolder(context).getAbsolutePath();
-		return mTvShowThumbFolderPath;
+		if (sDownloader == null)
+			sDownloader = Utils.createDefaultDownloader(context);
+		return sDownloader;
 	}
 
 	public static int calculateMemoryCacheSize(Context context) {
@@ -202,16 +172,14 @@ public class MizuuApplication extends Application {
 		return 1024 * 1024 * memoryClass / 5;
 	}
 
-	private static Bitmap.Config mBitmapConfig = Bitmap.Config.RGB_565;
-
 	public static Bitmap.Config getBitmapConfig() {
-		return mBitmapConfig;
+		return Bitmap.Config.RGB_565;
 	}
 
 	public static Typeface getOrCreateTypeface(Context context, String key) {
-		if (!mTypefaces.containsKey(key))
-			mTypefaces.put(key, Typeface.createFromAsset(context.getAssets(), key));
-		return mTypefaces.get(key);
+		if (!sTypefaces.containsKey(key))
+			sTypefaces.put(key, Typeface.createFromAsset(context.getAssets(), key));
+		return sTypefaces.get(key);
 	}
 
 	public static int getCardDrawable(Context context) {
@@ -244,11 +212,11 @@ public class MizuuApplication extends Application {
 		return R.color.light_background;
 	}
 
-	public static boolean usesDarkTheme(Context context) {
+	private static boolean usesDarkTheme(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(DARK_THEME, true);
 	}
 
-	public static boolean isFullscreen(Context context) {
+	private static boolean isFullscreen(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FULLSCREEN_TAG, false);
 	}
 
@@ -267,9 +235,8 @@ public class MizuuApplication extends Application {
 	}
 	
 	public static Bus getBus() {
-		if (mBus == null)
-			mBus = new Bus();
-		
-		return mBus;
+		if (sBus == null)
+			sBus = new Bus();	
+		return sBus;
 	}
 }

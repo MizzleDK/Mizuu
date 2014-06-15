@@ -55,11 +55,11 @@ public class DbMovie {
 	}
 
 	public String getThumbnail() {
-		return new File(MizLib.getMovieThumbFolder(context), tmdbId + ".jpg").getAbsolutePath();
+		return MizLib.getMovieThumb(context, tmdbId).getAbsolutePath();
 	}
 
 	public String getBackdrop() {
-		return new File(MizLib.getMovieBackdropFolder(context), tmdbId + "_bg.jpg").getAbsolutePath();
+		return MizLib.getMovieBackdrop(context, tmdbId).getAbsolutePath();
 	}
 
 	public String getRuntime() {

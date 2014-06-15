@@ -48,7 +48,7 @@ public class TvShow implements Comparable<TvShow> {
 		this.isFavorite = !(isFavorite.equals("0") || isFavorite.isEmpty());
 		
 		// Thumbnail
-		mThumbnail = new File(MizuuApplication.getTvShowThumbFolderPath(CONTEXT), ID + ".jpg");
+		mThumbnail = MizLib.getTvShowThumb(CONTEXT, ID);
 		
 		// Title		
 		if (MizLib.isEmpty(TITLE)) {
@@ -110,7 +110,7 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getBackdrop() {
-		return new File(MizLib.getTvShowBackdropFolder(CONTEXT), ID + "_tvbg.jpg").getAbsolutePath();
+		return MizLib.getTvShowBackdrop(CONTEXT, ID).getAbsolutePath();
 	}
 
 	public String getRating() {

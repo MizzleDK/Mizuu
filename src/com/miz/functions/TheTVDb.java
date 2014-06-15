@@ -39,12 +39,13 @@ import static com.miz.functions.PreferenceKeys.TVSHOWS_RATINGS_SOURCE;
 
 public class TheTVDb {
 
-	private String ratingsProvider;
-	private Context c;
+	private String mRatingsProvider, mTvdbApiKey;
+	private Context mContext;
 
 	public TheTVDb(Context c) {
-		this.c = c;
-		ratingsProvider = PreferenceManager.getDefaultSharedPreferences(c).getString(TVSHOWS_RATINGS_SOURCE, c.getString(R.string.ratings_option_4));
+		mContext = c;
+		mRatingsProvider = PreferenceManager.getDefaultSharedPreferences(c).getString(TVSHOWS_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_4));
+		mTvdbApiKey = MizLib.getTvdbApiKey(mContext);
 	}
 
 	public Tvshow searchForShow(DecryptedShowEpisode episode, String language) {
@@ -202,7 +203,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setTitle(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setTitle(c.getString(R.string.stringNA));
+						show.setTitle(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -211,7 +212,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setDescription(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setDescription(c.getString(R.string.stringNA));
+						show.setDescription(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -238,7 +239,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setFirst_aired(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setFirst_aired(c.getString(R.string.stringNA));
+						show.setFirst_aired(mContext.getString(R.string.stringNA));
 					}
 
 					results.add(show);
@@ -257,7 +258,7 @@ public class TheTVDb {
 			// Connection set-up
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			URL url = new URL("http://thetvdb.com/api/" + MizLib.TVDBAPI + "/series/" + show.getId() + "/" + language + ".xml");
+			URL url = new URL("http://thetvdb.com/api/" + mTvdbApiKey + "/series/" + show.getId() + "/" + language + ".xml");
 
 			URLConnection con = url.openConnection();
 			con.setReadTimeout(60000);
@@ -281,7 +282,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setTitle(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setTitle(c.getString(R.string.stringNA));
+						show.setTitle(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -290,7 +291,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setDescription(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setDescription(c.getString(R.string.stringNA));
+						show.setDescription(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -299,7 +300,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setActors(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setActors(c.getString(R.string.stringNA));
+						show.setActors(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -308,7 +309,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setGenre(((Node) tag.item(0)).getNodeValue());
 					} catch (Exception e) {
-						show.setGenre(c.getString(R.string.stringNA));
+						show.setGenre(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -344,7 +345,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setCertification(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setCertification(c.getString(R.string.stringNA));
+						show.setCertification(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -353,7 +354,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setRuntime(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setRuntime(c.getString(R.string.stringNA));
+						show.setRuntime(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -362,7 +363,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						show.setFirst_aired(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						show.setFirst_aired(c.getString(R.string.stringNA));
+						show.setFirst_aired(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -377,9 +378,9 @@ public class TheTVDb {
 			}
 
 			// Trakt.tv
-			if (ratingsProvider.equals(c.getString(R.string.ratings_option_2))) {
+			if (mRatingsProvider.equals(mContext.getString(R.string.ratings_option_2))) {
 				try {
-					JSONObject jObject = MizLib.getJSONObject("http://api.trakt.tv/show/summary.json/" + MizLib.TRAKT_API + "/" + showId);
+					JSONObject jObject = MizLib.getJSONObject("http://api.trakt.tv/show/summary.json/" + MizLib.getTraktApiKey(mContext) + "/" + showId);
 					double rating = Double.valueOf(MizLib.getStringFromJSONObject(jObject.getJSONObject("ratings"), "percentage", "0")) / 10;
 
 					if (rating > 0 || show.getRating().equals("0.0"))
@@ -388,7 +389,7 @@ public class TheTVDb {
 			}
 
 			// OMDb API / IMDb
-			if (ratingsProvider.equals(c.getString(R.string.ratings_option_3))) {
+			if (mRatingsProvider.equals(mContext.getString(R.string.ratings_option_3))) {
 				try {
 					JSONObject jObject = MizLib.getJSONObject("http://www.omdbapi.com/?i=" + show.getImdbId());
 					double rating = Double.valueOf(MizLib.getStringFromJSONObject(jObject, "imdbRating", "0"));
@@ -403,7 +404,7 @@ public class TheTVDb {
 			// Connection set-up
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			URL url = new URL("http://thetvdb.com/api/" + MizLib.TVDBAPI + "/series/" + show.getId() + "/all/" + language + ".xml");
+			URL url = new URL("http://thetvdb.com/api/" + mTvdbApiKey + "/series/" + show.getId() + "/all/" + language + ".xml");
 
 			URLConnection con = url.openConnection();
 			con.setReadTimeout(60000);
@@ -447,7 +448,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						episode.setTitle(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						episode.setTitle(c.getString(R.string.stringNA));
+						episode.setTitle(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -456,7 +457,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						episode.setAirdate(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						episode.setAirdate(c.getString(R.string.stringNA));
+						episode.setAirdate(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -465,7 +466,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						episode.setDescription(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						episode.setDescription(c.getString(R.string.stringNA));
+						episode.setDescription(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -492,7 +493,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						episode.setDirector(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						episode.setDirector(c.getString(R.string.stringNA));
+						episode.setDirector(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -501,7 +502,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						episode.setWriter(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						episode.setWriter(c.getString(R.string.stringNA));
+						episode.setWriter(mContext.getString(R.string.stringNA));
 					}
 
 					try {
@@ -510,7 +511,7 @@ public class TheTVDb {
 						tag = element.getChildNodes();
 						episode.setGueststars(((Node) tag.item(0)).getNodeValue());
 					} catch(Exception e) {
-						episode.setGueststars(c.getString(R.string.stringNA));
+						episode.setGueststars(mContext.getString(R.string.stringNA));
 					}
 
 					show.addEpisode(episode);
@@ -522,7 +523,7 @@ public class TheTVDb {
 			// Connection set-up
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			URL url = new URL("http://thetvdb.com/api/" + MizLib.TVDBAPI + "/series/" + show.getId() + "/banners.xml");
+			URL url = new URL("http://thetvdb.com/api/" + mTvdbApiKey + "/series/" + show.getId() + "/banners.xml");
 
 			URLConnection con = url.openConnection();
 			con.setReadTimeout(60000);

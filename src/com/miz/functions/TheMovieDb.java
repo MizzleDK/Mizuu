@@ -44,7 +44,6 @@ public class TheMovieDb {
 	private TMDbMovie movie;
 	private String LOCALE = "", filepath = "", language = "";
 	private boolean localizedInfo = false, isFromManualIdentify = false;
-	private File thumbsFolder;
 	private long rowId;
 	private SharedPreferences settings;
 
@@ -97,12 +96,10 @@ public class TheMovieDb {
 		} else {
 			LOCALE = language;
 		}
-
-		thumbsFolder = MizLib.getMovieThumbFolder(context);
 	}
 
 	private void download() {
-		String thumb_filepath = new File(thumbsFolder, movie.getId() + ".jpg").getAbsolutePath();
+		String thumb_filepath = MizLib.getMovieThumb(context, movie.getId()).getAbsolutePath();
 
 		// Download the movie.getCover() file and try again if it fails
 		if (!MizLib.downloadFile(movie.getCover(), thumb_filepath))
@@ -110,7 +107,7 @@ public class TheMovieDb {
 
 		// Download the backdrop file and try again if it fails
 		if (!movie.getBackdrop().equals("NOIMG")) {
-			String backdropFile = new File(MizLib.getMovieBackdropFolder(context), movie.getId() + "_bg.jpg").getAbsolutePath();
+			String backdropFile = MizLib.getMovieBackdrop(context, movie.getId()).getAbsolutePath();
 
 			if (!MizLib.downloadFile(movie.getBackdrop(), backdropFile))
 				MizLib.downloadFile(movie.getBackdrop(), backdropFile);
@@ -118,7 +115,7 @@ public class TheMovieDb {
 
 		// Download the collection image
 		if (!movie.getCollectionImage().isEmpty()) {
-			String collectionImage = new File(thumbsFolder, movie.getCollectionId() + ".jpg").getAbsolutePath();
+			String collectionImage = MizLib.getMovieThumb(context, movie.getCollectionId()).getAbsolutePath();
 
 			if (!MizLib.downloadFile(movie.getCollectionImage(), collectionImage))
 				MizLib.downloadFile(movie.getCollectionImage(), collectionImage);
@@ -141,12 +138,12 @@ public class TheMovieDb {
 
 	private void updateNotification() {
 		if (!isFromManualIdentify) {
-			File backdropFile = new File(MizLib.getMovieBackdropFolder(context), movie.getId() + "_bg.jpg");
+			File backdropFile = MizLib.getMovieBackdrop(context, movie.getId());
 			if (!backdropFile.exists())
-				backdropFile = new File(thumbsFolder, movie.getId() + ".jpg");
+				backdropFile = MizLib.getMovieThumb(context, movie.getId());
 
 			if (callback != null)
-				callback.onMovieAdded(movie.getTitle(), new File(thumbsFolder, movie.getId() + ".jpg").getAbsolutePath(), backdropFile.getAbsolutePath());
+				callback.onMovieAdded(movie.getTitle(), MizLib.getMovieThumb(context, movie.getId()).getAbsolutePath(), backdropFile.getAbsolutePath());
 		} else {
 			sendUpdateBroadcast(new Intent("mizuu-movies-identification"));
 			updateWidgets();

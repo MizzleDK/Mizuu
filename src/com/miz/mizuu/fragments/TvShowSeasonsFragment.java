@@ -461,10 +461,10 @@ public class TvShowSeasonsFragment extends Fragment {
 
 			File temp = null;
 			for (String key : seasons.keySet()) {
-				temp = new File(MizLib.getTvShowSeasonFolder(mContext).getAbsolutePath() + "/" + mShowId + "_S" + key + ".jpg");					
+				temp = MizLib.getTvShowSeason(mContext, mShowId, key);				
 				mItems.add(new GridSeason(mContext, Integer.valueOf(key), seasons.get(key).getEpisodeCount(), seasons.get(key).getWatchedCount(),
-						temp.exists() ? new File(MizLib.getTvShowSeasonFolder(mContext).getAbsolutePath(), mShowId + "_S" + key + ".jpg") :
-							new File(MizLib.getTvShowThumbFolder(mContext).getAbsolutePath(), mShowId + ".jpg")));
+						temp.exists() ? temp :
+							MizLib.getTvShowThumb(mContext, mShowId)));
 			}
 
 			seasons.clear();

@@ -22,40 +22,39 @@ import java.io.File;
 import java.util.Locale;
 
 import com.miz.functions.MizLib;
-import com.miz.mizuu.MizuuApplication;
 
 public abstract class BaseMovie implements Comparable<BaseMovie> {
 
-	protected Context CONTEXT;
-	protected String ROW_ID, FILEPATH, TITLE, TMDB_ID;
-	protected boolean ignorePrefixes, ignoreNfo;
+	protected Context mContext;
+	protected String mRowId, mFilepath, mTitle, mTmdbId;
+	protected boolean mIgnorePrefixes, mIgnoreNfo;
 
 	protected File mGetThumbnail;
 
 	public BaseMovie(Context context, String rowId, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
 		// Set up movie fields based on constructor
-		CONTEXT = context;
-		ROW_ID = rowId;
-		FILEPATH = filepath;
-		TITLE = title;
-		TMDB_ID = tmdbId;
-		this.ignorePrefixes = ignorePrefixes;
-		this.ignoreNfo = ignoreNfo;
+		mContext = context;
+		mRowId = rowId;
+		mFilepath = filepath;
+		mTitle = title;
+		mTmdbId = tmdbId;
+		mIgnorePrefixes = ignorePrefixes;
+		mIgnoreNfo = ignoreNfo;
 
 		// getTitle()
-		if (TITLE == null || TITLE.isEmpty()) {
-			String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[0] : FILEPATH;
+		if (mTitle == null || mTitle.isEmpty()) {
+			String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[0] : mFilepath;
 			File fileName = new File(temp);
 			int pointPosition=fileName.getName().lastIndexOf(".");
-			TITLE = pointPosition == -1 ? fileName.getName() : fileName.getName().substring(0, pointPosition);
+			mTitle = pointPosition == -1 ? fileName.getName() : fileName.getName().substring(0, pointPosition);
 		} else {
 			if (ignorePrefixes) {
-				String temp = TITLE.toLowerCase(Locale.ENGLISH);
-				String[] prefixes = MizLib.getPrefixes(CONTEXT);
+				String temp = mTitle.toLowerCase(Locale.ENGLISH);
+				String[] prefixes = MizLib.getPrefixes(mContext);
 				int count = prefixes.length;
 				for (int i = 0; i < count; i++) {
 					if (temp.startsWith(prefixes[i])) {
-						TITLE = TITLE.substring(prefixes[i].length());
+						mTitle = mTitle.substring(prefixes[i].length());
 						break;
 					}
 				}
@@ -63,15 +62,15 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		}
 		
 		// getThumbnail()
-		mGetThumbnail = new File(MizuuApplication.getMovieThumbFolderPath(CONTEXT), TMDB_ID + ".jpg");
+		mGetThumbnail = MizLib.getMovieThumb(mContext, mTmdbId);
 	}
 
 	public String getRowId() {
-		return ROW_ID;
+		return mRowId;
 	}
 
 	public String getTitle() {
-		return TITLE;
+		return mTitle;
 	}
 
 	/**
@@ -87,11 +86,11 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 	}
 
 	public File getThumbnail() {
-		if (!ignoreNfo) {
+		if (!mIgnoreNfo) {
 			try {
 				// Check if there's a custom cover art image
-				String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
-				File parentFolder = new File(FILEPATH).getParentFile();
+				String filename = mFilepath.substring(0, mFilepath.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
+				File parentFolder = new File(mFilepath).getParentFile();
 
 				if (parentFolder != null) {
 					File[] list = parentFolder.listFiles();
@@ -136,11 +135,11 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 	}
 
 	public String getBackdrop() {
-		if (!ignoreNfo) {
+		if (!mIgnoreNfo) {
 			try {
 				// Check if there's a custom cover art image
-				String filename = FILEPATH.substring(0, FILEPATH.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
-				File parentFolder = new File(FILEPATH).getParentFile();
+				String filename = mFilepath.substring(0, mFilepath.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
+				File parentFolder = new File(mFilepath).getParentFile();
 
 				if (parentFolder != null) {
 					File[] list = parentFolder.listFiles();
@@ -178,7 +177,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		}
 
 		// New naming style
-		return new File(MizLib.getMovieBackdropFolder(CONTEXT), TMDB_ID + "_bg.jpg").getAbsolutePath();
+		return MizLib.getMovieBackdrop(mContext, mTmdbId).getAbsolutePath();
 	}
 
 	@Override
