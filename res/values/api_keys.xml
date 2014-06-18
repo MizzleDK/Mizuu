@@ -4,4 +4,5 @@
     <string name="tvdb_api_key">add_your_own</string>
     <string name="youtube_api_key">add_your_own</string>
     <string name="trakt_api_key">add_your_own</string>
+    <string name="crashlytics_api_key">add_your_own</string>
 </resources>
