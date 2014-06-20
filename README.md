@@ -5,6 +5,22 @@ This GitHub repository houses the source code of the Mizuu application for Andro
 
 ![image alt][1]
 
+Description
+----------------------
+
+Mizuu is a user friendly media center application for Android tablets and smartphones. The application helps manage all your movie and TV show video files - and automatically fetches useful information about the video content, including title, plot, cover art and actors.
+
+<b>Features</b>
+- Indexing of movie and TV show files on your device or on Samba (CIFS / SMB) and UPnP / DLNA compatible devices
+- View actor details for movies, including biography, filmography and photos
+- Many options to customize and personalize the application
+- Enjoy popular video content from YouTube, Reddit as well as the latest TED Talks
+- Browse details and watch trailers for upcoming and popular movies with online search
+- Different widgets for displaying your collections on the home screen
+- Synchronizes indexed content with your Trakt.tv account
+- Google TV support <i>(experimental)</i>
+
+
 Issues and suggestions
 ----------------------
 
