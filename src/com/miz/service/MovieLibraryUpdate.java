@@ -266,8 +266,8 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		db.deleteAllMovies();
 
 		// Delete all downloaded images files from the device
-		MizLib.deleteRecursive(MizLib.getMovieThumbFolder(this));
-		MizLib.deleteRecursive(MizLib.getMovieBackdropFolder(this));
+		MizLib.deleteRecursive(MizuuApplication.getMovieThumbFolder(this));
+		MizLib.deleteRecursive(MizuuApplication.getMovieBackdropFolder(this));
 	}
 
 	private void removeUnavailableFiles() {

@@ -56,7 +56,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
@@ -84,7 +83,7 @@ import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
-import com.miz.mizuu.ShowDetails;
+import com.miz.mizuu.TvShowDetails;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowActorSearchActivity;
 import com.miz.mizuu.UnidentifiedFiles;
@@ -137,7 +136,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		mShowTitles = settings.getBoolean(SHOW_TITLES_IN_GRID, true);
 
 		String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
-		if (thumbnailSize.equals(getString(R.string.normal))) 
+		if (thumbnailSize.equals(getString(R.string.large))) 
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
+		else if (thumbnailSize.equals(getString(R.string.normal))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 		else
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
@@ -268,14 +269,14 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		overviewMessage = (TextView) v.findViewById(R.id.overviewMessage);
 
-		updateMovieLibrary = (Button) v.findViewById(R.id.addMoviesButton);
-		updateMovieLibrary.setText(getString(R.string.mainUpdateBtTv));
-		updateMovieLibrary.setOnClickListener(new OnClickListener() {
+		//updateMovieLibrary = (Button) v.findViewById(R.id.addMoviesButton);
+		//updateMovieLibrary.setText(getString(R.string.mainUpdateBtTv));
+		/*updateMovieLibrary.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				startActivityForResult(getUpdateIntent(), 0);
 			}
-		});
+		});*/
 
 		mAdapter = new LoaderAdapter(getActivity());
 
@@ -314,7 +315,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				Intent intent = new Intent();
 				intent.putExtra("showId", shownShows.get(arg2).getId());
-				intent.setClass(getActivity(), ShowDetails.class);
+				intent.setClass(getActivity(), TvShowDetails.class);
 				startActivityForResult(intent, 0);
 			}
 		});
@@ -1063,7 +1064,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			forceLoaderLoad();
 		} else if (key.equals(GRID_ITEM_SIZE)) {
 			String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
-			if (thumbnailSize.equals(getString(R.string.normal))) 
+			if (thumbnailSize.equals(getString(R.string.large))) 
+				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
+			else if (thumbnailSize.equals(getString(R.string.normal))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);

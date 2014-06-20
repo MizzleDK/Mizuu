@@ -23,66 +23,66 @@ import com.miz.db.DbAdapterSources;
 public class FileSource {
 	
 	public static final int FILE = 0, SMB = 1, UPNP = 2;
-	private long rowId;
-	private String filepath, user, password, domain, type;
-	private int fileSourceType;
+	private long mRowId;
+	private String mFilepath, mUser, mPassword, mDomain, mType;
+	private int mFileSourceType;
 
 	public FileSource(long rowId, String filepath, int fileSourceType, String user, String password, String domain, String type) {
-		this.rowId = rowId;
-		this.filepath = filepath;
-		this.fileSourceType = fileSourceType;
-		this.user = user;
-		this.password = password;
-		this.domain = domain;
-		this.type = type;
+		mRowId = rowId;
+		mFilepath = filepath;
+		mFileSourceType = fileSourceType;
+		mUser = user;
+		mPassword = password;
+		mDomain = domain;
+		mType = type;
 	}
 
 	public long getRowId() {
-		return rowId;
+		return mRowId;
 	}
 
 	public String getFilepath() {
-		return filepath;
+		return mFilepath;
 	}
 
 	public String getTitle() {
 		try {
-			return new File(filepath).getName();
+			return new File(mFilepath).getName();
 		} catch (Exception e) {
-			return filepath;
+			return mFilepath;
 		}
 	}
 
 	public int getFileSourceType() {
-		return fileSourceType;
+		return mFileSourceType;
 	}
 
 	public String getUser() {
-		return user;
+		return mUser;
 	}
 
 	public String getPassword() {
-		return password;
+		return mPassword;
 	}
 
 	public String getDomain() {
-		return domain;
+		return mDomain;
 	}
 	
 	public String getUpnpFolderId() {
-		return domain;
+		return mDomain;
 	}
 	
 	public String getUpnpSerialNumber() {
-		return password;
+		return mPassword;
 	}
 	
 	public String getUpnpName() {
-		return user;
+		return mUser;
 	}
 
 	public boolean isMovie() {
-		if (type.equals(DbAdapterSources.KEY_TYPE_MOVIE))
+		if (mType.equals(DbAdapterSources.KEY_TYPE_MOVIE))
 			return true;
 		return false;
 	}

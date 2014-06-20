@@ -23,6 +23,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ActionBar;
@@ -30,7 +31,6 @@ import android.app.ActionBar.OnNavigationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -40,13 +40,15 @@ import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.miz.base.MizActivity;
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBiographyFragment;
 import com.miz.mizuu.fragments.ActorMoviesFragment;
 import com.miz.mizuu.fragments.ActorPhotosFragment;
-import com.miz.mizuu.R;
+import com.miz.mizuu.fragments.ActorTaggedPhotosFragment;
+import com.miz.mizuu.fragments.ActorTvShowsFragment;
 
 public class Actor extends MizActivity implements OnNavigationListener {
 
@@ -60,7 +62,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		if (!MizLib.isPortrait(this))
 			if (isFullscreen())
 				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
@@ -70,9 +72,9 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
-		
+
 		findViewById(R.id.layout).setBackgroundResource(R.drawable.bg);
-		
+
 		pbar = (ProgressBar) findViewById(R.id.progressbar);
 		pbar.setVisibility(View.VISIBLE);
 
@@ -80,7 +82,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		actorName = getIntent().getExtras().getString("actorName");
 		mActorThumb = getIntent().getExtras().getString("thumb");
 		mTmdbApiKey = MizLib.getTmdbApiKey(this);
-		
+
 		setTitle(actorName);
 
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
@@ -91,7 +93,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 				actionBar.setSelectedNavigationItem(position);
 			}
 		});
-		
+
 		if (savedInstanceState != null) {	
 			json = savedInstanceState.getString("json", "");
 			baseUrl = savedInstanceState.getString("baseUrl");
@@ -103,12 +105,30 @@ public class Actor extends MizActivity implements OnNavigationListener {
 			new ActorLoader().execute(actorId);
 		}
 	}
-	
+
 	private void setupSpinnerItems() {
 		spinnerItems.clear();
-		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorBiography)));
-		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.chooserMovies)));
-		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorsShowAllPhotos)));
+		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorBiography), ActorBiographyFragment.newInstance(json, mActorThumb)));
+		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.chooserMovies), ActorMoviesFragment.newInstance(json, baseUrl)));
+		
+		try {
+			JSONObject j = new JSONObject(json);
+			if (j.getJSONObject("tv_credits").getJSONArray("cast").length() > 0) {
+				spinnerItems.add(new SpinnerItem(actorName, getString(R.string.chooserTVShows), ActorTvShowsFragment.newInstance(json, baseUrl)));
+			}
+		} catch (JSONException e) {}
+		
+		try {
+			JSONObject j = new JSONObject(json);
+			if (j.getJSONObject("images").getJSONArray("profiles").length() > 0)
+				spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorsShowAllPhotos), ActorPhotosFragment.newInstance(json, actorName, baseUrl)));
+		} catch (JSONException e) {}
+
+		try {
+			JSONObject j = new JSONObject(json);
+			if (j.getJSONObject("tagged_images").getInt("total_results") > 0)
+				spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorsTaggedPhotos), ActorTaggedPhotosFragment.newInstance(json, actorName, baseUrl)));
+		} catch (JSONException e) {}
 		
 		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 	}
@@ -147,17 +167,12 @@ public class Actor extends MizActivity implements OnNavigationListener {
 
 		@Override
 		public Fragment getItem(int index) {
-			switch (index) {
-			case 0: return ActorBiographyFragment.newInstance(json, mActorThumb);
-			case 1: return ActorMoviesFragment.newInstance(json, baseUrl);
-			case 2: return ActorPhotosFragment.newInstance(json, actorName, baseUrl);
-			default: return null;
-			}
+			return spinnerItems.get(index).getFragment();
 		}  
 
 		@Override  
-		public int getCount() { 
-			return 3;
+		public int getCount() {
+			return spinnerItems.size();
 		}
 	}
 
@@ -166,7 +181,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
-	
+
 	private class ActorLoader extends AsyncTask<Object, Object, String> {
 		@Override
 		protected String doInBackground(Object... params) {
@@ -181,7 +196,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
 				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
 
-				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=credits,images");
+				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=movie_credits,tv_credits,images,tagged_images");
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 
@@ -202,7 +217,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 			}
 		}
 	}
-	
+
 	private void setupActionBarStuff() {
 		actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -214,10 +229,11 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(0);
 		pbar.setVisibility(View.GONE);
-
-		awesomePager.setAdapter(new ActorDetailsAdapter(getSupportFragmentManager()));
+		
 		setupSpinnerItems();
 		
+		awesomePager.setAdapter(new ActorDetailsAdapter(getSupportFragmentManager()));
+
 		findViewById(R.id.layout).setBackgroundResource(0);
 	}
 }

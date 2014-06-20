@@ -84,12 +84,13 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/movie_details_padding"
+                    android:layout_marginTop="16dp"
                     android:orientation="vertical" >
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:baselineAligned="false" >
 
                         <TextView
@@ -101,6 +102,7 @@
                             android:drawableLeft="@drawable/ic_action_calendar_day"
                             android:drawablePadding="@dimen/movie_details_padding"
                             android:focusable="false"
+                            android:gravity="center_vertical"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="#ddd"
                             android:textSize="@dimen/details_text_size" />
@@ -114,9 +116,11 @@
                             android:drawableLeft="@drawable/ic_action_star_10"
                             android:drawablePadding="@dimen/movie_details_padding"
                             android:focusable="false"
+                            android:gravity="center_vertical"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="#ddd"
                             android:textSize="@dimen/details_text_size" />
+
                     </LinearLayout>
 
                     <TextView
@@ -128,6 +132,7 @@
                         android:drawableLeft="@drawable/director"
                         android:drawablePadding="@dimen/movie_details_padding"
                         android:focusable="false"
+                        android:gravity="center_vertical"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#ddd"
                         android:textSize="@dimen/details_text_size" />
@@ -141,6 +146,7 @@
                         android:drawableLeft="@drawable/ic_action_edit"
                         android:drawablePadding="@dimen/movie_details_padding"
                         android:focusable="false"
+                        android:gravity="center_vertical"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#ddd"
                         android:textSize="@dimen/details_text_size" />
@@ -154,6 +160,7 @@
                         android:drawableLeft="@drawable/ic_action_users"
                         android:drawablePadding="@dimen/movie_details_padding"
                         android:focusable="false"
+                        android:gravity="center_vertical"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#ddd"
                         android:textSize="@dimen/details_text_size" />
@@ -168,9 +175,11 @@
                         android:drawableLeft="@drawable/file"
                         android:drawablePadding="@dimen/movie_details_padding"
                         android:focusable="false"
+                        android:gravity="center_vertical"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#ddd"
                         android:textSize="@dimen/details_text_size" />
+
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

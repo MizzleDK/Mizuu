@@ -28,6 +28,8 @@ import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -98,7 +100,7 @@ public class IdentifyMovie extends MizActivity {
 		rowId = Long.valueOf(getIntent().getExtras().getString("rowId"));
 		filename = getIntent().getExtras().getString("fileName");
 		mMovie = MizLib.decryptMovie(filename, settings.getString(IGNORED_FILENAME_TAGS, ""));
-		
+
 		locale = Locale.getDefault();
 
 		pbar = (ProgressBar) findViewById(R.id.pbar);
@@ -118,9 +120,29 @@ public class IdentifyMovie extends MizActivity {
 		lv.setEmptyView(findViewById(R.id.no_results));
 		findViewById(R.id.no_results).setVisibility(View.GONE);
 
+		startSearch = new StartSearch();
+
 		searchText = (EditText) findViewById(R.id.search);
 		searchText.setText(mMovie.getDecryptedFileName());
 		searchText.setSelection(searchText.length());
+		searchText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (s.toString().length() > 0)
+					searchForMovies();
+				else {
+					startSearch.cancel(true);
+					results.clear();
+					mAdapter.notifyDataSetChanged();
+				}
+			}
+		});
 		searchText.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -131,8 +153,6 @@ public class IdentifyMovie extends MizActivity {
 		});
 
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-identification"));
-
-		startSearch = new StartSearch();
 
 		if (MizLib.isOnline(this)) {
 			startSearch.execute(searchText.getText().toString());
@@ -175,12 +195,18 @@ public class IdentifyMovie extends MizActivity {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
+				if (isCancelled())
+					return null;
+
 				TMDb tmdb = new TMDb(getApplicationContext());
 				ArrayList<TMDbMovie> movieResults;
 				if (useSystemLanguage.isChecked())
 					movieResults = tmdb.searchForMovies(params[0], "", getLocaleShortcode());
 				else
 					movieResults = tmdb.searchForMovies(params[0], "", "en");
+
+				if (isCancelled())
+					return null;
 
 				int count = movieResults.size();
 				for (int i = 0; i < count; i++) {
@@ -192,6 +218,10 @@ public class IdentifyMovie extends MizActivity {
 							movieResults.get(i).getReleasedate())
 							);
 				}
+
+				if (isCancelled())
+					return null;
+
 				return "";
 			} catch (Exception e) {}
 			return null;
@@ -199,14 +229,17 @@ public class IdentifyMovie extends MizActivity {
 
 		@Override
 		protected void onPostExecute(String result) {
+			if (result == null)
+				return;
+
 			hideProgressBar();
 			if (searchText.getText().toString().length() > 0) {
 				if (lv.getAdapter() == null) {
 					mAdapter = new ListAdapter(getApplicationContext());
 					lv.setAdapter(mAdapter);
+				} else {				
+					mAdapter.notifyDataSetChanged();
 				}
-				
-				mAdapter.notifyDataSetChanged();
 			}
 		}
 	}
@@ -279,7 +312,7 @@ public class IdentifyMovie extends MizActivity {
 				if (holder.layout.getLayoutParams().height != mItemHeight) {
 					holder.layout.setLayoutParams(mImageViewLayoutParams);
 				}
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
@@ -288,7 +321,7 @@ public class IdentifyMovie extends MizActivity {
 			holder.title.setText(results.get(position).getName());
 			holder.orig_title.setText(results.get(position).getOriginalTitle());
 			holder.release.setText(results.get(position).getRelease());
-			
+
 			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
 
 			return convertView;

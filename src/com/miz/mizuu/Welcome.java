@@ -176,7 +176,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 						intent.setClass(getApplicationContext(), MovieDetails.class);
 					} else {
 						intent.putExtra("showId", backdrops.get(index).getId());
-						intent.setClass(getApplicationContext(), ShowDetails.class);
+						intent.setClass(getApplicationContext(), TvShowDetails.class);
 					}
 					startActivity(intent);
 				}

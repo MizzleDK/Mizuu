@@ -16,6 +16,8 @@
 
 package com.miz.mizuu.fragments;
 
+import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
+
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -23,8 +25,11 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -51,7 +56,7 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
 import com.squareup.picasso.Picasso;
 
-public class MovieDiscoveryFragment extends Fragment {
+public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferenceChangeListener {
 
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
@@ -85,8 +90,17 @@ public class MovieDiscoveryFragment extends Fragment {
 
 		db = MizuuApplication.getMovieAdapter();
 
-		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+		String thumbnailSize = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(GRID_ITEM_SIZE, getString(R.string.normal));
+		if (thumbnailSize.equals(getString(R.string.large))) 
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
+		else if (thumbnailSize.equals(getString(R.string.normal))) 
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+		else
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+
+		// Set OnSharedPreferenceChange listener
+		PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
@@ -108,6 +122,7 @@ public class MovieDiscoveryFragment extends Fragment {
 
 		mGridView = (GridView) v.findViewById(R.id.gridView);
 		mGridView.setAdapter(mAdapter);
+		mGridView.setColumnWidth(mImageThumbSize);
 
 		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -115,11 +130,11 @@ public class MovieDiscoveryFragment extends Fragment {
 					@Override
 					public void onGlobalLayout() {
 						if (mAdapter.getNumColumns() == 0) {
-							final int numColumns = (int) Math.floor(
-									mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-							if (numColumns > 0) {
+							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+							if (numColumns > 0)
 								mAdapter.setNumColumns(numColumns);
-							}
+
+							MizLib.removeViewTreeObserver(mGridView.getViewTreeObserver(), this);
 						}
 					}
 				});
@@ -210,7 +225,7 @@ public class MovieDiscoveryFragment extends Fragment {
 				holder.text.setTextColor(mCardTitleColor);
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 				holder.subtext.setBackgroundResource(mCardBackground);
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
@@ -285,6 +300,28 @@ public class MovieDiscoveryFragment extends Fragment {
 			if (isAdded()) {
 				mAdapter.notifyDataSetChanged();
 			}
+		}
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals(GRID_ITEM_SIZE)) {
+			String thumbnailSize = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(GRID_ITEM_SIZE, getString(R.string.normal));
+			if (thumbnailSize.equals(getString(R.string.large))) 
+				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
+			else if (thumbnailSize.equals(getString(R.string.normal))) 
+				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+			else
+				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
+
+			mGridView.setColumnWidth(mImageThumbSize);
+
+			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+			if (numColumns > 0) {
+				mAdapter.setNumColumns(numColumns);
+			}
+
+			mAdapter.notifyDataSetChanged();
 		}
 	}
 }

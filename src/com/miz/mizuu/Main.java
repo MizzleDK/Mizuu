@@ -244,7 +244,7 @@ public class Main extends MizActivity {
 			((TextView) findViewById(R.id.username)).setText(full_name);
 		else
 			mDrawerUserInfo.setVisibility(View.GONE);
-		
+
 		if (!MizLib.isEmpty(full_name)) {
 			CoverItem c = new CoverItem();
 			c.cover = ((ImageView) findViewById(R.id.userPhoto));
@@ -280,12 +280,9 @@ public class Main extends MizActivity {
 		mMenuItems.add(new MenuItem(getString(R.string.drawerOnlineMovies), -1, MenuItem.SECTION, null));
 		mMenuItems.add(new MenuItem(getString(R.string.drawerWebVideos), -1, MenuItem.SECTION, null));
 
-		// Menu section header
-		mMenuItems.add(new MenuItem(getString(R.string.installed_media_apps), -1, MenuItem.HEADER, null));
-
 		// Third party applications
 		final PackageManager pm = getPackageManager();
-		
+
 		if (refreshThirdPartyApps) {
 			mApplicationList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
 		}
@@ -296,18 +293,22 @@ public class Main extends MizActivity {
 				temp.add(new MenuItem(pm.getApplicationLabel(mApplicationList.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, mApplicationList.get(i).packageName));
 			}
 		}
-		
+
+		if (temp.size() > 0)
+			// Menu section header
+			mMenuItems.add(new MenuItem(getString(R.string.installed_media_apps), -1, MenuItem.HEADER, null));
+
 		Collections.sort(temp, new Comparator<MenuItem>() {
 			@Override
 			public int compare(MenuItem lhs, MenuItem rhs) {
 				return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
 			}
 		});
-		
+
 		for (int i = 0; i < temp.size(); i++) {
 			mMenuItems.add(temp.get(i));
 		}
-		
+
 		temp.clear();
 		temp = null;
 	}
@@ -489,7 +490,7 @@ public class Main extends MizActivity {
 
 		if (!mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && mConfirmExit) {
 			if (mTriedOnce) {
-				super.onBackPressed();
+				finish();
 			} else {
 				Toast.makeText(this, getString(R.string.pressBackToExit), Toast.LENGTH_SHORT).show();
 				mTriedOnce = true;
@@ -498,7 +499,7 @@ public class Main extends MizActivity {
 			if (MizLib.isGoogleTV(this))
 				mDrawerLayout.closeDrawers();
 			else
-				super.onBackPressed();
+				finish();
 		}
 	}
 

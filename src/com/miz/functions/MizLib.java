@@ -108,6 +108,8 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
@@ -439,6 +441,24 @@ public class MizLib {
 		params.setMargins(0, mActionBarHeight, 0, 0);
 		v.setLayoutParams(params);
 	}
+	
+	/**
+	 * Add a margin with a height of the ActionBar to the top of a given View contained in a FrameLayout
+	 * @param c
+	 * @param v
+	 */
+	public static void addActionBarMarginBottom(Context c, View v) {
+		int mActionBarHeight = 0;
+		TypedValue tv = new TypedValue();
+		if (c.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+			mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, c.getResources().getDisplayMetrics());
+		else
+			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
+
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		params.setMargins(0, 0, 0, mActionBarHeight);
+		v.setLayoutParams(params);
+	}
 
 	public static void addNavigationBarPadding(Context c, View v) {
 		v.setPadding(0, 0, 0, getNavigationBarHeight(c));
@@ -684,8 +704,7 @@ public class MizLib {
 			return "original";
 		else if (width > 780)
 			return "w1280";
-		else
-			return "w780";
+		return "w780";
 	}
 
 	public static String getBackdropThumbUrlSize(Context c) {
@@ -697,10 +716,11 @@ public class MizLib {
 
 		final int width = getLowestNumber(size.x, size.y);
 
-		if (width >= 1200)
+		if (width >= 780)
 			return "w780";
-		else
-			return "w300";
+		if (width >= 400)
+			return "w500";
+		return "w300";
 	}
 
 	public static String getActorUrlSize(Context c) {
@@ -720,6 +740,9 @@ public class MizLib {
 
 			if (columnWidth > 400)
 				return "h632";
+			
+			if (columnWidth >= 300)
+				return "w300";
 		}
 
 		return "w185";
@@ -1486,7 +1509,7 @@ public class MizLib {
 				}
 
 				// Delete episode images
-				File dataFolder = getTvShowEpisodeFolder(c);
+				File dataFolder = MizuuApplication.getTvShowEpisodeFolder(c);
 				File[] listFiles = dataFolder.listFiles();
 				if (listFiles != null) {
 					int count = listFiles.length;
@@ -2292,83 +2315,29 @@ public class MizLib {
 		f.mkdirs();
 		return f;
 	}
-
-	/*
-	 * Please refrain from using this when you need a File object for a specific image.
-	 */
-	public static File getMovieThumbFolder(Context c) {
-		File f = new File(c.getExternalFilesDir(null) + "/movie-thumbs");
-		f.mkdirs();
-		return f;
-	}
 	
 	public static File getMovieThumb(Context c, String movieId) {
-		return new File(getMovieThumbFolder(c), movieId + ".jpg");
-	}
-
-	/*
-	 * Please refrain from using this when you need a File object for a specific image.
-	 */
-	public static File getMovieBackdropFolder(Context c) {
-		File f = new File(c.getExternalFilesDir(null) + "/movie-backdrops");
-		f.mkdirs();
-		return f;
+		return new File(MizuuApplication.getMovieThumbFolder(c), movieId + ".jpg");
 	}
 	
 	public static File getMovieBackdrop(Context c, String movieId) {
-		return new File(getMovieBackdropFolder(c), movieId + "_bg.jpg");
-	}
-
-	/*
-	 * Please refrain from using this when you need a File object for a specific image.
-	 */
-	public static File getTvShowThumbFolder(Context c) {
-		File f = new File(c.getExternalFilesDir(null) + "/tvshows-thumbs");
-		f.mkdirs();
-		return f;
+		return new File(MizuuApplication.getMovieBackdropFolder(c), movieId + "_bg.jpg");
 	}
 	
 	public static File getTvShowThumb(Context c, String showId) {
-		return new File(getTvShowThumbFolder(c), showId + ".jpg");
-	}
-
-	/*
-	 * Please refrain from using this when you need a File object for a specific image.
-	 */
-	public static File getTvShowBackdropFolder(Context c) {
-		File f = new File(c.getExternalFilesDir(null) + "/tvshows-backdrops");
-		f.mkdirs();
-		return f;
+		return new File(MizuuApplication.getTvShowThumbFolder(c), showId + ".jpg");
 	}
 	
 	public static File getTvShowBackdrop(Context c, String showId) {
-		return new File(getTvShowBackdropFolder(c), showId + "_tvbg.jpg");
-	}
-
-	/*
-	 * Please refrain from using this when you need a File object for a specific image.
-	 */
-	public static File getTvShowEpisodeFolder(Context c) {
-		File f = new File(c.getExternalFilesDir(null) + "/tvshows-episodes");
-		f.mkdirs();
-		return f;
+		return new File(MizuuApplication.getTvShowBackdropFolder(c), showId + "_tvbg.jpg");
 	}
 	
 	public static File getTvShowEpisode(Context c, String showId, String season, String episode) {
-		return new File(getTvShowEpisodeFolder(c), showId + "_S" + season + "E" + episode + ".jpg");
-	}
-
-	/*
-	 * Please refrain from using this when you need a File object for a specific image.
-	 */
-	public static File getTvShowSeasonFolder(Context c) {
-		File f = new File(c.getExternalFilesDir(null) + "/tvshows-seasons");
-		f.mkdirs();
-		return f;
+		return new File(MizuuApplication.getTvShowEpisodeFolder(c), showId + "_S" + season + "E" + episode + ".jpg");
 	}
 	
 	public static File getTvShowSeason(Context c, String showId, String season) {
-		return new File(getTvShowSeasonFolder(c), showId + "_S" + season + ".jpg");
+		return new File(MizuuApplication.getTvShowSeasonFolder(c), showId + "_S" + season + ".jpg");
 	}
 
 	public static File getCacheFolder(Context c) {
@@ -3268,8 +3237,8 @@ public class MizLib {
 	}
 
 	public static String getLatestBackdropPath(Context c) {
-		File latestMovie = lastFileModified(getMovieBackdropFolder(c));
-		File latestShow = lastFileModified(getTvShowBackdropFolder(c));
+		File latestMovie = lastFileModified(MizuuApplication.getMovieBackdropFolder(c));
+		File latestShow = lastFileModified(MizuuApplication.getTvShowBackdropFolder(c));
 		if (latestMovie != null && latestShow != null) {
 			if (latestMovie.lastModified() > latestShow.lastModified())
 				return latestMovie.getAbsolutePath();
@@ -3582,5 +3551,20 @@ public class MizLib {
 
 	public static boolean isNumber(String runtime) {
 		return TextUtils.isDigitsOnly(runtime);
+	}
+	
+	/**
+	 * Helper method to remove a ViewTreeObserver correctly, i.e.
+	 * avoiding the deprecated method on API level 16+.
+	 * @param vto
+	 * @param victim
+	 */
+	@SuppressWarnings("deprecation")
+	public static void removeViewTreeObserver(ViewTreeObserver vto, OnGlobalLayoutListener victim) {
+		if (MizLib.hasJellyBean()) {
+			vto.removeOnGlobalLayoutListener(victim);
+		} else {
+			vto.removeGlobalOnLayoutListener(victim);
+		}
 	}
 }

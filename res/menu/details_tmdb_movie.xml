@@ -20,7 +20,7 @@
     </item>
     <item
         android:id="@+id/openInBrowser"
-        android:showAsAction="never"
+        android:showAsAction="always"
         android:icon="@drawable/ic_action_globe"
         android:title="@string/openInBrowser">
     </item>

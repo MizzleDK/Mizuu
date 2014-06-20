@@ -58,10 +58,10 @@ public class ActorBrowserFragment extends Fragment {
 
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
-	private ArrayList<Actor> actors = new ArrayList<Actor>();
+	private ArrayList<Actor> mActors = new ArrayList<Actor>();
 	private GridView mGridView = null;
-	private ProgressBar pbar;
-	private String json, mTmdbApiKey;
+	private ProgressBar mProgressBar;
+	private String mJson, mTmdbApiKey;
 	private Picasso mPicasso;
 	private Config mConfig;
 
@@ -119,16 +119,19 @@ public class ActorBrowserFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
+		mGridView = (GridView) v.findViewById(R.id.gridView);
+		
 		v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		if (!MizLib.isTablet(getActivity()) && MizLib.isPortrait(getActivity()))
+			MizLib.addActionBarMarginBottom(getActivity(), mGridView);
 
-		pbar = (ProgressBar) v.findViewById(R.id.progress);
-		if (actors.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
+		if (mActors.size() > 0)
+			mProgressBar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
 
 		mAdapter = new ImageAdapter(getActivity());
-
-		mGridView = (GridView) v.findViewById(R.id.gridView);
 		mGridView.setAdapter(mAdapter);
 
 		// Calculate the total column width to set item heights by factor 1.5
@@ -146,25 +149,16 @@ public class ActorBrowserFragment extends Fragment {
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), com.miz.mizuu.Actor.class);
-
-				// Add the actor ID of the selected actor into a Bundle
-				Bundle bundle = new Bundle();
-				bundle.putString("actorName", actors.get(arg2).getName());
-				bundle.putString("actorID", actors.get(arg2).getId());
-				bundle.putString("thumb", actors.get(arg2).getUrl());
-
-				// Create a new Intent with the Bundle
-				intent.putExtras(bundle);
-
-				// Start the Intent for result
+				Intent intent = new Intent(getActivity(), com.miz.mizuu.Actor.class);
+				intent.putExtra("actorName", mActors.get(arg2).getName());
+				intent.putExtra("actorID", mActors.get(arg2).getId());
+				intent.putExtra("thumb", mActors.get(arg2).getUrl());
 				startActivity(intent);
 			}
 		});
 
 		if (getArguments().containsKey("json")) {
-			json = getArguments().getString("json");
+			mJson = getArguments().getString("json");
 			loadJson(getArguments().getString("baseUrl"));
 		}
 	}
@@ -177,13 +171,13 @@ public class ActorBrowserFragment extends Fragment {
 
 	private class ImageAdapter extends BaseAdapter {
 
-		private LayoutInflater inflater;
+		private LayoutInflater mInflater;
 		private final Context mContext;
 		private int mCard, mCardBackground, mCardTitleColor;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
-			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			mCard = MizuuApplication.getCardDrawable(mContext);
 			mCardBackground = MizuuApplication.getCardColor(mContext);
 			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
@@ -191,7 +185,7 @@ public class ActorBrowserFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return actors.size();
+			return mActors.size();
 		}
 
 		@Override
@@ -219,7 +213,7 @@ public class ActorBrowserFragment extends Fragment {
 			CoverItem holder;
 
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item, container, false);
+				convertView = mInflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
 
 				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
@@ -240,13 +234,13 @@ public class ActorBrowserFragment extends Fragment {
 
 			holder.cover.setImageResource(mCardBackground);
 
-			holder.text.setText(actors.get(position).getName());
-			holder.subtext.setText(actors.get(position).getCharacter().equals("null") ? "" : actors.get(position).getCharacter());
+			holder.text.setText(mActors.get(position).getName());
+			holder.subtext.setText(mActors.get(position).getCharacter().equals("null") ? "" : mActors.get(position).getCharacter());
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			if (!actors.get(position).getUrl().endsWith("null"))
-				mPicasso.load(actors.get(position).getUrl()).error(R.drawable.noactor).config(mConfig).into(holder);
+			if (!mActors.get(position).getUrl().endsWith("null"))
+				mPicasso.load(mActors.get(position).getUrl()).error(R.drawable.noactor).config(mConfig).into(holder);
 			else
 				holder.cover.setImageResource(R.drawable.noactor);
 
@@ -277,7 +271,7 @@ public class ActorBrowserFragment extends Fragment {
 
 				JSONArray jArray = jObject.getJSONArray("cast");
 
-				actors.clear();
+				mActors.clear();
 
 				Set<String> actorIds = new HashSet<String>();
 
@@ -285,7 +279,7 @@ public class ActorBrowserFragment extends Fragment {
 					if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
 						actorIds.add(jArray.getJSONObject(i).getString("id"));
 
-						actors.add(new Actor(
+						mActors.add(new Actor(
 								jArray.getJSONObject(i).getString("name"),
 								jArray.getJSONObject(i).getString("character"),
 								jArray.getJSONObject(i).getString("id"),
@@ -303,7 +297,7 @@ public class ActorBrowserFragment extends Fragment {
 		@Override
 		protected void onPostExecute(String result) {
 			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
+				mProgressBar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
 			}
 		}
@@ -311,11 +305,11 @@ public class ActorBrowserFragment extends Fragment {
 
 	private void loadJson(String baseUrl) {		
 		try {
-			JSONObject jObject = new JSONObject(json);
+			JSONObject jObject = new JSONObject(mJson);
 
 			JSONArray jArray = jObject.getJSONObject("casts").getJSONArray("cast");
 
-			actors.clear();
+			mActors.clear();
 
 			Set<String> actorIds = new HashSet<String>();
 
@@ -323,7 +317,7 @@ public class ActorBrowserFragment extends Fragment {
 				if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
 					actorIds.add(jArray.getJSONObject(i).getString("id"));
 					
-					actors.add(new Actor(
+					mActors.add(new Actor(
 							jArray.getJSONObject(i).getString("name"),
 							jArray.getJSONObject(i).getString("character"),
 							jArray.getJSONObject(i).getString("id"),
@@ -336,7 +330,7 @@ public class ActorBrowserFragment extends Fragment {
 		} catch (Exception e) {}
 
 		if (isAdded()) {
-			pbar.setVisibility(View.GONE);
+			mProgressBar.setVisibility(View.GONE);
 			mAdapter.notifyDataSetChanged();
 		}
 	}

@@ -29,8 +29,6 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 	protected String mRowId, mFilepath, mTitle, mTmdbId;
 	protected boolean mIgnorePrefixes, mIgnoreNfo;
 
-	protected File mGetThumbnail;
-
 	public BaseMovie(Context context, String rowId, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
 		// Set up movie fields based on constructor
 		mContext = context;
@@ -60,9 +58,6 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 				}
 			}
 		}
-		
-		// getThumbnail()
-		mGetThumbnail = MizLib.getMovieThumb(mContext, mTmdbId);
 	}
 
 	public String getRowId() {
@@ -131,7 +126,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		}
 
 		// New naming style
-		return mGetThumbnail;
+		return MizLib.getMovieThumb(mContext, mTmdbId);
 	}
 
 	public String getBackdrop() {

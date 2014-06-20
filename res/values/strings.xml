@@ -93,6 +93,7 @@
     <string name="prefsUseLocalDataTitle">Prefer localized video info</string>
     <string name="prefsUseLocalDataDescription">Look for movie and TV show data in the current system language. Defaults to English if no data is available.</string>
     <string name="actorsShowAllPhotos">Photos</string>
+    <string name="actorsTaggedPhotos">Tagged photos</string>
     <string name="actorBiography">Biography</string>
     <string name="detailsActors">Actors</string>
     <string name="chooserMovies">Movies</string>
@@ -337,6 +338,7 @@
     <string name="scheduledEveryWeek">Every week</string>
     <string name="nextUpdateIn">Next update in</string>
     <string name="IMDb">Open in IMDb</string>
+    <string name="TMDb">Open in TMDb</string>
     <string name="enterTitle">Enter title</string>
     <string name="identify">Identify</string>
     <string name="drawer_open">Open navigation drawer</string>
@@ -389,6 +391,7 @@
     <string name="actor">Actor</string>
     <string name="overviewGridItemSizeTitle">Set overview cover size</string>
     <string name="overviewGridItemSizeDescription">Change the size of movie and TV show covers in the overviews.</string>
+    <string name="large">Large</string>
     <string name="normal">Normal</string>
     <string name="small">Small</string>
     <string name="watchOffline">Watch offline</string>
@@ -451,17 +454,22 @@
     <string name="use_dark_theme_title">Use dark application theme</string>
     <string name="set_dark_theme_description">Sets the application theme to a darker style. Requires application restart.</string>
     <string name="no_results_found">No results found</string>
-	<string name="check_in">Check in on Trakt</string>
-	<string name="checked_in">Successfully checked in on Trakt!</string>
-	<string name="openWith">Open with…</string>
-	<string name="seasons">Seasons</string>
-	<string name="unwatchedEpisodesCount">%d unwatched</string>
-	<string name="leftEpisodesCount">%d left</string>
-	<string name="tvShowSeasonsOrderType">TV show seasons order type</string>
+    <string name="check_in">Check in on Trakt</string>
+    <string name="checked_in">Successfully checked in on Trakt!</string>
+    <string name="openWith">Open with…</string>
+    <string name="seasons">Seasons</string>
+    <string name="unwatchedEpisodesCount">%d unwatched</string>
+    <string name="leftEpisodesCount">%d left</string>
+    <string name="tvShowSeasonsOrderType">TV show seasons order type</string>
     <string name="tvShowSeasonsOrderTypeDescription">Show newest or oldest seasons first.</string>
     <string name="unwatched">(unwatched)</string>
     <string name="sync_error">Error synchronizing with Trakt!</string>
     <string name="setEpisodesLayoutDescription">Use a grid or list view to display TV show episodes.</string>
     <string name="setEpisodeLayout">TV show episodes layout</string>
-    
+    <string name="no_biography">No biography available.</string>
+    <string name="clear_filters">Clear filters</string>
+    <string name="empty_library_title">There\'s nothing here!</string>
+    <string name="empty_library_description">Press the <b>Update library</b> button to add some content.</string>
+    <string name="empty_watchlist_description">Press the <b>Watch later</b> button when viewing movie details to add new movies to your watchlist.</string>
+
 </resources>

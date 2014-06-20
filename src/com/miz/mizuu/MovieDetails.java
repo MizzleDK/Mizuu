@@ -240,10 +240,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				menu.findItem(R.id.watched).setTitle(R.string.stringMarkAsWatched);
 			}
 
-			if (!MizLib.isImdbInstalled(this)) {
-				menu.findItem(R.id.imdb).setVisible(false);
-			}
-
 			if (thisMovie.isNetworkFile() || thisMovie.isUpnpFile()) {
 				menu.findItem(R.id.watchOffline).setVisible(true);				
 				if (thisMovie.hasOfflineCopy())
@@ -281,9 +277,14 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			startActivity(intent);
 			return true;
 		case R.id.imdb:
-			Intent i = new Intent(Intent.ACTION_VIEW);
-			i.setData(Uri.parse("http://www.imdb.com/title/" + thisMovie.getImdbId()));
-			startActivity(i);
+			Intent imdbIntent = new Intent(Intent.ACTION_VIEW);
+			imdbIntent.setData(Uri.parse("http://www.imdb.com/title/" + thisMovie.getImdbId()));
+			startActivity(imdbIntent);
+			return true;
+		case R.id.tmdb:
+			Intent tmdbIntent = new Intent(Intent.ACTION_VIEW);
+			tmdbIntent.setData(Uri.parse("http://www.themoviedb.org/movie/" + thisMovie.getTmdbId()));
+			startActivity(tmdbIntent);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

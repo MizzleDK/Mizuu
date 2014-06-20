@@ -262,10 +262,10 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		dbEpisodes.deleteAllEpisodesInDatabase();
 
 		// Delete all downloaded images files from the device
-		MizLib.deleteRecursive(MizLib.getTvShowThumbFolder(this));
-		MizLib.deleteRecursive(MizLib.getTvShowEpisodeFolder(this));
-		MizLib.deleteRecursive(MizLib.getTvShowBackdropFolder(this));
-		MizLib.deleteRecursive(MizLib.getTvShowSeasonFolder(this));
+		MizLib.deleteRecursive(MizuuApplication.getTvShowThumbFolder(this));
+		MizLib.deleteRecursive(MizuuApplication.getTvShowEpisodeFolder(this));
+		MizLib.deleteRecursive(MizuuApplication.getTvShowBackdropFolder(this));
+		MizLib.deleteRecursive(MizuuApplication.getTvShowSeasonFolder(this));
 	}
 
 	private void removeUnavailableFiles() {

@@ -17,7 +17,9 @@
 package com.miz.mizuu.fragments;
 
 import java.io.IOException;
+import java.util.Random;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.graphics.Bitmap;
@@ -39,11 +41,12 @@ import com.squareup.picasso.Picasso;
 
 public class ActorBiographyFragment extends Fragment {
 
+	private int mRandomInt = -1;
 	private String mName, mBio, mBirth, mBirthday, mImage, mThumb;
 	private TextView mActorName, mActorBio, mActorBirth, mActorBirthday;
 	private ImageView mActorImage, mActorImageBackground;
 	private Typeface mCondensedTypeface, mLightTypeface;
-	private String json;
+	private String json, mBackgroundImage;
 	private Picasso mPicasso;
 
 	/**
@@ -88,14 +91,14 @@ public class ActorBiographyFragment extends Fragment {
 		else
 			MizLib.addActionBarMargin(getActivity(), v.findViewById(R.id.linearLayout1));
 
-		mActorBirthday = (TextView) v.findViewById(R.id.overviewMessage);
-		mActorBirth = (TextView) v.findViewById(R.id.textView2);
-		mActorName = (TextView) v.findViewById(R.id.textView3);
+		mActorBirthday = (TextView) v.findViewById(R.id.birthday);
+		mActorBirth = (TextView) v.findViewById(R.id.birth);
+		mActorName = (TextView) v.findViewById(R.id.actor_name);
 		mActorName.setTypeface(mCondensedTypeface);
 		mActorName.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		if (MizLib.isTablet(getActivity()))
 			mActorName.setTextSize(48f);
-		mActorBio = (TextView) v.findViewById(R.id.textView4);
+		mActorBio = (TextView) v.findViewById(R.id.bio);
 		mActorBio.setTypeface(mLightTypeface);
 		mActorBio.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		mActorImage = (ImageView) v.findViewById(R.id.traktIcon);
@@ -140,16 +143,25 @@ public class ActorBiographyFragment extends Fragment {
 				mBirthday = "";
 			}
 
+			try {
+				JSONArray resultArray = jObject.getJSONObject("tagged_images").getJSONArray("results");
+				if (mRandomInt == -1)
+					mRandomInt = new Random().nextInt(resultArray.length());
+				mBackgroundImage = MizLib.TMDB_BASE_URL + "w300" + resultArray.getJSONObject(mRandomInt).getString("file_path");
+			} catch (Exception ignored) {
+				mBackgroundImage = "";
+			}
+
 			if (mBirthday.equals("null")) mBirthday = "";
 
-			mImage = mThumb.replace("/w185", "/h632");
+			mImage = mThumb.replace("/" + MizLib.getActorUrlSize(getActivity()), "/h632");
 
 			mActorName.setText(mName);
 
 			if (!MizLib.isEmpty(mBio))
 				mActorBio.setText(mBio);
 			else
-				mActorBio.setVisibility(View.GONE);
+				mActorBio.setText(R.string.no_biography);
 
 			if (!MizLib.isEmpty(mBirth))
 				mActorBirth.setText(mBirth);
@@ -157,23 +169,33 @@ public class ActorBiographyFragment extends Fragment {
 				mActorBirth.setVisibility(View.GONE);
 
 			if (!MizLib.isEmpty(mBirthday))
-				mActorBirthday.setText(mBirthday);
+				mActorBirthday.setText(MizLib.getPrettyDate(getActivity(), mBirthday));
 			else
 				mActorBirthday.setVisibility(View.GONE);
 
-			if (!mThumb.isEmpty() || !mThumb.contains("null")) {
+			if (!mThumb.isEmpty() || !mThumb.contains("null") || !mBackgroundImage.isEmpty()) {
 				new BlurImage().execute();
 			}
 		} catch (Exception ignored) {}
 	}
 
-	protected class BlurImage extends AsyncTask<String, String, Bitmap> {
+	protected class BlurImage extends AsyncTask<String, Integer, Bitmap> {
 		private Bitmap mBitmap;
 
 		@Override
 		protected Bitmap doInBackground(String... params) {
 			try {
-				mBitmap = mPicasso.load(mThumb).config(MizuuApplication.getBitmapConfig()).get();
+				if (!mThumb.contains("null"))
+					mBitmap = mPicasso.load(mThumb).config(MizuuApplication.getBitmapConfig()).get();
+
+				// Set low-quality image
+				publishProgress(0);
+
+				if (!mBackgroundImage.isEmpty()) {
+					Bitmap temp = mPicasso.load(mBackgroundImage).config(MizuuApplication.getBitmapConfig()).get();
+					if (temp != null)
+						return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(temp, temp.getWidth(), temp.getHeight(), false), 4);
+				}
 
 				if (mBitmap != null)
 					return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(mBitmap, mBitmap.getWidth(), mBitmap.getHeight(), false), 4);
@@ -183,15 +205,21 @@ public class ActorBiographyFragment extends Fragment {
 		}
 
 		@Override
+		protected void onProgressUpdate(Integer... params) {
+			// Set the low-quality version of the portrait photo and start loading the HQ version
+			if (!mThumb.contains("null"))
+				mActorImage.setImageBitmap(mBitmap);
+			else
+				mActorImage.setImageResource(R.drawable.noactor);
+			new HighQualityImageLoader().execute();
+		}
+
+		@Override
 		protected void onPostExecute(Bitmap result) {
 			if (result != null) {
 				// Set the blurred version as the backdrop image
 				mActorImageBackground.setImageBitmap(result);
 				mActorImageBackground.setColorFilter(Color.parseColor("#AA181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-				
-				// Set the low-quality version of the portrait photo and start loading the HQ version
-				mActorImage.setImageBitmap(mBitmap);
-				new HighQualityImageLoader().execute();
 			}
 		}
 	}
@@ -202,7 +230,7 @@ public class ActorBiographyFragment extends Fragment {
 			try {
 				return mPicasso.load(mImage).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).get();
 			} catch (IOException e) {}
-			
+
 			return null;
 		}
 

@@ -233,7 +233,7 @@ public class ActorMoviesFragment extends Fragment {
 		try {
 			JSONObject jObject = new JSONObject(json);
 
-			JSONArray jArray = jObject.getJSONObject("credits").getJSONArray("cast");
+			JSONArray jArray = jObject.getJSONObject("movie_credits").getJSONArray("cast");
 
 			Set<String> movieIds = new HashSet<String>();
 

@@ -36,5 +36,6 @@
     <dimen name="episode_details_background_overlay_width">250dp</dimen>
     <dimen name="episode_details_small_margin">16dp</dimen>
     <dimen name="episode_details_large_margin">32dp</dimen>
+    <dimen name="empty_library_message_width">300dp</dimen>
 
 </resources>

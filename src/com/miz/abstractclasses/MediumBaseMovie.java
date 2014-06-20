@@ -21,6 +21,7 @@ import java.io.File;
 import android.content.Context;
 
 import com.miz.functions.MizLib;
+import com.miz.functions.SortingKeys;
 import com.miz.mizuu.R;
 
 
@@ -221,5 +222,22 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		if (mFilepath.contains("<MiZ>"))
 			return new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(getFilepath()) + "." + MizLib.getFileExtension(getFilepath()));
 		return new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
+	}
+	
+	public String getSubText(int sort) {
+		switch (sort) {
+		case SortingKeys.DURATION:
+			return getPrettyRuntime();
+		case SortingKeys.RATING:
+			return (int) (getRawRating() * 10) + "%";
+		case SortingKeys.WEIGHTED_RATING:
+			return getWeightedCompatibility();
+		case SortingKeys.DATE:
+			return getPrettyDateAdded();
+		case SortingKeys.RELEASE:
+			return getPrettyReleaseDate();
+		default:
+			return getReleaseYear();
+		}
 	}
 }

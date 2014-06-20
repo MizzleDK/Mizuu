@@ -16,21 +16,33 @@
 
 package com.miz.functions;
 
+import android.support.v4.app.Fragment;
+
 public class SpinnerItem {
 	
-	private String title, subtitle;
+	private Fragment mFragment;
+	private String mTitle, mSubtitle;
 	
 	public SpinnerItem(String title, String subtitle) {
-		this.title = title;
-		this.subtitle = subtitle;
+		mTitle = title;
+		mSubtitle = subtitle;
+	}
+	
+	public SpinnerItem(String title, String subtitle, Fragment fragment) {
+		mTitle = title;
+		mSubtitle = subtitle;
+		mFragment = fragment;
 	}
 	
 	public String getTitle() {
-		return title;
+		return mTitle;
 	}
 	
 	public String getSubtitle() {
-		return subtitle;
+		return mSubtitle;
 	}
 	
+	public Fragment getFragment() {
+		return mFragment;
+	}
 }

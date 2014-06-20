@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.miz.functions.MizLib;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.SplashScreen;
 
@@ -115,31 +116,31 @@ public class MoveFilesService extends IntentService {
 
 	private void movieBackdrop(File backdrop) {
 		try {
-			MizLib.copyFile(backdrop, new File(MizLib.getMovieBackdropFolder(this), backdrop.getName()));
+			MizLib.copyFile(backdrop, new File(MizuuApplication.getMovieBackdropFolder(this), backdrop.getName()));
 		} catch (IOException e) {}
 	}
 
 	private void tvShowBackdrop(File backdrop) {
 		try {
-			MizLib.copyFile(backdrop, new File(MizLib.getTvShowBackdropFolder(this), backdrop.getName()));
+			MizLib.copyFile(backdrop, new File(MizuuApplication.getTvShowBackdropFolder(this), backdrop.getName()));
 		} catch (IOException e) {}
 	}
 
 	private void episodePhoto(File episode) {
 		try {
-			MizLib.copyFile(episode, new File(MizLib.getTvShowEpisodeFolder(this), episode.getName()));
+			MizLib.copyFile(episode, new File(MizuuApplication.getTvShowEpisodeFolder(this), episode.getName()));
 		} catch (IOException e) {}
 	}
 
 	private void movieThumb(File thumb) {
 		try {
-			MizLib.copyFile(thumb, new File(MizLib.getMovieThumbFolder(this), thumb.getName()));
+			MizLib.copyFile(thumb, new File(MizuuApplication.getMovieThumbFolder(this), thumb.getName()));
 		} catch (IOException e) {}
 	}
 
 	private void tvShowThumb(File thumb) {
 		try {
-			MizLib.copyFile(thumb, new File(MizLib.getTvShowThumbFolder(this), thumb.getName()));
+			MizLib.copyFile(thumb, new File(MizuuApplication.getTvShowThumbFolder(this), thumb.getName()));
 		} catch (IOException e) {}
 	}
 }

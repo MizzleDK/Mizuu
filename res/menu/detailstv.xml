@@ -25,6 +25,11 @@
             android:title="@string/browseMedia">
         </item>
         <item
+            android:id="@+id/openInBrowser"
+            android:icon="@drawable/ic_action_globe"
+            android:title="@string/openInBrowser">
+        </item>
+        <item
             android:id="@+id/menuDeleteShow"
             android:icon="@drawable/delete"
             android:title="@string/removeShow"/>

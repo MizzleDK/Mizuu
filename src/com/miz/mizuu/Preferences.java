@@ -26,6 +26,11 @@ public class Preferences extends PreferenceActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		if (MizuuApplication.isFullscreen(this))
+			setTheme(R.style.Theme_Example_FullScreen);
+		else
+			setTheme(R.style.Theme_Example);
+		
 		super.onCreate(savedInstanceState);
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);

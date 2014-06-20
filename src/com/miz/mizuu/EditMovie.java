@@ -18,17 +18,15 @@ package com.miz.mizuu;
 
 import java.util.Calendar;
 
-import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapter;
 
-import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -51,8 +49,6 @@ public class EditMovie extends MizActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		setupDoneDiscard();
 		
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -126,33 +122,6 @@ public class EditMovie extends MizActivity {
 		cursor.close();
 	}
 
-	private void setupDoneDiscard() {
-		// Inflate a "Done/Discard" custom action bar view.
-		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-
-		final View customActionBarView = inflater.inflate(R.layout.actionbar_custom_view_done_discard, null);
-
-		customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						doneEditing();
-					}
-				});
-		customActionBarView.findViewById(R.id.actionbar_discard).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						cancelEditing();
-					}
-				});
-
-		// Show the custom action bar view and hide the normal Home icon and title.
-		final ActionBar actionBar = getActionBar();
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-		actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-	}
-
 	private void doneEditing() {
 		if (rating.getText().toString().isEmpty())
 			rating.setText("0.0");
@@ -218,10 +187,22 @@ public class EditMovie extends MizActivity {
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.editmovie, menu);
+		return true;
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			onBackPressed();
+			return true;
+		case R.id.cancel_editing:
+			cancelEditing();
+			return true;
+		case R.id.done_editing:
+			doneEditing();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

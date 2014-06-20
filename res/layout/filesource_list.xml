@@ -2,52 +2,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/relLayout"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:orientation="horizontal" >
+    android:layout_height="wrap_content"
+    android:divider="?android:dividerHorizontal"
+    android:dividerPadding="8dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:minHeight="48dp"
+    android:orientation="horizontal"
+    android:showDividers="middle" >
 
-    <ImageView
-        android:id="@+id/traktIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:padding="8dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/folder" >
-    </ImageView>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1.0"
-        android:gravity="center_vertical"
-        android:orientation="vertical" >
+        android:layout_weight="1"
+        android:layout_height="match_parent" >
 
-        <TextView
-            android:id="@+id/txtListTitle"
+        <ImageView
+            android:id="@+id/traktIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/folder" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="false"
-            android:textStyle="bold" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@+id/traktIcon"
+            android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/txtListPlot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAllCaps="false"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textIsSelectable="false" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/txtListTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textIsSelectable="false" />
+
+            <TextView
+                android:id="@+id/txtListPlot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAllCaps="false"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textIsSelectable="false"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/buttonstyle"
+        android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/remove" />
 

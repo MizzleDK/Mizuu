@@ -13,15 +13,12 @@
         android:cacheColorHint="#00000000"
         android:clipToPadding="false"
         android:columnWidth="@dimen/image_thumbnail_size"
-        android:fastScrollAlwaysVisible="false"
         android:fastScrollEnabled="true"
         android:horizontalSpacing="@dimen/image_thumbnail_spacing"
         android:nextFocusLeft="@android:id/home"
         android:numColumns="auto_fit"
-        android:paddingBottom="@dimen/image_thumbnail_spacing"
-        android:paddingLeft="@dimen/image_thumbnail_spacing"
-        android:paddingTop="@dimen/image_thumbnail_spacing"
-        android:scrollbarStyle="outsideInset"
+        android:padding="@dimen/image_thumbnail_spacing"
+        android:scrollbarStyle="outsideOverlay"
         android:scrollingCache="true"
         android:smoothScrollbar="true"
         android:stretchMode="columnWidth"
@@ -37,30 +34,43 @@
         android:layout_gravity="center" />
 
     <LinearLayout
-        android:id="@+id/overviewMessageLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/empty_library_layout"
+        android:layout_width="@dimen/empty_library_message_width"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:gravity="center"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/empty_library_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:src="@drawable/no_content_face" />
 
         <TextView
-            android:id="@+id/overviewMessage"
+            android:id="@+id/empty_library_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:focusable="false"
-            android:text=""
+            android:gravity="center_horizontal"
+            android:text="@string/empty_library_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:visibility="visible" />
+            android:textSize="26sp" />
 
-        <Button
-            android:id="@+id/addMoviesButton"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/refresh"
-            android:text="@string/mainUpdateBt"
-            android:visibility="gone" />
+        <TextView
+            android:id="@+id/empty_library_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:lineSpacingMultiplier="1.2"
+            android:text="@string/empty_library_description"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
     </LinearLayout>
 
 </FrameLayout>

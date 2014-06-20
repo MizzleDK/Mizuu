@@ -26,5 +26,6 @@
     <dimen name="cover_photo_width">192dp</dimen>
     <dimen name="details_padding">24dp</dimen>
     <dimen name="details_background_gradient_height">144dp</dimen>
+    <dimen name="empty_library_message_width">400dp</dimen>
 
 </resources>

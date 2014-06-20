@@ -54,6 +54,10 @@
                 android:id="@+id/folders"
                 android:icon="@drawable/folder"
                 android:title="@string/folders"/>
+            <item
+                android:id="@+id/clear_filters"
+                android:icon="@drawable/ic_action_discard"
+                android:title="@string/clear_filters"/>
         </menu>
     </item>
     <item

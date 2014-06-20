@@ -18,6 +18,8 @@ package com.miz.functions;
 
 import java.io.File;
 
+import com.miz.mizuu.MizuuApplication;
+
 import android.content.Context;
 
 public class DbEpisode {
@@ -48,7 +50,7 @@ public class DbEpisode {
 	}
 
 	public String getEpisodeCoverPath() {
-		return new File(MizLib.getTvShowEpisodeFolder(context), episodeCoverPath).getAbsolutePath();
+		return new File(MizuuApplication.getTvShowEpisodeFolder(context), episodeCoverPath).getAbsolutePath();
 	}
 
 	public String getThumbnail() {

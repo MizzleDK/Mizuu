@@ -63,10 +63,15 @@
         android:title="@string/watchOffline"
         android:visible="false">
     </item>
-    <item
-        android:id="@+id/imdb"
-        android:enabled="true"
-        android:title="@string/IMDb">
+    <item android:title="@string/openInBrowser">
+        <menu>
+            <item
+                android:id="@+id/imdb"
+                android:title="@string/IMDb"/>
+            <item
+                android:id="@+id/tmdb"
+                android:title="@string/TMDb"/>
+        </menu>
     </item>
     <item
         android:id="@+id/delete_movie"

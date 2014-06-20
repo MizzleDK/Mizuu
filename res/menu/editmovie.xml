@@ -5,13 +5,11 @@
     <item
         android:id="@+id/cancel_editing"
         android:icon="@drawable/remove"
-        android:onClick="cancelEditing"
         android:showAsAction="ifRoom|withText"
         android:title="@string/cancel" />
     <item
         android:id="@+id/done_editing"
         android:icon="@drawable/done"
-        android:onClick="doneEditing"
         android:showAsAction="ifRoom|withText"
         android:title="@string/done" />
 

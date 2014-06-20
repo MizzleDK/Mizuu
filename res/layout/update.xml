@@ -20,13 +20,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/updateCheckBox" />
+            android:text="@string/updateCheckBox"
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/checkBox2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/stringRemoveUnavailableEntries" />
+            android:text="@string/stringRemoveUnavailableEntries"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/row_title_movies_online"
@@ -37,7 +39,7 @@
             android:text="@string/fileSources" />
 
         <TextView
-            android:id="@+id/overviewMessage"
+            android:id="@+id/file_sources_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -45,7 +47,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
-            android:id="@+id/traktLogIn"
+            android:id="@+id/select_file_sources_button"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="8dp"
@@ -62,7 +64,7 @@
             android:text="@string/menuUpdateTitle" />
 
         <TextView
-            android:id="@+id/TextView04"
+            android:id="@+id/update_library_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -70,7 +72,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
-            android:id="@+id/btNewUserStartSearch"
+            android:id="@+id/start_update_button"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="8dp"

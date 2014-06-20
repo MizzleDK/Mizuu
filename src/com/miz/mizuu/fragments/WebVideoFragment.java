@@ -109,6 +109,7 @@ public class WebVideoFragment extends Fragment {
 		mAdapter = new ImageAdapter(getActivity());
 
 		mGridView = (GridView) v.findViewById(R.id.gridView);
+		mGridView.setClipToPadding(false);
 		mGridView.setAdapter(mAdapter);
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
 				new ViewTreeObserver.OnGlobalLayoutListener() {

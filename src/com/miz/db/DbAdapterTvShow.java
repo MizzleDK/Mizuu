@@ -62,6 +62,45 @@ public class DbAdapterTvShow {
 			return -1;
 		}
 	}
+	
+	public boolean showExists(String showTitle) {
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_TITLE + "='" + showTitle.replace("'", "''") + "'", null, KEY_SHOW_TITLE, null, null, null);
+		if (mCursor == null)
+			return false;
+		try {
+			if (mCursor.getCount() == 0) {
+				mCursor.close();
+				return false;
+			}
+		} catch (Exception e) {
+			mCursor.close();
+			return false;
+		}
+		
+		mCursor.close();
+		return true;
+	}
+	
+	public String getShowId(String showTitle) {
+		Cursor mCursor = database.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_TITLE + "='" + showTitle.replace("'", "''") + "'", null, KEY_SHOW_TITLE, null, null, null);
+		if (mCursor == null)
+			return "";
+		try {
+			if (mCursor.getCount() == 0) {
+				mCursor.close();
+				return "";
+			}
+		} catch (Exception e) {
+			mCursor.close();
+			return "";
+		}
+		
+		mCursor.moveToFirst();
+		String showId = mCursor.getString(mCursor.getColumnIndex(KEY_SHOW_ID));
+		
+		mCursor.close();
+		return showId;
+	}
 
 	public boolean updateShowSingleItem(String showId, String table, String value) {
 		ContentValues values = new ContentValues();

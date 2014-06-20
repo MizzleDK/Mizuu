@@ -19,6 +19,7 @@ package com.miz.mizuu;
 import static com.miz.functions.PreferenceKeys.DARK_THEME;
 import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -58,6 +59,7 @@ public class MizuuApplication extends Application {
 	private static ThreadPoolExecutor sThreadPoolExecutor;
 	private static HashMap<String, Typeface> sTypefaces = new HashMap<String, Typeface>();
 	private static Bus sBus;
+	private static File sMovieThumbFolder, sMovieBackdropFolder, sTvShowThumbFolder, sTvShowBackdropFolder, sTvShowEpisodeFolder, sTvShowSeasonFolder;
 
 	@Override
 	public void onCreate() {
@@ -212,11 +214,11 @@ public class MizuuApplication extends Application {
 		return R.color.light_background;
 	}
 
-	private static boolean usesDarkTheme(Context context) {
+	public static boolean usesDarkTheme(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(DARK_THEME, true);
 	}
 
-	private static boolean isFullscreen(Context context) {
+	public static boolean isFullscreen(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FULLSCREEN_TAG, false);
 	}
 
@@ -233,10 +235,77 @@ public class MizuuApplication extends Application {
 				context.setTheme(R.style.Theme_Example_Light);
 		}
 	}
-	
+
 	public static Bus getBus() {
 		if (sBus == null)
 			sBus = new Bus();	
 		return sBus;
+	}
+
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
+	public static File getMovieThumbFolder(Context c) {
+		if (sMovieThumbFolder == null) {
+			sMovieThumbFolder = new File(c.getExternalFilesDir(null) + "/movie-thumbs");
+			sMovieThumbFolder.mkdirs();
+		}
+		return sMovieThumbFolder;
+	}
+
+
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
+	public static File getMovieBackdropFolder(Context c) {
+		if (sMovieBackdropFolder == null) {
+			sMovieBackdropFolder = new File(c.getExternalFilesDir(null) + "/movie-backdrops");
+			sMovieBackdropFolder.mkdirs();
+		}
+		return sMovieBackdropFolder;
+	}
+
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
+	public static File getTvShowThumbFolder(Context c) {
+		if (sTvShowThumbFolder == null) {
+			sTvShowThumbFolder = new File(c.getExternalFilesDir(null) + "/tvshows-thumbs");
+			sTvShowThumbFolder.mkdirs();
+		}
+		return sTvShowThumbFolder;
+	}
+
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
+	public static File getTvShowBackdropFolder(Context c) {
+		if (sTvShowBackdropFolder == null) {
+			sTvShowBackdropFolder = new File(c.getExternalFilesDir(null) + "/tvshows-backdrops");
+			sTvShowBackdropFolder.mkdirs();
+		}
+		return sTvShowBackdropFolder;
+	}
+
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
+	public static File getTvShowEpisodeFolder(Context c) {
+		if (sTvShowEpisodeFolder == null) {
+			sTvShowEpisodeFolder = new File(c.getExternalFilesDir(null) + "/tvshows-episodes");
+			sTvShowEpisodeFolder.mkdirs();
+		}
+		return sTvShowEpisodeFolder;
+	}
+
+	/*
+	 * Please refrain from using this when you need a File object for a specific image.
+	 */
+	public static File getTvShowSeasonFolder(Context c) {
+		if (sTvShowSeasonFolder == null) {
+			sTvShowSeasonFolder = new File(c.getExternalFilesDir(null) + "/tvshows-seasons");
+			sTvShowSeasonFolder.mkdirs();
+		}
+		return sTvShowSeasonFolder;
 	}
 }

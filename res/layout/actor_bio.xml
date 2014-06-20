@@ -44,7 +44,7 @@
             android:paddingTop="8dp" >
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/actor_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -53,28 +53,30 @@
                 android:textSize="36sp" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/birthday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="regular"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textIsSelectable="true"
                 android:textSize="@dimen/tagline_text_size"
                 android:textStyle="italic" />
 
             <TextView
-                android:id="@+id/overviewMessage"
+                android:id="@+id/birth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="regular"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textIsSelectable="true"
                 android:textSize="@dimen/tagline_text_size"
                 android:textStyle="italic" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/bio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="8dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textIsSelectable="true"
                 android:textSize="@dimen/details_text_size" />

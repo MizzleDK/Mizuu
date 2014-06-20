@@ -25,7 +25,6 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap.Config;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -42,6 +41,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.GridEpisode;
 import com.miz.mizuu.MizuuApplication;

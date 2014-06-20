@@ -135,6 +135,9 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		
 		if (MizLib.isPortrait(getActivity())) {
+			if (!MizLib.isTablet(getActivity()))
+				MizLib.addActionBarPaddingBottom(getActivity(), view.findViewById(R.id.scrollView1));
+			
 			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
 			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
 			

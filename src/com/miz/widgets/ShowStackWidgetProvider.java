@@ -16,9 +16,6 @@
 
 package com.miz.widgets;
 
-import com.miz.mizuu.ShowDetails;
-import com.miz.mizuu.R;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -26,6 +23,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
+
+import com.miz.mizuu.R;
+import com.miz.mizuu.TvShowDetails;
 
 public class ShowStackWidgetProvider extends AppWidgetProvider {
 
@@ -49,7 +49,7 @@ public class ShowStackWidgetProvider extends AppWidgetProvider {
 			Intent openShow = new Intent();
 			openShow.putExtra("showId", intent.getStringExtra("showId"));
 			openShow.putExtra("isFromWidget", true);
-			openShow.setClass(context, ShowDetails.class);
+			openShow.setClass(context, TvShowDetails.class);
 			openShow.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startActivity(openShow);
 		} else {

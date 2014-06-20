@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="1011"
-    android:versionName="2.8.9.2" >
+    android:versionCode="1012"
+    android:versionName="2.9-beta1" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -50,7 +50,7 @@
 
         <!-- Show details activity -->
         <activity
-            android:name="com.miz.mizuu.ShowDetails"
+            android:name="com.miz.mizuu.TvShowDetails"
             android:exported="true"
             android:icon="@drawable/white_app_icon" >
             <intent-filter>
@@ -188,12 +188,13 @@
         <activity
             android:name="com.miz.mizuu.TMDbMovieDetails"
             android:exported="false"
-            android:icon="@drawable/white_app_icon" >
+            android:icon="@drawable/white_app_icon"
+            android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-        
+
         <!-- TV show episode details view -->
         <activity
             android:name="com.miz.mizuu.TvShowEpisodeDetails"
@@ -553,7 +554,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 
@@ -582,7 +583,7 @@
 
         <meta-data
             android:name="com.crashlytics.ApiKey"
-            android:value="f8acb38c12321dcd8a76c678a4cc3c85b4e71d87" />
+            android:value="@string/crashlytics_api_key" />
     </application>
 
     <instrumentation

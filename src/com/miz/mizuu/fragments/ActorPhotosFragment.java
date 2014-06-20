@@ -120,7 +120,7 @@ public class ActorPhotosFragment extends Fragment {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				String[] photos = new String[pics_sources.size()];
 				for (int i = 0; i < photos.length; i++)
-					photos[i] = pics_sources.get(i).replace("w185", "original");
+					photos[i] = pics_sources.get(i).replace(MizLib.getActorUrlSize(getActivity()), "original");
 
 				Intent intent = new Intent();
 				intent.setClass(getActivity(), ImageViewer.class);

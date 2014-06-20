@@ -18,7 +18,7 @@ package com.miz.functions;
 
 /**
  * Simple class to hold keys for application preferences. This should
- * always be used rather when dealing with preferences. Scattered keys
+ * always be used when dealing with preferences. Scattered keys
  * across the app? No thank you.
  * @author Michell
  *

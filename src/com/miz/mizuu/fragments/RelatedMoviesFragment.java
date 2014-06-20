@@ -121,15 +121,19 @@ public class RelatedMoviesFragment extends Fragment {
 		super.onViewCreated(v, savedInstanceState);
 
 		v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
+		
+		mGridView = (GridView) v.findViewById(R.id.gridView);
 
 		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		
+		if (!MizLib.isTablet(getActivity()) && MizLib.isPortrait(getActivity()))
+			MizLib.addActionBarMarginBottom(getActivity(), mGridView);
 
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
 		if (pics_sources.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
 
 		mAdapter = new ImageAdapter(getActivity());
 
-		mGridView = (GridView) v.findViewById(R.id.gridView);
 		mGridView.setAdapter(mAdapter);
 
 		// Calculate the total column width to set item heights by factor 1.5

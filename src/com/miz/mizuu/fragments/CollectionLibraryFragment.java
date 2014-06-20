@@ -148,7 +148,9 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		prefsDisableEthernetWiFiCheck = settings.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 
 		String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
-		if (thumbnailSize.equals(getString(R.string.normal))) 
+		if (thumbnailSize.equals(getString(R.string.large))) 
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
+		else if (thumbnailSize.equals(getString(R.string.normal))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 		else
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
@@ -1062,7 +1064,9 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			forceLoaderLoad();
 		} else if (key.equals(GRID_ITEM_SIZE)) {
 			String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
-			if (thumbnailSize.equals(getString(R.string.normal))) 
+			if (thumbnailSize.equals(getString(R.string.large))) 
+				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
+			else if (thumbnailSize.equals(getString(R.string.normal))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);

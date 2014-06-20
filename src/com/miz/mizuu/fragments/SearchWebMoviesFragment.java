@@ -242,8 +242,9 @@ public class SearchWebMoviesFragment extends Fragment {
 				if (lv.getAdapter() == null) {
 					mAdapter = new ListAdapter(getActivity());
 					lv.setAdapter(mAdapter);
+				} else {				
+					mAdapter.notifyDataSetChanged();
 				}
-				mAdapter.notifyDataSetChanged();
 			}
 		}
 	}

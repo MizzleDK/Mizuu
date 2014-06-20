@@ -81,7 +81,8 @@ public class TestShowFileNames extends AndroidTestCase {
 			"/TV/Breaking Bad/Season 5/5x03 - Hazard Pay.mkv", // 52
 			"/Serier/The Big Bang Theory/Season 3/Episode 5/TBBT S02E01.mkv", // 53
 			"/Looney Tunes/Season 1940/Looney Tunes.s1940e07.m4v", // 54
-			"/Looney Tunes/Looney Tunes Season 1960/Looney Tunes S1960E05 episodename.avi" // 55
+			"/Looney Tunes/Looney Tunes Season 1960/Looney Tunes S1960E05 episodename.avi", // 55
+			"/Video/Series/Atuais/Once Upon a Time/Once.Upon.A.Time.S00E00.release.mp4" // 56
 	};
 	
 	private DecryptedShowEpisode[] d;
@@ -150,6 +151,7 @@ public class TestShowFileNames extends AndroidTestCase {
 		//Assert.assertEquals("", d[53].getFileNameYear());
 		Assert.assertEquals("1940", d[54].getFileNameYear());
 		Assert.assertEquals("1960", d[55].getFileNameYear());
+		Assert.assertEquals("", d[56].getFileNameYear());
 	}
 	
 	public void testDecryptedFilenameEpisodes() {
@@ -209,6 +211,7 @@ public class TestShowFileNames extends AndroidTestCase {
 		//Assert.assertEquals(5, d[53].getEpisode());
 		Assert.assertEquals(7, d[54].getEpisode());
 		Assert.assertEquals(5, d[55].getEpisode());
+		Assert.assertEquals(0, d[56].getEpisode());
 	}
 	
 	public void testDecryptedFilenameSeasons() {
@@ -268,6 +271,7 @@ public class TestShowFileNames extends AndroidTestCase {
 		//Assert.assertEquals(3, d[53].getSeason());
 		Assert.assertEquals(1940, d[54].getSeason());
 		Assert.assertEquals(1960, d[55].getSeason());
+		Assert.assertEquals(0, d[56].getSeason());
 	}
 	
 	public void testDecryptedFilenames() {
@@ -326,6 +330,7 @@ public class TestShowFileNames extends AndroidTestCase {
 		//Assert.assertEquals("TBBT", d[53].getDecryptedFileName());
 		Assert.assertEquals("Looney Tunes", d[54].getDecryptedFileName());
 		Assert.assertEquals("Looney Tunes", d[55].getDecryptedFileName());
+		Assert.assertEquals("Once Upon A Time", d[56].getDecryptedFileName());
 	}
 	
 	public void testDecryptedParentNames() {
@@ -385,6 +390,7 @@ public class TestShowFileNames extends AndroidTestCase {
 		//Assert.assertEquals("The Big Bang Theory", d[53].getDecryptedParentName());
 		Assert.assertEquals("Looney Tunes", d[54].getDecryptedParentName());
 		Assert.assertEquals("Looney Tunes", d[55].getDecryptedParentName());
+		Assert.assertEquals("Once Upon A Time", d[56].getDecryptedParentName());
 	}
 	
 	public void testDecryptedParentNameYears() {
@@ -444,5 +450,6 @@ public class TestShowFileNames extends AndroidTestCase {
 		//Assert.assertEquals("", d[53].getParentNameYear());
 		Assert.assertEquals("", d[54].getParentNameYear());
 		Assert.assertEquals("", d[55].getParentNameYear());
+		Assert.assertEquals("", d[56].getParentNameYear());
 	}
 }
