@@ -17,3 +17,4 @@ gen/
 .idea/gradle.xml
 local.properties
 res/drawable-hdpi/Thumbs.db
+res/values/com_crashlytics_export_strings.xml
