@@ -31,8 +31,6 @@ Dependencies
 
 Mizuu uses a number of third-party libraries, which are all included in the lib folder of this repo.
 
-Additionally, you'll need StickyGridHeaders in your workspace, as Mizuu uses it as a reference for the version on the master branch. It has been removed in the dev branch, and won't be required in the future. Here's the link: https://github.com/TonicArtos/StickyGridHeaders
-
 Contributing
 ------------
 
