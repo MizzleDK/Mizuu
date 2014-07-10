@@ -41,5 +41,5 @@ resources>
 ```
 
  [1]: https://github.com/MizzleDK/Mizuu/fork
- [2]: https://github.com/MizzleDK/MizuuApp/issues
+ [2]: https://github.com/MizzleDK/Mizuu/issues
  [3]: http://translate.mizuu.tv/
