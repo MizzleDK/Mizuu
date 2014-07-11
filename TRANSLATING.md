@@ -46,7 +46,7 @@ Some strings have explanations / context descriptions. Please refer to these, if
 </plurals>
 ```
 
-Some languages include words for many different quantities. Valid quantities are: "zero", "one", "two", "few", "many", "other".
+Some languages include words for many different quantities. You may add or remove these quantities to match the specific language. Valid quantities are: "zero", "one", "two", "few", "many", "other".
 
  [1]: https://github.com/MizzleDK/Mizuu/fork
  [2]: https://github.com/MizzleDK/Mizuu/blob/master/res/values/strings.xml
