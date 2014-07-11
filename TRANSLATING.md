@@ -11,7 +11,7 @@ Translating Mizuu
 #### How to translate
 
 1. Locate the original strings in [/res/values/strings.xml][2]
-2. Check if the strings have already been translated into the language you want to translate to. You can do that by checking [/res/][3] folder and look for values-##, where ## represents the [ISO 639-1 code][4] of the language.
+2. Check if the strings have already been translated into the language you want to translate to. You can do that by checking [/res/][3] folder and look for values-##, where ## represents the [ISO 639-1 code][4] of the language, i.e. `values-da` for Danish.
 3. If the language folder exists, you can check previous translations and add missing ones. If the folder doesn't exist, you can create it and add translations.
 4. See the section below for specific translation examples
 
