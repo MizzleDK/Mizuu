@@ -30,6 +30,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -83,13 +84,16 @@ public class ActorBiographyFragment extends Fragment {
 		return inflater.inflate(R.layout.actor_bio, container, false);
 	}
 
-	public void onViewCreated(View v, Bundle savedInstanceState) {
+	public void onViewCreated(final View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		if (MizLib.isPortrait(getActivity()))
+		if (!MizuuApplication.isFullscreen(getActivity())) {
+			if (MizLib.isPortrait(getActivity()))
+				MizLib.addActionBarAndStatusBarMargin(getActivity(), v.findViewById(R.id.traktIcon), (LayoutParams) v.findViewById(R.id.traktIcon).getLayoutParams());
+			else
+				MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
+		} else
 			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
-		else
-			MizLib.addActionBarMargin(getActivity(), v.findViewById(R.id.linearLayout1));
 
 		mActorBirthday = (TextView) v.findViewById(R.id.birthday);
 		mActorBirth = (TextView) v.findViewById(R.id.birth);
@@ -162,6 +166,9 @@ public class ActorBiographyFragment extends Fragment {
 				mActorBio.setText(mBio);
 			else
 				mActorBio.setText(R.string.no_biography);
+			
+			if (MizLib.isTablet(getActivity()) && MizLib.isPortrait(getActivity()))
+				mActorBio.setLineSpacing(0, 1.15f);
 
 			if (!MizLib.isEmpty(mBirth))
 				mActorBirth.setText(mBirth);
@@ -219,7 +226,7 @@ public class ActorBiographyFragment extends Fragment {
 			if (result != null) {
 				// Set the blurred version as the backdrop image
 				mActorImageBackground.setImageBitmap(result);
-				mActorImageBackground.setColorFilter(Color.parseColor("#AA181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+				mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
 			}
 		}
 	}

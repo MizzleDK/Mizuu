@@ -54,10 +54,10 @@ public class WebVideoFragment extends Fragment {
 
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
-	private ArrayList<WebVideo> videos = new ArrayList<WebVideo>();
+	private ArrayList<WebVideo> mVideos = new ArrayList<WebVideo>();
 	private GridView mGridView = null;
-	private ProgressBar pbar;
-	private String type;
+	private ProgressBar mProgressBar;
+	private String mType;
 	private Picasso mPicasso;
 	private Config mConfig;
 
@@ -84,10 +84,10 @@ public class WebVideoFragment extends Fragment {
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
 		
-		type = getArguments().getString("type");
-		if (type.equals(getString(R.string.choiceYouTube))) {
+		mType = getArguments().getString("type");
+		if (mType.equals(getString(R.string.choiceYouTube))) {
 			new GetYouTubeVideos().execute();
-		} else if (type.equals(getString(R.string.choiceReddit))) {
+		} else if (mType.equals(getString(R.string.choiceReddit))) {
 			new RedditSearch().execute();
 		} else { // Ted Talks
 			new TEDSearch().execute();
@@ -103,8 +103,8 @@ public class WebVideoFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		pbar = (ProgressBar) v.findViewById(R.id.progress);
-		if (videos.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
+		if (mVideos.size() > 0) mProgressBar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
 
 		mAdapter = new ImageAdapter(getActivity());
 
@@ -129,11 +129,11 @@ public class WebVideoFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(getActivity(), MizLib.getYouTubeApiKey(getActivity()), videos.get(arg2).getId(), 0, false, true);
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(getActivity(), MizLib.getYouTubeApiKey(getActivity()), mVideos.get(arg2).getId(), 0, false, true);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(Intent.ACTION_VIEW);
-					intent.setData(Uri.parse("http://www.youtube.com/watch?v=" + videos.get(arg2).getId()));
+					intent.setData(Uri.parse("http://www.youtube.com/watch?v=" + mVideos.get(arg2).getId()));
 					startActivity(intent);
 				}
 			}
@@ -157,24 +157,21 @@ public class WebVideoFragment extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0, mCard, mCardBackground, mCardTitleColor;;
+		private int mNumColumns = 0;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mCard = MizuuApplication.getCardDrawable(mContext);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
-			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
 		public int getCount() {
-			return videos.size();
+			return mVideos.size();
 		}
 
 		@Override
 		public Object getItem(int position) {
-			return videos.get(position).getUrl();
+			return mVideos.get(position).getUrl();
 		}
 
 		@Override
@@ -185,7 +182,9 @@ public class WebVideoFragment extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 
+			final WebVideo mWebVideo = mVideos.get(position);
 			CoverItem holder;
+			
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.webvideo_item, container, false);
 				holder = new CoverItem();
@@ -194,9 +193,6 @@ public class WebVideoFragment extends Fragment {
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				
-				holder.mLinearLayout.setBackgroundResource(mCard);
-				holder.text.setBackgroundResource(mCardBackground);
-				holder.text.setTextColor(mCardTitleColor);
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 				
 				convertView.setTag(holder);
@@ -204,9 +200,9 @@ public class WebVideoFragment extends Fragment {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.text.setText(videos.get(position).getTitle());
+			holder.text.setText(mWebVideo.getTitle());
 			
-			mPicasso.load(videos.get(position).getUrl()).placeholder(mCardBackground).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
+			mPicasso.load(mWebVideo.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
 			
 			return convertView;
 		}
@@ -223,7 +219,7 @@ public class WebVideoFragment extends Fragment {
 	protected class GetYouTubeVideos extends AsyncTask<String, String, String> {
 		@Override
 		protected String doInBackground(String... params) {
-			videos.clear();
+			mVideos.clear();
 
 			try {
 				JSONObject jObject = MizLib.getJSONObject("http://gdata.youtube.com/feeds/api/standardfeeds/most_popular?time=today&alt=json&start-index=1&max-results=50");
@@ -234,7 +230,7 @@ public class WebVideoFragment extends Fragment {
 					JSONObject item = aitems.getJSONObject(i);
 					JSONObject id = item.getJSONObject("id");
 
-					videos.add(new WebVideo(
+					mVideos.add(new WebVideo(
 							item.getJSONObject("title").getString("$t"),
 							id.getString("$t").substring(id.getString("$t").lastIndexOf("videos/") + 7, id.getString("$t").length()),
 							item.getJSONObject("media$group").getJSONArray("media$thumbnail").getJSONObject(0).getString("url"))
@@ -248,7 +244,7 @@ public class WebVideoFragment extends Fragment {
 		@Override
 		protected void onPostExecute(String result) {
 			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
+				mProgressBar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
 			}
 		}
@@ -257,7 +253,7 @@ public class WebVideoFragment extends Fragment {
 	protected class RedditSearch extends AsyncTask<String, String, String> {
 		@Override
 		protected String doInBackground(String... params) {
-			videos.clear();
+			mVideos.clear();
 
 			try {
 				JSONObject jsonObject = MizLib.getJSONObject("http://www.reddit.com/r/videos/hot.json?sort=hot&limit=100");
@@ -267,7 +263,7 @@ public class WebVideoFragment extends Fragment {
 					if (jsonArray.getJSONObject(i).getJSONObject("data").getString("domain").equals("youtube.com") || jsonArray.getJSONObject(i).getJSONObject("data").getString("domain").equals("youtu.be")) {
 						String youtubeId = MizLib.getYouTubeId(jsonArray.getJSONObject(i).getJSONObject("data").getString("url"));
 						if (!youtubeId.isEmpty()) {
-							videos.add(new WebVideo(
+							mVideos.add(new WebVideo(
 									jsonArray.getJSONObject(i).getJSONObject("data").getString("title"),
 									youtubeId,
 									jsonArray.getJSONObject(i).getJSONObject("data").getJSONObject("media").getJSONObject("oembed").getString("thumbnail_url"))
@@ -283,7 +279,7 @@ public class WebVideoFragment extends Fragment {
 		@Override
 		protected void onPostExecute(String result) {
 			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
+				mProgressBar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
 			}
 		}
@@ -292,7 +288,7 @@ public class WebVideoFragment extends Fragment {
 	protected class TEDSearch extends AsyncTask<String, String, String> {
 		@Override
 		protected String doInBackground(String... params) {
-			videos.clear();
+			mVideos.clear();
 
 			try {
 				JSONObject jObject = MizLib.getJSONObject("http://gdata.youtube.com/feeds/api/users/TEDtalksDirector/uploads?alt=json&start-index=1&max-results=50");
@@ -303,7 +299,7 @@ public class WebVideoFragment extends Fragment {
 					JSONObject item = aitems.getJSONObject(i);
 					JSONObject id = item.getJSONObject("id");
 
-					videos.add(new WebVideo(
+					mVideos.add(new WebVideo(
 							item.getJSONObject("title").getString("$t"),
 							id.getString("$t").substring(id.getString("$t").lastIndexOf("videos/") + 7, id.getString("$t").length()),
 							item.getJSONObject("media$group").getJSONArray("media$thumbnail").getJSONObject(0).getString("url"))
@@ -317,7 +313,7 @@ public class WebVideoFragment extends Fragment {
 		@Override
 		protected void onPostExecute(String result) {
 			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
+				mProgressBar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
 			}
 		}

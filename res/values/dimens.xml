@@ -37,5 +37,23 @@
     <dimen name="episode_details_small_margin">16dp</dimen>
     <dimen name="episode_details_large_margin">32dp</dimen>
     <dimen name="empty_library_message_width">300dp</dimen>
+    <dimen name="actor_backdrop_height">300dp</dimen>
+    
+    <!-- Movie / show details -->
+    <dimen name="movie_details_landscape_width">500dp</dimen>
+    <dimen name="movie_details_landscape_height">237dp</dimen>
+    <dimen name="actionbar_gradient_height">64dp</dimen>
+    <dimen name="cover_width">150dp</dimen>
+    <dimen name="cover_height">225dp</dimen>
+    <dimen name="details_large_font_size">28sp</dimen>
+    <dimen name="details_medium_font_size">18sp</dimen>
+    <dimen name="details_description_font_size">16sp</dimen>
+    <dimen name="details_very_small_padding">2dp</dimen>
+    <dimen name="details_small_padding">6dp</dimen>
+    <dimen name="details_between_padding">8dp</dimen>
+    <dimen name="details_medium_padding">12dp</dimen>
+    <dimen name="details_large_padding">16dp</dimen>
+    <dimen name="details_top_margin">16dp</dimen>
+    <dimen name="details_left_padding_large">162dp</dimen>
 
 </resources>

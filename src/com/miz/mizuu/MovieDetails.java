@@ -16,8 +16,25 @@
 
 package com.miz.mizuu;
 
+import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
+import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
+import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
+
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbFile;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,15 +43,16 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,11 +63,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
@@ -66,15 +87,10 @@ import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
+import com.miz.smbstreamer.Streamer;
 import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
-
-import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
-import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
-import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
-import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
 
 public class MovieDetails extends MizActivity implements OnNavigationListener {
 
@@ -82,26 +98,28 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	private int movieId;
 	private Movie thisMovie;
 	private DbAdapter db;
-	private boolean ignorePrefixes, prefsRemoveMoviesFromWatchlist, ignoreDeletedFiles, ignoreNfo;
+	private boolean ignorePrefixes, prefsRemoveMoviesFromWatchlist, ignoreDeletedFiles, ignoreNfo, useWildcard, prefsDisableEthernetWiFiCheck;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
 	private ActionBar actionBar;
 	private String mYouTubeApiKey;
+	private long videoPlaybackStarted, videoPlaybackEnded;
+	private Context mContext;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.isPortrait(this))
-			if (isFullscreen())
-				setTheme(R.style.Theme_Example_Transparent_NoBackGround_FullScreen);
-			else
-				setTheme(R.style.Theme_Example_Transparent_NoBackGround);
+		mContext = this;
+		
+		if (isFullscreen())
+			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 		else
-			if (isFullscreen())
-				setTheme(R.style.Theme_Example_Transparent_FullScreen);
-			else
-				setTheme(R.style.Theme_Example_Transparent);
+			setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
+
+		if (MizLib.isPortrait(this)) {
+			getWindow().setBackgroundDrawableResource(R.drawable.bg);
+		}
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -118,9 +136,11 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		ignoreNfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_NFO_FILES, true);
 		prefsRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
 		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_FILES_ENABLED, false);
+		useWildcard = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
+		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 
 		mYouTubeApiKey = MizLib.getYouTubeApiKey(this);
-		
+
 		// Fetch the database ID of the movie to view
 		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
 			movieId = Integer.valueOf(getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY));
@@ -286,6 +306,9 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			tmdbIntent.setData(Uri.parse("http://www.themoviedb.org/movie/" + thisMovie.getTmdbId()));
 			startActivity(tmdbIntent);
 			return true;
+		case R.id.play_video:
+			playMovie();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -400,10 +423,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					Intent intent = new Intent();
-					
+
 					String temp2 = versions[which].getFilepath();
 					String temp = temp2.contains("<MiZ>") ? temp2.split("<MiZ>")[0] : temp2;
-					
+
 					intent.putExtra("fileName", temp);
 					intent.putExtra("rowId", String.valueOf(versions[which].getRowId()));
 					intent.setClass(MovieDetails.this, IdentifyMovie.class);
@@ -462,8 +485,12 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			}
 		}.start();
 	}
-
+	
 	public void watched(MenuItem item) {
+		watched(true);
+	}
+
+	private void watched(boolean showToast) {
 		thisMovie.setHasWatched(!thisMovie.hasWatched()); // Reverse the hasWatched boolean
 
 		boolean success = true;
@@ -478,11 +505,12 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		if (success) {
 			invalidateOptionsMenu();
 
-			if (thisMovie.hasWatched()) {
-				Toast.makeText(this, getString(R.string.markedAsWatched), Toast.LENGTH_SHORT).show();
-			} else {
-				Toast.makeText(this, getString(R.string.markedAsUnwatched), Toast.LENGTH_SHORT).show();
-			}
+			if (showToast)
+				if (thisMovie.hasWatched()) {
+					Toast.makeText(this, getString(R.string.markedAsWatched), Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(this, getString(R.string.markedAsUnwatched), Toast.LENGTH_SHORT).show();
+				}
 
 			notifyDatasetChanges();
 
@@ -803,11 +831,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		if (itemPosition == 1)
-			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
-		else
-			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
-
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
@@ -817,10 +840,322 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_MEDIA_PLAY:
 		case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("movie-play-button"));
+			playMovie();
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 
+	private void checkIn() {
+		new Thread() {
+			@Override
+			public void run() {
+				MizLib.checkInMovieTrakt(thisMovie, getApplicationContext());
+			}
+		}.start();
+	}
 
+	private void playMovie() {
+		if (thisMovie.hasOfflineCopy()) {
+			playMovie(thisMovie.getOfflineCopyUri(), false);
+		} else if (thisMovie.hasMultipleVersions() && !thisMovie.isUnidentified()) {
+			final MovieVersion[] versions = thisMovie.getMultipleVersions();
+			CharSequence[] items = new CharSequence[versions.length];
+			for (int i = 0; i < versions.length; i++)
+				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(getString(R.string.fileToPlay));
+			builder.setItems(items, new AlertDialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					playMovie(versions[which].getFilepath(), versions[which].getFilepath().contains("smb:/"));
+				};
+			});
+			builder.show();
+		} else {
+			playMovie(thisMovie.getFilepath(), thisMovie.isNetworkFile());
+		}
+	}
+
+	private void playMovie(String filepath, boolean isNetworkFile) {
+		videoPlaybackStarted = System.currentTimeMillis();
+		if (filepath.toLowerCase(Locale.getDefault()).matches(".*(cd1|part1).*")) {
+			new GetSplitFiles(filepath, isNetworkFile).execute();
+		} else {
+			if (isNetworkFile) {
+				playNetworkFile(filepath);
+			} else {
+				try { // Attempt to launch intent based on the MIME type
+					startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisMovie));
+					checkIn();
+				} catch (Exception e) {
+					System.out.println(e);
+					try { // Attempt to launch intent based on wildcard MIME type
+						startActivity(MizLib.getVideoIntent(filepath, "video/*", thisMovie));
+						checkIn();
+					} catch (Exception e2) {
+						System.out.println(e2);
+						Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
+					}
+				}
+			}
+		}
+	}
+
+	private class GetSplitFiles extends AsyncTask<String, Void, List<SplitFile>> {
+
+		private ProgressDialog progress;
+		private String orig_filepath;
+		private boolean isNetworkFile;
+
+		public GetSplitFiles(String filepath, boolean isNetworkFile) {
+			this.orig_filepath = filepath;
+			this.isNetworkFile = isNetworkFile;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			progress = new ProgressDialog(getApplicationContext());
+			progress.setIndeterminate(true);
+			progress.setTitle(getString(R.string.loading_movie_parts));
+			progress.setMessage(getString(R.string.few_moments));
+			progress.show();
+		}
+
+		@Override
+		protected List<SplitFile> doInBackground(String... params) {
+			List<SplitFile> parts = new ArrayList<SplitFile>();
+			List<String> temp;
+
+			try {				
+				if (isNetworkFile)
+					temp = MizLib.getSplitParts(orig_filepath, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, orig_filepath));
+				else
+					temp = MizLib.getSplitParts(orig_filepath, null);
+
+				for (int i = 0; i < temp.size(); i++)
+					parts.add(new SplitFile(temp.get(i)));
+
+			} catch (Exception e) {}
+
+			return parts;
+		}
+
+		@Override
+		protected void onPostExecute(final List<SplitFile> result) {
+			progress.dismiss();
+			if (result.size() > 1) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+				builder.setTitle(getString(R.string.playPart));
+				builder.setAdapter(new SplitAdapter(getApplicationContext(), result), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						String filepath = result.get(which).getFilepath();
+
+						if (isNetworkFile)
+							playNetworkFile(filepath);
+						else
+							play(filepath);
+					}});
+				builder.show();
+			} else if (result.size() == 1) {
+				String filepath = result.get(0).getFilepath();
+
+				if (isNetworkFile)
+					playNetworkFile(filepath);
+				else
+					play(filepath);
+			} else {
+				Toast.makeText(getApplicationContext(), getString(R.string.errorSomethingWentWrong), Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	private class SplitAdapter implements android.widget.ListAdapter {
+
+		private List<SplitFile> mFiles;
+		private Context mContext;
+		private LayoutInflater inflater;
+
+		public SplitAdapter(Context context, List<SplitFile> files) {
+			mContext = context;
+			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mFiles = files;
+		}
+
+		@Override
+		public int getCount() {
+			return mFiles.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+
+			convertView = inflater.inflate(R.layout.split_file_item, parent, false);
+
+			TextView title = (TextView) convertView.findViewById(R.id.title);
+			TextView description = (TextView) convertView.findViewById(R.id.description);
+
+			title.setText(getString(R.string.part) + " " + mFiles.get(position).getPartNumber());
+			description.setText(mFiles.get(position).getUserFilepath());
+
+			return convertView;
+		}
+
+		@Override
+		public int getViewTypeCount() {
+			return 1;
+		}
+
+		@Override
+		public boolean hasStableIds() {
+			return true;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return mFiles.isEmpty();
+		}
+
+		@Override
+		public void registerDataSetObserver(DataSetObserver observer) {}
+
+		@Override
+		public void unregisterDataSetObserver(DataSetObserver observer) {}
+
+		@Override
+		public boolean areAllItemsEnabled() {
+			return true;
+		}
+
+		@Override
+		public boolean isEnabled(int position) {
+			return true;
+		}
+
+	}
+
+	private class SplitFile {
+
+		String filepath;
+
+		public SplitFile(String filepath) {
+			this.filepath = filepath;
+		}
+
+		public String getFilepath() {
+			return filepath;
+		}
+
+		public String getUserFilepath() {
+			return MizLib.transformSmbPath(filepath);
+		}
+
+		public int getPartNumber() {
+			return MizLib.getPartNumberFromFilepath(getUserFilepath());
+		}
+
+	}
+
+	private void playNetworkFile(final String networkFilepath) {
+		if (!MizLib.isWifiConnected(getApplicationContext(), prefsDisableEthernetWiFiCheck)) {
+			Toast.makeText(getApplicationContext(), getString(R.string.noConnection), Toast.LENGTH_LONG).show();
+			return;
+		}
+
+		int bufferSize;
+		String buff = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(BUFFER_SIZE, getString(R.string._16kb));
+		if (buff.equals(getString(R.string._16kb)))
+			bufferSize = 8192 * 2; // This appears to be the limit for most video players
+		else bufferSize = 8192;
+
+		final Streamer s = Streamer.getInstance();
+		if (s != null)
+			s.setBufferSize(bufferSize);
+		else {
+			Toast.makeText(getApplicationContext(), getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		final NtlmPasswordAuthentication auth = MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, networkFilepath);
+
+		new Thread(){
+			public void run(){
+				try{
+					final SmbFile file = new SmbFile(
+							MizLib.createSmbLoginString(
+									URLEncoder.encode(auth.getDomain(), "utf-8"),
+									URLEncoder.encode(auth.getUsername(), "utf-8"),
+									URLEncoder.encode(auth.getPassword(), "utf-8"),
+									networkFilepath,
+									false
+									));
+
+					if (networkFilepath.endsWith("VIDEO_TS.IFO"))
+						s.setStreamSrc(file, MizLib.getDVDFiles(networkFilepath, auth));
+					else
+						s.setStreamSrc(file, MizLib.getSubtitleFiles(networkFilepath, auth));
+
+					runOnUiThread(new Runnable(){
+						public void run(){
+							try{
+								Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
+								mContext.startActivity(MizLib.getVideoIntent(uri, useWildcard, thisMovie));
+								checkIn();
+							} catch (Exception e) {
+								try { // Attempt to launch intent based on wildcard MIME type
+									Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
+									mContext.startActivity(MizLib.getVideoIntent(uri, "video/*", thisMovie));
+									checkIn();
+								} catch (Exception e2) {
+									Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
+								}
+							}
+						}
+					});
+				}
+				catch (MalformedURLException e) {}
+				catch (UnsupportedEncodingException e1) {}
+			}
+		}.start();
+	}
+
+	private void play(String filepath) {
+		try { // Attempt to launch intent based on the MIME type
+			getApplicationContext().startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisMovie));
+			checkIn();
+		} catch (Exception e) {
+			try { // Attempt to launch intent based on wildcard MIME type
+				getApplicationContext().startActivity(MizLib.getVideoIntent(filepath, "video/*", thisMovie));
+				checkIn();
+			} catch (Exception e2) {
+				Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	public void onResume() {
+		super.onResume();
+
+		videoPlaybackEnded = System.currentTimeMillis();
+
+		if (videoPlaybackStarted > 0 && videoPlaybackEnded - videoPlaybackStarted > (1000 * 60 * 5)) {
+			if (!thisMovie.hasWatched())
+				watched(false); // Mark it as watched
+		}
+	}
 }

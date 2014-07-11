@@ -1,86 +1,86 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollView1"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/linearLayout1"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:layout_height="@dimen/actor_backdrop_height" >
+
+        <ImageView
+            android:contentDescription="@string/content_description_image_backdrop"
+            android:id="@+id/imageView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
 
         <FrameLayout
-            android:id="@+id/frame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <com.miz.views.AspectRatioImageViewBackdropLarge
-                android:id="@+id/imageView2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp" >
 
             <com.miz.views.AspectRatioImageViewCover
                 android:id="@+id/traktIcon"
                 android:layout_width="@dimen/actor_details_width"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
                 android:background="@drawable/border"
                 android:cropToPadding="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/noactor" />
         </FrameLayout>
+    </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/linearLayout3"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp" >
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
-            <TextView
-                android:id="@+id/actor_name"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:textColor="#fff"
-                android:textIsSelectable="true"
-                android:textSize="36sp" />
+                android:orientation="vertical"
+                android:padding="@dimen/episode_details_small_margin" >
 
-            <TextView
-                android:id="@+id/birthday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="regular"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textIsSelectable="true"
-                android:textSize="@dimen/tagline_text_size"
-                android:textStyle="italic" />
+                <TextView
+                    android:id="@+id/actor_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:textColor="#fff"
+                    android:textIsSelectable="true"
+                    android:textSize="36sp" />
 
-            <TextView
-                android:id="@+id/birth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="regular"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textIsSelectable="true"
-                android:textSize="@dimen/tagline_text_size"
-                android:textStyle="italic" />
+                <TextView
+                    android:id="@+id/birthday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="regular"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textIsSelectable="true"
+                    android:textSize="@dimen/tagline_text_size"
+                    android:textStyle="italic" />
 
-            <TextView
-                android:id="@+id/bio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textIsSelectable="true"
-                android:textSize="@dimen/details_text_size" />
-        </LinearLayout>
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/birth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="regular"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textIsSelectable="true"
+                    android:textSize="@dimen/tagline_text_size"
+                    android:textStyle="italic" />
 
-</ScrollView>
+                <TextView
+                    android:id="@+id/bio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textIsSelectable="true"
+                    android:textSize="@dimen/details_text_size" />
+            </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

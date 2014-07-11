@@ -24,14 +24,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -72,14 +71,14 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 		if (!MizLib.isPortrait(this))
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_Transparent_NoBackGround_FullScreen);
+				setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_Transparent_NoBackGround);
+				setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
 		else
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_Transparent_FullScreen);
+				setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_Transparent);
+				setTheme(R.style.Mizuu_Theme_Transparent);
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -121,9 +120,21 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	private void setupSpinnerItems() {
 		String movieName = getIntent().getExtras().getString("title");
 		spinnerItems.clear();
-		spinnerItems.add(new SpinnerItem(movieName, getString(R.string.overview)));
-		spinnerItems.add(new SpinnerItem(movieName, getString(R.string.detailsActors)));
-		spinnerItems.add(new SpinnerItem(movieName, getString(R.string.relatedMovies)));
+		spinnerItems.add(new SpinnerItem(movieName, getString(R.string.overview), TmdbMovieDetailsFragment.newInstance(movieId, json)));
+		
+		try {
+			JSONObject j = new JSONObject(json);
+			if (j.getJSONObject("casts").getJSONArray("cast").length() > 0) {
+				spinnerItems.add(new SpinnerItem(movieName, getString(R.string.detailsActors), ActorBrowserFragment.newInstance(movieId, json, baseUrl)));
+			}
+		} catch (JSONException e) {}
+		
+		try {
+			JSONObject j = new JSONObject(json);
+			if (j.getJSONObject("similar_movies").getJSONArray("results").length() > 0) {
+				spinnerItems.add(new SpinnerItem(movieName, getString(R.string.relatedMovies), RelatedMoviesFragment.newInstance(movieId, true, json, baseUrl)));
+			}
+		} catch (JSONException e) {}
 
 		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 	}
@@ -293,39 +304,23 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 	private class MovieDetailsAdapter extends FragmentPagerAdapter {
 
-		private String jsonString;
-
-		public MovieDetailsAdapter(FragmentManager fm, String json) {
+		public MovieDetailsAdapter(FragmentManager fm) {
 			super(fm);
-			jsonString = json;
 		}
 
 		@Override  
 		public Fragment getItem(int index) {			
-			switch (index) {
-			case 0:
-				return TmdbMovieDetailsFragment.newInstance(movieId, jsonString);
-			case 1:
-				return ActorBrowserFragment.newInstance(movieId, jsonString, baseUrl);
-			case 2:
-				return RelatedMoviesFragment.newInstance(movieId, true, jsonString, baseUrl);
-			}
-			return null;
+			return spinnerItems.get(index).getFragment();
 		}  
 
 		@Override  
 		public int getCount() {  
-			return 3;
+			return spinnerItems.size();
 		}
 	}
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		if (itemPosition == 0)
-			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
-		else
-			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
-
 		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
@@ -378,7 +373,8 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 			findViewById(R.id.layout).setBackgroundResource(0);
 		pbar.setVisibility(View.GONE);
 
-		awesomePager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager(), json));
 		setupSpinnerItems();
+		
+		awesomePager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
 	}
 }

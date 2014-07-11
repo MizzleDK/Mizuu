@@ -1,60 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.Example.Transparent.NoBackGround" parent="@style/Theme.Example">
+    <style name="Mizuu.Theme.NoBackGround" parent="@style/Mizuu.Theme">
         <item name="android:windowBackground">@null</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="Theme.Example.Transparent.NoBackGround.FullScreen" parent="@style/Theme.Example">
-        <item name="android:windowBackground">@null</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
-    </style>
-
-    <style name="Theme.Example.NoBackGround" parent="@style/Theme.Example">
-        <item name="android:windowBackground">@null</item>
-    </style>
-
-    <style name="Theme.Example.NoBackGround.FullScreen" parent="@style/Theme.Example">
-        <item name="android:windowBackground">@null</item>
+    <style name="Mizuu.Theme.NoBackGround.FullScreen" parent="@style/Mizuu.Theme.NoBackGround">
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="Theme.Example.Transparent" parent="@style/Theme.Example">
-        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
+    <style name="Mizuu.Theme.NoBackGround.Transparent" parent="@style/Mizuu.Theme.NoBackGround">
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent</item>
     </style>
 
-    <style name="Theme.Example.Transparent.FullScreen" parent="@style/Theme.Example">
+    <style name="Mizuu.Theme.Transparent.NoBackGround.FullScreen" parent="@style/Mizuu.Theme.NoBackGround.Transparent">
         <item name="android:windowFullscreen">true</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Example</item>
     </style>
 
-    <style name="Theme.Example.Light" parent="@style/Theme.Example">
-        <item name="android:windowBackground">@color/light_background</item>
+    <style name="Mizuu.Theme.Transparent" parent="@style/Mizuu.Theme">
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent</item>
     </style>
 
-    <style name="Theme.Example.Light.FullScreen" parent="@style/Theme.Example.FullScreen">
-        <item name="android:windowBackground">@color/light_background</item>
+    <style name="Mizuu.Theme.Transparent.FullScreen" parent="@style/Mizuu.Theme.Transparent">
+        <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="Theme.Example" parent="@android:style/Theme.Holo">
+    <style name="Mizuu.Theme" parent="@android:style/Theme.Holo">
         <item name="android:listSelector">@drawable/list_selector</item>
         <item name="android:windowBackground">@drawable/bg</item>
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_example</item>
-        <item name="android:popupMenuStyle">@style/PopupMenu.Example</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Example</item>
-        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Example</item>
-        <item name="android:actionDropDownStyle">@style/DropDownNav.Example</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Solid.Example</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_example</item>
-        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_example</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Example</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid</item>
         <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
         <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_holo_dark</item>
         <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_dark</item>
+    </style>
+
+    <style name="Mizuu.Theme.FullScreen" parent="@style/Mizuu.Theme">
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
@@ -65,36 +49,21 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name="Theme.Example.FullScreen" parent="@style/Theme.Example">
-        <item name="android:windowFullscreen">true</item>
-    </style>
-
+    <!-- Rounded overflow icon -->
     <style name="OverFlow" parent="@android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow_round</item>
     </style>
 
-    <style name="ActionBar.Solid.Example" parent="@android:style/Widget.Holo.ActionBar">
+    <style name="ActionBar.Solid" parent="@android:style/Widget.Holo.ActionBar">
         <item name="android:background">#aa000000</item>
-        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_example</item>
-        <item name="android:progressBarStyle">@style/ProgressBar.Example</item>
         <item name="android:titleTextStyle">@style/ActionBar.Title</item>
         <item name="android:subtitleTextStyle">@style/ActionBar.Subtitle</item>
     </style>
 
-    <style name="ActionBar.Transparent.Example" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">@drawable/transparent_actionbar</item>
-        <item name="android:backgroundSplit">#aa000000</item>
-        <item name="android:progressBarStyle">@style/ProgressBar.Example</item>
+    <style name="ActionBar.Transparent" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@null</item>
         <item name="android:titleTextStyle">@style/ActionBar.Title</item>
         <item name="android:subtitleTextStyle">@style/ActionBar.Subtitle</item>
-    </style>
-
-    <style name="ActionBar.Subtitle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle">
-        <item name="android:textColor">#ddd</item>
-        <item name="android:shadowColor">#000</item>
-        <item name="android:shadowDx">1.0</item>
-        <item name="android:shadowDy">1.0</item>
-        <item name="android:shadowRadius">1.0</item>
     </style>
 
     <style name="ActionBar.Title" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
@@ -104,61 +73,12 @@
         <item name="android:shadowRadius">1.0</item>
     </style>
 
-    <style name="PopupMenu.Example" parent="@android:style/Widget.Holo.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_example</item>
-    </style>
-
-    <style name="DropDownListView.Example" parent="@android:style/Widget.Holo.ListView.DropDown">
-        <item name="android:listSelector">@drawable/selectable_background_example</item>
-    </style>
-
-    <style name="ActionBarTabStyle.Example" parent="@android:style/Widget.Holo.ActionBar.TabView">
-        <item name="android:background">@drawable/tab_indicator_ab_example</item>
-    </style>
-
-    <style name="DropDownNav.Example" parent="@android:style/Widget.Holo.Spinner">
-        <item name="android:background">@drawable/spinner_background_ab_example</item>
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_example</item>
-        <item name="android:dropDownSelector">@drawable/selectable_background_example</item>
-    </style>
-
-    <style name="ProgressBar.Example" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
-        <item name="android:progressDrawable">@drawable/progress_horizontal_example</item>
-    </style>
-
-    <style name="ActionButton.CloseMode.Example" parent="@android:style/Widget.Holo.ActionButton.CloseMode">
-        <item name="android:background">@drawable/btn_cab_done_example</item>
-    </style>
-
-    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="Theme.Example.Widget" parent="@android:style/Theme.Holo">
-        <item name="android:popupMenuStyle">@style/PopupMenu.Example</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Example</item>
-    </style>
-
-    <style name="MizuuTheme" parent="android:Theme.Holo">
-        <item name="android:windowBackground">@drawable/bg</item>
-        <item name="android:actionBarStyle">@style/MizuuActionBar</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="MizuuActionBar" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">#aa000000</item>
-    </style>
-
-    <style name="PhotoGridLayout">
-        <item name="android:drawSelectorOnTop">true</item>
-    </style>
-
-    <style name="TextHeader2">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">#ffffff</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="android:background">@drawable/accent_bottom_border</item>
+    <style name="ActionBar.Subtitle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle">
+        <item name="android:textColor">#ddd</item>
+        <item name="android:shadowColor">#000</item>
+        <item name="android:shadowDx">1.0</item>
+        <item name="android:shadowDy">1.0</item>
+        <item name="android:shadowRadius">1.0</item>
     </style>
 
     <style name="MenuHeader">
@@ -182,21 +102,14 @@
         <item name="android:background">@drawable/accent_bottom_border_grey</item>
     </style>
 
-    <style name="Theme.Transparent" parent="android:Theme.Holo">
+    <!-- Theme for cancel library update dialog and such -->
+    <style name="Mizuu.Theme.Transparent.Dialog" parent="android:Theme.Holo">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">false</item>
-    </style>
-
-    <style name="PopupTheme" parent="android:Theme.Holo.Light.Dialog">
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
-        <item name="android:windowActionModeOverlay">true</item>
-        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 </resources>

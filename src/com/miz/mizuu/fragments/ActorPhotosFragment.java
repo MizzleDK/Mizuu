@@ -92,9 +92,13 @@ public class ActorPhotosFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
+		if (!MizLib.isPortrait(getActivity()))
+			v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
 
-		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		if (!MizuuApplication.isFullscreen(getActivity()))
+			MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.container));
+		else
+			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
 		v.findViewById(R.id.progress).setVisibility(View.GONE);
 
@@ -145,12 +149,10 @@ public class ActorPhotosFragment extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mCardBackground;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
 		}
 
 		@Override
@@ -182,10 +184,12 @@ public class ActorPhotosFragment extends Fragment {
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
+			
+			holder.cover.setImageResource(R.color.card_background_dark);
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(pics_sources.get(position)).placeholder(mCardBackground).config(mConfig).into(holder.cover);
+			mPicasso.load(pics_sources.get(position)).placeholder(R.color.card_background_dark).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}
@@ -193,6 +197,8 @@ public class ActorPhotosFragment extends Fragment {
 
 	private void loadData() {
 		try {
+			pics_sources.clear();
+			
 			JSONObject jObject = new JSONObject(json);
 
 			JSONArray jArray = jObject.getJSONObject("images").getJSONArray("profiles");

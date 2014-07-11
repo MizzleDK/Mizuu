@@ -33,7 +33,7 @@ public class MovieCollection extends MizActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.empty_layout);
+		MizuuApplication.setupTheme(this);
 		
 		Fragment frag = getSupportFragmentManager().findFragmentByTag(TAG);
 		if (frag == null) {

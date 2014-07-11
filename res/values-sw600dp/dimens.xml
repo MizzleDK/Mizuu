@@ -31,5 +31,6 @@
     <dimen name="episode_details_small_margin">32dp</dimen>
     <dimen name="episode_details_large_margin">48dp</dimen>
     <dimen name="empty_library_message_width">480dp</dimen>
+    <dimen name="actor_backdrop_height">480dp</dimen>
 
 </resources>

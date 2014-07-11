@@ -2,7 +2,6 @@
     android:id="@+id/card_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card"
     android:orientation="vertical" >
 
     <com.miz.views.LargeGridItemImageView
@@ -11,18 +10,13 @@
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:cropToPadding="true"
-        android:paddingLeft="1dp"
-        android:paddingRight="1dp"
         android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:background="#fff"
+        android:background="@color/card_background_dark"
         android:ellipsize="end"
         android:lines="2"
         android:maxLines="2"
@@ -31,7 +25,7 @@
         android:paddingRight="5dp"
         android:paddingTop="2dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="#000"
+        android:textColor="@color/card_title_color"
         android:textIsSelectable="false"
         android:textStyle="bold" />
 

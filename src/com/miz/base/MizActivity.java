@@ -24,6 +24,7 @@ import android.support.v4.app.FragmentActivity;
 
 import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 
 public class MizActivity extends FragmentActivity implements OnSharedPreferenceChangeListener {
@@ -34,10 +35,10 @@ public class MizActivity extends FragmentActivity implements OnSharedPreferenceC
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mFullscreen = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false);
+		mFullscreen = MizuuApplication.isFullscreen(this);
 		
 		if (isFullscreen())
-			setTheme(R.style.Theme_Example_FullScreen);
+			setTheme(R.style.Mizuu_Theme_FullScreen);
 		
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 	}

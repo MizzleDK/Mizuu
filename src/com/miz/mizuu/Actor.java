@@ -63,11 +63,10 @@ public class Actor extends MizActivity implements OnNavigationListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.isPortrait(this))
-			if (isFullscreen())
-				setTheme(R.style.Theme_Example_NoBackGround_FullScreen);
-			else
-				setTheme(R.style.Theme_Example_NoBackGround);
+		if (isFullscreen())
+			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
+		else
+			setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -85,6 +84,10 @@ public class Actor extends MizActivity implements OnNavigationListener {
 
 		setTitle(actorName);
 
+		if (MizLib.isPortrait(this)) {
+			getWindow().setBackgroundDrawableResource(R.drawable.bg);
+		}
+		
 		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(3);
 		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -110,14 +113,14 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		spinnerItems.clear();
 		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorBiography), ActorBiographyFragment.newInstance(json, mActorThumb)));
 		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.chooserMovies), ActorMoviesFragment.newInstance(json, baseUrl)));
-		
+
 		try {
 			JSONObject j = new JSONObject(json);
 			if (j.getJSONObject("tv_credits").getJSONArray("cast").length() > 0) {
 				spinnerItems.add(new SpinnerItem(actorName, getString(R.string.chooserTVShows), ActorTvShowsFragment.newInstance(json, baseUrl)));
 			}
 		} catch (JSONException e) {}
-		
+
 		try {
 			JSONObject j = new JSONObject(json);
 			if (j.getJSONObject("images").getJSONArray("profiles").length() > 0)
@@ -129,7 +132,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 			if (j.getJSONObject("tagged_images").getInt("total_results") > 0)
 				spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorsTaggedPhotos), ActorTaggedPhotosFragment.newInstance(json, actorName, baseUrl)));
 		} catch (JSONException e) {}
-		
+
 		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 	}
 
@@ -229,9 +232,9 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(0);
 		pbar.setVisibility(View.GONE);
-		
+
 		setupSpinnerItems();
-		
+
 		awesomePager.setAdapter(new ActorDetailsAdapter(getSupportFragmentManager()));
 
 		findViewById(R.id.layout).setBackgroundResource(0);

@@ -24,6 +24,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -172,14 +173,11 @@ public class TvShowEpisodesFragment extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0, mCard, mCardBackground, mCardTitleColor;
+		private int mNumColumns = 0;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mCard = MizuuApplication.getCardDrawable(mContext);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
-			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -222,12 +220,9 @@ public class TvShowEpisodesFragment extends Fragment {
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.watchedColor = (ImageView) convertView.findViewById(R.id.watched_color);
 
-				holder.mLinearLayout.setBackgroundResource(mCard);
-				holder.text.setBackgroundResource(mCardBackground);
-				holder.text.setTextColor(mCardTitleColor);
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
-				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
 			} else {
@@ -235,16 +230,18 @@ public class TvShowEpisodesFragment extends Fragment {
 			}
 
 			if (!mUseGridView)
-				convertView.findViewById(R.id.list_season_text_area).setBackgroundResource(mCardBackground);
+				convertView.findViewById(R.id.list_season_text_area).setBackgroundResource(R.color.card_background_dark);
 
 			holder.text.setText(mItems.get(position).getTitle());
 
 			holder.subtext.setText(mItems.get(position).getSubtitleText());
+			
+			holder.watchedColor.setBackgroundColor(Color.parseColor(mItems.get(position).hasWatched() ? "#669900" : "#CC0000"));
 
 			if (mResizedWidth > 0)
-				mPicasso.load(mItems.get(position).getCover()).placeholder(mCardBackground).error(R.drawable.nobackdrop).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder.cover);
+				mPicasso.load(mItems.get(position).getCover()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder.cover);
 			else
-				mPicasso.load(mItems.get(position).getCover()).placeholder(mCardBackground).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
+				mPicasso.load(mItems.get(position).getCover()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

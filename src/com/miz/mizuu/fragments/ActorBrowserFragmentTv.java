@@ -169,14 +169,10 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mCard, mCardBackground, mCardTitleColor;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mCard = MizuuApplication.getCardDrawable(mContext);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
-			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -217,18 +213,14 @@ public class ActorBrowserFragmentTv extends Fragment {
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 
-				holder.mLinearLayout.setBackgroundResource(mCard);
-				holder.text.setBackgroundResource(mCardBackground);
-				holder.text.setTextColor(mCardTitleColor);
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
-				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.cover.setImageResource(mCardBackground);
+			holder.cover.setImageResource(R.color.card_background_dark);
 
 			holder.text.setText(actors.get(position).getName());
 			holder.subtext.setText(actors.get(position).getCharacter().equals("null") ? "" : actors.get(position).getCharacter());

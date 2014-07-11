@@ -101,7 +101,8 @@ public class TvShowDetailsFragment extends Fragment {
 					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
 					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
 					ignorePrefixes,
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
+					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
+					MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
 					);
 		}
 
@@ -177,13 +178,13 @@ public class TvShowDetailsFragment extends Fragment {
 		
 		// Set the show plot
 		textPlot.setText(thisShow.getDescription());
-		textPlot.setBackgroundResource(R.drawable.selectable_background_example);
+		textPlot.setBackgroundResource(R.drawable.selectable_background);
 		textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
 		textPlot.setTag(true); // true = collapsed
 		textPlot.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (((boolean) textPlot.getTag())) {
+				if (((Boolean) textPlot.getTag())) {
 					textPlot.setMaxLines(1000);
 					textPlot.setTag(false);
 				} else {

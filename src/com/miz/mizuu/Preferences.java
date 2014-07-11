@@ -27,9 +27,9 @@ public class Preferences extends PreferenceActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		if (MizuuApplication.isFullscreen(this))
-			setTheme(R.style.Theme_Example_FullScreen);
+			setTheme(R.style.Mizuu_Theme_FullScreen);
 		else
-			setTheme(R.style.Theme_Example);
+			setTheme(R.style.Mizuu_Theme);
 		
 		super.onCreate(savedInstanceState);
 		

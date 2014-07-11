@@ -8,7 +8,7 @@
     <string name="newuser_btStartSearch">Start opdatering</string>
     <string name="detailsReleaseDate">Udgivelsesdato</string>
     <string name="detailsGenre">Genre (kommasepareret)</string>
-    <string name="detailsRunTime">Længde</string>
+    <string name="detailsRunTime">Varighed</string>
     <string name="detailsRating">Karakter</string>
     <string name="detailsCertification">Certificering</string>
     <string name="noInternet">Ingen aktiv internetforbindelse</string>

@@ -35,7 +35,7 @@
         android:icon="@drawable/menuicon"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/Theme.Example" >
+        android:theme="@style/Mizuu.Theme" >
         <uses-library android:name="android.test.runner" />
 
         <!-- Welcome activity -->
@@ -419,7 +419,7 @@
             android:excludeFromRecents="true"
             android:exported="false"
             android:noHistory="true"
-            android:theme="@style/Theme.Transparent" >
+            android:theme="@style/Mizuu.Theme.Transparent.Dialog" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -429,7 +429,7 @@
             android:excludeFromRecents="true"
             android:exported="false"
             android:noHistory="true"
-            android:theme="@style/Theme.Transparent" >
+            android:theme="@style/Mizuu.Theme.Transparent.Dialog" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>

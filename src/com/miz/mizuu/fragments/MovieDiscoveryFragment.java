@@ -60,13 +60,13 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
-	private ArrayList<WebMovie> pics_sources = new ArrayList<WebMovie>();
-	private SparseBooleanArray movieMap = new SparseBooleanArray();
+	private ArrayList<WebMovie> mMovies = new ArrayList<WebMovie>();
+	private SparseBooleanArray mMovieMap = new SparseBooleanArray();
 	private GridView mGridView = null;
-	private ProgressBar pbar;
-	private DbAdapter db;
+	private ProgressBar mProgressBar;
+	private DbAdapter mDatabase;
 	private Picasso mPicasso;
-	private String json, baseUrl;
+	private String mJson, mBaseUrl;
 	private Config mConfig;
 
 	/**
@@ -88,7 +88,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 
-		db = MizuuApplication.getMovieAdapter();
+		mDatabase = MizuuApplication.getMovieAdapter();
 
 		String thumbnailSize = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(GRID_ITEM_SIZE, getString(R.string.normal));
 		if (thumbnailSize.equals(getString(R.string.large))) 
@@ -115,8 +115,8 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		pbar = (ProgressBar) v.findViewById(R.id.progress);
-		pbar.setVisibility(View.GONE);
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
+		mProgressBar.setVisibility(View.GONE);
 
 		mAdapter = new ImageAdapter(getActivity());
 
@@ -141,26 +141,26 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (movieMap.get(Integer.valueOf(pics_sources.get(arg2).getId()))) {
+				if (mMovieMap.get(Integer.valueOf(mMovies.get(arg2).getId()))) {
 					Intent intent = new Intent();
 					intent.setClass(getActivity(), MovieDetails.class);
-					intent.putExtra("tmdbId", pics_sources.get(arg2).getId());
+					intent.putExtra("tmmDatabaseId", mMovies.get(arg2).getId());
 
 					// Start the Intent for result
 					startActivityForResult(intent, 0);
 				} else {
 					Intent i = new Intent(Intent.ACTION_VIEW);
 					i.setClass(getActivity(), TMDbMovieDetails.class);
-					i.putExtra("tmdbid", pics_sources.get(arg2).getId());
-					i.putExtra("title", pics_sources.get(arg2).getTitle());
+					i.putExtra("tmmDatabaseid", mMovies.get(arg2).getId());
+					i.putExtra("title", mMovies.get(arg2).getTitle());
 					startActivity(i);
 				}
 			}
 		});
 
 		if (getArguments().containsKey("json")) {
-			json = getArguments().getString("json");
-			baseUrl = getArguments().getString("baseUrl");
+			mJson = getArguments().getString("json");
+			mBaseUrl = getArguments().getString("baseUrl");
 			loadJson();
 		}
 	}
@@ -182,24 +182,21 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0, mCard, mCardBackground, mCardTitleColor;
+		private int mNumColumns = 0;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mCard = MizuuApplication.getCardDrawable(mContext);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
-			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
 		public int getCount() {
-			return pics_sources.size();
+			return mMovies.size();
 		}
 
 		@Override
 		public Object getItem(int position) {
-			return pics_sources.get(position).getUrl();
+			return mMovies.get(position).getUrl();
 		}
 
 		@Override
@@ -210,7 +207,9 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 
+			final WebMovie mMovie = mMovies.get(position);
 			CoverItem holder;
+			
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
@@ -220,28 +219,24 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 
-				holder.mLinearLayout.setBackgroundResource(mCard);
-				holder.text.setBackgroundResource(mCardBackground);
-				holder.text.setTextColor(mCardTitleColor);
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
-				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.cover.setImageResource(mCardBackground);
-			holder.text.setText(pics_sources.get(position).getTitle());
+			holder.cover.setImageResource(R.color.card_background_dark);
+			holder.text.setText(mMovie.getTitle());
 
-			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {
-				holder.subtext.setText(pics_sources.get(position).getDate() + " (" + getString(R.string.inLibrary) + ")");
+			if (mMovieMap.get(Integer.valueOf(mMovie.getId()))) {
+				holder.subtext.setText(mMovie.getDate() + " (" + getString(R.string.inLibrary) + ")");
 			} else {
-				holder.subtext.setText(pics_sources.get(position).getDate());
+				holder.subtext.setText(mMovie.getDate());
 			}
 
-			if (!pics_sources.get(position).getUrl().contains("null"))
-				mPicasso.load(pics_sources.get(position).getUrl()).config(mConfig).into(holder);
+			if (!mMovie.getUrl().contains("null"))
+				mPicasso.load(mMovie.getUrl()).config(mConfig).into(holder);
 			else
 				holder.cover.setImageResource(R.drawable.loading_image);
 
@@ -259,22 +254,22 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 	private void loadJson() {
 		try {
-			JSONObject jObject = new JSONObject(json);
+			JSONObject jObject = new JSONObject(mJson);
 
 			JSONArray jArray = jObject.getJSONObject(getArguments().getString("type")).getJSONArray("results");
 
-			pics_sources.clear();
+			mMovies.clear();
 			for (int i = 0; i < jArray.length(); i++) {
 				if (!MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("original_title"))) {
-					pics_sources.add(new WebMovie(getActivity().getApplicationContext(),
+					mMovies.add(new WebMovie(getActivity().getApplicationContext(),
 							jArray.getJSONObject(i).getString("original_title"),
 							jArray.getJSONObject(i).getString("id"),
-							baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
+							mBaseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
 							MizLib.getPrettyDate(getActivity(), jArray.getJSONObject(i).getString("release_date"))));
 				}
 			}
 
-			new MoviesInLibraryCheck(pics_sources).execute();
+			new MoviesInLibraryCheck(mMovies).execute();
 		} catch (Exception e) {}
 	}
 
@@ -284,13 +279,13 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 		public MoviesInLibraryCheck(ArrayList<WebMovie> movies) {
 			this.movies = movies;
-			movieMap.clear();
+			mMovieMap.clear();
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
 			for (int i = 0; i < movies.size(); i++)
-				movieMap.put(Integer.valueOf(movies.get(i).getId()), db.movieExists(movies.get(i).getId()));
+				mMovieMap.put(Integer.valueOf(movies.get(i).getId()), mDatabase.movieExists(movies.get(i).getId()));
 
 			return null;
 		}

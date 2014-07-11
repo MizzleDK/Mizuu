@@ -6,25 +6,21 @@
         android:id="@+id/card_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/card_dark"
         android:orientation="horizontal" >
 
         <com.miz.views.AspectRatioImageViewBackdrop
             android:id="@+id/cover"
             android:layout_width="@dimen/backdrop_thumbnail_width"
             android:layout_height="match_parent"
-            android:layout_marginBottom="2dp"
-            android:layout_marginLeft="1dp"
             android:adjustViewBounds="true"
             android:cropToPadding="true"
             android:scaleType="centerCrop" />
 
         <LinearLayout
             android:id="@+id/list_season_text_area"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginBottom="2dp"
-            android:layout_marginRight="1dp"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:padding="@dimen/movie_details_padding" >
 
@@ -32,10 +28,11 @@
                 android:id="@+id/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/card_background_dark"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#000"
+                android:textColor="@color/card_title_color"
                 android:textIsSelectable="false"
                 android:textSize="@dimen/details_text_size"
                 android:textStyle="bold" />
@@ -44,6 +41,7 @@
                 android:id="@+id/gridCoverSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/card_background_dark"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textAppearance="?android:attr/textAppearanceSmall"
@@ -51,17 +49,18 @@
                 android:textIsSelectable="false"
                 android:textSize="@dimen/season_list_subtitle"
                 android:textStyle="italic" />
-
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/watched_color"
+            android:layout_width="1dp"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/highlight"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="2dp"
-        android:paddingLeft="1dp"
-        android:paddingRight="1dp"
         android:src="@color/gridview_highlight"
         android:visibility="gone" />
 

@@ -343,14 +343,11 @@ public class TvShowSeasonsFragment extends Fragment {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0, mCard, mCardBackground, mCardTitleColor;
+		private int mNumColumns = 0;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mCard = MizuuApplication.getCardDrawable(mContext);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
-			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -380,6 +377,8 @@ public class TvShowSeasonsFragment extends Fragment {
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup container) {
+			
+			final GridSeason mSeason = mItems.get(position);
 			final CoverItem holder;
 
 			if (convertView == null) {
@@ -392,18 +391,14 @@ public class TvShowSeasonsFragment extends Fragment {
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 
-				holder.mLinearLayout.setBackgroundResource(mCard);
-				holder.text.setBackgroundResource(mCardBackground);
-				holder.text.setTextColor(mCardTitleColor);
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
-				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			holder.cover.setImageResource(mCardBackground);
+			holder.cover.setImageResource(R.color.card_background_dark);
 
 			// Android's GridView is pretty stupid regarding selectors
 			// so we have to highlight the selected view manually - yuck!
@@ -421,14 +416,14 @@ public class TvShowSeasonsFragment extends Fragment {
 				}
 			}
 
-			if (mItems.get(position).getSeason() == 0)
+			if (mSeason.getSeason() == 0)
 				holder.text.setText(R.string.stringSpecials);
 			else
-				holder.text.setText(getString(R.string.showSeason) + " " + mItems.get(position).getSeasonZeroIndex());
+				holder.text.setText(getString(R.string.showSeason) + " " + mSeason.getSeasonZeroIndex());
 
-			holder.subtext.setText(mItems.get(position).getSubtitleText());
+			holder.subtext.setText(mSeason.getSubtitleText());
 
-			mPicasso.load(mItems.get(position).getCover()).error(R.drawable.loading_image).fit().config(mConfig).into(holder.cover);
+			mPicasso.load(mSeason.getCover()).error(R.drawable.loading_image).fit().config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

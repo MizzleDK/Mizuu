@@ -6,7 +6,6 @@
         android:id="@+id/card_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/card_dark"
         android:orientation="vertical" >
 
         <com.miz.views.SeasonCoverImageView
@@ -15,23 +14,20 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:cropToPadding="true"
-            android:paddingLeft="1dp"
-            android:paddingRight="1dp"
             android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="1dp"
-            android:layout_marginRight="1dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#000"
+            android:background="@color/card_background_dark"
+            android:textColor="@color/card_title_color"
             android:textIsSelectable="false"
             android:textStyle="bold" />
 
@@ -39,15 +35,12 @@
             android:id="@+id/gridCoverSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:layout_marginLeft="1dp"
-            android:layout_marginRight="1dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:paddingBottom="2dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:background="@color/card_background_dark"
             android:textColor="#666"
             android:textIsSelectable="false"
             android:textSize="12sp"
@@ -58,9 +51,6 @@
         android:id="@+id/highlight"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="2dp"
-        android:paddingLeft="1dp"
-        android:paddingRight="1dp"
         android:src="@color/gridview_highlight"
         android:visibility="gone" />
 

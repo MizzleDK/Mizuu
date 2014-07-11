@@ -2,12 +2,4 @@
     android:id="@+id/cover"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="2dp"
-    android:layout_marginLeft="1dp"
-    android:layout_marginRight="1dp"
-    android:adjustViewBounds="true"
-    android:cropToPadding="true"
-    android:paddingBottom="2dp"
-    android:paddingLeft="1dp"
-    android:paddingRight="1dp"
     android:scaleType="centerCrop" />

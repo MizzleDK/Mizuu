@@ -105,6 +105,6 @@ public class DbMovie {
 	}
 
 	public File getOfflineCopyFile(Context CONTEXT) {
-		return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(filepath) + "." + MizLib.getFileExtension(filepath));
+		return MizLib.getOfflineFile(CONTEXT, filepath);
 	}
 }

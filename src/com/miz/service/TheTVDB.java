@@ -108,7 +108,7 @@ public class TheTVDB extends Service {
 					TvShow temp = new TvShow(getApplicationContext(),
 							bundle.getString("oldShowId"),
 							"", "", "", "", "", "", "", "",
-							false, "0");
+							false, "0", "");
 
 					MizLib.deleteShow(getApplicationContext(), temp, false);
 

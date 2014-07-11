@@ -21,6 +21,7 @@
             android:layout_width="@dimen/actor_details_width"
             android:layout_height="@dimen/actor_details_height"
             android:layout_gravity="center_vertical"
+            android:layout_margin="16dp"
             android:background="@drawable/border"
             android:cropToPadding="true"
             android:scaleType="centerCrop"
@@ -29,7 +30,8 @@
         <ScrollView
             android:id="@+id/scrollView1"
             android:layout_width="600dp"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:layout_margin="16dp" >
 
             <LinearLayout
                 android:id="@+id/linearLayout3"

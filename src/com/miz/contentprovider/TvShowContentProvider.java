@@ -133,7 +133,8 @@ public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
 							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
 							false,
-							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
+							c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
+							MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(c.getString(c.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
 							));
 				}
 			}

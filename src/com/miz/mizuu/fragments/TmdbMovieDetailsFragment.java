@@ -55,7 +55,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private FrameLayout container;
 	private boolean isRetained = false;
 	private Picasso mPicasso;
-	private Typeface mLight;
+	private Typeface mLight, mLightItalic, mMedium, mBoldItalic;
 	private Drawable mActionBarBackgroundDrawable;
 
 	/**
@@ -87,6 +87,9 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		setRetainInstance(true);
 
 		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
+		mLightItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-LightItalic.ttf");
+		mMedium = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Medium.ttf");
+		mBoldItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-BoldItalic.ttf");
 		
 		tmdb = new TMDb(getActivity());
 
@@ -98,7 +101,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View v = inflater.inflate(R.layout.movie_details, container, false);
+		final View v = inflater.inflate(R.layout.new_movie_details, container, false);
 
 		movieDetailsLayout = v.findViewById(R.id.movieDetailsLayout);
 		progressBar = v.findViewById(R.id.progressBar1);
@@ -184,7 +187,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			textCertification.setTypeface(mLight);
 			
 			// Set the movie plot
-			textPlot.setBackgroundResource(R.drawable.selectable_background_example);
+			textPlot.setBackgroundResource(R.drawable.selectable_background);
 			if (!thisMovie.getTagline().isEmpty())
 				textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.movie_details_max_lines));
 			else
@@ -193,7 +196,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			textPlot.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (((boolean) textPlot.getTag())) {
+					if (((Boolean) textPlot.getTag())) {
 						textPlot.setMaxLines(1000);
 						textPlot.setTag(false);
 					} else {
@@ -210,29 +213,32 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			textPlot.setText(thisMovie.getPlot());
 
 			// Set movie tag line
+			textTagline.setTypeface(mBoldItalic);
 			if (thisMovie.getTagline().equals("NOTAGLINE") || thisMovie.getTagline().isEmpty())
 				textTagline.setVisibility(TextView.GONE);
 			else
 				textTagline.setText(thisMovie.getTagline());
 
 			// Set the movie genre
+			textGenre.setTypeface(mLightItalic);
 			if (!MizLib.isEmpty(thisMovie.getGenres())) {
 				textGenre.setText(thisMovie.getGenres());
 			} else {
-				textGenre.setText(R.string.stringNA);
+				textGenre.setVisibility(View.GONE);
 			}
 
 			// Set the movie runtime
-			textRuntime.setText(MizLib.getPrettyTime(getActivity(), Integer.parseInt(thisMovie.getRuntime())));
+			textRuntime.setText(MizLib.getPrettyRuntime(getActivity(), Integer.parseInt(thisMovie.getRuntime())));
 
 			// Set the movie release date
+			textReleaseDate.setTypeface(mMedium);
 			textReleaseDate.setText(MizLib.getPrettyDate(getActivity(), thisMovie.getReleasedate()));
 
 			// Set the movie rating
 			if (!thisMovie.getRating().equals("0.0")) {
 				try {
 					int rating = (int) (Double.parseDouble(thisMovie.getRating()) * 10);
-					textRating.setText(Html.fromHtml(rating + "<small> %</small>"));
+					textRating.setText(Html.fromHtml("<b>" + rating + "</b><small> %</small>"));
 				} catch (NumberFormatException e) {
 					thisMovie.setRating(thisMovie.getRating() + "/10");
 					textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
@@ -243,9 +249,9 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 			// Set the movie certification
 			if (!MizLib.isEmpty(thisMovie.getCertification())) {
-				textCertification.setText(thisMovie.getCertification());
+				textCertification.setText(Html.fromHtml("<b>" + thisMovie.getCertification() + "</b>"));
 			} else {
-				textCertification.setText(R.string.stringNA);
+				textCertification.setText(Html.fromHtml("<b>" + getString(R.string.stringNA) + "</b>"));
 			}
 
 			setLoading(false);

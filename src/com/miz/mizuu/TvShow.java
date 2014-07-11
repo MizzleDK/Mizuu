@@ -22,21 +22,22 @@ import java.io.File;
 import java.util.Locale;
 
 import com.miz.functions.MizLib;
+import com.miz.functions.SortingKeys;
 import com.miz.mizuu.R;
 
 public class TvShow implements Comparable<TvShow> {
 
-	private Context CONTEXT;
-	private String ID, TITLE, DESCRIPTION, RATING, GENRES, ACTORS, CERTIFICATION, FIRST_AIR_DATE, RUNTIME;
-	private boolean isFavorite;
-	private String mTitle;
+	private Context mContext;
+	private String TITLE, DESCRIPTION, RATING, GENRES, ACTORS, CERTIFICATION, FIRST_AIR_DATE, RUNTIME, LATEST_EPISODE_AIR_DATE;
+	private String mId, mRuntime, mWeightedCompatibility, mReleaseDate, mGetReleaseYear, mTitle, mLatestEpisodeAirDate;
+	private boolean mFavorite;
 	private File mThumbnail;
 
-	public TvShow(Context context, String id, String title, String description, String rating, String genres, String actors, String certification, String firstAirdate, String runtime, boolean ignorePrefixes, String isFavorite) {
+	public TvShow(Context context, String id, String title, String description, String rating, String genres, String actors, String certification, String firstAirdate, String runtime, boolean ignorePrefixes, String isFavorite, String latestEpisodeAirDate) {
 
 		// Set up episode fields based on constructor
-		CONTEXT = context;
-		ID = id;
+		mContext = context;
+		mId = id;
 		TITLE = title;
 		DESCRIPTION = description;
 		RATING = rating;
@@ -45,11 +46,12 @@ public class TvShow implements Comparable<TvShow> {
 		CERTIFICATION = certification;
 		FIRST_AIR_DATE = firstAirdate;
 		RUNTIME = runtime;
-		this.isFavorite = !(isFavorite.equals("0") || isFavorite.isEmpty());
-		
+		LATEST_EPISODE_AIR_DATE = latestEpisodeAirDate;
+		mFavorite = !(isFavorite.equals("0") || isFavorite.isEmpty());
+
 		// Thumbnail
-		mThumbnail = MizLib.getTvShowThumb(CONTEXT, ID);
-		
+		mThumbnail = MizLib.getTvShowThumb(mContext, mId);
+
 		// Title		
 		if (MizLib.isEmpty(TITLE)) {
 			mTitle = "";
@@ -57,7 +59,7 @@ public class TvShow implements Comparable<TvShow> {
 			mTitle = TITLE;
 			if (ignorePrefixes) {
 				String temp = TITLE.toLowerCase(Locale.ENGLISH);
-				String[] prefixes = MizLib.getPrefixes(CONTEXT);
+				String[] prefixes = MizLib.getPrefixes(mContext);
 				int count = prefixes.length;
 				for (int i = 0; i < count; i++) {
 					if (temp.startsWith(prefixes[i])) {
@@ -67,6 +69,37 @@ public class TvShow implements Comparable<TvShow> {
 				}
 			}
 		}
+
+		// getReleaseYear()
+		if (!MizLib.isEmpty(FIRST_AIR_DATE)) {
+			String YEAR = FIRST_AIR_DATE.trim();
+			try {
+				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
+					mGetReleaseYear = YEAR.substring(0,4);
+				} else {
+					mGetReleaseYear = mContext.getString(R.string.unknownYear);
+				}
+			} catch (Exception e) {
+				if (YEAR.length() == 4)
+					mGetReleaseYear = YEAR;
+				else
+					mGetReleaseYear = mContext.getString(R.string.unknownYear);
+			}
+		} else {
+			mGetReleaseYear = mContext.getString(R.string.unknownYear);
+		}
+
+		// Weighted compatibility
+		mWeightedCompatibility = (int) (getWeightedRating() * 10) + "% " + mContext.getString(R.string.compatibility);
+
+		// Runtime
+		mRuntime = MizLib.getPrettyTime(mContext, Integer.parseInt(getRuntime()));
+
+		// Release date
+		mReleaseDate = MizLib.getPrettyDate(mContext, getFirstAirdate());
+		
+		// Latest episode airdate
+		mLatestEpisodeAirDate = MizLib.getPrettyDate(mContext, getLatestEpisodeAirdate());;
 	}
 
 	public String getTitle() {
@@ -86,16 +119,16 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getId() {
-		if (ID == null || ID.isEmpty()) {
+		if (mId == null || mId.isEmpty()) {
 			return "NOSHOW";
 		} else {
-			return ID;
+			return mId;
 		}
 	}
 
 	public String getDescription() {
 		if (DESCRIPTION == null || DESCRIPTION.isEmpty()) {
-			return CONTEXT.getString(R.string.stringNoPlot);
+			return mContext.getString(R.string.stringNoPlot);
 		} else {
 			return DESCRIPTION;
 		}
@@ -110,7 +143,7 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getBackdrop() {
-		return MizLib.getTvShowBackdrop(CONTEXT, ID).getAbsolutePath();
+		return MizLib.getTvShowBackdrop(mContext, mId).getAbsolutePath();
 	}
 
 	public String getRating() {
@@ -124,7 +157,7 @@ public class TvShow implements Comparable<TvShow> {
 			return 0.0;
 		}
 	}
-	
+
 	public double getWeightedRating() {
 		if (isFavorite())
 			return (10 + getRawRating()) / 2;
@@ -156,6 +189,10 @@ public class TvShow implements Comparable<TvShow> {
 	public String getFirstAirdate() {
 		return FIRST_AIR_DATE;
 	}
+	
+	public String getLatestEpisodeAirdate() {
+		return LATEST_EPISODE_AIR_DATE;
+	}
 
 	public String getFirstAirdateYear() {
 		try {
@@ -172,19 +209,56 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public boolean isFavorite() {
-		return isFavorite;
+		return mFavorite;
 	}
 
 	public void setFavorite(boolean fav) {
-		isFavorite = fav;
+		mFavorite = fav;
 	}
 
 	public String getFavorite() {
-		return isFavorite ? "1" : "0";
+		return mFavorite ? "1" : "0";
 	}
 
 	@Override
 	public int compareTo(TvShow another) {
 		return getTitle().compareToIgnoreCase(another.getTitle());
+	}
+
+	public String getPrettyRuntime() {
+		return mRuntime;
+	}
+
+	public String getWeightedCompatibility() {
+		return mWeightedCompatibility;
+	}
+
+	public String getPrettyReleaseDate() {
+		return mReleaseDate;
+	}
+	
+	public String getPrettyLatestEpisodeAirDate() {
+		return mLatestEpisodeAirDate;
+	}
+
+	public String getReleaseYear() {
+		return mGetReleaseYear;
+	}
+
+	public String getSubText(int sort) {
+		switch (sort) {
+		case SortingKeys.DURATION:
+			return getPrettyRuntime();
+		case SortingKeys.RATING:
+			return (int) (getRawRating() * 10) + "%";
+		case SortingKeys.WEIGHTED_RATING:
+			return getWeightedCompatibility();
+		case SortingKeys.NEWEST_EPISODE:
+			return getPrettyLatestEpisodeAirDate();
+		case SortingKeys.RELEASE:
+			return getPrettyReleaseDate();
+		default:
+			return getReleaseYear();
+		}
 	}
 }

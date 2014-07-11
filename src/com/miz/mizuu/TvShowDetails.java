@@ -69,14 +69,14 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 
 		if (!MizLib.isPortrait(this))
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_Transparent_NoBackGround_FullScreen);
+				setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_Transparent_NoBackGround);
+				setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
 		else
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_Transparent_FullScreen);
+				setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_Transparent);
+				setTheme(R.style.Mizuu_Theme_Transparent);
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -127,7 +127,8 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
 						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
 						ignorePrefixes,
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
+						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
 						);
 			}
 		} catch (Exception e) {
@@ -319,9 +320,6 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 
 		@Override  
 		public Fragment getItem(int index) {
-			
-			System.out.println("SHOW ID: " + thisShow.getId());
-			
 			switch (index) {
 			case 0:
 				return TvShowDetailsFragment.newInstance(thisShow.getId());

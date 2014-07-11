@@ -6,7 +6,6 @@
         android:id="@+id/card_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/card_dark"
         android:orientation="horizontal" >
 
         <com.miz.views.SeasonCoverImageView

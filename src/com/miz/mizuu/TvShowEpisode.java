@@ -206,7 +206,7 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	}
 	
 	public File getOfflineCopyFile() {
-		return new File(MizLib.getAvailableOfflineFolder(CONTEXT), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
+		return MizLib.getOfflineFile(CONTEXT, getFullFilepath());
 	}
 	
 	/**

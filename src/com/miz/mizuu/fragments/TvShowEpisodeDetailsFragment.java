@@ -186,13 +186,13 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 		mWriter.setTypeface(mLight);
 		mGuestStars.setTypeface(mLight);
 
-		mDescription.setBackgroundResource(R.drawable.selectable_background_example);
+		mDescription.setBackgroundResource(R.drawable.selectable_background);
 		mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
 		mDescription.setTag(true); // true = collapsed
 		mDescription.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (((boolean) mDescription.getTag())) {
+				if (((Boolean) mDescription.getTag())) {
 					mDescription.setMaxLines(1000);
 					mDescription.setTag(false);
 				} else {

@@ -21,11 +21,23 @@ import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
 import static com.miz.functions.PreferenceKeys.SORTING_TVSHOWS;
 
-import java.text.DecimalFormat;
+import static com.miz.functions.SortingKeys.CERTIFICATION;
+import static com.miz.functions.SortingKeys.GENRES;
+import static com.miz.functions.SortingKeys.ALL_SHOWS;
+import static com.miz.functions.SortingKeys.FAVORITES;
+import static com.miz.functions.SortingKeys.UNWATCHED_SHOWS;
+import static com.miz.functions.SortingKeys.DURATION;
+import static com.miz.functions.SortingKeys.RATING;
+import static com.miz.functions.SortingKeys.RELEASE;
+import static com.miz.functions.SortingKeys.TITLE;
+import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
+import static com.miz.functions.SortingKeys.NEWEST_EPISODE;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -51,6 +63,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -61,14 +75,12 @@ import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
-import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.miz.db.DbAdapterTvShow;
@@ -76,9 +88,11 @@ import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.db.DbHelperTvShow;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
+import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
+import com.miz.functions.TvShowSortHelper;
 import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.Preferences;
@@ -92,21 +106,23 @@ import com.squareup.picasso.Picasso;
 
 public class TvShowLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
-	private SharedPreferences settings;
-	private int mImageThumbSize, mImageThumbSpacing, mResizedWidth, mResizedHeight;
+	private SharedPreferences mSharedPreferences;
+	private int mImageThumbSize, mImageThumbSpacing, mResizedWidth, mResizedHeight, mCurrentSort;
 	private LoaderAdapter mAdapter;
-	private ArrayList<TvShow> shows = new ArrayList<TvShow>(), shownShows = new ArrayList<TvShow>();
+	private ArrayList<TvShow> mTvShows = new ArrayList<TvShow>();
+	private ArrayList<Integer> mTvShowKeys = new ArrayList<Integer>();
 	private GridView mGridView = null;
-	private ProgressBar pbar;
-	private TextView overviewMessage;
-	private Button updateMovieLibrary;
-	private boolean ignorePrefixes, mLoading, mShowTitles;
-	private ActionBar actionBar;
+	private ProgressBar mProgressBar;
+	private boolean mIgnorePrefixes, mLoading, mShowTitles;
+	private ActionBar mActionBar;
 	private Picasso mPicasso;
-	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
-	private ActionBarSpinner spinnerAdapter;
+	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner mSpinnerAdapter;
 	private SearchTask mSearch;
 	private Config mConfig;
+	private TvShowSectionLoader mTvShowSectionLoader;
+	private View mEmptyLibraryLayout;
+	private TextView mEmptyLibraryTitle, mEmptyLibraryDescription;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -130,12 +146,12 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
 
 		// Initialize the PreferenceManager variable and preference variable(s)
-		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		ignorePrefixes = settings.getBoolean(IGNORED_TITLE_PREFIXES, false);
-		mShowTitles = settings.getBoolean(SHOW_TITLES_IN_GRID, true);
+		mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
+		mShowTitles = mSharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
 
-		String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
+		String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
 		if (thumbnailSize.equals(getString(R.string.large))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
 		else if (thumbnailSize.equals(getString(R.string.normal))) 
@@ -156,8 +172,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		// Setup ActionBar with the action list
 		setupActionBar();
-		if (actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
-			actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		if (mActionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
+			mActionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-cover-change"));
@@ -165,17 +181,17 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	}
 
 	private void setupActionBar() {
-		actionBar = getActivity().getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		if (spinnerAdapter == null)
-			spinnerAdapter = new ActionBarSpinner();
+		mActionBar = getActivity().getActionBar();
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (mSpinnerAdapter == null)
+			mSpinnerAdapter = new ActionBarSpinner();
 	}
 
 	private void setupSpinnerItems() {
-		spinnerItems.clear();
-		spinnerItems.add(new SpinnerItem(getString(R.string.chooserTVShows), getString(R.string.choiceAllShows)));
-		spinnerItems.add(new SpinnerItem(getString(R.string.choiceFavorites), getString(R.string.choiceFavorites)));
-		spinnerItems.add(new SpinnerItem(getString(R.string.tvShowsWithUnwatchedEpisodes), getString(R.string.tvShowsWithUnwatchedEpisodes)));
+		mSpinnerItems.clear();
+		mSpinnerItems.add(new SpinnerItem(getString(R.string.chooserTVShows), getString(R.string.choiceAllShows)));
+		mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceFavorites), getString(R.string.choiceFavorites)));
+		mSpinnerItems.add(new SpinnerItem(getString(R.string.tvShowsWithUnwatchedEpisodes), getString(R.string.tvShowsWithUnwatchedEpisodes)));
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -205,15 +221,14 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			AsyncTask<Void, Void, Void> load = new AsyncTask<Void, Void, Void>() {
 				@Override
 				protected void onPreExecute() {
-					shows.clear();
-					shownShows.clear();
+					mTvShows.clear();
 				}
 
 				@Override
 				protected Void doInBackground(Void... params) {
 					try {
 						while (cursor.moveToNext()) {
-							shows.add(new TvShow(
+							mTvShows.add(new TvShow(
 									getActivity(),
 									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
 									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
@@ -224,22 +239,27 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
 									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
 									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
-									ignorePrefixes,
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1))
+									mIgnorePrefixes,
+									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
+									MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
 									));
 						}
-					} catch (Exception e) {}
-					finally {
+					} catch (Exception e) {
+					}finally {
 						cursor.close();
 					}
+
+					mTvShowKeys.clear();
+
+					for (int i = 0; i < mTvShows.size(); i++)
+						mTvShowKeys.add(i);
+
 					return null;
 				}
 
 				@Override
 				protected void onPostExecute(Void result) {
-					shownShows.addAll(shows);
-
-					showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
+					showTvShowSection(mActionBar.getSelectedNavigationIndex());
 
 					mLoading = false;
 				}
@@ -250,8 +270,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		@Override
 		public void onLoaderReset(Loader<Cursor> arg0) {
-			shows.clear();
-			shownShows.clear();
+			mTvShows.clear();
+			mTvShowKeys.clear();
 			notifyDataSetChanged();
 		}
 	};
@@ -265,31 +285,25 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		final View v = inflater.inflate(R.layout.image_grid_fragment, container, false);
 
-		pbar = (ProgressBar) v.findViewById(R.id.progress);
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
 
-		overviewMessage = (TextView) v.findViewById(R.id.overviewMessage);
-
-		//updateMovieLibrary = (Button) v.findViewById(R.id.addMoviesButton);
-		//updateMovieLibrary.setText(getString(R.string.mainUpdateBtTv));
-		/*updateMovieLibrary.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivityForResult(getUpdateIntent(), 0);
-			}
-		});*/
+		mEmptyLibraryLayout = v.findViewById(R.id.empty_library_layout);
+		mEmptyLibraryTitle = (TextView) v.findViewById(R.id.empty_library_title);
+		mEmptyLibraryTitle.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf"));
+		mEmptyLibraryDescription = (TextView) v.findViewById(R.id.empty_library_description);
+		mEmptyLibraryDescription.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf"));
 
 		mAdapter = new LoaderAdapter(getActivity());
 
 		mGridView = (GridView) v.findViewById(R.id.gridView);
-		mGridView.setFastScrollEnabled(true);
 		mGridView.setAdapter(mAdapter);
+		mGridView.setEmptyView(mEmptyLibraryLayout);
 		mGridView.setColumnWidth(mImageThumbSize);
 
 		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
 				new ViewTreeObserver.OnGlobalLayoutListener() {
 					@SuppressLint("NewApi")
-					@SuppressWarnings("deprecation")
 					@Override
 					public void onGlobalLayout() {
 						if (mAdapter.getNumColumns() == 0) {
@@ -300,13 +314,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 										/ numColumns) * 1.1); // * 1.1 is a hack to make images look slightly less blurry
 								mResizedHeight = (int) (mResizedWidth * 1.5);
 							}
-							if (MizLib.hasJellyBean()) {
-								mGridView.getViewTreeObserver()
-								.removeOnGlobalLayoutListener(this);
-							} else {
-								mGridView.getViewTreeObserver()
-								.removeGlobalOnLayoutListener(this);
-							}
+
+							MizLib.removeViewTreeObserver(mGridView.getViewTreeObserver(), this);
 						}
 					}
 				});
@@ -314,7 +323,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				Intent intent = new Intent();
-				intent.putExtra("showId", shownShows.get(arg2).getId());
+				intent.putExtra("showId", mTvShows.get(mTvShowKeys.get(arg2)).getId());
 				intent.setClass(getActivity(), TvShowDetails.class);
 				startActivityForResult(intent, 0);
 			}
@@ -323,11 +332,18 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		return v;
 	}
 
+	private void showDetails(int arg2) {
+		Intent intent = new Intent();
+		intent.putExtra("showId", mTvShows.get(mTvShowKeys.get(arg2)).getId());
+		intent.setClass(getActivity(), TvShowDetails.class);
+		startActivityForResult(intent, 0);
+	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
 
-		if (shows.size() == 0)
+		if (mTvShows.size() == 0)
 			forceLoaderLoad();
 
 		if (mAdapter != null)
@@ -343,26 +359,25 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
 	}
 
-	private class LoaderAdapter extends BaseAdapter implements SectionIndexer {
+	private class LoaderAdapter extends BaseAdapter {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
-		private int mNumColumns = 0, mSidePadding, mBottomPadding, mCard, mCardBackground, mCardTitleColor;
-		private Object[] sections;
+		private int mNumColumns = 0;
 
 		public LoaderAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
-			mBottomPadding = MizLib.convertDpToPixels(mContext, 2);
-			mCard = MizuuApplication.getCardDrawable(mContext);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
-			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return (!mLoading && mTvShows.size() == 0);
 		}
 
 		@Override
 		public int getCount() {
-			return shownShows.size();
+			return mTvShowKeys.size();
 		}
 
 		@Override
@@ -376,17 +391,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		}
 
 		@Override
-		public int getItemViewType(int position) {
-			return 0;
-		}
-
-		@Override
-		public int getViewTypeCount() {
-			return 1;
-		}
-
-		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
+
+			final TvShow mTvShow = mTvShows.get(mTvShowKeys.get(position));
 
 			CoverItem holder;
 			if (convertView == null) {
@@ -398,11 +405,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 
-				holder.mLinearLayout.setBackgroundResource(mCard);
-				holder.text.setBackgroundResource(mCardBackground);
-				holder.text.setTextColor(mCardTitleColor);
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
-				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
 			} else {
@@ -412,21 +415,20 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			if (!mShowTitles) {
 				holder.text.setVisibility(View.GONE);
 				holder.subtext.setVisibility(View.GONE);
-				holder.cover.setPadding(mSidePadding, 0, mSidePadding, mBottomPadding);
 			} else {
 				holder.text.setVisibility(View.VISIBLE);
 				holder.subtext.setVisibility(View.VISIBLE);
 
-				holder.text.setText(shownShows.get(position).getTitle());
-				holder.subtext.setText(shownShows.get(position).getFirstAirdateYear());
+				holder.text.setText(mTvShow.getTitle());
+				holder.subtext.setText(mTvShow.getSubText(mCurrentSort));
 			}
 
-			holder.cover.setImageResource(mCardBackground);
+			holder.cover.setImageResource(R.color.card_background_dark);
 
 			if (mResizedWidth > 0)
-				mPicasso.load(shownShows.get(position).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+				mPicasso.load(mTvShow.getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 			else
-				mPicasso.load(shownShows.get(position).getThumbnail()).config(mConfig).into(holder);
+				mPicasso.load(mTvShow.getThumbnail()).config(mConfig).into(holder);
 
 			return convertView;
 		}
@@ -438,188 +440,120 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		public int getNumColumns() {
 			return mNumColumns;
 		}
-
-		@Override
-		public int getPositionForSection(int section) {
-			return section;
-		}
-
-		@Override
-		public int getSectionForPosition(int position) {
-			return position;
-		}
-
-		@Override
-		public Object[] getSections() {
-			return sections;
-		}
-
-		@Override
-		public void notifyDataSetChanged() {
-			ArrayList<TvShow> tempShows = new ArrayList<TvShow>(shownShows);
-			sections = new Object[tempShows.size()];
-
-			String SORT_TYPE = settings.getString(SORTING_TVSHOWS, "sortTitle");
-			if (SORT_TYPE.equals("sortRating")) {
-				DecimalFormat df = new DecimalFormat("#.#");
-				for (int i = 0; i < sections.length; i++)
-					sections[i] = df.format(tempShows.get(i).getRawRating());
-			} else if (SORT_TYPE.equals("sortWeightedRating")) {
-				DecimalFormat df = new DecimalFormat("#.#");
-				for (int i = 0; i < sections.length; i++)
-					sections[i] = df.format(tempShows.get(i).getWeightedRating());
-			} else if (SORT_TYPE.equals("sortDuration")) {
-				String hour = getResources().getQuantityString(R.plurals.hour, 1, 1).substring(0,1);
-				String minute = getResources().getQuantityString(R.plurals.minute, 1, 1).substring(0,1);
-
-				for (int i = 0; i < sections.length; i++)
-					sections[i] = MizLib.getRuntimeInMinutesOrHours(tempShows.get(i).getRuntime(), hour, minute);
-			} else {
-				String temp = "";
-				for (int i = 0; i < sections.length; i++)
-					if (!MizLib.isEmpty(tempShows.get(i).getTitle())) {
-						temp = tempShows.get(i).getTitle().substring(0,1);
-						if (Character.isLetter(temp.charAt(0)))
-							sections[i] = tempShows.get(i).getTitle().substring(0,1);
-						else
-							sections[i] = "#";
-					} else
-						sections[i] = "";
-			}
-
-			tempShows.clear();
-			tempShows = null;
-
-			super.notifyDataSetChanged();
-		}
 	}
 
 	private void notifyDataSetChanged() {
-
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
 
-		if (spinnerAdapter != null)
-			spinnerAdapter.notifyDataSetChanged();
-
-		try {
-			if (shows.size() == 0) {
-				overviewMessage.setVisibility(View.VISIBLE);
-				if (MizLib.isTvShowLibraryBeingUpdated(getActivity())) {
-					overviewMessage.setText(getString(R.string.updatingLibraryDescription));
-					updateMovieLibrary.setVisibility(View.GONE);
-				} else {
-					overviewMessage.setText(getString(R.string.noShowsInLibrary));
-					updateMovieLibrary.setVisibility(View.VISIBLE);
-				}
-			} else {
-				overviewMessage.setVisibility(View.GONE);
-				updateMovieLibrary.setVisibility(View.GONE);
-			}
-		} catch (Exception e) {} // Can happen sometimes, I guess...
+		if (mSpinnerAdapter != null)
+			mSpinnerAdapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		if (!mLoading)
-			showCollectionBasedOnNavigationIndex(itemPosition);
+			showTvShowSection(itemPosition);
+
 		return true;
 	}
 
-	private void showCollectionBasedOnNavigationIndex(int itemPosition) {
-		if (spinnerAdapter != null)
-			spinnerAdapter.notifyDataSetChanged(); // To show "0 shows" when loading
+	private void showTvShowSection(int position) {
+		if (mSpinnerAdapter != null)
+			mSpinnerAdapter.notifyDataSetChanged(); // To show "0 shows" when loading
 
-		switch (itemPosition) {
-		case 0:
-			showAllShows();
-			break;
-		case 1:
-			showFavorites();
-			break;
-		case 2:
-			showUnwatchedShows();
-			break;
-		}
+		if (mTvShowSectionLoader != null)
+			mTvShowSectionLoader.cancel(true);
+		mTvShowSectionLoader = new TvShowSectionLoader(position);
+		mTvShowSectionLoader.execute();
 	}
 
-	private void showAllShows() {
-		showProgressBar();
+	private class TvShowSectionLoader extends LibrarySectionAsyncTask<Void, Void, Boolean> {
+		private int mPosition;
+		private ArrayList<Integer> mTempKeys = new ArrayList<Integer>();
 
-		shownShows.clear();
-
-		shownShows.addAll(shows);
-
-		sortShows();
-
-		notifyDataSetChanged();
-
-		hideProgressBar();
-	}
-
-	private void showFavorites() {
-		showProgressBar();
-
-		shownShows.clear();
-
-		for (int i = 0; i < shows.size(); i++) {
-			if (shows.get(i).isFavorite())
-				shownShows.add(shows.get(i));
+		public TvShowSectionLoader(int position) {
+			mPosition = position;
 		}
 
-		sortShows();
+		@Override
+		protected void onPreExecute() {
+			setProgressBarVisible(true);
+			mTvShowKeys.clear();
+		}
 
-		notifyDataSetChanged();
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			if (isCancelled())
+				return false;
 
-		hideProgressBar();
-	}
+			switch (mPosition) {
+			case ALL_SHOWS:
+				for (int i = 0; i < mTvShows.size(); i++)
+					mTempKeys.add(i);
+				break;
 
-	private void showUnwatchedShows() {
+			case FAVORITES:
+				for (int i = 0; i < mTvShows.size(); i++) {
+					if (mTvShows.get(i).isFavorite())
+						mTempKeys.add(i);
+				}
+				break;
 
-		shownShows.clear();
-
-		new AsyncTask<Void, Void, Void>() {
-			ArrayList<TvShow> tempShows = new ArrayList<TvShow>();
-
-			@Override
-			protected void onPreExecute() {
-				showProgressBar();
-			}
-
-			@Override
-			protected Void doInBackground(Void... params) {				
+			case UNWATCHED_SHOWS:
 				DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
-				for (int i = 0; i < shows.size(); i++)
-					if (db.hasUnwatchedEpisodes(shows.get(i).getId()))
-						tempShows.add(shows.get(i));
-				return null;
+				for (int i = 0; i < mTvShows.size(); i++)
+					if (db.hasUnwatchedEpisodes(mTvShows.get(i).getId()))
+						mTempKeys.add(i);
+				break;
 			}
 
-			@Override
-			protected void onPostExecute(Void result) {
-				shownShows.addAll(tempShows);
+			return true;
+		}
 
-				// Clean up...
-				tempShows.clear();
-				tempShows = null;
+		@Override
+		protected void onPostExecute(Boolean success) {
+			// Make sure that the loading was successful, that the Fragment is still added and
+			// that the currently selected navigation index is the same as when we started loading
+			if (success && isAdded() && mActionBar.getSelectedNavigationIndex() == mPosition) {
+				mTvShowKeys.addAll(mTempKeys);
 
-				sortShows();
+				sortTvShows();
 				notifyDataSetChanged();
-				hideProgressBar();
+				setProgressBarVisible(false);
 			}
-		}.execute();
+		}
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		if (((Main) getActivity()).isDrawerOpen()) {
-			if (actionBar == null && getActivity() != null)
-				actionBar = getActivity().getActionBar();
-			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
+			if (mActionBar == null && getActivity() != null)
+				mActionBar = getActivity().getActionBar();
+			mActionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
 			((Main) getActivity()).showDrawerOptionsMenu(menu, inflater);
 		} else {
 			setupActionBar();
 			inflater.inflate(R.menu.menutv, menu);
+			
+			if (mTvShows.size() == 0)
+				menu.findItem(R.id.random).setVisible(false);
+			else
+				menu.findItem(R.id.random).setVisible(true);
+			
+			MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search_textbox), new OnActionExpandListener() {
+				@Override
+				public boolean onMenuItemActionExpand(MenuItem item) {
+					return true;
+				}
+
+				@Override
+				public boolean onMenuItemActionCollapse(MenuItem item) {
+					onSearchViewCollapsed();
+					return true;
+				}
+			});
+			
 			SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
 			ComponentName cn = new ComponentName(getActivity(), TvShowActorSearchActivity.class);
@@ -630,7 +564,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 					if (newText.length() > 0) {
 						search(newText);
 					} else {
-						showAllShows();
+						onSearchViewCollapsed();
 					}
 					return true;
 				}
@@ -639,6 +573,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			});
 		}
 		super.onCreateOptionsMenu(menu, inflater);
+	}
+	
+	private void onSearchViewCollapsed() {
+		if (isAdded() && mActionBar != null) {
+			if (mActionBar.getSelectedNavigationIndex() == ALL_SHOWS)
+				showTvShowSection(ALL_SHOWS);
+			else
+				mActionBar.setSelectedNavigationItem(ALL_SHOWS);
+		}
 	}
 
 	@Override
@@ -650,22 +593,22 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			startActivityForResult(getUpdateIntent(), 0);
 			break;
 		case R.id.menuSortRating:
-			sortByRating();
+			sortBy(RATING);
 			break;
 		case R.id.menuSortWeightedRating:
-			sortByWeightedRating();
+			sortBy(WEIGHTED_RATING);
 			break;
 		case R.id.menuSortTitle:
-			sortByTitle();
+			sortBy(TITLE);
 			break;
 		case R.id.menuSortRelease:
-			sortByRelease();
+			sortBy(RELEASE);
 			break;
 		case R.id.menuSortNewestEpisode:
-			sortByNewestEpisode();
+			sortBy(NEWEST_EPISODE);
 			break;
 		case R.id.menuSortDuration:
-			sortByDuration();
+			sortBy(DURATION);
 			break;
 		case R.id.genres:
 			showGenres();
@@ -679,6 +622,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		case R.id.menuSettings:
 			startActivity(new Intent(getActivity(), Preferences.class));
 			break;
+		case R.id.clear_filters:
+			showTvShowSection(mActionBar.getSelectedNavigationIndex());
+			break;
+		case R.id.random:
+			if (mTvShowKeys.size() > 0) {
+				int random = new Random().nextInt(mTvShowKeys.size());
+				showDetails(random);
+			}
+			break;
 		}
 
 		return true;
@@ -691,192 +643,80 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		return intent;
 	}
 
-	private void sortShows() {
-		String SORT_TYPE = settings.getString(SORTING_TVSHOWS, "sortTitle");
+	private void sortTvShows() {
+		if (!isAdded())
+			return;
+
+		String SORT_TYPE = mSharedPreferences.getString(SORTING_TVSHOWS, "sortTitle");
+
 		if (SORT_TYPE.equals("sortRelease")) {
-			sortByRelease();
+			sortBy(RELEASE);
 		} else if (SORT_TYPE.equals("sortRating")) {
-			sortByRating();
+			sortBy(RATING);
 		} else if (SORT_TYPE.equals("sortWeightedRating")) {
-			sortByWeightedRating();
+			sortBy(WEIGHTED_RATING);
 		} else if (SORT_TYPE.equals("sortNewestEpisode")) {
-			sortByNewestEpisode();
+			sortBy(NEWEST_EPISODE);
 		} else if (SORT_TYPE.equals("sortDuration")) {
-			sortByDuration();
-		} else {
-			sortByTitle();
+			sortBy(DURATION);
+		} else { // if SORT_TYPE equals "sortTitle"
+			sortBy(TITLE);
 		}
 	}
 
-	public void sortByTitle() {
-		Editor editor = settings.edit();
-		editor.putString(SORTING_TVSHOWS, "sortTitle");
-		editor.apply();
+	public void sortBy(int sort) {
+		if (!isAdded())
+			return;
 
-		sortBy(TITLE);
-	}
+		mCurrentSort = sort;
 
-	public void sortByRelease() {
-		Editor editor = settings.edit();
-		editor.putString(SORTING_TVSHOWS, "sortRelease");
-		editor.apply();
-
-		sortBy(RELEASE);
-	}
-
-	public void sortByNewestEpisode() {
-		Editor editor = settings.edit();
-		editor.putString(SORTING_TVSHOWS, "sortNewestEpisode");
-		editor.apply();
-
-		sortBy(NEWEST_EPISODE);
-	}
-
-	public void sortByRating() {
-		Editor editor = settings.edit();
-		editor.putString(SORTING_TVSHOWS, "sortRating");
-		editor.apply();
-
-		sortBy(RATING);
-	}
-
-	public void sortByWeightedRating() {
-		Editor editor = settings.edit();
-		editor.putString(SORTING_TVSHOWS, "sortWeightedRating");
-		editor.apply();
-
-		sortBy(WEIGHTED_RATING);
-	}
-
-	public void sortByDuration() {
-		Editor editor = settings.edit();
-		editor.putString(SORTING_TVSHOWS, "sortDuration");
-		editor.apply();
-
-		sortBy(DURATION);
-	}
-
-	private final int TITLE = 10, RELEASE = 11, RATING = 12, NEWEST_EPISODE = 13, WEIGHTED_RATING = 14, DURATION = 15;
-
-	public void sortBy(final int sort) {
-
-		showProgressBar();
-
-		ArrayList<TvShow> tempShows = new ArrayList<TvShow>(shownShows);
-
-		switch (sort) {	
+		Editor editor = mSharedPreferences.edit();
+		switch (mCurrentSort) {
 		case TITLE:
-
-			Collections.sort(tempShows, new Comparator<TvShow>() {
-				@Override
-				public int compare(TvShow o1, TvShow o2) {
-					String s1 = o1.getTitle(), s2 = o2.getTitle();
-					if (s1 != null && s2 != null)
-						return s1.compareToIgnoreCase(s2);
-					return 0;
-				}
-			});
-
+			editor.putString(SORTING_TVSHOWS, "sortTitle");
 			break;
-
 		case RELEASE:
-			Collections.sort(tempShows, new Comparator<TvShow>() {
-				@Override
-				public int compare(TvShow o1, TvShow o2) {	
-					try {
-						return o1.getFirstAirdate().compareTo(o2.getFirstAirdate()) * -1;
-					} catch (Exception e) {
-						return 0;
-					}
-				}
-			});
-
+			editor.putString(SORTING_TVSHOWS, "sortRelease");
 			break;
-
 		case RATING:
-
-			Collections.sort(tempShows, new Comparator<TvShow>() {
-				@Override
-				public int compare(TvShow o1, TvShow o2) {
-					try {
-						if (o1.getRawRating() < o2.getRawRating())
-							return 1;
-						else if (o1.getRawRating() > o2.getRawRating())
-							return -1;
-					} catch (Exception e) {}
-					return 0;
-				}
-			});
-
+			editor.putString(SORTING_TVSHOWS, "sortRating");
 			break;
-
 		case WEIGHTED_RATING:
-
-			Collections.sort(tempShows, new Comparator<TvShow>() {
-				@Override
-				public int compare(TvShow o1, TvShow o2) {
-					try {
-						if (o1.getWeightedRating() < o2.getWeightedRating()) {
-							return 1;
-						} else if (o1.getWeightedRating() > o2.getWeightedRating())
-							return -1;
-					} catch (Exception e) {}
-					return 0;
-				}
-			});
-
+			editor.putString(SORTING_TVSHOWS, "sortWeightedRating");
 			break;
-
 		case NEWEST_EPISODE:
-
-			final DbAdapterTvShowEpisode dbTvShowEpisode = MizuuApplication.getTvEpisodeDbAdapter();
-			Collections.sort(tempShows, new Comparator<TvShow>() {
-				@Override
-				public int compare(TvShow o1, TvShow o2) {
-					String first = dbTvShowEpisode.getLatestEpisodeAirdate(o1.getId());
-					String second = dbTvShowEpisode.getLatestEpisodeAirdate(o2.getId());
-					return first.compareTo(second) * -1;
-				}
-			});
-
+			editor.putString(SORTING_TVSHOWS, "sortNewestEpisode");
 			break;
-
 		case DURATION:
+			editor.putString(SORTING_TVSHOWS, "sortDuration");
+			break;
+		}
+		editor.apply();
 
-			Collections.sort(tempShows, new Comparator<TvShow>() {
-				@Override
-				public int compare(TvShow o1, TvShow o2) {
-
-					int first = Integer.valueOf(o1.getRuntime());
-					int second = Integer.valueOf(o2.getRuntime());
-
-					if (first < second)
-						return 1;
-					else if (first > second)
-						return -1;
-
-					return 0;
-				}
-			});
+		ArrayList<TvShowSortHelper> tempHelper = new ArrayList<TvShowSortHelper>();
+		for (int i = 0; i < mTvShowKeys.size(); i++) {
+			tempHelper.add(new TvShowSortHelper(mTvShows.get(mTvShowKeys.get(i)), mTvShowKeys.get(i), mCurrentSort));
 		}
 
-		shownShows = new ArrayList<TvShow>(tempShows);
+		Collections.sort(tempHelper);
 
-		// Clean up on aisle three...
-		tempShows.clear();
+		mTvShowKeys.clear();
+		for (int i = 0; i < tempHelper.size(); i++) {
+			mTvShowKeys.add(tempHelper.get(i).getIndex());
+		}
 
-		hideProgressBar();
+		tempHelper.clear();
+
+		setProgressBarVisible(false);
 		notifyDataSetChanged();
 	}
 
 	private void showGenres() {
-		showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
-
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
 		String[] split;
-		for (int i = 0; i < shownShows.size(); i++) {
-			if (!shownShows.get(i).getGenres().isEmpty()) {
-				split = shownShows.get(i).getGenres().split(",");
+		for (int i = 0; i < mTvShowKeys.size(); i++) {
+			if (!mTvShows.get(mTvShowKeys.get(i)).getGenres().isEmpty()) {
+				split = mTvShows.get(mTvShowKeys.get(i)).getGenres().split(",");
 				for (int j = 0; j < split.length; j++) {
 					if (map.containsKey(split[j].trim())) {
 						map.put(split[j].trim(), map.get(split[j].trim()) + 1);
@@ -887,50 +727,13 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			}
 		}
 
-		final CharSequence[] tempArray = map.keySet().toArray(new CharSequence[map.keySet().size()]);	
-		for (int i = 0; i < tempArray.length; i++)
-			tempArray[i] = tempArray[i] + " (" + map.get(tempArray[i]) +  ")";
-
-		final CharSequence[] temp = new CharSequence[tempArray.length + 1];
-		temp[0] = getString(R.string.allGenres);
-
-		for (int i = 1; i < temp.length; i++)
-			temp[i] = tempArray[i-1];
-
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.selectGenre)
-		.setItems(temp, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				if (which > 0) {
-					ArrayList<TvShow> currentlyShown = new ArrayList<TvShow>();
-					currentlyShown.addAll(shownShows);
-
-					shownShows.clear();
-
-					String selectedGenre = temp[which].toString();
-					selectedGenre = selectedGenre.substring(0, selectedGenre.lastIndexOf("(")).trim();
-
-					for (int i = 0; i < currentlyShown.size(); i++)
-						if (currentlyShown.get(i).getGenres().contains(selectedGenre))
-							shownShows.add(currentlyShown.get(i));
-
-					sortShows();
-					notifyDataSetChanged();
-				}
-
-				dialog.dismiss();
-			}
-		});
-		builder.show();
+		createAndShowAlertDialog(setupItemArray(map, R.string.allGenres), R.string.selectGenre, GENRES);
 	}
 
 	private void showCertifications() {
-		showCollectionBasedOnNavigationIndex(actionBar.getSelectedNavigationIndex());
-
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-		for (int i = 0; i < shownShows.size(); i++) {
-			String certification = shownShows.get(i).getCertification();
+		for (int i = 0; i < mTvShowKeys.size(); i++) {
+			String certification = mTvShows.get(mTvShowKeys.get(i)).getCertification();
 			if (!MizLib.isEmpty(certification) && !certification.equalsIgnoreCase(getString(R.string.stringNA))) {
 				if (map.containsKey(certification.trim())) {
 					map.put(certification.trim(), map.get(certification.trim()) + 1);
@@ -940,46 +743,76 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			}
 		}
 
-		final CharSequence[] tempArray = map.keySet().toArray(new CharSequence[map.keySet().size()]);	
-		for (int i = 0; i < tempArray.length; i++)
-			tempArray[i] = tempArray[i] + " (" + map.get(tempArray[i]) +  ")";
+		createAndShowAlertDialog(setupItemArray(map, R.string.allCertifications), R.string.selectCertification, CERTIFICATION);
+	}
 
-		final CharSequence[] temp = new CharSequence[tempArray.length + 1];
-		temp[0] = getString(R.string.allCertifications);
-
-		for (int i = 1; i < temp.length; i++)
-			temp[i] = tempArray[i-1];
-
-
+	private void createAndShowAlertDialog(final CharSequence[] temp, int title, final int type) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.selectCertification)
+		builder.setTitle(title)
 		.setItems(temp, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				if (which > 0) {
-					ArrayList<TvShow> currentlyShown = new ArrayList<TvShow>();
-					currentlyShown.addAll(shownShows);
-
-					shownShows.clear();
-
-					String selectedGenre = temp[which].toString();
-					selectedGenre = selectedGenre.substring(0, selectedGenre.lastIndexOf("(")).trim();
-
-					for (int i = 0; i < currentlyShown.size(); i++)
-						if (currentlyShown.get(i).getCertification().trim().contains(selectedGenre))
-							shownShows.add(currentlyShown.get(i));
-
-					sortShows();
-					notifyDataSetChanged();
-				}
-
-				dialog.dismiss();
+				handleDialogOnClick(dialog, which, type, temp);
 			}
 		});
 		builder.show();
 	}
 
+	private CharSequence[] setupItemArray(TreeMap<String, Integer> map, int stringId) {
+		final CharSequence[] tempArray = map.keySet().toArray(new CharSequence[map.keySet().size()]);	
+		for (int i = 0; i < tempArray.length; i++)
+			tempArray[i] = tempArray[i] + " (" + map.get(tempArray[i]) +  ")";
+
+		final CharSequence[] temp = new CharSequence[tempArray.length + 1];
+		temp[0] = getString(stringId);
+
+		for (int i = 1; i < temp.length; i++)
+			temp[i] = tempArray[i-1];
+
+		return temp;
+	}
+
+	private void handleDialogOnClick(DialogInterface dialog, int which, int type, CharSequence[] temp) {
+		if (which > 0) {
+			ArrayList<Integer> currentlyShown = new ArrayList<Integer>(mTvShowKeys);
+			mTvShowKeys.clear();
+
+			String selected = temp[which].toString();
+			selected = selected.substring(0, selected.lastIndexOf("(")).trim();
+
+			boolean condition;
+			for (int i = 0; i < currentlyShown.size(); i++) {
+				condition = false;
+
+				switch (type) {
+				case GENRES:
+					if (mTvShows.get(currentlyShown.get(i)).getGenres().contains(selected)) {
+						String[] genres = mTvShows.get(currentlyShown.get(i)).getGenres().split(",");
+						for (String genre : genres) {
+							if (genre.trim().equals(selected)) {
+								condition = true;
+								break;
+							}
+						}
+					}
+					break;
+				case CERTIFICATION:
+					condition = mTvShows.get(currentlyShown.get(i)).getCertification().trim().contains(selected);
+					break;
+				}
+
+				if (condition)
+					mTvShowKeys.add(currentlyShown.get(i));
+			}
+
+			sortTvShows();
+			notifyDataSetChanged();
+		}
+
+		dialog.dismiss();
+	}
+
 	private void search(String query) {
-		showProgressBar();
+		setProgressBarVisible(true);
 
 		if (mSearch != null)
 			mSearch.cancel(true);
@@ -990,36 +823,43 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	private class SearchTask extends AsyncTask<String, String, String> {
 
-		private String searchQuery = "";
+		private String mSearchQuery = "";
+		private List<Integer> mTempKeys;
 
 		public SearchTask(String query) {
-			searchQuery = query.toLowerCase(Locale.ENGLISH);
+			mSearchQuery = query.toLowerCase(Locale.ENGLISH);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			setProgressBarVisible(true);
+			mTvShowKeys.clear();
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			shownShows.clear();
+			mTempKeys = new ArrayList<Integer>();
 
-			if (searchQuery.startsWith("actor:")) {
-				for (int i = 0; i < shows.size(); i++) {
+			if (mSearchQuery.startsWith("actor:")) {
+				for (int i = 0; i < mTvShows.size(); i++) {
 					if (isCancelled())
 						return null;
 
-					if (shows.get(i).getActors().toLowerCase(Locale.ENGLISH).contains(searchQuery.replace("actor:", "").trim()))
-						shownShows.add(shows.get(i));
+					if (mTvShows.get(i).getActors().toLowerCase(Locale.ENGLISH).contains(mSearchQuery.replace("actor:", "").trim()))
+						mTempKeys.add(i);
 				}
 			} else {
 				String lowerCase = ""; // Reuse String variable
-				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
+				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x)
 
-				for (int i = 0; i < shows.size(); i++) {
+				for (int i = 0; i < mTvShows.size(); i++) {
 					if (isCancelled())
 						return null;
 
-					lowerCase = shows.get(i).getTitle().toLowerCase(Locale.ENGLISH);
+					lowerCase = mTvShows.get(i).getTitle().toLowerCase(Locale.ENGLISH);
 
-					if (lowerCase.indexOf(searchQuery) != -1 ||  p.matcher(lowerCase).replaceAll("").indexOf(searchQuery) != -1)
-						shownShows.add(shows.get(i));
+					if (lowerCase.indexOf(mSearchQuery) != -1 ||  p.matcher(lowerCase).replaceAll("").indexOf(mSearchQuery) != -1)
+						mTempKeys.add(i);
 				}
 			}
 
@@ -1028,20 +868,17 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		@Override
 		protected void onPostExecute(String result) {
-			sortShows();
+			mTvShowKeys.addAll(mTempKeys);
+
+			sortTvShows();
 			notifyDataSetChanged();
-			hideProgressBar();
+			setProgressBarVisible(false);
 		}
 	}
 
-	private void showProgressBar() {
-		pbar.setVisibility(View.VISIBLE);
-		mGridView.setVisibility(View.GONE);
-	}
-
-	private void hideProgressBar() {
-		pbar.setVisibility(View.GONE);
-		mGridView.setVisibility(View.VISIBLE);
+	private void setProgressBarVisible(boolean visible) {
+		mProgressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+		mGridView.setVisibility(visible ? View.GONE : View.VISIBLE);
 	}
 
 	@Override
@@ -1049,8 +886,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == 2) { // Favourite removed
-			if (actionBar.getSelectedNavigationIndex() == 1) {
-				showFavorites();
+			if (mActionBar.getSelectedNavigationIndex() == FAVORITES) {
+				showTvShowSection(FAVORITES);
 			}
 		} else if (resultCode == 3) {
 			notifyDataSetChanged();
@@ -1060,10 +897,10 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(IGNORED_TITLE_PREFIXES)) {
-			ignorePrefixes = settings.getBoolean(IGNORED_TITLE_PREFIXES, false);
+			mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
 			forceLoaderLoad();
 		} else if (key.equals(GRID_ITEM_SIZE)) {
-			String thumbnailSize = settings.getString(GRID_ITEM_SIZE, getString(R.string.normal));
+			String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
 			if (thumbnailSize.equals(getString(R.string.large))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
 			else if (thumbnailSize.equals(getString(R.string.normal))) 
@@ -1095,15 +932,15 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	private class ActionBarSpinner extends BaseAdapter {
 
-		private LayoutInflater inflater;
+		private LayoutInflater mInflater;
 
 		public ActionBarSpinner() {
-			inflater = LayoutInflater.from(getActivity());
+			mInflater = LayoutInflater.from(getActivity());
 		}
 
 		@Override
 		public int getCount() {
-			return spinnerItems.size();
+			return mSpinnerItems.size();
 		}
 
 		@Override
@@ -1117,39 +954,19 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		}
 
 		@Override
-		public int getItemViewType(int position) {
-			return 0;
-		}
-
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = inflater.inflate(R.layout.spinner_header, parent, false);
-			((TextView) convertView.findViewById(R.id.title)).setText(spinnerItems.get(position).getTitle());
+			convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
+			((TextView) convertView.findViewById(R.id.title)).setText(mSpinnerItems.get(position).getTitle());
 
-			int size = shownShows.size();
+			int size = mTvShowKeys.size();
 			((TextView) convertView.findViewById(R.id.subtitle)).setText(size + " " + getResources().getQuantityString(R.plurals.showsInLibrary, size, size));
 			return convertView;
 		}
 
 		@Override
-		public int getViewTypeCount() {
-			return 0;
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			return true;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return spinnerItems.size() == 0;
-		}
-
-		@Override
 		public View getDropDownView(int position, View convertView, ViewGroup parent) {			
-			convertView = inflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
-			((TextView) convertView.findViewById(android.R.id.text1)).setText(spinnerItems.get(position).getSubtitle());
+			convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+			((TextView) convertView.findViewById(android.R.id.text1)).setText(mSpinnerItems.get(position).getSubtitle());
 
 			return convertView;
 		}

@@ -46,6 +46,10 @@
                 android:id="@+id/certifications"
                 android:icon="@drawable/ic_action_flag"
                 android:title="@string/detailsCertification"/>
+            <item
+                android:id="@+id/clear_filters"
+                android:icon="@drawable/ic_action_discard"
+                android:title="@string/clear_filters"/>
         </menu>
     </item>
     <item
@@ -56,6 +60,11 @@
     </item>
 
     <group android:id="@+id/group1" >
+        <item
+            android:id="@+id/random"
+            android:icon="@drawable/ic_action_puzzle"
+            android:title="@string/random_show">
+        </item>
         <item
             android:id="@+id/unidentifiedFiles"
             android:icon="@drawable/folder"

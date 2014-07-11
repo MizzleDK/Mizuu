@@ -98,7 +98,10 @@
                     android:id="@+id/traktRemoveAccount"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="64dp"
+                    android:lines="2"
+                    android:maxHeight="2dp"
+                    android:minLines="2"
                     android:paddingLeft="@dimen/movie_details_padding"
                     android:paddingRight="@dimen/movie_details_padding"
                     android:text="@string/removeAccount" />
@@ -107,7 +110,10 @@
                     android:id="@+id/traktLogIn"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="64dp"
+                    android:lines="2"
+                    android:maxLines="2"
+                    android:minLines="2"
                     android:paddingLeft="@dimen/movie_details_padding"
                     android:paddingRight="@dimen/movie_details_padding"
                     android:text="@string/logIn" />
@@ -116,11 +122,15 @@
                     android:id="@+id/traktSyncNow"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="64dp"
+                    android:lines="2"
+                    android:maxLines="2"
+                    android:minLines="2"
                     android:paddingLeft="@dimen/movie_details_padding"
                     android:paddingRight="@dimen/movie_details_padding"
                     android:text="@string/syncNow"
                     android:visibility="gone" />
+
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

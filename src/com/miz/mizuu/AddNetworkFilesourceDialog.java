@@ -71,10 +71,9 @@ public class AddNetworkFilesourceDialog extends Activity {
 
 		if (!MizLib.isTablet(this)) {
 			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false))
-				setTheme(R.style.Theme_Example_FullScreen);
+				setTheme(R.style.Mizuu_Theme_FullScreen);
 			else
-				setTheme(R.style.Theme_Example);
-
+				setTheme(R.style.Mizuu_Theme);
 		}
 
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

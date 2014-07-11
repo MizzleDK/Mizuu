@@ -220,8 +220,8 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	
 	public File getOfflineCopyFile() {
 		if (mFilepath.contains("<MiZ>"))
-			return new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(getFilepath()) + "." + MizLib.getFileExtension(getFilepath()));
-		return new File(MizLib.getAvailableOfflineFolder(mContext), MizLib.md5(getFullFilepath()) + "." + MizLib.getFileExtension(getFullFilepath()));
+			return MizLib.getOfflineFile(mContext, getFilepath());
+		return MizLib.getOfflineFile(mContext, getFullFilepath());
 	}
 	
 	public String getSubText(int sort) {

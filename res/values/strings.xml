@@ -25,15 +25,33 @@
         <item quantity="one">hour</item>
         <item quantity="other">hours</item>
     </plurals>
+    <plurals name="hour_short">
+        <item quantity="one">hr</item>
+        <item quantity="other">hrs</item>
+    </plurals>
     <plurals name="minute">
         <item quantity="one">minute</item>
         <item quantity="other">minutes</item>
+    </plurals>
+    <plurals name="minute_short">
+        <item quantity="one">min</item>
+        <item quantity="other">mins</item>
     </plurals>
     <plurals name="seasons_selected">
         <item quantity="one">season selected</item>
         <item quantity="other">seasons selected</item>
     </plurals>
+    <plurals name="file_location">
+        <item quantity="one">File location</item>
+        <item quantity="other">File locations</item>
+    </plurals>
 
+    <!-- CONTENT DESCRIPTION STRINGS -->
+    <string name="content_description_image_backdrop">Background image</string>
+    <string name="content_description_cover_image">Cover image</string>
+    <string name="content_description_no_content_icon">No content icon</string>
+    
+    <!-- APP STRINGS -->
     <string name="app_name">Mizuu</string>
     <string name="app_name_movies">Mizuu - movies</string>
     <string name="app_name_tvshows">Mizuu - TV shows</string>
@@ -451,8 +469,6 @@
     <string name="browser_help_message">Press the Back-button to navigate up the file system</string>
     <string name="unknown_size">Unknown size</string>
     <string name="compatibility">compatibility</string>
-    <string name="use_dark_theme_title">Use dark application theme</string>
-    <string name="set_dark_theme_description">Sets the application theme to a darker style. Requires application restart.</string>
     <string name="no_results_found">No results found</string>
     <string name="check_in">Check in on Trakt</string>
     <string name="checked_in">Successfully checked in on Trakt!</string>
@@ -471,5 +487,10 @@
     <string name="empty_library_title">There\'s nothing here!</string>
     <string name="empty_library_description">Press the <b>Update library</b> button to add some content.</string>
     <string name="empty_watchlist_description">Press the <b>Watch later</b> button when viewing movie details to add new movies to your watchlist.</string>
+    <string name="random_movie">Random movie</string>
+    <string name="random_show">Random TV show</string>
+    <string name="more">More</string>
+    <string name="show_file_location">Show file location(s)</string>
+    <string name="show_file_location_description">Make file location(s) visible in the movie details view</string>
 
 </resources>

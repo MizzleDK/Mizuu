@@ -16,7 +16,6 @@
 
 package com.miz.mizuu;
 
-import static com.miz.functions.PreferenceKeys.DARK_THEME;
 import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 
 import java.io.File;
@@ -31,7 +30,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 
@@ -59,7 +57,7 @@ public class MizuuApplication extends Application {
 	private static ThreadPoolExecutor sThreadPoolExecutor;
 	private static HashMap<String, Typeface> sTypefaces = new HashMap<String, Typeface>();
 	private static Bus sBus;
-	private static File sMovieThumbFolder, sMovieBackdropFolder, sTvShowThumbFolder, sTvShowBackdropFolder, sTvShowEpisodeFolder, sTvShowSeasonFolder;
+	private static File sMovieThumbFolder, sMovieBackdropFolder, sTvShowThumbFolder, sTvShowBackdropFolder, sTvShowEpisodeFolder, sTvShowSeasonFolder, sAvailableOfflineFolder;
 
 	@Override
 	public void onCreate() {
@@ -184,38 +182,8 @@ public class MizuuApplication extends Application {
 		return sTypefaces.get(key);
 	}
 
-	public static int getCardDrawable(Context context) {
-		if (usesDarkTheme(context))
-			return R.drawable.card;
-		return R.drawable.card_dark;
-	}
-
-	public static int getCardColor(Context context) {
-		if (usesDarkTheme(context))
-			return R.color.card_background_dark;
-		return R.color.card_background_light;
-	}
-
-	public static int getCardTitleColor(Context context) {
-		if (usesDarkTheme(context))
-			return Color.parseColor("#d0d0d0");
-		return Color.parseColor("#101010");
-	}
-
-	public static int getBackgroundColor(Context context) {
-		if (usesDarkTheme(context))
-			return Color.WHITE;
-		return Color.BLACK;
-	}
-
 	public static int getBackgroundColorResource(Context context) {
-		if (usesDarkTheme(context))
-			return R.color.dark_background;
-		return R.color.light_background;
-	}
-
-	public static boolean usesDarkTheme(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(DARK_THEME, true);
+		return R.color.dark_background;
 	}
 
 	public static boolean isFullscreen(Context context) {
@@ -223,17 +191,10 @@ public class MizuuApplication extends Application {
 	}
 
 	public static void setupTheme(Context context) {
-		if (usesDarkTheme(context)) {
 			if (isFullscreen(context))
-				context.setTheme(R.style.Theme_Example_FullScreen);
+				context.setTheme(R.style.Mizuu_Theme_FullScreen);
 			else
-				context.setTheme(R.style.Theme_Example);
-		} else {
-			if (isFullscreen(context))
-				context.setTheme(R.style.Theme_Example_Light_FullScreen);
-			else
-				context.setTheme(R.style.Theme_Example_Light);
-		}
+				context.setTheme(R.style.Mizuu_Theme);
 	}
 
 	public static Bus getBus() {
@@ -307,5 +268,16 @@ public class MizuuApplication extends Application {
 			sTvShowSeasonFolder.mkdirs();
 		}
 		return sTvShowSeasonFolder;
+	}
+	
+	/*
+	 * Please refrain from using this when you need a File object for a specific video.
+	 */
+	public static File getAvailableOfflineFolder(Context c) {
+		if (sAvailableOfflineFolder == null) {
+			sAvailableOfflineFolder = new File(c.getExternalFilesDir(null) + "/offline_storage");
+			sAvailableOfflineFolder.mkdirs();
+		}
+		return sAvailableOfflineFolder;
 	}
 }

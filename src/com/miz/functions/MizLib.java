@@ -101,6 +101,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -407,6 +411,24 @@ public class MizLib {
 
 		v.setPadding(0, mActionBarHeight, 0, 0);
 	}
+	
+	/**
+	 * Add a padding with a combined height of the ActionBar and Status bar to the top of a given View
+	 * @param c
+	 * @param v
+	 */
+	public static void addActionBarAndStatusBarPadding(Context c, View v) {
+		int mActionBarHeight = 0, mStatusBarHeight = 0;
+		TypedValue tv = new TypedValue();
+		if (c.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+			mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, c.getResources().getDisplayMetrics());
+		else
+			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
+		
+		mStatusBarHeight = convertDpToPixels(c, 25);
+
+		v.setPadding(0, mActionBarHeight + mStatusBarHeight, 0, 0);
+	}
 
 	/**
 	 * Add a padding with a height of the ActionBar to the bottom of a given View
@@ -439,6 +461,27 @@ public class MizLib {
 
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		params.setMargins(0, mActionBarHeight, 0, 0);
+		v.setLayoutParams(params);
+	}
+	
+	/**
+	 * Add a margin with a combined height of the ActionBar and Status bar to the top of a given View contained in a FrameLayout
+	 * @param c
+	 * @param v
+	 */
+	public static void addActionBarAndStatusBarMargin(Context c, View v, FrameLayout.LayoutParams layoutParams) {
+		int mActionBarHeight = 0, mStatusBarHeight = 0;
+		TypedValue tv = new TypedValue();
+		if (c.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+			mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, c.getResources().getDisplayMetrics());
+		else
+			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
+
+		mStatusBarHeight = convertDpToPixels(c, 25);
+		
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		params.setMargins(0, mActionBarHeight + mStatusBarHeight, 0, 0);
+		params.gravity = layoutParams.gravity;
 		v.setLayoutParams(params);
 	}
 	
@@ -2339,15 +2382,13 @@ public class MizLib {
 	public static File getTvShowSeason(Context c, String showId, String season) {
 		return new File(MizuuApplication.getTvShowSeasonFolder(c), showId + "_S" + season + ".jpg");
 	}
+	
+	public static File getOfflineFile(Context c, String filepath) {
+		return new File(MizuuApplication.getAvailableOfflineFolder(c), MizLib.md5(filepath) + "." + MizLib.getFileExtension(filepath));
+	}
 
 	public static File getCacheFolder(Context c) {
 		File f = new File(c.getExternalFilesDir(null) + "/app_cache");
-		f.mkdirs();
-		return f;
-	}
-
-	public static File getAvailableOfflineFolder(Context c) {
-		File f = new File(c.getExternalFilesDir(null) + "/offline_storage");
 		f.mkdirs();
 		return f;
 	}
@@ -2769,7 +2810,7 @@ public class MizLib {
 		}
 
 		// #####
-		searchPattern = Pattern.compile("(\\d){1,5}");
+		searchPattern = Pattern.compile("(\\d){1,7}");
 		searchMatcher = searchPattern.matcher(input);
 
 		if (searchMatcher.find()) {
@@ -3361,6 +3402,25 @@ public class MizLib {
 				return context.getString(R.string.stringNA);
 			}
 	}
+	
+	public static Spanned getPrettyRuntime(Context context, int minutes) {
+		if (minutes == 0) {
+			return Html.fromHtml("<b>" + context.getString(R.string.stringNA) + "</b>");
+		}
+		
+		int hours = (minutes / 60);
+		minutes = (minutes % 60);
+		
+		if (hours > 0) {
+			if (minutes == 0) {
+				return Html.fromHtml("<b>" + hours + "</b> " + context.getResources().getQuantityString(R.plurals.hour, hours, hours));
+			} else {
+				return Html.fromHtml("<b>" + hours + "</b> " + context.getResources().getQuantityString(R.plurals.hour_short, hours, hours) + " <b>" + minutes + "</b> " + context.getResources().getQuantityString(R.plurals.minute_short, minutes, minutes));
+			}
+		} else {
+			return Html.fromHtml("<b>" + minutes + "</b> " + context.getResources().getQuantityString(R.plurals.minute, minutes, minutes));
+		}
+	}
 
 	public static String getPrettyDate(Context context, String date) {
 		if (!MizLib.isEmpty(date)) {
@@ -3369,7 +3429,7 @@ public class MizLib {
 				Calendar cal = Calendar.getInstance();
 				cal.set(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
 
-				return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault()).format(cal.getTime());
+				return cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + cal.get(Calendar.YEAR);
 			} catch (Exception e) { // Fall back if something goes wrong
 				return date;
 			}

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.MenuItem;
 import android.view.Window;
 
 import com.miz.base.MizActivity;
@@ -31,14 +32,14 @@ public class TvShowEpisodeDetails extends MizActivity {
 
 		if (!MizLib.isPortrait(this))
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_Transparent_NoBackGround_FullScreen);
+				setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_Transparent_NoBackGround);
+				setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
 		else
 			if (isFullscreen())
-				setTheme(R.style.Theme_Example_Transparent_FullScreen);
+				setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
 			else
-				setTheme(R.style.Theme_Example_Transparent);
+				setTheme(R.style.Mizuu_Theme_Transparent);
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -98,6 +99,23 @@ public class TvShowEpisodeDetails extends MizActivity {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

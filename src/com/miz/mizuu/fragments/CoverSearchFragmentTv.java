@@ -154,12 +154,10 @@ public class CoverSearchFragmentTv extends Fragment {
 
 		private final Context mContext;
 		private LayoutInflater inflater;
-		private int mCardBackground;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
 		}
 
 		@Override
@@ -191,9 +189,11 @@ public class CoverSearchFragmentTv extends Fragment {
 				holder = (CoverItem) convertView.getTag();
 			}
 
+			holder.cover.setImageResource(R.color.card_background_dark);
+			
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(pics_sources.get(position)).placeholder(mCardBackground).config(mConfig).into(holder.cover);
+			mPicasso.load(pics_sources.get(position)).placeholder(R.color.card_background_dark).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

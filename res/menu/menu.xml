@@ -69,6 +69,11 @@
 
     <group android:id="@+id/group1" >
         <item
+            android:id="@+id/random"
+            android:icon="@drawable/ic_action_puzzle"
+            android:title="@string/random_movie">
+        </item>
+        <item
             android:id="@+id/menuSettings"
             android:enabled="true"
             android:icon="@drawable/ic_action_settings"

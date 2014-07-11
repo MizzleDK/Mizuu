@@ -50,11 +50,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import jcifs.smb.SmbFile;
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
@@ -69,13 +69,14 @@ import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.graphics.Bitmap.Config;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -102,7 +103,7 @@ import com.miz.functions.CoverItem;
 import com.miz.functions.FileSource;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
-import com.miz.functions.MovieSectionAsyncTask;
+import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MovieSortHelper;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
@@ -115,7 +116,6 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.Update;
 import com.squareup.picasso.Picasso;
 
-@SuppressLint("NewApi")
 public class MovieLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
 
 	public static final int MAIN = 0, OTHER = 1;
@@ -136,7 +136,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	private MovieSectionLoader mMovieSectionLoader;
 	private SearchTask mSearch;
 	private View mEmptyLibraryLayout;
-	private ImageView mEmptyLibraryIcon;
 	private TextView mEmptyLibraryTitle, mEmptyLibraryDescription;
 
 	/**
@@ -337,19 +336,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			mProgressBar.setVisibility(View.GONE);
 
 		mEmptyLibraryLayout = v.findViewById(R.id.empty_library_layout);
-		mEmptyLibraryIcon = (ImageView) v.findViewById(R.id.empty_library_icon);
 		mEmptyLibraryTitle = (TextView) v.findViewById(R.id.empty_library_title);
 		mEmptyLibraryTitle.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf"));
 		mEmptyLibraryDescription = (TextView) v.findViewById(R.id.empty_library_description);
 		if (mType == OTHER)
 			mEmptyLibraryDescription.setText(R.string.empty_watchlist_description);
 		mEmptyLibraryDescription.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf"));
-
-		if (!MizuuApplication.usesDarkTheme(getActivity())) {
-			mEmptyLibraryIcon.setImageResource(R.drawable.no_content_face_dark);
-			mEmptyLibraryTitle.setTextColor(Color.parseColor("#222222"));
-			mEmptyLibraryDescription.setTextColor(Color.parseColor("#222222"));
-		}
 
 		mAdapter = new LoaderAdapter(getActivity());
 
@@ -379,19 +371,23 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Intent intent = new Intent();
-				if (mActionBar.getSelectedNavigationIndex() == 3) { // Collection
-					intent.putExtra("collectionId", mMovies.get(mMovieKeys.get(arg2)).getCollectionId());
-					intent.putExtra("collectionTitle", mMovies.get(mMovieKeys.get(arg2)).getCollection());
-					intent.setClass(getActivity(), MovieCollection.class);
-					startActivity(intent);
-				} else {
-					intent.putExtra("rowId", Integer.parseInt(mMovies.get(mMovieKeys.get(arg2)).getRowId()));
-					intent.setClass(getActivity(), MovieDetails.class);
-					startActivityForResult(intent, 0);
-				}
+				showDetails(arg2);
 			}
 		});
+	}
+
+	private void showDetails(int arg2) {
+		Intent intent = new Intent();
+		if (mActionBar.getSelectedNavigationIndex() == COLLECTIONS) { // Collection
+			intent.putExtra("collectionId", mMovies.get(mMovieKeys.get(arg2)).getCollectionId());
+			intent.putExtra("collectionTitle", mMovies.get(mMovieKeys.get(arg2)).getCollection());
+			intent.setClass(getActivity(), MovieCollection.class);
+			startActivity(intent);
+		} else {
+			intent.putExtra("rowId", Integer.parseInt(mMovies.get(mMovieKeys.get(arg2)).getRowId()));
+			intent.setClass(getActivity(), MovieDetails.class);
+			startActivityForResult(intent, 0);
+		}
 	}
 
 	@Override
@@ -418,17 +414,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		private LayoutInflater mInflater;
 		private final Context mContext;
-		private int mNumColumns = 0, mSidePadding, mBottomPadding, mCard, mCardBackground, mCardTitleColor;
+		private int mNumColumns = 0;
 		private boolean mCollectionsView = false;
 
 		public LoaderAdapter(Context context) {
 			mContext = context;
 			mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mSidePadding = MizLib.convertDpToPixels(mContext, 1);
-			mBottomPadding = MizLib.convertDpToPixels(mContext, 2);
-			mCard = MizuuApplication.getCardDrawable(mContext);
-			mCardBackground = MizuuApplication.getCardColor(mContext);
-			mCardTitleColor = MizuuApplication.getCardTitleColor(mContext);
 		}
 
 		@Override
@@ -454,7 +445,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 
-			int mKeyPosition = mMovieKeys.get(position);
+			final MediumMovie mMovie = mMovies.get(mMovieKeys.get(position));
 
 			CoverItem holder;
 			if (convertView == null) {
@@ -466,11 +457,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
 
-				holder.mLinearLayout.setBackgroundResource(mCard);
-				holder.text.setBackgroundResource(mCardBackground);
-				holder.text.setTextColor(mCardTitleColor);
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
-				holder.subtext.setBackgroundResource(mCardBackground);
 
 				convertView.setTag(holder);
 			} else {
@@ -480,39 +467,54 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			if (!mShowTitles) {
 				holder.text.setVisibility(View.GONE);
 				holder.subtext.setVisibility(View.GONE);
-				holder.cover.setPadding(mSidePadding, 0, mSidePadding, mBottomPadding);
 			} else {
 				holder.text.setVisibility(View.VISIBLE);
-				holder.subtext.setVisibility(View.VISIBLE);
 
-				holder.text.setText(mCollectionsView ? mMovies.get(mKeyPosition).getCollection() : mMovies.get(mKeyPosition).getTitle());
-				holder.subtext.setText(mMovies.get(mKeyPosition).getSubText(mCurrentSort));
+				holder.text.setText(mCollectionsView ? mMovie.getCollection() : mMovie.getTitle());
+				if (mCollectionsView) {
+					holder.text.setLines(2);
+					holder.text.setMaxLines(2);
+					holder.subtext.setVisibility(View.GONE);
+				} else {
+					holder.text.setLines(1);
+					holder.text.setMaxLines(1);
+					holder.subtext.setVisibility(View.VISIBLE);
+					holder.subtext.setText(mMovie.getSubText(mCurrentSort));
+				}
 			}
-
-			holder.cover.setImageResource(mCardBackground);
+			
+			holder.cover.setImageResource(R.color.card_background_dark);
 
 			if (!mCollectionsView) {
 				// Movie poster
-				if (!mIgnoreNfo && mMovies.get(mKeyPosition).isNetworkFile()) {
+				if (!mIgnoreNfo && mMovie.isNetworkFile()) {
 					if (mResizedWidth > 0)
-						mPicasso.load(mMovies.get(mKeyPosition).getFilepath() + "<MiZ>" + mMovies.get(mKeyPosition).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+						mPicasso.load(mMovie.getFilepath() + "<MiZ>" + mMovie.getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 					else
-						mPicasso.load(mMovies.get(mKeyPosition).getFilepath() + "<MiZ>" + mMovies.get(mKeyPosition).getThumbnail()).config(mConfig).into(holder);
+						mPicasso.load(mMovie.getFilepath() + "<MiZ>" + mMovie.getThumbnail()).config(mConfig).into(holder);
 				} else {
 					if (mResizedWidth > 0)
-						mPicasso.load(mMovies.get(mKeyPosition).getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+						mPicasso.load(mMovie.getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 					else
-						mPicasso.load(mMovies.get(mKeyPosition).getThumbnail()).config(mConfig).into(holder);
+						mPicasso.load(mMovie.getThumbnail()).config(mConfig).into(holder);
 				}
 			} else {
 				// Collection poster
 				if (mResizedWidth > 0)
-					mPicasso.load(mMovies.get(mKeyPosition).getCollectionPoster()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+					mPicasso.load(mMovie.getCollectionPoster()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
 				else
-					mPicasso.load(mMovies.get(mKeyPosition).getCollectionPoster()).config(mConfig).into(holder);
+					mPicasso.load(mMovie.getCollectionPoster()).config(mConfig).into(holder);
 			}
 
 			return convertView;
+		}
+
+		@Override
+		public void notifyDataSetChanged() {
+			if (mActionBar != null)
+				mCollectionsView = mActionBar.getSelectedNavigationIndex() == COLLECTIONS;
+
+			super.notifyDataSetChanged();
 		}
 
 		public void setNumColumns(int numColumns) {
@@ -540,7 +542,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		return true;
 	}
 
-	private class MovieSectionLoader extends MovieSectionAsyncTask<Void, Void, Boolean> {
+	private class MovieSectionLoader extends LibrarySectionAsyncTask<Void, Void, Boolean> {
 		private int mPosition;
 		private ArrayList<Integer> mTempKeys = new ArrayList<Integer>();
 
@@ -648,6 +650,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				break;
 
 			case OFFLINE_COPIES:
+				// No point in running through all movies if the folder
+				// doesn't contain any files at all - so let's check that first
+				File offlineFolder = MizuuApplication.getAvailableOfflineFolder(getActivity());
+				if (offlineFolder != null && offlineFolder.listFiles().length == 0)
+					return true; // Return true in order to force the notifyDataSetChanged() call
+
 				for (int i = 0; i < mMovies.size(); i++) {
 					if (isCancelled())
 						return false;
@@ -671,6 +679,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				sortMovies();
 				notifyDataSetChanged();
 				setProgressBarVisible(false);
+
+				mGridView.smoothScrollToPosition(0);
 			}
 		}
 	}
@@ -697,6 +707,24 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			inflater.inflate(R.menu.menu, menu);
 			if (mType == OTHER) // Don't show the Update icon if this is the Watchlist
 				menu.removeItem(R.id.update);
+			
+			if (mMovies.size() == 0)
+				menu.findItem(R.id.random).setVisible(false);
+			else
+				menu.findItem(R.id.random).setVisible(true);
+
+			MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search_textbox), new OnActionExpandListener() {
+				@Override
+				public boolean onMenuItemActionExpand(MenuItem item) {
+					return true;
+				}
+
+				@Override
+				public boolean onMenuItemActionCollapse(MenuItem item) {
+					onSearchViewCollapsed();
+					return true;
+				}
+			});
 
 			SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
@@ -707,7 +735,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (newText.length() > 0) {
 						search(newText);
 					} else {
-						showMovieSection(ALL_MOVIES);
+						onSearchViewCollapsed();
 					}
 					return true;
 				}
@@ -716,6 +744,15 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			});
 		}
 		super.onCreateOptionsMenu(menu, inflater);
+	}
+	
+	private void onSearchViewCollapsed() {
+		if (isAdded() && mActionBar != null) {
+			if (mActionBar.getSelectedNavigationIndex() == ALL_MOVIES)
+				showMovieSection(ALL_MOVIES);
+			else
+				mActionBar.setSelectedNavigationItem(ALL_MOVIES);
+		}
 	}
 
 	@Override
@@ -762,6 +799,12 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		case R.id.clear_filters:
 			showMovieSection(mActionBar.getSelectedNavigationIndex());
 			break;
+		case R.id.random:
+			if (mMovieKeys.size() > 0) {
+				int random = new Random().nextInt(mMovieKeys.size());
+				showDetails(random);
+			}
+			break;
 		}
 
 		return true;
@@ -778,11 +821,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		if (!isAdded())
 			return;
 
-		String SORT_TYPE = mSharedPreferences.getString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortTitle");
-
-		Editor editor = mSharedPreferences.edit();
-		editor.putString((getActivity().getActionBar().getSelectedNavigationIndex() == 3) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, SORT_TYPE);
-		editor.apply();
+		String SORT_TYPE = mSharedPreferences.getString((getActivity().getActionBar().getSelectedNavigationIndex() == COLLECTIONS) ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES, "sortTitle");
 
 		if (SORT_TYPE.equals("sortRelease")) {
 			sortBy(RELEASE);
@@ -800,9 +839,37 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	}
 
 	public void sortBy(int sort) {
+		if (!isAdded())
+			return;
+
 		mCurrentSort = sort;
 
-		boolean isCollection = getActivity().getActionBar().getSelectedNavigationIndex() == 3;	
+		boolean isCollection = getActivity().getActionBar().getSelectedNavigationIndex() == COLLECTIONS;
+
+		String key = isCollection ? SORTING_COLLECTIONS_OVERVIEW : SORTING_MOVIES;
+		Editor editor = mSharedPreferences.edit();
+		switch (mCurrentSort) {
+		case TITLE:
+			editor.putString(key, "sortTitle");
+			break;
+		case RELEASE:
+			editor.putString(key, "sortRelease");
+			break;
+		case RATING:
+			editor.putString(key, "sortRating");
+			break;
+		case WEIGHTED_RATING:
+			editor.putString(key, "sortWeightedRating");
+			break;
+		case DATE:
+			editor.putString(key, "sortAdded");
+			break;
+		case DURATION:
+			editor.putString(key, "sortDuration");
+			break;
+		}
+		editor.apply();
+
 		ArrayList<MovieSortHelper> tempHelper = new ArrayList<MovieSortHelper>();
 		for (int i = 0; i < mMovieKeys.size(); i++) {
 			tempHelper.add(new MovieSortHelper(mMovies.get(mMovieKeys.get(i)), mMovieKeys.get(i), mCurrentSort, isCollection));
@@ -837,16 +904,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 		}
 
-		final CharSequence[] temp = setupItemArray(map, R.string.allGenres);
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.selectGenre)
-		.setItems(temp, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				handleDialogOnClick(dialog, which, GENRES, temp);
-			}
-		});
-		builder.show();
+		createAndShowAlertDialog(setupItemArray(map, R.string.allGenres), R.string.selectGenre, GENRES);
 	}
 
 	private void showCertifications() {
@@ -862,16 +920,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 		}
 
-		final CharSequence[] temp = setupItemArray(map, R.string.allCertifications);
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.selectCertification)
-		.setItems(temp, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				handleDialogOnClick(dialog, which, CERTIFICATION, temp);
-			}
-		});
-		builder.show();
+		createAndShowAlertDialog(setupItemArray(map, R.string.allCertifications), R.string.selectCertification, CERTIFICATION);
 	}
 
 	private void showFileSources() {
@@ -909,16 +958,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 		}
 
-		final CharSequence[] temp = setupItemArray(map, R.string.allFileSources);
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.selectFileSource)
-		.setItems(temp, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				handleDialogOnClick(dialog, which, FILE_SOURCES, temp);
-			}
-		});
-		builder.show();
+		createAndShowAlertDialog(setupItemArray(map, R.string.allFileSources), R.string.selectFileSource, FILE_SOURCES);
 	}
 
 	private void showFolders() {
@@ -934,16 +974,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 		}
 
-		final CharSequence[] temp = setupItemArray(map, R.string.allFolders);
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.selectFolder)
-		.setItems(temp, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				handleDialogOnClick(dialog, which, FOLDERS, temp);
-			}
-		});
-		builder.show();
+		createAndShowAlertDialog(setupItemArray(map, R.string.allFolders), R.string.selectFolder, FOLDERS);
 	}
 
 	private CharSequence[] setupItemArray(TreeMap<String, Integer> map, int stringId) {
@@ -958,6 +989,17 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			temp[i] = tempArray[i-1];
 
 		return temp;
+	}
+
+	private void createAndShowAlertDialog(final CharSequence[] temp, int title, final int type) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle(title)
+		.setItems(temp, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				handleDialogOnClick(dialog, which, type, temp);
+			}
+		});
+		builder.show();
 	}
 
 	private void handleDialogOnClick(DialogInterface dialog, int which, int type, CharSequence[] temp) {
@@ -1171,15 +1213,10 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			((TextView) convertView.findViewById(R.id.title)).setText(mSpinnerItems.get(position).getTitle());
 
 			int size = mMovieKeys.size();
-			((TextView) convertView.findViewById(R.id.subtitle)).setText(size + " " + getResources().getQuantityString((mActionBar.getSelectedNavigationIndex() == 3) ?
+			((TextView) convertView.findViewById(R.id.subtitle)).setText(size + " " + getResources().getQuantityString((mActionBar.getSelectedNavigationIndex() == COLLECTIONS) ?
 					R.plurals.collectionsInLibrary : R.plurals.moviesInLibrary, size, size));
 
 			return convertView;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return mSpinnerItems.size() == 0;
 		}
 
 		@Override

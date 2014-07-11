@@ -27,8 +27,10 @@ public class SortingKeys {
 	private SortingKeys() {} // No instantiation
 	
 	public static final int ALL_MOVIES = 0;
+	public static final int ALL_SHOWS = 0;
 	public static final int FAVORITES = 1;
 	public static final int AVAILABLE_FILES = 2;
+	public static final int UNWATCHED_SHOWS = 2;
 	public static final int COLLECTIONS = 3;
 	public static final int WATCHED_MOVIES = 4;
 	public static final int UNWATCHED_MOVIES = 5;
@@ -39,6 +41,7 @@ public class SortingKeys {
 	public static final int RELEASE = 11;
 	public static final int RATING = 12;
 	public static final int DATE = 13;
+	public static final int NEWEST_EPISODE = 13;
 	public static final int WEIGHTED_RATING = 14;
 	public static final int DURATION = 15;
 	
