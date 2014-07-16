@@ -37,7 +37,7 @@ In order to use the project with the various web services, you'll need to add an
     <string name="youtube_api_key">add_your_own</string>
     <string name="trakt_api_key">add_your_own</string>
     <string name="crashlytics_api_key">add_your_own</string>
-resources>
+</resources>
 ```
 
  [1]: https://github.com/MizzleDK/Mizuu/fork
