@@ -180,7 +180,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 
 		switch (awesomePager.getCurrentItem()) {
 		case 0:
-			getMenuInflater().inflate(R.menu.detailstv, menu);
+			getMenuInflater().inflate(R.menu.tv_show_details, menu);
 
 			try {
 				if (thisShow.isFavorite()) {

@@ -67,8 +67,7 @@
         <activity
             android:name="com.miz.mizuu.EpisodeDetails"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:icon="@drawable/white_app_icon" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -188,8 +187,7 @@
         <activity
             android:name="com.miz.mizuu.TMDbMovieDetails"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:icon="@drawable/white_app_icon" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -338,8 +336,7 @@
         <activity
             android:name="com.miz.mizuu.MovieDetails"
             android:exported="true"
-            android:icon="@drawable/white_app_icon"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:icon="@drawable/white_app_icon" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
                 <action android:name="android.intent.action.SEARCH" />

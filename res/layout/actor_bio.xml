@@ -1,86 +1,89 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.miz.views.ObservableScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/actor_backdrop_height" >
-
-        <ImageView
-            android:contentDescription="@string/content_description_image_backdrop"
-            android:id="@+id/imageView2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/episode_details_small_margin" >
 
         <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/actor_backdrop_height" >
+
+            <com.miz.views.PanningView
+                android:id="@+id/imageView2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/content_description_image_backdrop"
+                android:src="@drawable/bg" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="8dp" >
+
+                <com.miz.views.AspectRatioImageViewCover
+                    android:id="@+id/traktIcon"
+                    android:layout_width="@dimen/actor_details_width"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border"
+                    android:cropToPadding="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/noactor" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/actor_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="8dp" >
+            android:layout_marginBottom="8dp"
+            android:paddingLeft="@dimen/episode_details_small_margin"
+            android:paddingRight="@dimen/episode_details_small_margin"
+            android:paddingTop="@dimen/episode_details_small_margin"
+            android:textColor="#fff"
+            android:textIsSelectable="true"
+            android:textSize="36sp" />
 
-            <com.miz.views.AspectRatioImageViewCover
-                android:id="@+id/traktIcon"
-                android:layout_width="@dimen/actor_details_width"
-                android:layout_height="match_parent"
-                android:background="@drawable/border"
-                android:cropToPadding="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/noactor" />
-        </FrameLayout>
-    </FrameLayout>
+        <TextView
+            android:id="@+id/birthday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="regular"
+            android:paddingLeft="@dimen/episode_details_small_margin"
+            android:paddingRight="@dimen/episode_details_small_margin"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/tagline_text_size"
+            android:textStyle="italic" />
 
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        <TextView
+            android:id="@+id/birth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="regular"
+            android:paddingLeft="@dimen/episode_details_small_margin"
+            android:paddingRight="@dimen/episode_details_small_margin"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/tagline_text_size"
+            android:textStyle="italic" />
 
-            <LinearLayout
-                android:id="@+id/linearLayout3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/episode_details_small_margin" >
+        <TextView
+            android:id="@+id/bio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingLeft="@dimen/episode_details_small_margin"
+            android:paddingRight="@dimen/episode_details_small_margin"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/details_text_size" />
+    </LinearLayout>
 
-                <TextView
-                    android:id="@+id/actor_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="#fff"
-                    android:textIsSelectable="true"
-                    android:textSize="36sp" />
-
-                <TextView
-                    android:id="@+id/birthday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="regular"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textIsSelectable="true"
-                    android:textSize="@dimen/tagline_text_size"
-                    android:textStyle="italic" />
-
-                <TextView
-                    android:id="@+id/birth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="regular"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textIsSelectable="true"
-                    android:textSize="@dimen/tagline_text_size"
-                    android:textStyle="italic" />
-
-                <TextView
-                    android:id="@+id/bio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textIsSelectable="true"
-                    android:textSize="@dimen/details_text_size" />
-            </LinearLayout>
-    </ScrollView>
-
-</LinearLayout>
+</com.miz.views.ObservableScrollView>

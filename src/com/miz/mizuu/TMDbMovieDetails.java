@@ -150,7 +150,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.details_tmdb_movie, menu);
+		getMenuInflater().inflate(R.menu.tmdb_details, menu);
 		
 		if (!MizLib.hasTraktAccount(this))
 			menu.findItem(R.id.checkIn).setVisible(false);

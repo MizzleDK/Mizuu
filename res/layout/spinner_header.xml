@@ -15,6 +15,7 @@
         android:shadowDy="1.0"
         android:shadowRadius="1.0"
         android:singleLine="true"
+        android:textColor="#f0f0f0"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/spinner_title_size" />
 

@@ -10,19 +10,16 @@
         android:id="@+id/movie_fav"
         android:icon="@drawable/fav"
         android:onClick="favAction"
-        android:showAsAction="always"
         android:title="@string/menuFavouriteTitleRemove">
     </item>
     <item
         android:id="@+id/share"
         android:icon="@drawable/share"
-        android:showAsAction="always"
         android:title="@string/menuShareTitle"/>
     <item
         android:id="@+id/watch_list"
         android:icon="@drawable/watchlist_add"
         android:onClick="watchList"
-        android:showAsAction="always"
         android:title="@string/watchLater">
     </item>
     <item

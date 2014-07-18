@@ -32,12 +32,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.views.ObservableScrollView;
+import com.miz.views.PanningView;
+import com.miz.views.ObservableScrollView.OnScrollChangedListener;
+import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 
 public class ActorBiographyFragment extends Fragment {
@@ -49,6 +55,7 @@ public class ActorBiographyFragment extends Fragment {
 	private Typeface mCondensedTypeface, mLightTypeface;
 	private String json, mBackgroundImage;
 	private Picasso mPicasso;
+	private Bus mBus;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -69,6 +76,8 @@ public class ActorBiographyFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
+		
+		mBus = MizuuApplication.getBus();
 
 		mCondensedTypeface = MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf");
 		mLightTypeface = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
@@ -79,6 +88,13 @@ public class ActorBiographyFragment extends Fragment {
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(getActivity());
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.actor_bio, container, false);
@@ -94,6 +110,25 @@ public class ActorBiographyFragment extends Fragment {
 				MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
 		} else
 			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
+		
+		if (MizLib.isPortrait(getActivity())) {
+			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
+			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
+
+			ObservableScrollView sv = (ObservableScrollView) v.findViewById(R.id.scrollView1);
+			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
+				@Override
+				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+					final int headerHeight = v.findViewById(R.id.imageView2).getHeight() - height;
+					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+					final int newAlpha = (int) (ratio * 255);
+
+					// We only want to update the ActionBar if it would actually make a change (times 1.2 to handle fast flings)
+					if (t <= headerHeight * 1.2)
+						mBus.post(Integer.valueOf(newAlpha));
+				}
+			});
+		}
 
 		mActorBirthday = (TextView) v.findViewById(R.id.birthday);
 		mActorBirth = (TextView) v.findViewById(R.id.birth);
@@ -166,7 +201,7 @@ public class ActorBiographyFragment extends Fragment {
 				mActorBio.setText(mBio);
 			else
 				mActorBio.setText(R.string.no_biography);
-			
+
 			if (MizLib.isTablet(getActivity()) && MizLib.isPortrait(getActivity()))
 				mActorBio.setLineSpacing(0, 1.15f);
 
@@ -188,6 +223,7 @@ public class ActorBiographyFragment extends Fragment {
 
 	protected class BlurImage extends AsyncTask<String, Integer, Bitmap> {
 		private Bitmap mBitmap;
+		private boolean mBackdropImage = true;
 
 		@Override
 		protected Bitmap doInBackground(String... params) {
@@ -204,6 +240,8 @@ public class ActorBiographyFragment extends Fragment {
 						return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(temp, temp.getWidth(), temp.getHeight(), false), 4);
 				}
 
+				mBackdropImage = false;
+				
 				if (mBitmap != null)
 					return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(mBitmap, mBitmap.getWidth(), mBitmap.getHeight(), false), 4);
 			} catch (IOException e) {}
@@ -227,6 +265,14 @@ public class ActorBiographyFragment extends Fragment {
 				// Set the blurred version as the backdrop image
 				mActorImageBackground.setImageBitmap(result);
 				mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+				
+				if (MizLib.isPortrait(getActivity())) {					
+					if (mBackdropImage) {
+						((PanningView) mActorImageBackground).startPanning();
+					} else {
+						((PanningView) mActorImageBackground).setScaleType(ScaleType.CENTER_CROP);
+					}
+				}
 			}
 		}
 	}

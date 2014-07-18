@@ -28,6 +28,9 @@ import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -37,8 +40,11 @@ import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.widget.FrameLayout.LayoutParams;
 
 import com.miz.base.MizActivity;
 import com.miz.functions.ActionBarSpinner;
@@ -49,20 +55,28 @@ import com.miz.mizuu.fragments.ActorMoviesFragment;
 import com.miz.mizuu.fragments.ActorPhotosFragment;
 import com.miz.mizuu.fragments.ActorTaggedPhotosFragment;
 import com.miz.mizuu.fragments.ActorTvShowsFragment;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 public class Actor extends MizActivity implements OnNavigationListener {
 
-	private ViewPager awesomePager;
-	private String actorId, actorName, json, baseUrl, mActorThumb, mTmdbApiKey;
-	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
-	private ActionBarSpinner spinnerAdapter;
-	private ActionBar actionBar;
-	private ProgressBar pbar;
+	private ViewPager mViewPager;
+	private String mActorId, mActorName, mJson, mBaseUrl, mActorThumb, mTmdbApiKey;
+	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner mSpinnerAdapter;
+	private ActionBar mActionBar;
+	private ProgressBar mProgressBar;
+	private Bus mBus;
+	private Drawable mActionBarBackgroundDrawable;
+	private ImageView mActionBarOverlay;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mBus = MizuuApplication.getBus();
+		mBus.register(getApplicationContext());
+		
 		if (isFullscreen())
 			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 		else
@@ -71,77 +85,114 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
+		
+		mActionBarOverlay = (ImageView) findViewById(R.id.actionbar_overlay);
+		mActionBarOverlay.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, isFullscreen() ? MizLib.getActionBarHeight(this) : MizLib.getActionBarAndStatusBarHeight(this)));
 
 		findViewById(R.id.layout).setBackgroundResource(R.drawable.bg);
 
-		pbar = (ProgressBar) findViewById(R.id.progressbar);
-		pbar.setVisibility(View.VISIBLE);
+		mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
+		mProgressBar.setVisibility(View.VISIBLE);
 
-		actorId = getIntent().getExtras().getString("actorID");
-		actorName = getIntent().getExtras().getString("actorName");
+		mActorId = getIntent().getExtras().getString("actorID");
+		mActorName = getIntent().getExtras().getString("actorName");
 		mActorThumb = getIntent().getExtras().getString("thumb");
 		mTmdbApiKey = MizLib.getTmdbApiKey(this);
 
-		setTitle(actorName);
+		setTitle(mActorName);
 
 		if (MizLib.isPortrait(this)) {
 			getWindow().setBackgroundDrawableResource(R.drawable.bg);
 		}
 		
-		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
-		awesomePager.setOffscreenPageLimit(3);
-		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
+		mViewPager.setOffscreenPageLimit(3);
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				actionBar.setSelectedNavigationItem(position);
+				mActionBar.setSelectedNavigationItem(position);
+				
+				updateActionBarDrawable(1, false);
 			}
 		});
 
 		if (savedInstanceState != null) {	
-			json = savedInstanceState.getString("json", "");
-			baseUrl = savedInstanceState.getString("baseUrl");
+			mJson = savedInstanceState.getString("json", "");
+			mBaseUrl = savedInstanceState.getString("baseUrl");
 			mActorThumb = savedInstanceState.getString("mActorThumb");
 			setupActionBarStuff();
 
-			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+			mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		} else {
-			new ActorLoader().execute(actorId);
+			new ActorLoader().execute(mActorId);
 		}
+	}
+	
+	@Subscribe
+	public void onScrollChanged(Integer newAlpha) {
+		updateActionBarDrawable(newAlpha, true);
+	}
+	
+	private void updateActionBarDrawable(int newAlpha, boolean setBackground) {
+		if (mViewPager.getCurrentItem() == 0) { // Details page
+			mActionBarOverlay.setVisibility(View.VISIBLE);
+
+			if (setBackground) {
+				mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
+				mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
+			}
+		} else { // Actors page
+			mActionBarOverlay.setVisibility(View.GONE);
+		}
+	}
+	
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(this);
+		updateActionBarDrawable(0, true);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		mBus.unregister(this);
 	}
 
 	private void setupSpinnerItems() {
-		spinnerItems.clear();
-		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorBiography), ActorBiographyFragment.newInstance(json, mActorThumb)));
-		spinnerItems.add(new SpinnerItem(actorName, getString(R.string.chooserMovies), ActorMoviesFragment.newInstance(json, baseUrl)));
+		mSpinnerItems.clear();
+		mSpinnerItems.add(new SpinnerItem(mActorName, getString(R.string.actorBiography), ActorBiographyFragment.newInstance(mJson, mActorThumb)));
+		mSpinnerItems.add(new SpinnerItem(mActorName, getString(R.string.chooserMovies), ActorMoviesFragment.newInstance(mJson, mBaseUrl)));
 
 		try {
-			JSONObject j = new JSONObject(json);
+			JSONObject j = new JSONObject(mJson);
 			if (j.getJSONObject("tv_credits").getJSONArray("cast").length() > 0) {
-				spinnerItems.add(new SpinnerItem(actorName, getString(R.string.chooserTVShows), ActorTvShowsFragment.newInstance(json, baseUrl)));
+				mSpinnerItems.add(new SpinnerItem(mActorName, getString(R.string.chooserTVShows), ActorTvShowsFragment.newInstance(mJson, mBaseUrl)));
 			}
 		} catch (JSONException e) {}
 
 		try {
-			JSONObject j = new JSONObject(json);
+			JSONObject j = new JSONObject(mJson);
 			if (j.getJSONObject("images").getJSONArray("profiles").length() > 0)
-				spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorsShowAllPhotos), ActorPhotosFragment.newInstance(json, actorName, baseUrl)));
+				mSpinnerItems.add(new SpinnerItem(mActorName, getString(R.string.actorsShowAllPhotos), ActorPhotosFragment.newInstance(mJson, mActorName, mBaseUrl)));
 		} catch (JSONException e) {}
 
 		try {
-			JSONObject j = new JSONObject(json);
+			JSONObject j = new JSONObject(mJson);
 			if (j.getJSONObject("tagged_images").getInt("total_results") > 0)
-				spinnerItems.add(new SpinnerItem(actorName, getString(R.string.actorsTaggedPhotos), ActorTaggedPhotosFragment.newInstance(json, actorName, baseUrl)));
+				mSpinnerItems.add(new SpinnerItem(mActorName, getString(R.string.actorsTaggedPhotos), ActorTaggedPhotosFragment.newInstance(mJson, mActorName, mBaseUrl)));
 		} catch (JSONException e) {}
 
-		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		mActionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt("tab", awesomePager.getCurrentItem());
-		outState.putString("json", json);
-		outState.putString("baseUrl", baseUrl);
+		outState.putInt("tab", mViewPager.getCurrentItem());
+		outState.putString("json", mJson);
+		outState.putString("baseUrl", mBaseUrl);
 		outState.putString("mActorThumb", mActorThumb);
 	}
 
@@ -170,18 +221,18 @@ public class Actor extends MizActivity implements OnNavigationListener {
 
 		@Override
 		public Fragment getItem(int index) {
-			return spinnerItems.get(index).getFragment();
+			return mSpinnerItems.get(index).getFragment();
 		}  
 
 		@Override  
 		public int getCount() {
-			return spinnerItems.size();
+			return mSpinnerItems.size();
 		}
 	}
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		awesomePager.setCurrentItem(itemPosition);
+		mViewPager.setCurrentItem(itemPosition);
 		return true;
 	}
 
@@ -193,19 +244,19 @@ public class Actor extends MizActivity implements OnNavigationListener {
 				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				baseUrl = httpclient.execute(httppost, responseHandler);
+				mBaseUrl = httpclient.execute(httppost, responseHandler);
 
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
+				JSONObject jObject = new JSONObject(mBaseUrl);
+				try { mBaseUrl = jObject.getJSONObject("images").getString("base_url");
+				} catch (Exception e) { mBaseUrl = MizLib.TMDB_BASE_URL; }
 
 				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=movie_credits,tv_credits,images,tagged_images");
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 
-				json = httpclient.execute(httppost, responseHandler);
+				mJson = httpclient.execute(httppost, responseHandler);
 
-				return json;
+				return mJson;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
 
 			return null;
@@ -222,20 +273,20 @@ public class Actor extends MizActivity implements OnNavigationListener {
 	}
 
 	private void setupActionBarStuff() {
-		actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		if (spinnerAdapter == null)
-			spinnerAdapter = new ActionBarSpinner(getApplicationContext(), spinnerItems);
+		mActionBar = getActionBar();
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (mSpinnerAdapter == null)
+			mSpinnerAdapter = new ActionBarSpinner(getApplicationContext(), mSpinnerItems);
 
 		setTitle(null);
 
 		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(0);
-		pbar.setVisibility(View.GONE);
+		mProgressBar.setVisibility(View.GONE);
 
 		setupSpinnerItems();
 
-		awesomePager.setAdapter(new ActorDetailsAdapter(getSupportFragmentManager()));
+		mViewPager.setAdapter(new ActorDetailsAdapter(getSupportFragmentManager()));
 
 		findViewById(R.id.layout).setBackgroundResource(0);
 	}

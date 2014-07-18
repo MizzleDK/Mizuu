@@ -10,17 +10,10 @@
         android:contentDescription="@string/content_description_image_backdrop"
         android:scaleType="centerCrop" />
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/actionbar_gradient_height"
-        android:src="@drawable/transparent_actionbar" />
-
     <RelativeLayout
         android:layout_width="@dimen/movie_details_landscape_width"
         android:layout_height="@dimen/movie_details_landscape_height"
-        android:layout_gravity="center_horizontal|bottom"
-        android:fitsSystemWindows="true" >
+        android:layout_gravity="center_horizontal|bottom" >
 
         <ScrollView
             android:id="@+id/movieDetailsLayout"
@@ -195,19 +188,18 @@
                     android:drawablePadding="@dimen/details_small_padding"
                     android:gravity="center_vertical"
                     android:paddingBottom="@dimen/details_medium_padding"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="@dimen/details_description_font_size" />
             </LinearLayout>
-
         </ScrollView>
 
         <ImageView
-            android:contentDescription="@string/content_description_cover_image"
             android:id="@+id/traktIcon"
             android:layout_width="@dimen/cover_width"
             android:layout_height="@dimen/cover_height"
             android:layout_marginLeft="@dimen/details_medium_padding"
             android:background="@drawable/border"
+            android:contentDescription="@string/content_description_cover_image"
             android:scaleType="centerCrop"
             android:src="@drawable/loading_image" />
     </RelativeLayout>

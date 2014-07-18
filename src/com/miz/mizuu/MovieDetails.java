@@ -17,13 +17,13 @@
 package com.miz.mizuu;
 
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
+import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
 import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
 import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
 import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
-import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -53,6 +53,9 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -70,6 +73,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,27 +97,34 @@ import com.miz.smbstreamer.Streamer;
 import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 public class MovieDetails extends MizActivity implements OnNavigationListener {
 
-	private ViewPager awesomePager;
-	private int movieId;
-	private Movie thisMovie;
-	private DbAdapter db;
-	private boolean ignorePrefixes, prefsRemoveMoviesFromWatchlist, ignoreDeletedFiles, ignoreNfo, useWildcard, prefsDisableEthernetWiFiCheck;
-	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
-	private ActionBarSpinner spinnerAdapter;
-	private ActionBar actionBar;
+	private ViewPager mViewPager;
+	private int mMovieId;
+	private Movie mMovie;
+	private DbAdapter mDatabase;
+	private boolean mIgnorePrefixes, mRemoveMoviesFromWatchlist, mIgnoreDeletedFiles, mIgnoreNfo, mWildcard, mDisableEthernetWiFiCheck;
+	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner mSpinnerAdater;
+	private ActionBar mActionBar;
 	private String mYouTubeApiKey;
-	private long videoPlaybackStarted, videoPlaybackEnded;
+	private long mVideoPlaybackStarted, mVideoPlaybackEnded;
 	private Context mContext;
+	private Bus mBus;
+	private Drawable mActionBarBackgroundDrawable;
+	private ImageView mActionBarOverlay;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		mContext = this;
-		
+		mBus = MizuuApplication.getBus();
+		mBus.register(getApplicationContext());
+
 		if (isFullscreen())
 			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 		else
@@ -125,52 +138,57 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		setContentView(R.layout.viewpager);
 
-		actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		if (spinnerAdapter == null)
-			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
+		mActionBarOverlay = (ImageView) findViewById(R.id.actionbar_overlay);
+		mActionBarOverlay.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, isFullscreen() ? MizLib.getActionBarHeight(this) : MizLib.getActionBarAndStatusBarHeight(this)));
+
+		mActionBar = getActionBar();
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (mSpinnerAdater == null)
+			mSpinnerAdater = new ActionBarSpinner(this, mSpinnerItems);
 
 		setTitle(null);
 
-		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_TITLE_PREFIXES, false);
-		ignoreNfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_NFO_FILES, true);
-		prefsRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
-		ignoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_FILES_ENABLED, false);
-		useWildcard = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
-		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
+		mIgnorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_TITLE_PREFIXES, false);
+		mIgnoreNfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_NFO_FILES, true);
+		mRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
+		mIgnoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_FILES_ENABLED, false);
+		mWildcard = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
+		mDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 
 		mYouTubeApiKey = MizLib.getYouTubeApiKey(this);
 
 		// Fetch the database ID of the movie to view
 		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
-			movieId = Integer.valueOf(getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY));
+			mMovieId = Integer.valueOf(getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY));
 		} else {
-			movieId = getIntent().getExtras().getInt("rowId");
+			mMovieId = getIntent().getExtras().getInt("rowId");
 		}
 
-		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
-		awesomePager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
-		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
+		mViewPager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				actionBar.setSelectedNavigationItem(position);
+				mActionBar.setSelectedNavigationItem(position);
+
+				updateActionBarDrawable(1, false);
 			}
 		});
 
 		if (savedInstanceState != null) {
-			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+			mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		}
 
 		// Set up database and open it
-		db = MizuuApplication.getMovieAdapter();
+		mDatabase = MizuuApplication.getMovieAdapter();
 
 		Cursor cursor = null;
 		try {
-			if (movieId > 0)
-				cursor = db.fetchMovie(movieId);
+			if (mMovieId > 0)
+				cursor = mDatabase.fetchMovie(mMovieId);
 			else
-				cursor = db.fetchMovie(getIntent().getExtras().getString("tmdbId"));
-			thisMovie = new Movie(this,
+				cursor = mDatabase.fetchMovie(getIntent().getExtras().getString("tmdbId"));
+			mMovie = new Movie(this,
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
@@ -192,8 +210,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COVERPATH)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
-					ignorePrefixes,
-					ignoreNfo
+					mIgnorePrefixes,
+					mIgnoreNfo
 					);
 		} catch (Exception e) {
 			finish();
@@ -202,43 +220,97 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			cursor.close();
 		}
 
-		if (thisMovie != null) {
+		if (mMovie != null) {
 			// The the row ID again, if the MovieDetails activity was launched based on a TMDB ID
-			movieId = Integer.parseInt(thisMovie.getRowId());
+			mMovieId = Integer.parseInt(mMovie.getRowId());
 
-			if (db.hasMultipleVersions(thisMovie.getTmdbId())) {
-				thisMovie.setMultipleVersions(db.getRowIdsForMovie(thisMovie.getTmdbId()));
+			if (mDatabase.hasMultipleVersions(mMovie.getTmdbId())) {
+				mMovie.setMultipleVersions(mDatabase.getRowIdsForMovie(mMovie.getTmdbId()));
 			}
 
 			setupSpinnerItems();
 		} else {
-			Toast.makeText(this, getString(R.string.errorSomethingWentWrong) + " (movie ID: " + movieId + ")", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.errorSomethingWentWrong) + " (movie ID: " + mMovieId + ")", Toast.LENGTH_SHORT).show();
 			finish();
 			return;
 		}
 	}
 
-	private void setupSpinnerItems() {
-		spinnerItems.clear();
-		spinnerItems.add(new SpinnerItem(thisMovie.getTitle(), getString(R.string.overview)));
-		spinnerItems.add(new SpinnerItem(thisMovie.getTitle(), getString(R.string.detailsActors)));
+	@Subscribe
+	public void onScrollChanged(Integer newAlpha) {
+		updateActionBarDrawable(newAlpha, true);
+	}
 
-		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+	private void updateActionBarDrawable(int newAlpha, boolean setBackground) {
+		if (mViewPager.getCurrentItem() == 0) { // Details page
+			mActionBarOverlay.setVisibility(View.VISIBLE);
+
+			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
+				if (newAlpha == 0)
+					mActionBar.hide();
+				else
+					mActionBar.show();
+
+			if (setBackground) {
+				mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
+				mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
+			}
+		} else { // Actors page
+			mActionBarOverlay.setVisibility(View.GONE);
+
+			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
+				mActionBar.show();
+		}
+	}
+
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(this);
+		updateActionBarDrawable(0, true);
+
+		mVideoPlaybackEnded = System.currentTimeMillis();
+
+		if (mVideoPlaybackStarted > 0 && mVideoPlaybackEnded - mVideoPlaybackStarted > (1000 * 60 * 5)) {
+			if (!mMovie.hasWatched())
+				watched(false); // Mark it as watched
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		mBus.unregister(this);
+	}
+
+	private void setupSpinnerItems() {
+		mSpinnerItems.clear();
+		mSpinnerItems.add(new SpinnerItem(mMovie.getTitle(), getString(R.string.overview)));
+		mSpinnerItems.add(new SpinnerItem(mMovie.getTitle(), getString(R.string.detailsActors)));
+
+		mActionBar.setListNavigationCallbacks(mSpinnerAdater, this);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt("tab", awesomePager.getCurrentItem());
+		outState.putInt("tab", mViewPager.getCurrentItem());
 	}
 
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.details, menu);
+		getMenuInflater().inflate(R.menu.movie_details, menu);
+
+		if (MizLib.isTablet(mContext)) {
+			menu.findItem(R.id.movie_fav).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			menu.findItem(R.id.share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			menu.findItem(R.id.watch_list).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		}
 
 		try {
-			if (thisMovie.isFavourite()) {
+			if (mMovie.isFavourite()) {
 				menu.findItem(R.id.movie_fav).setIcon(R.drawable.fav);
 				menu.findItem(R.id.movie_fav).setTitle(R.string.menuFavouriteTitleRemove);
 			} else {
@@ -246,7 +318,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				menu.findItem(R.id.movie_fav).setTitle(R.string.menuFavouriteTitle);
 			}
 
-			if (thisMovie.toWatch()) {
+			if (mMovie.toWatch()) {
 				menu.findItem(R.id.watch_list).setIcon(R.drawable.watchlist_remove);
 				menu.findItem(R.id.watch_list).setTitle(R.string.removeFromWatchlist);
 			} else {
@@ -254,24 +326,24 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				menu.findItem(R.id.watch_list).setTitle(R.string.watchLater);
 			}
 
-			if (thisMovie.hasWatched()) {
+			if (mMovie.hasWatched()) {
 				menu.findItem(R.id.watched).setTitle(R.string.stringMarkAsUnwatched);
 			} else {
 				menu.findItem(R.id.watched).setTitle(R.string.stringMarkAsWatched);
 			}
 
-			if (thisMovie.isNetworkFile() || thisMovie.isUpnpFile()) {
+			if (mMovie.isNetworkFile() || mMovie.isUpnpFile()) {
 				menu.findItem(R.id.watchOffline).setVisible(true);				
-				if (thisMovie.hasOfflineCopy())
+				if (mMovie.hasOfflineCopy())
 					menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
 				else
 					menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
 			}
 
-			if (thisMovie.getTmdbId().isEmpty() || thisMovie.getTmdbId().equals("invalid"))
+			if (mMovie.getTmdbId().isEmpty() || mMovie.getTmdbId().equals("invalid"))
 				menu.findItem(R.id.change_cover).setVisible(false);
 
-		} catch (Exception e) {} // This can happen if thisMovie is null for whatever reason
+		} catch (Exception e) {} // This can happen if mMovie is null for whatever reason
 
 		return true;
 	}
@@ -293,17 +365,17 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		case R.id.share:
 			Intent intent = new Intent(Intent.ACTION_SEND);
 			intent.setType("text/plain");
-			intent.putExtra(Intent.EXTRA_TEXT, "http://www.imdb.com/title/" + thisMovie.getImdbId());
+			intent.putExtra(Intent.EXTRA_TEXT, "http://www.imdb.com/title/" + mMovie.getImdbId());
 			startActivity(intent);
 			return true;
 		case R.id.imdb:
 			Intent imdbIntent = new Intent(Intent.ACTION_VIEW);
-			imdbIntent.setData(Uri.parse("http://www.imdb.com/title/" + thisMovie.getImdbId()));
+			imdbIntent.setData(Uri.parse("http://www.imdb.com/title/" + mMovie.getImdbId()));
 			startActivity(imdbIntent);
 			return true;
 		case R.id.tmdb:
 			Intent tmdbIntent = new Intent(Intent.ACTION_VIEW);
-			tmdbIntent.setData(Uri.parse("http://www.themoviedb.org/movie/" + thisMovie.getTmdbId()));
+			tmdbIntent.setData(Uri.parse("http://www.themoviedb.org/movie/" + mMovie.getTmdbId()));
 			startActivity(tmdbIntent);
 			return true;
 		case R.id.play_video:
@@ -325,7 +397,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		View dialogLayout = getLayoutInflater().inflate(R.layout.delete_file_dialog_layout, null);
 		final CheckBox cb = (CheckBox) dialogLayout.findViewById(R.id.deleteFile);
-		if (thisMovie.isUpnpFile())
+		if (mMovie.isUpnpFile())
 			cb.setEnabled(false);
 		else
 			cb.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(ALWAYS_DELETE_FILE, false));
@@ -337,25 +409,25 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			public void onClick(DialogInterface dialog, int id) {
 
 				boolean deleted = true;
-				if (thisMovie.hasMultipleVersions()) {
-					MovieVersion[] versions = thisMovie.getMultipleVersions();
+				if (mMovie.hasMultipleVersions()) {
+					MovieVersion[] versions = mMovie.getMultipleVersions();
 					for (int i = 0; i < versions.length; i++) {
-						if (ignoreDeletedFiles)
-							deleted = deleted && db.ignoreMovie(Long.valueOf(versions[i].getRowId()));
+						if (mIgnoreDeletedFiles)
+							deleted = deleted && mDatabase.ignoreMovie(Long.valueOf(versions[i].getRowId()));
 						else
-							deleted = deleted && db.deleteMovie(Long.valueOf(versions[i].getRowId()));
+							deleted = deleted && mDatabase.deleteMovie(Long.valueOf(versions[i].getRowId()));
 					}
 				} else {
-					if (ignoreDeletedFiles)
-						deleted = db.ignoreMovie(Long.valueOf(thisMovie.getRowId()));
+					if (mIgnoreDeletedFiles)
+						deleted = mDatabase.ignoreMovie(Long.valueOf(mMovie.getRowId()));
 					else
-						deleted = db.deleteMovie(Long.valueOf(thisMovie.getRowId()));
+						deleted = mDatabase.deleteMovie(Long.valueOf(mMovie.getRowId()));
 				}
 
 				if (deleted) {
 					if (cb.isChecked()) {
-						if (thisMovie.hasMultipleVersions()) {
-							MovieVersion[] versions = thisMovie.getMultipleVersions();
+						if (mMovie.hasMultipleVersions()) {
+							MovieVersion[] versions = mMovie.getMultipleVersions();
 							for (int i = 0; i < versions.length; i++) {
 								Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
 								deleteIntent.putExtra("filepath", versions[i].getFilepath());
@@ -363,31 +435,31 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 							}
 						} else {						
 							Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
-							deleteIntent.putExtra("filepath", thisMovie.getFilepath());
+							deleteIntent.putExtra("filepath", mMovie.getFilepath());
 							getApplicationContext().startService(deleteIntent);
 						}
 					}
 
-					boolean movieExists = db.movieExists(thisMovie.getTmdbId());
+					boolean movieExists = mDatabase.movieExists(mMovie.getTmdbId());
 
 					// We only want to delete movie images, if there are no other versions of the same movie
 					if (!movieExists) {
 						try { // Delete cover art image
-							File coverArt = thisMovie.getPoster();
+							File coverArt = mMovie.getPoster();
 							if (coverArt.exists() && coverArt.getAbsolutePath().contains("com.miz.mizuu")) {
 								MizLib.deleteFile(coverArt);
 							}
 						} catch (NullPointerException e) {} // No file to delete
 
 						try { // Delete thumbnail image
-							File thumbnail = thisMovie.getThumbnail();
+							File thumbnail = mMovie.getThumbnail();
 							if (thumbnail.exists() && thumbnail.getAbsolutePath().contains("com.miz.mizuu")) {
 								MizLib.deleteFile(thumbnail);
 							}
 						} catch (NullPointerException e) {} // No file to delete
 
 						try { // Delete backdrop image
-							File backdrop = new File(thisMovie.getBackdrop());
+							File backdrop = new File(mMovie.getBackdrop());
 							if (backdrop.exists() && backdrop.getAbsolutePath().contains("com.miz.mizuu")) {
 								MizLib.deleteFile(backdrop);
 							}
@@ -411,8 +483,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	}
 
 	public void identifyMovie(MenuItem item) {
-		if (thisMovie.hasMultipleVersions()) {
-			final MovieVersion[] versions = thisMovie.getMultipleVersions();
+		if (mMovie.hasMultipleVersions()) {
+			final MovieVersion[] versions = mMovie.getMultipleVersions();
 			CharSequence[] items = new CharSequence[versions.length];
 			for (int i = 0; i < versions.length; i++)
 				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
@@ -436,8 +508,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			builder.show();
 		} else {
 			Intent intent = new Intent();
-			intent.putExtra("fileName", thisMovie.getManualIdentificationQuery());
-			intent.putExtra("rowId", thisMovie.getRowId());
+			intent.putExtra("fileName", mMovie.getManualIdentificationQuery());
+			intent.putExtra("rowId", mMovie.getRowId());
 			intent.setClass(this, IdentifyMovie.class);
 			startActivityForResult(intent, 0);
 		}
@@ -446,26 +518,26 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	public void shareMovie(MenuItem item) {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
-		intent.putExtra(Intent.EXTRA_TEXT, "http://www.imdb.com/title/" + thisMovie.getImdbId());
+		intent.putExtra(Intent.EXTRA_TEXT, "http://www.imdb.com/title/" + mMovie.getImdbId());
 		startActivity(Intent.createChooser(intent, getString(R.string.shareWith)));
 	}
 
 	public void favAction(MenuItem item) {
-		thisMovie.setFavourite(!thisMovie.isFavourite()); // Reverse the favourite boolean
+		mMovie.setFavourite(!mMovie.isFavourite()); // Reverse the favourite boolean
 
 		boolean success = true;
-		if (thisMovie.hasMultipleVersions()) {
-			MovieVersion[] versions = thisMovie.getMultipleVersions();
+		if (mMovie.hasMultipleVersions()) {
+			MovieVersion[] versions = mMovie.getMultipleVersions();
 			for (int i = 0; i < versions.length; i++)
-				success = success && db.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_FAVOURITE, thisMovie.getFavourite());
+				success = success && mDatabase.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_FAVOURITE, mMovie.getFavourite());
 		} else {
-			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_FAVOURITE, thisMovie.getFavourite());
+			success = mDatabase.updateMovieSingleItem(Long.valueOf(mMovie.getRowId()), DbAdapter.KEY_FAVOURITE, mMovie.getFavourite());
 		}
 
 		if (success) {
 			invalidateOptionsMenu();
 
-			if (thisMovie.isFavourite()) {
+			if (mMovie.isFavourite()) {
 				Toast.makeText(this, getString(R.string.addedToFavs), Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(this, getString(R.string.removedFromFavs), Toast.LENGTH_SHORT).show();
@@ -480,33 +552,33 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			@Override
 			public void run() {
 				ArrayList<Movie> movie = new ArrayList<Movie>();
-				movie.add(thisMovie);
+				movie.add(mMovie);
 				MizLib.movieFavorite(movie, getApplicationContext());
 			}
 		}.start();
 	}
-	
+
 	public void watched(MenuItem item) {
 		watched(true);
 	}
 
 	private void watched(boolean showToast) {
-		thisMovie.setHasWatched(!thisMovie.hasWatched()); // Reverse the hasWatched boolean
+		mMovie.setHasWatched(!mMovie.hasWatched()); // Reverse the hasWatched boolean
 
 		boolean success = true;
-		if (thisMovie.hasMultipleVersions()) {
-			MovieVersion[] versions = thisMovie.getMultipleVersions();
+		if (mMovie.hasMultipleVersions()) {
+			MovieVersion[] versions = mMovie.getMultipleVersions();
 			for (int i = 0; i < versions.length; i++)
-				success = success && db.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_HAS_WATCHED, thisMovie.getHasWatched());
+				success = success && mDatabase.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_HAS_WATCHED, mMovie.getHasWatched());
 		} else {
-			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_HAS_WATCHED, thisMovie.getHasWatched());
+			success = mDatabase.updateMovieSingleItem(Long.valueOf(mMovie.getRowId()), DbAdapter.KEY_HAS_WATCHED, mMovie.getHasWatched());
 		}
 
 		if (success) {
 			invalidateOptionsMenu();
 
 			if (showToast)
-				if (thisMovie.hasWatched()) {
+				if (mMovie.hasWatched()) {
 					Toast.makeText(this, getString(R.string.markedAsWatched), Toast.LENGTH_SHORT).show();
 				} else {
 					Toast.makeText(this, getString(R.string.markedAsUnwatched), Toast.LENGTH_SHORT).show();
@@ -516,35 +588,35 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		} else Toast.makeText(this, getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
 
-		if (prefsRemoveMoviesFromWatchlist)
+		if (mRemoveMoviesFromWatchlist)
 			removeFromWatchlist();
 
 		new Thread() {
 			@Override
 			public void run() {
 				ArrayList<Movie> watchedMovies = new ArrayList<Movie>();
-				watchedMovies.add(thisMovie);
+				watchedMovies.add(mMovie);
 				MizLib.markMovieAsWatched(watchedMovies, getApplicationContext());
 			}
 		}.start();
 	}
 
 	public void watchList(MenuItem item) {
-		thisMovie.setToWatch(!thisMovie.toWatch()); // Reverse the toWatch boolean
+		mMovie.setToWatch(!mMovie.toWatch()); // Reverse the toWatch boolean
 
 		boolean success = true;
-		if (thisMovie.hasMultipleVersions()) {
-			MovieVersion[] versions = thisMovie.getMultipleVersions();
+		if (mMovie.hasMultipleVersions()) {
+			MovieVersion[] versions = mMovie.getMultipleVersions();
 			for (int i = 0; i < versions.length; i++)
-				success = success && db.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+				success = success && mDatabase.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
 		} else {
-			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+			success = mDatabase.updateMovieSingleItem(Long.valueOf(mMovie.getRowId()), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
 		}
 
 		if (success) {
 			invalidateOptionsMenu();
 
-			if (thisMovie.toWatch()) {
+			if (mMovie.toWatch()) {
 				Toast.makeText(this, getString(R.string.addedToWatchList), Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(this, getString(R.string.removedFromWatchList), Toast.LENGTH_SHORT).show();
@@ -558,22 +630,22 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			@Override
 			public void run() {
 				ArrayList<Movie> watchlist = new ArrayList<Movie>();
-				watchlist.add(thisMovie);
+				watchlist.add(mMovie);
 				MizLib.movieWatchlist(watchlist, getApplicationContext());
 			}
 		}.start();
 	}
 
 	public void removeFromWatchlist() {
-		thisMovie.setToWatch(false); // Remove it
+		mMovie.setToWatch(false); // Remove it
 
 		boolean success = true;
-		if (thisMovie.hasMultipleVersions()) {
-			MovieVersion[] versions = thisMovie.getMultipleVersions();
+		if (mMovie.hasMultipleVersions()) {
+			MovieVersion[] versions = mMovie.getMultipleVersions();
 			for (int i = 0; i < versions.length; i++)
-				success = success && db.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+				success = success && mDatabase.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
 		} else {
-			success = db.updateMovieSingleItem(Long.valueOf(thisMovie.getRowId()), DbAdapter.KEY_TO_WATCH, thisMovie.getToWatch());
+			success = mDatabase.updateMovieSingleItem(Long.valueOf(mMovie.getRowId()), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
 		}
 
 		if (success) {
@@ -585,51 +657,51 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			@Override
 			public void run() {
 				ArrayList<Movie> watchlist = new ArrayList<Movie>();
-				watchlist.add(thisMovie);
+				watchlist.add(mMovie);
 				MizLib.movieWatchlist(watchlist, getApplicationContext());
 			}
 		}.start();
 	}
 
 	public void watchTrailer(MenuItem item) {
-		if (!MizLib.isEmpty(thisMovie.getLocalTrailer())) {
+		if (!MizLib.isEmpty(mMovie.getLocalTrailer())) {
 			try { // Attempt to launch intent based on the MIME type
-				startActivity(MizLib.getVideoIntent(thisMovie.getLocalTrailer(), false, thisMovie.getTitle() + " " + getString(R.string.detailsTrailer)));
+				startActivity(MizLib.getVideoIntent(mMovie.getLocalTrailer(), false, mMovie.getTitle() + " " + getString(R.string.detailsTrailer)));
 			} catch (Exception e) {
 				try { // Attempt to launch intent based on wildcard MIME type
-					startActivity(MizLib.getVideoIntent(thisMovie.getLocalTrailer(), "video/*", thisMovie.getTitle() + " " + getString(R.string.detailsTrailer)));
+					startActivity(MizLib.getVideoIntent(mMovie.getLocalTrailer(), "video/*", mMovie.getTitle() + " " + getString(R.string.detailsTrailer)));
 				} catch (Exception e2) {
 					Toast.makeText(this, getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 				}
 			}
 		} else {
-			if (!MizLib.isEmpty(thisMovie.getTrailer())) {
+			if (!MizLib.isEmpty(mMovie.getTrailer())) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getApplicationContext()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, mYouTubeApiKey, MizLib.getYouTubeId(thisMovie.getTrailer()), 0, false, true);
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, mYouTubeApiKey, MizLib.getYouTubeId(mMovie.getTrailer()), 0, false, true);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent(Intent.ACTION_VIEW);
-					intent.setData(Uri.parse(thisMovie.getTrailer()));
+					intent.setData(Uri.parse(mMovie.getTrailer()));
 					startActivity(intent);
 				}
 			} else {
 				Toast.makeText(this, getString(R.string.searching), Toast.LENGTH_SHORT).show();
-				new TmdbTrailerSearch().execute(thisMovie.getTmdbId());
+				new TmdbTrailerSearch().execute(mMovie.getTmdbId());
 			}
 		}
 	}
 
 	public void watchOffline(MenuItem item) {
-		if (thisMovie.hasOfflineCopy()) {
+		if (mMovie.hasOfflineCopy()) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(getString(R.string.areYouSure))
 			.setTitle(getString(R.string.removeOfflineCopy))
 			.setCancelable(false)
 			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {	
-					boolean success = thisMovie.getOfflineCopyFile().delete();
+					boolean success = mMovie.getOfflineCopyFile().delete();
 					if (!success)
-						thisMovie.getOfflineCopyFile().delete();
+						mMovie.getOfflineCopyFile().delete();
 					invalidateOptionsMenu();
 					return;
 				}
@@ -651,10 +723,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 						Toast.makeText(getApplicationContext(), R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
 
 					Intent i = new Intent(MovieDetails.this, MakeAvailableOffline.class);
-					i.putExtra(MakeAvailableOffline.FILEPATH, thisMovie.getFilepath());
+					i.putExtra(MakeAvailableOffline.FILEPATH, mMovie.getFilepath());
 					i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_MOVIE);
-					i.putExtra("thumb", thisMovie.getThumbnail());
-					i.putExtra("backdrop", thisMovie.getBackdrop());
+					i.putExtra("thumb", mMovie.getThumbnail());
+					i.putExtra("backdrop", mMovie.getBackdrop());
 					startService(i);
 					return;
 				}
@@ -695,7 +767,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					intent.setData(Uri.parse(result));
 				}
 			} else {
-				new YoutubeTrailerSearch().execute(thisMovie.getTitle());
+				new YoutubeTrailerSearch().execute(mMovie.getTitle());
 			}
 		}
 	}
@@ -752,10 +824,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	}
 
 	public void searchCover(MenuItem mi) {
-		if (thisMovie.getTmdbId() != null && !thisMovie.getTmdbId().isEmpty() && MizLib.isOnline(getApplicationContext())) { // Make sure that the device is connected to the web and has the TMDb ID
+		if (mMovie.getTmdbId() != null && !mMovie.getTmdbId().isEmpty() && MizLib.isOnline(getApplicationContext())) { // Make sure that the device is connected to the web and has the TMDb ID
 			Intent intent = new Intent();
-			intent.putExtra("tmdbId", thisMovie.getTmdbId());
-			intent.putExtra("collectionId", thisMovie.getCollectionId());
+			intent.putExtra("tmdbId", mMovie.getTmdbId());
+			intent.putExtra("collectionId", mMovie.getCollectionId());
 			intent.setClass(this, MovieCoverFanartBrowser.class);
 			startActivity(intent); // Start the intent for result
 		} else {
@@ -778,7 +850,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			// Create a new Intent with the Bundle
 			Intent intent = new Intent();
 			intent.setClass(getApplicationContext(), MovieDetails.class);
-			intent.putExtra("rowId", movieId);
+			intent.putExtra("rowId", mMovieId);
 
 			// Start the Intent for result
 			startActivity(intent);
@@ -801,8 +873,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	public void showEditMenu(MenuItem mi) {
 		Intent intent = new Intent(this, EditMovie.class);
-		intent.putExtra("rowId", Integer.valueOf(thisMovie.getRowId()));
-		intent.putExtra("tmdbId", thisMovie.getTmdbId());
+		intent.putExtra("rowId", Integer.valueOf(mMovie.getRowId()));
+		intent.putExtra("tmdbId", mMovie.getTmdbId());
 		startActivityForResult(intent, 1);
 	}
 
@@ -816,9 +888,9 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		public Fragment getItem(int index) {
 			switch (index) {
 			case 0:
-				return MovieDetailsFragment.newInstance(movieId);
+				return MovieDetailsFragment.newInstance(mMovieId);
 			case 1:
-				return ActorBrowserFragment.newInstance(thisMovie.getTmdbId());
+				return ActorBrowserFragment.newInstance(mMovie.getTmdbId());
 			}
 			return null;
 		}  
@@ -831,7 +903,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		awesomePager.setCurrentItem(itemPosition);
+		mViewPager.setCurrentItem(itemPosition);
+
 		return true;
 	}
 
@@ -849,16 +922,16 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		new Thread() {
 			@Override
 			public void run() {
-				MizLib.checkInMovieTrakt(thisMovie, getApplicationContext());
+				MizLib.checkInMovieTrakt(mMovie, getApplicationContext());
 			}
 		}.start();
 	}
 
 	private void playMovie() {
-		if (thisMovie.hasOfflineCopy()) {
-			playMovie(thisMovie.getOfflineCopyUri(), false);
-		} else if (thisMovie.hasMultipleVersions() && !thisMovie.isUnidentified()) {
-			final MovieVersion[] versions = thisMovie.getMultipleVersions();
+		if (mMovie.hasOfflineCopy()) {
+			playMovie(mMovie.getOfflineCopyUri(), false);
+		} else if (mMovie.hasMultipleVersions() && !mMovie.isUnidentified()) {
+			final MovieVersion[] versions = mMovie.getMultipleVersions();
 			CharSequence[] items = new CharSequence[versions.length];
 			for (int i = 0; i < versions.length; i++)
 				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
@@ -873,12 +946,12 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			});
 			builder.show();
 		} else {
-			playMovie(thisMovie.getFilepath(), thisMovie.isNetworkFile());
+			playMovie(mMovie.getFilepath(), mMovie.isNetworkFile());
 		}
 	}
 
 	private void playMovie(String filepath, boolean isNetworkFile) {
-		videoPlaybackStarted = System.currentTimeMillis();
+		mVideoPlaybackStarted = System.currentTimeMillis();
 		if (filepath.toLowerCase(Locale.getDefault()).matches(".*(cd1|part1).*")) {
 			new GetSplitFiles(filepath, isNetworkFile).execute();
 		} else {
@@ -886,12 +959,12 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				playNetworkFile(filepath);
 			} else {
 				try { // Attempt to launch intent based on the MIME type
-					startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisMovie));
+					startActivity(MizLib.getVideoIntent(filepath, mWildcard, mMovie));
 					checkIn();
 				} catch (Exception e) {
 					System.out.println(e);
 					try { // Attempt to launch intent based on wildcard MIME type
-						startActivity(MizLib.getVideoIntent(filepath, "video/*", thisMovie));
+						startActivity(MizLib.getVideoIntent(filepath, "video/*", mMovie));
 						checkIn();
 					} catch (Exception e2) {
 						System.out.println(e2);
@@ -1072,7 +1145,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	}
 
 	private void playNetworkFile(final String networkFilepath) {
-		if (!MizLib.isWifiConnected(getApplicationContext(), prefsDisableEthernetWiFiCheck)) {
+		if (!MizLib.isWifiConnected(getApplicationContext(), mDisableEthernetWiFiCheck)) {
 			Toast.makeText(getApplicationContext(), getString(R.string.noConnection), Toast.LENGTH_LONG).show();
 			return;
 		}
@@ -1114,12 +1187,12 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 						public void run(){
 							try{
 								Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
-								mContext.startActivity(MizLib.getVideoIntent(uri, useWildcard, thisMovie));
+								mContext.startActivity(MizLib.getVideoIntent(uri, mWildcard, mMovie));
 								checkIn();
 							} catch (Exception e) {
 								try { // Attempt to launch intent based on wildcard MIME type
 									Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
-									mContext.startActivity(MizLib.getVideoIntent(uri, "video/*", thisMovie));
+									mContext.startActivity(MizLib.getVideoIntent(uri, "video/*", mMovie));
 									checkIn();
 								} catch (Exception e2) {
 									Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
@@ -1136,26 +1209,15 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	private void play(String filepath) {
 		try { // Attempt to launch intent based on the MIME type
-			getApplicationContext().startActivity(MizLib.getVideoIntent(filepath, useWildcard, thisMovie));
+			getApplicationContext().startActivity(MizLib.getVideoIntent(filepath, mWildcard, mMovie));
 			checkIn();
 		} catch (Exception e) {
 			try { // Attempt to launch intent based on wildcard MIME type
-				getApplicationContext().startActivity(MizLib.getVideoIntent(filepath, "video/*", thisMovie));
+				getApplicationContext().startActivity(MizLib.getVideoIntent(filepath, "video/*", mMovie));
 				checkIn();
 			} catch (Exception e2) {
 				Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 			}
-		}
-	}
-
-	public void onResume() {
-		super.onResume();
-
-		videoPlaybackEnded = System.currentTimeMillis();
-
-		if (videoPlaybackStarted > 0 && videoPlaybackEnded - videoPlaybackStarted > (1000 * 60 * 5)) {
-			if (!thisMovie.hasWatched())
-				watched(false); // Mark it as watched
 		}
 	}
 }

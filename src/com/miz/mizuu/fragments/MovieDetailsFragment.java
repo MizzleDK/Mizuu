@@ -33,7 +33,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
 
 import com.miz.db.DbAdapter;
 import com.miz.functions.MizLib;
@@ -41,6 +43,10 @@ import com.miz.functions.Movie;
 import com.miz.functions.MovieVersion;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.views.ObservableScrollView;
+import com.miz.views.PanningView;
+import com.miz.views.ObservableScrollView.OnScrollChangedListener;
+import com.squareup.otto.Bus;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -58,6 +64,7 @@ public class MovieDetailsFragment extends Fragment {
 	private ImageView background, cover;
 	private Picasso mPicasso;
 	private Typeface mLight, mLightItalic, mMedium, mBoldItalic;
+	private Bus mBus;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -77,6 +84,8 @@ public class MovieDetailsFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
+
+		mBus = MizuuApplication.getBus();
 
 		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_TITLE_PREFIXES, false);
 		ignoreNfo = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_NFO_FILES, true);
@@ -138,6 +147,13 @@ public class MovieDetailsFragment extends Fragment {
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-backdrop-change"));
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(getActivity());
+	}
+
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -148,6 +164,7 @@ public class MovieDetailsFragment extends Fragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
 		// Unregister since the activity is about to be closed.
 		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
 	}
@@ -160,6 +177,25 @@ public class MovieDetailsFragment extends Fragment {
 	@Override
 	public void onViewCreated(final View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+
+		if (MizLib.isPortrait(getActivity())) {
+			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
+			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
+
+			ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.scrollView1);
+			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
+				@Override
+				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+					final int headerHeight = view.findViewById(R.id.imageBackground).getHeight() - height;
+					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+					final int newAlpha = (int) (ratio * 255);
+
+					// We only want to update the ActionBar if it would actually make a change (times 1.2 to handle fast flings)
+					if (t <= headerHeight * 1.2)
+						mBus.post(Integer.valueOf(newAlpha));
+				}
+			});
+		}
 
 		background = (ImageView) view.findViewById(R.id.imageBackground);
 		textTitle = (TextView) view.findViewById(R.id.movieTitle);
@@ -284,9 +320,7 @@ public class MovieDetailsFragment extends Fragment {
 	private void loadImages() {
 		if (!MizLib.isPortrait(getActivity())) {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
-				int height = (int) (MizLib.getDisplaySize(getActivity(), MizLib.HEIGHT) * 0.6);
-				int width = (int) (height * 0.67);
-				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).resize(width, height).into(cover);
+				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(cover);
 				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 			} else {
 				mPicasso.load(thisMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);
@@ -294,28 +328,32 @@ public class MovieDetailsFragment extends Fragment {
 			}
 		} else {
 			if (!ignoreNfo && thisMovie.isNetworkFile()) {
-				int height = (int) (MizLib.getDisplaySize(getActivity(), MizLib.HEIGHT) * 0.6);
-				int width = (int) (height * 0.67);
-				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).resize(width, height).into(cover);
+				mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(cover);
 				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
+						((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
 						mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 					}
 
 					@Override
-					public void onSuccess() {}					
+					public void onSuccess() {
+						((PanningView) background).startPanning();
+					}					
 				});
 			} else {
 				mPicasso.load(thisMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(cover);
 				mPicasso.load(thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
+						((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
 						mPicasso.load(thisMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 					}
 
 					@Override
-					public void onSuccess() {}					
+					public void onSuccess() {
+						((PanningView) background).startPanning();
+					}					
 				});
 			}
 		}

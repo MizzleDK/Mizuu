@@ -160,21 +160,21 @@ public class MizLib {
 	public static final int HOUR = 60 * MINUTE;
 	public static final int DAY = 24 * HOUR;
 	public static final int WEEK = 7 * DAY;
-	
+
 	private MizLib() {} // No instantiation
-	
+
 	public static String getTmdbApiKey(Context context) {
 		return context.getString(R.string.tmdb_api_key);
 	}
-	
+
 	public static String getTraktApiKey(Context context) {
 		return context.getString(R.string.trakt_api_key);
 	}
-	
+
 	public static String getTvdbApiKey(Context context) {
 		return context.getString(R.string.tvdb_api_key);
 	}
-	
+
 	public static String getYouTubeApiKey(Context context) {
 		return context.getString(R.string.youtube_api_key);
 	}
@@ -411,7 +411,7 @@ public class MizLib {
 
 		v.setPadding(0, mActionBarHeight, 0, 0);
 	}
-	
+
 	/**
 	 * Add a padding with a combined height of the ActionBar and Status bar to the top of a given View
 	 * @param c
@@ -424,8 +424,9 @@ public class MizLib {
 			mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, c.getResources().getDisplayMetrics());
 		else
 			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
-		
-		mStatusBarHeight = convertDpToPixels(c, 25);
+
+		if (hasKitKat())
+			mStatusBarHeight = convertDpToPixels(c, 25);
 
 		v.setPadding(0, mActionBarHeight + mStatusBarHeight, 0, 0);
 	}
@@ -463,7 +464,7 @@ public class MizLib {
 		params.setMargins(0, mActionBarHeight, 0, 0);
 		v.setLayoutParams(params);
 	}
-	
+
 	/**
 	 * Add a margin with a combined height of the ActionBar and Status bar to the top of a given View contained in a FrameLayout
 	 * @param c
@@ -477,14 +478,15 @@ public class MizLib {
 		else
 			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
 
-		mStatusBarHeight = convertDpToPixels(c, 25);
-		
+		if (hasKitKat())
+			mStatusBarHeight = convertDpToPixels(c, 25);
+
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		params.setMargins(0, mActionBarHeight + mStatusBarHeight, 0, 0);
 		params.gravity = layoutParams.gravity;
 		v.setLayoutParams(params);
 	}
-	
+
 	/**
 	 * Add a margin with a height of the ActionBar to the top of a given View contained in a FrameLayout
 	 * @param c
@@ -611,6 +613,20 @@ public class MizLib {
 			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
 
 		return mActionBarHeight;
+	}
+
+	public static int getActionBarAndStatusBarHeight(Context c) {
+		int mActionBarHeight = 0, mStatusBarHeight = 0;
+		TypedValue tv = new TypedValue();
+		if (c.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+			mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, c.getResources().getDisplayMetrics());
+		else
+			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
+
+		if (hasKitKat())
+			mStatusBarHeight = convertDpToPixels(c, 25);
+
+		return mActionBarHeight + mStatusBarHeight	;
 	}
 
 	public static final String md5(final String s) {
@@ -783,7 +799,7 @@ public class MizLib {
 
 			if (columnWidth > 400)
 				return "h632";
-			
+
 			if (columnWidth >= 300)
 				return "w300";
 		}
@@ -1678,7 +1694,7 @@ public class MizLib {
 
 		return false;
 	}
-	
+
 	public static boolean checkInMovieTrakt(Movie movie, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
@@ -1831,7 +1847,7 @@ public class MizLib {
 
 		return false;
 	}
-	
+
 	public static boolean changeSeasonWatchedStatus(String showId, int season, Context c, boolean watched) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
@@ -1871,7 +1887,7 @@ public class MizLib {
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
-		
+
 		if (!settings.getBoolean(SYNC_WITH_TRAKT, false))
 			return false;
 
@@ -2086,7 +2102,7 @@ public class MizLib {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
-		
+
 		if (username.isEmpty() || password.isEmpty())
 			return false;
 
@@ -2358,31 +2374,31 @@ public class MizLib {
 		f.mkdirs();
 		return f;
 	}
-	
+
 	public static File getMovieThumb(Context c, String movieId) {
 		return new File(MizuuApplication.getMovieThumbFolder(c), movieId + ".jpg");
 	}
-	
+
 	public static File getMovieBackdrop(Context c, String movieId) {
 		return new File(MizuuApplication.getMovieBackdropFolder(c), movieId + "_bg.jpg");
 	}
-	
+
 	public static File getTvShowThumb(Context c, String showId) {
 		return new File(MizuuApplication.getTvShowThumbFolder(c), showId + ".jpg");
 	}
-	
+
 	public static File getTvShowBackdrop(Context c, String showId) {
 		return new File(MizuuApplication.getTvShowBackdropFolder(c), showId + "_tvbg.jpg");
 	}
-	
+
 	public static File getTvShowEpisode(Context c, String showId, String season, String episode) {
 		return new File(MizuuApplication.getTvShowEpisodeFolder(c), showId + "_S" + season + "E" + episode + ".jpg");
 	}
-	
+
 	public static File getTvShowSeason(Context c, String showId, String season) {
 		return new File(MizuuApplication.getTvShowSeasonFolder(c), showId + "_S" + season + ".jpg");
 	}
-	
+
 	public static File getOfflineFile(Context c, String filepath) {
 		return new File(MizuuApplication.getAvailableOfflineFolder(c), MizLib.md5(filepath) + "." + MizLib.getFileExtension(filepath));
 	}
@@ -2603,7 +2619,7 @@ public class MizLib {
 
 		return mMovie;
 	}
-	
+
 	public static String decryptImdbId(String filename) {
 		Pattern p = Pattern.compile("(tt\\d{7})");
 		Matcher m = p.matcher(filename);
@@ -3402,15 +3418,15 @@ public class MizLib {
 				return context.getString(R.string.stringNA);
 			}
 	}
-	
+
 	public static Spanned getPrettyRuntime(Context context, int minutes) {
 		if (minutes == 0) {
 			return Html.fromHtml("<b>" + context.getString(R.string.stringNA) + "</b>");
 		}
-		
+
 		int hours = (minutes / 60);
 		minutes = (minutes % 60);
-		
+
 		if (hours > 0) {
 			if (minutes == 0) {
 				return Html.fromHtml("<b>" + hours + "</b> " + context.getResources().getQuantityString(R.plurals.hour, hours, hours));
@@ -3612,7 +3628,7 @@ public class MizLib {
 	public static boolean isNumber(String runtime) {
 		return TextUtils.isDigitsOnly(runtime);
 	}
-	
+
 	/**
 	 * Helper method to remove a ViewTreeObserver correctly, i.e.
 	 * avoiding the deprecated method on API level 16+.

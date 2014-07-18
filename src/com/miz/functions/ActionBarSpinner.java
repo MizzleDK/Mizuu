@@ -29,17 +29,17 @@ import com.miz.mizuu.R;
 
 public class ActionBarSpinner extends BaseAdapter {
 
-		private LayoutInflater inflater;
-		private ArrayList<SpinnerItem> spinnerItems;
+		private LayoutInflater mInflater;
+		private ArrayList<SpinnerItem> mSpinnerItems;
 
 		public ActionBarSpinner(Context context, ArrayList<SpinnerItem> spinnerItems) {
-			this.spinnerItems = spinnerItems;
-			inflater = LayoutInflater.from(context);
+			mSpinnerItems = spinnerItems;
+			mInflater = LayoutInflater.from(context);
 		}
 
 		@Override
 		public int getCount() {
-			return spinnerItems.size();
+			return mSpinnerItems.size();
 		}
 
 		@Override
@@ -59,9 +59,9 @@ public class ActionBarSpinner extends BaseAdapter {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = inflater.inflate(R.layout.spinner_header, parent, false);
-			((TextView) convertView.findViewById(R.id.title)).setText(spinnerItems.get(position).getTitle());
-			((TextView) convertView.findViewById(R.id.subtitle)).setText(spinnerItems.get(position).getSubtitle());
+			convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
+			((TextView) convertView.findViewById(R.id.title)).setText(mSpinnerItems.get(position).getTitle());
+			((TextView) convertView.findViewById(R.id.subtitle)).setText(mSpinnerItems.get(position).getSubtitle());
 			return convertView;
 		}
 
@@ -77,13 +77,13 @@ public class ActionBarSpinner extends BaseAdapter {
 
 		@Override
 		public boolean isEmpty() {
-			return spinnerItems.size() == 0;
+			return mSpinnerItems.size() == 0;
 		}
 
 		@Override
 		public View getDropDownView(int position, View convertView, ViewGroup parent) {
-			convertView = inflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
-			((TextView) convertView.findViewById(android.R.id.text1)).setText(spinnerItems.get(position).getSubtitle());
+			convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+			((TextView) convertView.findViewById(android.R.id.text1)).setText(mSpinnerItems.get(position).getSubtitle());
 
 			return convertView;
 		}

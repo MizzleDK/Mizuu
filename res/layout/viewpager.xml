@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/layout" >
+    android:layout_height="match_parent" >
 
     <android.support.v4.view.ViewPager
         android:id="@+id/awesomepager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/actionbar_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
     <ProgressBar
         android:id="@+id/progressbar"

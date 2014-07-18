@@ -129,9 +129,6 @@ public class ActorBrowserFragment extends Fragment {
 		else
 			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
-		if (!MizLib.isTablet(getActivity()) && MizLib.isPortrait(getActivity()))
-			MizLib.addActionBarMarginBottom(getActivity(), mGridView);
-
 		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
 		if (mActors.size() > 0)
 			mProgressBar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change

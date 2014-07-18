@@ -27,5 +27,6 @@
     <dimen name="details_padding">24dp</dimen>
     <dimen name="details_background_gradient_height">144dp</dimen>
     <dimen name="empty_library_message_width">400dp</dimen>
+    <dimen name="backdrop_portrait_height">384dp</dimen>
 
 </resources>
