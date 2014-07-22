@@ -3,7 +3,6 @@
 
     <style name="Mizuu.Theme.NoBackGround" parent="@style/Mizuu.Theme">
         <item name="android:windowBackground">@null</item>
-        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="Mizuu.Theme.NoBackGround.FullScreen" parent="@style/Mizuu.Theme.NoBackGround">

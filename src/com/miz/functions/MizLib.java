@@ -640,7 +640,7 @@ public class MizLib {
 		if (hasKitKat())
 			mStatusBarHeight = convertDpToPixels(c, 25);
 
-		return mActionBarHeight + mStatusBarHeight	;
+		return mActionBarHeight + mStatusBarHeight;
 	}
 
 	public static final String md5(final String s) {

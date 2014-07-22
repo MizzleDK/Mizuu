@@ -335,12 +335,16 @@ public class MovieDetailsFragment extends Fragment {
 				mPicasso.load(thisMovie.getFilepath() + "MIZ_BG<MiZ>" + thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
+						if (!isAdded())
+							return;
 						((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
 						mPicasso.load(thisMovie.getFilepath() + "<MiZ>" + thisMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 					}
 
 					@Override
 					public void onSuccess() {
+						if (!isAdded())
+							return;
 						((PanningView) background).startPanning();
 					}					
 				});
@@ -349,12 +353,16 @@ public class MovieDetailsFragment extends Fragment {
 				mPicasso.load(thisMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
+						if (!isAdded())
+							return;
 						((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
 						mPicasso.load(thisMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 					}
 
 					@Override
 					public void onSuccess() {
+						if (!isAdded())
+							return;
 						((PanningView) background).startPanning();
 					}				
 				});

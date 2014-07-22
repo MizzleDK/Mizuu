@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="1015"
-    android:versionName="2.9-beta2_fixed" >
+    android:versionCode="1016"
+    android:versionName="2.9-beta2_fixed2" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -544,10 +544,6 @@
             android:name="com.miz.contentprovider.TvShowActorContentProvider"
             android:authorities="com.miz.contentprovider.TvShowActorContentProvider"
             android:exported="false" />
-
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="@string/crashlytics_api_key" />
     </application>
 
     <instrumentation

@@ -227,6 +227,8 @@ public class ActorBiographyFragment extends Fragment {
 					mPicasso.load(mBackgroundImage).placeholder(R.drawable.bg).transform(new BlurTransformation(getActivity(), mBackgroundImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground, new Callback() {
 						@Override
 						public void onError() {
+							if (!isAdded())
+								return;
 							mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity(), mImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground);
 							mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
 							if (MizLib.isPortrait(getActivity()))
@@ -235,6 +237,8 @@ public class ActorBiographyFragment extends Fragment {
 
 						@Override
 						public void onSuccess() {
+							if (!isAdded())
+								return;
 							mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
 							if (MizLib.isPortrait(getActivity()))
 								((PanningView) mActorImageBackground).startPanning();

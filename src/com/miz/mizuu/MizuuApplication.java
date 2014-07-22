@@ -28,12 +28,10 @@ import java.util.concurrent.TimeUnit;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 
-import com.crashlytics.android.Crashlytics;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
@@ -64,9 +62,6 @@ public class MizuuApplication extends Application {
 		super.onCreate();
 
 		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "false");
-
-		if (!(0 != ( getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)))
-			Crashlytics.start(this);
 
 		// Database setup
 		sDbTvShow = new DbAdapterTvShow(this);

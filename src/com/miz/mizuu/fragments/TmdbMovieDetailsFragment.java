@@ -277,6 +277,9 @@ public class TmdbMovieDetailsFragment extends Fragment {
 				mPicasso.load(thisMovie.getBackdrop()).placeholder(R.drawable.gray).error(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
+						if (!isAdded())
+							return;
+						
 						if (MizLib.isPortrait(getActivity())) {
 							((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
 						}
@@ -289,6 +292,12 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 					@Override
 					public void onSuccess() {
+						
+						System.out.println("onSuccess() ADDED " + isAdded());
+						
+						if (!isAdded())
+							return;
+						
 						if (MizLib.isPortrait(getActivity())) {
 							((PanningView) background).startPanning();
 						}

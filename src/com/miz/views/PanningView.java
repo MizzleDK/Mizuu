@@ -31,6 +31,7 @@ public class PanningView extends ImageView {
 	private final PanningViewAttacher mAttacher;
 
 	private int mPanningDurationInMs = PanningViewAttacher.DEFAULT_PANNING_DURATION_IN_MS;
+	private boolean mDetached = false;
 
 	public PanningView(Context context) {
 		this(context, null);
@@ -49,20 +50,26 @@ public class PanningView extends ImageView {
 	@Override
 	// setImageBitmap calls through to this method
 	public void setImageDrawable(Drawable drawable) {
-		super.setImageDrawable(drawable);
-		stopUpdateStartIfNecessary();
+		if (!mDetached) {
+			super.setImageDrawable(drawable);
+			stopUpdateStartIfNecessary();
+		}
 	}
 
 	@Override
 	public void setImageResource(int resId) {
-		super.setImageResource(resId);
-		stopUpdateStartIfNecessary();
+		if (!mDetached) {
+			super.setImageResource(resId);
+			stopUpdateStartIfNecessary();
+		}
 	}
 
 	@Override
 	public void setImageURI(Uri uri) {
-		super.setImageURI(uri);
-		stopUpdateStartIfNecessary();
+		if (!mDetached) {
+			super.setImageURI(uri);
+			stopUpdateStartIfNecessary();
+		}
 	}
 
 	private void stopUpdateStartIfNecessary() {
@@ -87,8 +94,9 @@ public class PanningView extends ImageView {
 
 	@Override
 	protected void onDetachedFromWindow() {
-		mAttacher.cleanup();
 		super.onDetachedFromWindow();
+		mDetached = true;
+		mAttacher.cleanup();
 	}
 
 	public void startPanning() {

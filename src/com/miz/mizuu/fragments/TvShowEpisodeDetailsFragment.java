@@ -282,16 +282,22 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 		mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).config(MizuuApplication.getBitmapConfig()).into(mEpisodePhoto, new Callback() {
 			@Override
 			public void onError() {
+				if (!isAdded())
+					return;
 				int width = getActivity().getResources().getDimensionPixelSize(R.dimen.episode_details_background_overlay_width);
 				int height = getActivity().getResources().getDimensionPixelSize(R.dimen.episode_details_background_overlay_height);
 				mPicasso.load(mEpisode.getTvShowBackdrop()).placeholder(R.drawable.bg).error(R.drawable.nobackdrop).resize(width, height).config(MizuuApplication.getBitmapConfig()).into(mEpisodePhoto, new Callback() {
 					@Override
 					public void onError() {
+						if (!isAdded())
+							return;
 						setPanning(false);
 					}
 
 					@Override
 					public void onSuccess() {
+						if (!isAdded())
+							return;
 						setPanning(true);
 					}
 				});
@@ -299,6 +305,8 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 
 			@Override
 			public void onSuccess() {
+				if (!isAdded())
+					return;
 				setPanning(true);
 			}
 		});
@@ -312,6 +320,8 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 
 						@Override
 						public void onSuccess() {
+							if (!isAdded())
+								return;
 							mBackdrop.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
 						}
 					});
@@ -319,6 +329,8 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 				
 				@Override
 				public void onSuccess() {
+					if (!isAdded())
+						return;
 					mBackdrop.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
 				}
 			});
