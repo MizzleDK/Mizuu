@@ -31,6 +31,8 @@ Dependencies
 
 Mizuu uses a number of third-party libraries, which are all included in the lib folder of this repo.
 
+Additionally, you'll need the Crashlytics plugin for your IDE and make sure it's set up with Mizuu. It needs to generate a special file in your assets folder and you also need to supply an API key for Crashlytics.
+
 Contributing
 ------------
 
