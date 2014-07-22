@@ -46,6 +46,7 @@ import android.util.Log;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.miz.abstractclasses.TvShowFileSource;
+import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
@@ -118,7 +119,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		MizLib.scheduleShowsUpdate(this);
 
-		if (MizLib.hasTraktAccount(this) && mSyncLibraries && (mEpisodeCount > 0)) {
+		if (Trakt.hasTraktAccount(this) && mSyncLibraries && (mEpisodeCount > 0)) {
 			startService(new Intent(getApplicationContext(), TraktTvShowsSyncService.class));
 		}
 	}
@@ -262,10 +263,10 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		dbEpisodes.deleteAllEpisodesInDatabase();
 
 		// Delete all downloaded images files from the device
-		MizLib.deleteRecursive(MizuuApplication.getTvShowThumbFolder(this));
-		MizLib.deleteRecursive(MizuuApplication.getTvShowEpisodeFolder(this));
-		MizLib.deleteRecursive(MizuuApplication.getTvShowBackdropFolder(this));
-		MizLib.deleteRecursive(MizuuApplication.getTvShowSeasonFolder(this));
+		MizLib.deleteRecursive(MizuuApplication.getTvShowThumbFolder(this), false);
+		MizLib.deleteRecursive(MizuuApplication.getTvShowEpisodeFolder(this), false);
+		MizLib.deleteRecursive(MizuuApplication.getTvShowBackdropFolder(this), false);
+		MizLib.deleteRecursive(MizuuApplication.getTvShowSeasonFolder(this), false);
 	}
 
 	private void removeUnavailableFiles() {
@@ -319,7 +320,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
 		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.refresh));
-		mBuilder.addAction(R.drawable.remove, getString(android.R.string.cancel), contentIntent);
+		mBuilder.addAction(R.drawable.ic_action_discard, getString(android.R.string.cancel), contentIntent);
 
 		// Build notification
 		Notification updateNotification = mBuilder.build();
@@ -411,7 +412,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 	public void onTvShowAdded(String showId, String title, Bitmap cover, Bitmap backdrop, int count) {
 		if (!showId.equals("invalid")) {
 			mUniqueShowIds.add(showId);
-			sendUpdateBroadcast();
 		}
 		updateTvShowAddedNotification(showId, title, cover, backdrop, count);
 	}
@@ -509,9 +509,5 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		if (mEpisodeCount > 0)
 			mNotificationManager.notify(POST_UPDATE_NOTIFICATION, updateNotification);
-	}
-
-	private void sendUpdateBroadcast() {
-		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-shows-update"));
 	}
 }

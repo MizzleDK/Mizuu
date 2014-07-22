@@ -94,9 +94,9 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 		if (!getArguments().containsKey("json")) {		
 			if (getArguments().getString("showId") == null) {
-				new GetActorDetails().execute(getActivity().getIntent().getExtras().getString("showId"));
+				new GetActorDetails(getActivity()).execute(getActivity().getIntent().getExtras().getString("showId"));
 			} else {
-				new GetActorDetails().execute(getArguments().getString("showId"));
+				new GetActorDetails(getActivity()).execute(getArguments().getString("showId"));
 			}
 		}
 	}
@@ -109,9 +109,13 @@ public class ActorBrowserFragmentTv extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
+		if (!MizLib.isPortrait(getActivity()))
+			v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
 
-		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		if (!MizuuApplication.isFullscreen(getActivity()))
+			MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.container));
+		else
+			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
 		if (actors.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
@@ -237,25 +241,25 @@ public class ActorBrowserFragmentTv extends Fragment {
 	}
 
 	protected class GetActorDetails extends AsyncTask<String, String, String> {
+		
+		private Context mContext;
+		
+		public GetActorDetails(Context context) {
+			mContext = context;
+		}
+		
 		@Override
 		protected String doInBackground(String... params) {
-			try {				
+			try {
+				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+				
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/find/" + params[0] + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String baseUrl = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-
-				httppost = new HttpGet("https://api.themoviedb.org/3/find/" + params[0] + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
 				String credits = httpclient.execute(httppost, responseHandler);
 
-				jObject = new JSONObject(credits);
+				JSONObject jObject = new JSONObject(credits);
 				String newId = jObject.getJSONArray("tv_results").getJSONObject(0).getString("id");
 
 				httppost = new HttpGet("https://api.themoviedb.org/3/tv/" + newId + "/credits?api_key=" + mTmdbApiKey);

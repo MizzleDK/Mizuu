@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -139,7 +140,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		}
 		
 		if (json.isEmpty()) {
-			new MovieLoader().execute();
+			new MovieLoader(getActivity()).execute();
 		} else {
 			awesomePager.setAdapter(new WebVideosAdapter(getChildFragmentManager()));
 			pbar.setVisibility(View.GONE);
@@ -209,22 +210,22 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	}
 	
 	private class MovieLoader extends AsyncTask<Object, Object, String> {
+		
+		private Context mContext;
+		
+		public MovieLoader(Context context) {
+			mContext = context;
+		}
+		
 		@Override
 		protected String doInBackground(Object... params) {
 			try {
+				baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+				
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/movie?api_key=" + mTmdbApiKey + "&append_to_response=upcoming,now_playing,popular,top_rated");
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				baseUrl = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie?api_key=" + mTmdbApiKey + "&append_to_response=upcoming,now_playing,popular,top_rated");
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
 
 				json = EntityUtils.toString(httpclient.execute(httppost).getEntity());
 				

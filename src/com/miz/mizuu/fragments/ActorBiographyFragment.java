@@ -16,13 +16,11 @@
 
 package com.miz.mizuu.fragments;
 
-import java.io.IOException;
 import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -36,7 +34,7 @@ import android.widget.ScrollView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
-import com.miz.functions.AsyncTask;
+import com.miz.functions.BlurTransformation;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -44,6 +42,7 @@ import com.miz.views.ObservableScrollView;
 import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
 import com.squareup.otto.Bus;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class ActorBiographyFragment extends Fragment {
@@ -76,7 +75,7 @@ public class ActorBiographyFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-		
+
 		mBus = MizuuApplication.getBus();
 
 		mCondensedTypeface = MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf");
@@ -94,7 +93,7 @@ public class ActorBiographyFragment extends Fragment {
 
 		mBus.register(getActivity());
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.actor_bio, container, false);
@@ -103,14 +102,22 @@ public class ActorBiographyFragment extends Fragment {
 	public void onViewCreated(final View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
+		mActorImageBackground = (ImageView) v.findViewById(R.id.imageView2);
+		mActorBirthday = (TextView) v.findViewById(R.id.birthday);
+		mActorBirth = (TextView) v.findViewById(R.id.birth);
+		mActorName = (TextView) v.findViewById(R.id.actor_name);
+		mActorBio = (TextView) v.findViewById(R.id.bio);
+		mActorImage = (ImageView) v.findViewById(R.id.traktIcon);
+		mActorImageBackground = (ImageView) v.findViewById(R.id.imageView2);
+
 		if (!MizuuApplication.isFullscreen(getActivity())) {
 			if (MizLib.isPortrait(getActivity()))
-				MizLib.addActionBarAndStatusBarMargin(getActivity(), v.findViewById(R.id.traktIcon), (LayoutParams) v.findViewById(R.id.traktIcon).getLayoutParams());
+				MizLib.addActionBarAndStatusBarMargin(getActivity(), mActorImage, (LayoutParams) mActorImage.getLayoutParams());
 			else
 				MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
 		} else
 			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
-		
+
 		if (MizLib.isPortrait(getActivity())) {
 			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
 			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
@@ -119,29 +126,27 @@ public class ActorBiographyFragment extends Fragment {
 			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
 				@Override
 				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-					final int headerHeight = v.findViewById(R.id.imageView2).getHeight() - height;
+					final int headerHeight = mActorImageBackground.getHeight() - height;
 					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
 					final int newAlpha = (int) (ratio * 255);
 
 					// We only want to update the ActionBar if it would actually make a change (times 1.2 to handle fast flings)
-					if (t <= headerHeight * 1.2)
+					if (t <= headerHeight * 1.2) {
 						mBus.post(Integer.valueOf(newAlpha));
+
+						// Such parallax, much wow
+						mActorImageBackground.setPadding(0, (int) (t / 1.5), 0, 0);
+					}
 				}
 			});
 		}
 
-		mActorBirthday = (TextView) v.findViewById(R.id.birthday);
-		mActorBirth = (TextView) v.findViewById(R.id.birth);
-		mActorName = (TextView) v.findViewById(R.id.actor_name);
 		mActorName.setTypeface(mCondensedTypeface);
 		mActorName.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		if (MizLib.isTablet(getActivity()))
 			mActorName.setTextSize(48f);
-		mActorBio = (TextView) v.findViewById(R.id.bio);
 		mActorBio.setTypeface(mLightTypeface);
 		mActorBio.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-		mActorImage = (ImageView) v.findViewById(R.id.traktIcon);
-		mActorImageBackground = (ImageView) v.findViewById(R.id.imageView2);
 
 		if (!MizLib.isPortrait(getActivity())) {
 			mActorImageBackground.setImageResource(R.drawable.bg);
@@ -186,7 +191,7 @@ public class ActorBiographyFragment extends Fragment {
 				JSONArray resultArray = jObject.getJSONObject("tagged_images").getJSONArray("results");
 				if (mRandomInt == -1)
 					mRandomInt = new Random().nextInt(resultArray.length());
-				mBackgroundImage = MizLib.TMDB_BASE_URL + "w300" + resultArray.getJSONObject(mRandomInt).getString("file_path");
+				mBackgroundImage = MizLib.getTmdbImageBaseUrl(getActivity()) + "w300" + resultArray.getJSONObject(mRandomInt).getString("file_path");
 			} catch (Exception ignored) {
 				mBackgroundImage = "";
 			}
@@ -215,82 +220,34 @@ public class ActorBiographyFragment extends Fragment {
 			else
 				mActorBirthday.setVisibility(View.GONE);
 
-			if (!mThumb.isEmpty() || !mThumb.contains("null") || !mBackgroundImage.isEmpty()) {
-				new BlurImage().execute();
-			}
-		} catch (Exception ignored) {}
-	}
-
-	protected class BlurImage extends AsyncTask<String, Integer, Bitmap> {
-		private Bitmap mBitmap;
-		private boolean mBackdropImage = true;
-
-		@Override
-		protected Bitmap doInBackground(String... params) {
-			try {
-				if (!mThumb.contains("null"))
-					mBitmap = mPicasso.load(mThumb).config(MizuuApplication.getBitmapConfig()).get();
-
-				// Set low-quality image
-				publishProgress(0);
+			if (!MizLib.isEmpty(mImage)) {
+				mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(mActorImage);
 
 				if (!mBackgroundImage.isEmpty()) {
-					Bitmap temp = mPicasso.load(mBackgroundImage).config(MizuuApplication.getBitmapConfig()).get();
-					if (temp != null)
-						return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(temp, temp.getWidth(), temp.getHeight(), false), 4);
-				}
+					mPicasso.load(mBackgroundImage).placeholder(R.drawable.bg).transform(new BlurTransformation(getActivity(), mBackgroundImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground, new Callback() {
+						@Override
+						public void onError() {
+							mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity(), mImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground);
+							mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+							if (MizLib.isPortrait(getActivity()))
+								((PanningView) mActorImageBackground).setScaleType(ScaleType.CENTER_CROP);
+						}
 
-				mBackdropImage = false;
-				
-				if (mBitmap != null)
-					return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(mBitmap, mBitmap.getWidth(), mBitmap.getHeight(), false), 4);
-			} catch (IOException e) {}
+						@Override
+						public void onSuccess() {
+							mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+							if (MizLib.isPortrait(getActivity()))
+								((PanningView) mActorImageBackground).startPanning();
+						}
 
-			return null;
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... params) {
-			// Set the low-quality version of the portrait photo and start loading the HQ version
-			if (!mThumb.contains("null"))
-				mActorImage.setImageBitmap(mBitmap);
-			else
-				mActorImage.setImageResource(R.drawable.noactor);
-			new HighQualityImageLoader().execute();
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			if (result != null) {
-				// Set the blurred version as the backdrop image
-				mActorImageBackground.setImageBitmap(result);
-				mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-				
-				if (MizLib.isPortrait(getActivity())) {					
-					if (mBackdropImage) {
-						((PanningView) mActorImageBackground).startPanning();
-					} else {
+					});
+				} else {
+					mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity(), mImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground);
+					mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+					if (MizLib.isPortrait(getActivity()))
 						((PanningView) mActorImageBackground).setScaleType(ScaleType.CENTER_CROP);
-					}
 				}
 			}
-		}
-	}
-
-	protected class HighQualityImageLoader extends AsyncTask<Void, Void, Bitmap> {		
-		@Override
-		protected Bitmap doInBackground(Void... params) {
-			try {
-				return mPicasso.load(mImage).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).get();
-			} catch (IOException e) {}
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			if (result != null)
-				mActorImage.setImageBitmap(result);
-		}
+		} catch (Exception ignored) {}
 	}
 }

@@ -67,7 +67,7 @@
             android:dialogTitle="@string/selectSourceForMovieRatings"
             android:entries="@array/rating_options"
             android:entryValues="@array/rating_options"
-            android:icon="@drawable/reviews"
+            android:icon="@drawable/ic_action_ratings"
             android:key="prefsMovieRatingsSource"
             android:summary="@string/dataSourceOfMovieRatings"
             android:title="@string/sourceForMovieRatings" />
@@ -79,7 +79,7 @@
             android:dialogTitle="@string/selectSourceForShowRatings"
             android:entries="@array/rating_options_shows"
             android:entryValues="@array/rating_options_shows"
-            android:icon="@drawable/reviews"
+            android:icon="@drawable/ic_action_ratings"
             android:key="prefsShowsRatingsSource"
             android:summary="@string/dataSourceOfShowRatings"
             android:title="@string/sourceForShowRatings" />

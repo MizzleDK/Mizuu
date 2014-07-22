@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.mizuu.fragments;
 
 import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
@@ -7,7 +23,6 @@ import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
 import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
@@ -19,11 +34,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -43,11 +55,13 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageView.ScaleType;
 
+import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
-import com.miz.functions.AsyncTask;
+import com.miz.functions.BlurTransformation;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.IdentifyTvShow;
 import com.miz.mizuu.MizuuApplication;
@@ -57,18 +71,19 @@ import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.smbstreamer.Streamer;
 import com.miz.views.ObservableScrollView;
+import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
 import com.squareup.otto.Bus;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class TvShowEpisodeDetailsFragment extends Fragment {
 
 	private TvShowEpisode mEpisode;
 	private ImageView mBackdrop, mEpisodePhoto;
-	private TextView mTitle, mDescription, mFileSource, mAirDate, mRating, mDirector, mWriter, mGuestStars;
+	private TextView mTitle, mDescription, mFileSource, mAirDate, mRating, mDirector, mWriter, mGuestStars, mSeasonEpisodeNumber;
 	private Picasso mPicasso;
-	private Typeface mLight;
-	private Drawable mActionBarBackgroundDrawable;
+	private Typeface mLight, mLightItalic, mMedium;
 	private DbAdapterTvShowEpisode mDatabaseHelper;
 	private long mVideoPlaybackStarted, mVideoPlaybackEnded;
 	private boolean mVideoWildcard, mDisableEthernetWiFiCheck, mIgnoreDeletedFiles;
@@ -103,7 +118,10 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 		mIgnoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_FILES_ENABLED, false);
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
+
 		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
+		mLightItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-LightItalic.ttf");
+		mMedium = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Medium.ttf");
 
 		mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
 
@@ -140,37 +158,46 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 	public void onViewCreated(final View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (MizLib.isPortrait(getActivity())) {
-			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
-			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
-
-			ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.scrollView1);
-			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
-				@Override
-				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-					final int headerHeight = view.findViewById(R.id.episodePhoto).getHeight() - getActivity().getActionBar().getHeight();
-					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
-					final int newAlpha = (int) (ratio * 255);
-					mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "080808"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "080808") : 0xaa080808});
-					getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
-				}
-			});
-		}
-
-		if (!MizLib.isPortrait(getActivity()))
-			MizLib.addActionBarMargin(getActivity(), view.findViewById(R.id.episode_relative_layout));
-
 		mBackdrop = (ImageView) view.findViewById(R.id.imageBackground);
 		mEpisodePhoto = (ImageView) view.findViewById(R.id.episodePhoto);
 
 		mTitle = (TextView) view.findViewById(R.id.movieTitle);
+		mSeasonEpisodeNumber = (TextView) view.findViewById(R.id.textView7);
 		mDescription = (TextView) view.findViewById(R.id.textView2);
 		mFileSource = (TextView) view.findViewById(R.id.textView3);
 		mAirDate = (TextView) view.findViewById(R.id.textReleaseDate);
 		mRating = (TextView) view.findViewById(R.id.textView12);
 		mDirector = (TextView) view.findViewById(R.id.director);
 		mWriter = (TextView) view.findViewById(R.id.writer);
-		mGuestStars = (TextView) view.findViewById(R.id.guest_stars);
+		mGuestStars = (TextView) view.findViewById(R.id.guest_stars);	
+
+		if (MizLib.isPortrait(getActivity())) {
+			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
+			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
+
+			ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.scrollView1);
+			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
+				@Override
+				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+					final int headerHeight = mEpisodePhoto.getHeight() - height;
+					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+					final int newAlpha = (int) (ratio * 255);
+
+					// We only want to update the ActionBar if it would actually make a change (times 1.2 to handle fast flings)
+					if (t <= headerHeight * 1.2) {
+						mBus.post(Integer.valueOf(newAlpha));
+
+						// Such parallax, much wow
+						mEpisodePhoto.setPadding(0, (int) (t / 1.5), 0, 0);
+					}
+				}
+			});
+		} else {
+			if (!MizuuApplication.isFullscreen(getActivity()))
+				MizLib.addActionBarAndStatusBarMargin(getActivity(), view.findViewById(R.id.episode_relative_layout));
+			else
+				MizLib.addActionBarMargin(getActivity(), view.findViewById(R.id.episode_relative_layout));
+		}
 
 		// Set the episode title
 		mTitle.setVisibility(View.VISIBLE);
@@ -180,11 +207,19 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 
 		mDescription.setTypeface(mLight);
 		mFileSource.setTypeface(mLight);
-		mAirDate.setTypeface(mLight);
-		mRating.setTypeface(mLight);
 		mDirector.setTypeface(mLight);
 		mWriter.setTypeface(mLight);
 		mGuestStars.setTypeface(mLight);
+
+		if (MizLib.isPortrait(getActivity())) {
+			mAirDate.setTypeface(mMedium);
+			mRating.setTypeface(mMedium);
+			mSeasonEpisodeNumber.setTypeface(mLightItalic);		
+			mSeasonEpisodeNumber.setText(getString(R.string.showSeason) + " " + mEpisode.getSeason() + ", " + getString(R.string.showEpisode) + " " + mEpisode.getEpisode());
+		} else {
+			mAirDate.setTypeface(mLight);
+			mRating.setTypeface(mLight);
+		}
 
 		mDescription.setBackgroundResource(R.drawable.selectable_background);
 		mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
@@ -204,11 +239,11 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 		mDescription.setEllipsize(TextUtils.TruncateAt.END);
 		mDescription.setFocusable(true);
 		mDescription.setText(mEpisode.getDescription());
-		
+
 		mFileSource.setText(mEpisode.getFilepath());
 
 		// Set the episode air date
-		mAirDate.setText(MizLib.getPrettyDate(getActivity(), mEpisode.getReleasedate()));
+		mAirDate.setText(MizLib.getPrettyDatePrecise(getActivity(), mEpisode.getReleasedate()));
 
 		// Set the movie rating
 		if (!mEpisode.getRating().equals("0.0/10")) {
@@ -244,50 +279,59 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 			mGuestStars.setText(mEpisode.getGuestStars());
 		}
 
-		new BlurImage().execute();
+		mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).config(MizuuApplication.getBitmapConfig()).into(mEpisodePhoto, new Callback() {
+			@Override
+			public void onError() {
+				int width = getActivity().getResources().getDimensionPixelSize(R.dimen.episode_details_background_overlay_width);
+				int height = getActivity().getResources().getDimensionPixelSize(R.dimen.episode_details_background_overlay_height);
+				mPicasso.load(mEpisode.getTvShowBackdrop()).placeholder(R.drawable.bg).error(R.drawable.nobackdrop).resize(width, height).config(MizuuApplication.getBitmapConfig()).into(mEpisodePhoto, new Callback() {
+					@Override
+					public void onError() {
+						setPanning(false);
+					}
+
+					@Override
+					public void onSuccess() {
+						setPanning(true);
+					}
+				});
+			}
+
+			@Override
+			public void onSuccess() {
+				setPanning(true);
+			}
+		});
+
+		if (!MizLib.isPortrait(getActivity()))
+			mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity().getApplicationContext(), mEpisode.getEpisodePhoto().getAbsolutePath() + "-blur", 4)).config(MizuuApplication.getBitmapConfig()).into(mBackdrop, new Callback() {
+				@Override public void onError() {
+					mPicasso.load(mEpisode.getTvShowBackdrop()).placeholder(R.drawable.bg).error(R.drawable.nobackdrop).transform(new BlurTransformation(getActivity().getApplicationContext(), mEpisode.getTvShowBackdrop().getAbsolutePath() + "-blur", 4)).config(MizuuApplication.getBitmapConfig()).config(MizuuApplication.getBitmapConfig()).into(mBackdrop, new Callback() {
+						@Override
+						public void onError() {}
+
+						@Override
+						public void onSuccess() {
+							mBackdrop.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+						}
+					});
+				}
+				
+				@Override
+				public void onSuccess() {
+					mBackdrop.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+				}
+			});
 	}
 
-	protected class BlurImage extends AsyncTask<String, String, Bitmap> {
-		private Bitmap mBitmap;
+	private void setPanning(boolean successful) {
+		if (!MizLib.isPortrait(getActivity()))
+			return;
 
-		@Override
-		protected Bitmap doInBackground(String... params) {
-			try {
-				mBitmap = mPicasso.load(mEpisode.getEpisodePhoto()).config(MizuuApplication.getBitmapConfig()).get();
-
-				if (mBitmap != null)
-					return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(mBitmap, mBitmap.getWidth(), mBitmap.getHeight(), false), 4);
-			} catch (IOException e) {}
-
-			try {
-				mBitmap = mPicasso.load(mEpisode.getTvShowBackdrop()).resize(400, 225).config(MizuuApplication.getBitmapConfig()).get();
-				if (mBitmap != null)
-					return MizLib.fastblur(getActivity(), Bitmap.createScaledBitmap(mBitmap, mBitmap.getWidth(), mBitmap.getHeight(), false), 4);
-			} catch(IOException e) {}
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			if (result != null) {
-
-				if (!MizLib.isPortrait(getActivity())) {
-					// Set the blurred version as the backdrop image
-					mBackdrop.setImageBitmap(result);
-
-					if (!MizLib.isPortrait(getActivity()))
-						mBackdrop.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-					else
-						mBackdrop.setColorFilter(Color.parseColor("#66181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-				}
-
-				// Set the episode photo
-				mEpisodePhoto.setImageBitmap(mBitmap);
-			} else {
-				if (!MizLib.isPortrait(getActivity()))
-					mBackdrop.setImageResource(R.drawable.bg);
-			}
+		if (successful) {
+			((PanningView) mEpisodePhoto).startPanning();
+		} else {
+			((PanningView) mEpisodePhoto).setScaleType(ScaleType.CENTER_CROP);
 		}
 	}
 
@@ -320,6 +364,8 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 
 	public void onResume() {
 		super.onResume();
+
+		mBus.register(getActivity());
 
 		mVideoPlaybackEnded = System.currentTimeMillis();
 
@@ -519,7 +565,7 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 			public void run() {
 				ArrayList<com.miz.functions.TvShowEpisode> episode = new ArrayList<com.miz.functions.TvShowEpisode>();
 				episode.add(new com.miz.functions.TvShowEpisode(mEpisode.getShowId(), Integer.valueOf(mEpisode.getEpisode()), Integer.valueOf(mEpisode.getSeason())));
-				MizLib.markEpisodeAsWatched(mEpisode.getShowId(), episode, getActivity(), false);
+				Trakt.markEpisodeAsWatched(mEpisode.getShowId(), episode, getActivity(), false);
 			}
 		}.start();
 	}
@@ -532,7 +578,7 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 		new Thread() {
 			@Override
 			public void run() {
-				MizLib.checkInEpisodeTrakt(mEpisode, getActivity());
+				Trakt.performEpisodeCheckin(mEpisode, getActivity());
 			}
 		}.start();
 	}

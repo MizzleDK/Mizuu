@@ -82,6 +82,7 @@ import android.widget.Toast;
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
+import com.miz.apis.trakt.Trakt;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapter;
 import com.miz.functions.ActionBarSpinner;
@@ -123,7 +124,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		mContext = this;
 		mBus = MizuuApplication.getBus();
-		mBus.register(getApplicationContext());
 
 		if (isFullscreen())
 			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
@@ -171,7 +171,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			public void onPageSelected(int position) {
 				mActionBar.setSelectedNavigationItem(position);
 
-				updateActionBarDrawable(1, false);
+				updateActionBarDrawable(1, false, false);
 			}
 		});
 
@@ -238,10 +238,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	@Subscribe
 	public void onScrollChanged(Integer newAlpha) {
-		updateActionBarDrawable(newAlpha, true);
+		updateActionBarDrawable(newAlpha, true, false);
 	}
 
-	private void updateActionBarDrawable(int newAlpha, boolean setBackground) {
+	private void updateActionBarDrawable(int newAlpha, boolean setBackground, boolean showActionBar) {
 		if (mViewPager.getCurrentItem() == 0) { // Details page
 			mActionBarOverlay.setVisibility(View.VISIBLE);
 
@@ -261,13 +261,17 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
 				mActionBar.show();
 		}
+		
+		if (showActionBar) {
+			mActionBar.show();
+		}
 	}
 
 	public void onResume() {
 		super.onResume();
 
 		mBus.register(this);
-		updateActionBarDrawable(0, true);
+		updateActionBarDrawable(0, true, true);
 
 		mVideoPlaybackEnded = System.currentTimeMillis();
 
@@ -314,7 +318,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				menu.findItem(R.id.movie_fav).setIcon(R.drawable.fav);
 				menu.findItem(R.id.movie_fav).setTitle(R.string.menuFavouriteTitleRemove);
 			} else {
-				menu.findItem(R.id.movie_fav).setIcon(R.drawable.reviews);
+				menu.findItem(R.id.movie_fav).setIcon(R.drawable.ic_action_star_0);
 				menu.findItem(R.id.movie_fav).setTitle(R.string.menuFavouriteTitle);
 			}
 
@@ -553,7 +557,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			public void run() {
 				ArrayList<Movie> movie = new ArrayList<Movie>();
 				movie.add(mMovie);
-				MizLib.movieFavorite(movie, getApplicationContext());
+				Trakt.movieFavorite(movie, getApplicationContext());
 			}
 		}.start();
 	}
@@ -596,7 +600,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			public void run() {
 				ArrayList<Movie> watchedMovies = new ArrayList<Movie>();
 				watchedMovies.add(mMovie);
-				MizLib.markMovieAsWatched(watchedMovies, getApplicationContext());
+				Trakt.markMovieAsWatched(watchedMovies, getApplicationContext());
 			}
 		}.start();
 	}
@@ -631,7 +635,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			public void run() {
 				ArrayList<Movie> watchlist = new ArrayList<Movie>();
 				watchlist.add(mMovie);
-				MizLib.movieWatchlist(watchlist, getApplicationContext());
+				Trakt.movieWatchlist(watchlist, getApplicationContext());
 			}
 		}.start();
 	}
@@ -658,7 +662,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			public void run() {
 				ArrayList<Movie> watchlist = new ArrayList<Movie>();
 				watchlist.add(mMovie);
-				MizLib.movieWatchlist(watchlist, getApplicationContext());
+				Trakt.movieWatchlist(watchlist, getApplicationContext());
 			}
 		}.start();
 	}
@@ -922,7 +926,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		new Thread() {
 			@Override
 			public void run() {
-				MizLib.checkInMovieTrakt(mMovie, getApplicationContext());
+				Trakt.performMovieCheckin(mMovie, getApplicationContext());
 			}
 		}.start();
 	}

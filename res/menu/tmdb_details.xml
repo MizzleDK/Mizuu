@@ -10,17 +10,14 @@
     <item
         android:id="@+id/share"
         android:icon="@drawable/share"
-        android:showAsAction="always"
         android:title="@string/menuShareTitle"/>
     <item
         android:id="@+id/checkIn"
         android:icon="@drawable/done"
-        android:showAsAction="ifRoom"
         android:title="@string/check_in">
     </item>
     <item
         android:id="@+id/openInBrowser"
-        android:showAsAction="always"
         android:icon="@drawable/ic_action_globe"
         android:title="@string/openInBrowser">
     </item>

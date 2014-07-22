@@ -134,7 +134,7 @@ public class MakeAvailableOffline extends IntentService {
 		builder.setContentText(getContentText());
 		builder.setLargeIcon(MizLib.getNotificationImageThumbnail(mContext, intent.getExtras().getString("thumb")));
 
-		builder.addAction(R.drawable.remove, getString(android.R.string.cancel), contentIntent);
+		builder.addAction(R.drawable.ic_action_discard, getString(android.R.string.cancel), contentIntent);
 
 		boolean exists = checkIfNetworkFileExists();
 
@@ -237,7 +237,9 @@ public class MakeAvailableOffline extends IntentService {
 	}
 
 	private boolean beginTransfer() {
-		if (file.startsWith("http")) {
+		return false;
+		/*
+		 * if (file.startsWith("http")) {
 			// the size of my buffer in bits
 			int bufferSize = 16384;
 			byte[] retVal = null;
@@ -320,6 +322,7 @@ public class MakeAvailableOffline extends IntentService {
 				return false;
 			}
 		}
+		 */
 	}
 
 	private void update() {

@@ -190,7 +190,6 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		setupActionBar();
 		mActionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
 
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
 	}

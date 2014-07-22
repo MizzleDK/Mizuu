@@ -23,10 +23,10 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -87,7 +87,7 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 
 			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		} else {
-			new MovieLoader().execute(tmdbId, collectionId);
+			new MovieLoader(getApplicationContext()).execute(tmdbId, collectionId);
 		}
 	}
 
@@ -136,22 +136,22 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 	}
 
 	private class MovieLoader extends AsyncTask<Object, Object, String> {
+		
+		private Context mContext;
+		
+		public MovieLoader(Context context) {
+			mContext = context;
+		}
+		
 		@Override
 		protected String doInBackground(Object... params) {			
 			try {				
+				baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+				
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/images?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				baseUrl = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-				
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/images?api_key=" + mTmdbApiKey);
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
 
 				json = httpclient.execute(httppost, responseHandler);
 

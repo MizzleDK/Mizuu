@@ -42,7 +42,7 @@
             android:defaultValue="@string/listView"
             android:entries="@array/seasonsLayout"
             android:entryValues="@array/seasonsLayout"
-            android:icon="@drawable/startup"
+            android:icon="@drawable/ic_action_list_grid"
             android:key="prefsSeasonsLayout"
             android:summary="@string/setEpisodesLayoutDescription"
             android:title="@string/setEpisodeLayout" />

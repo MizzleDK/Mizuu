@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="1012"
-    android:versionName="2.9-beta1" >
+    android:versionCode="1013"
+    android:versionName="2.9-beta2" >
 
     <uses-sdk
         android:minSdkVersion="13"
@@ -61,16 +61,6 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable_tv" />
-        </activity>
-
-        <!-- Episode details activity -->
-        <activity
-            android:name="com.miz.mizuu.EpisodeDetails"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon" >
-            <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
-            </intent-filter>
         </activity>
 
         <!-- Splash activity -->
@@ -223,29 +213,6 @@
             <intent-filter>
                 <action android:name="com.miz.mizuu.FileSources" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <!-- Add local file source activity -->
-        <activity
-            android:name="com.miz.mizuu.AddLocalFileSource"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon"
-            android:label="@string/addFileSourceTitle" >
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <!-- Add network file source activity -->
-        <activity
-            android:name="com.miz.mizuu.AddNetworkFileSource"
-            android:configChanges="keyboard|keyboardHidden"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon"
-            android:windowSoftInputMode="adjustPan" >
-            <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

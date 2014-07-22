@@ -107,7 +107,7 @@ public class MoveFilesService extends IntentService {
 		}
 
 		// Delete the old data folder
-		MizLib.deleteRecursive(oldDataFolder);
+		MizLib.deleteRecursive(oldDataFolder, true);
 
 		Intent i = new Intent(this, SplashScreen.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);

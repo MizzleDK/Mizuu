@@ -2,7 +2,7 @@
 
     <header
         android:fragment="com.miz.mizuu.fragments.Prefs"
-        android:icon="@drawable/overview"
+        android:icon="@drawable/ic_action_settings"
         android:title="@string/prefsUIGeneral" >
         <extra
             android:name="resource"
@@ -22,7 +22,7 @@
         android:title="@string/scheduledUpdates" />
     <header
         android:fragment="com.miz.mizuu.fragments.Prefs"
-        android:icon="@drawable/localizedinfo"
+        android:icon="@drawable/user_interface"
         android:title="@string/prefsUI" >
         <extra
             android:name="resource"

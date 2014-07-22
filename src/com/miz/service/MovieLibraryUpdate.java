@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONObject;
-
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -45,6 +43,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.miz.abstractclasses.MovieFileSource;
+import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterSources;
 import com.miz.filesources.FileMovie;
@@ -63,7 +62,6 @@ import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
 
-import static com.miz.functions.PreferenceKeys.TMDB_BASE_URL;
 import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
 import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
@@ -107,6 +105,8 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
+		reloadLibrary();
+		
 		showPostUpdateNotification();
 
 		AppWidgetManager awm = AppWidgetManager.getInstance(this);
@@ -118,7 +118,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		MizLib.scheduleMovieUpdate(this);
 
-		if (MizLib.hasTraktAccount(this) && mSyncLibraries && ((mTotalFiles - mMovieQueue.size()) > 0)) {
+		if (Trakt.hasTraktAccount(this) && mSyncLibraries && ((mTotalFiles - mMovieQueue.size()) > 0)) {
 			getApplicationContext().startService(new Intent(getApplicationContext(), TraktMoviesSyncService.class));
 		}
 	}
@@ -190,16 +190,11 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		if (mStopUpdate)
 			return;
+		
+		reloadLibrary();
 
 		// Search all folders
 		searchFolders();
-
-		if (mStopUpdate)
-			return;
-		log("getTMDbConfiguration()");
-
-		// Get TMDb image configuration
-		getTMDbConfiguration();
 
 		if (mStopUpdate)
 			return;
@@ -212,6 +207,12 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			// Start the actual movie update / identification task
 			updateMovies();
 		}
+	}
+	
+	private void reloadLibrary() {
+		log("reloadLibrary()");
+		
+		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-movies-update"));
 	}
 
 	private void loadFileSources() {
@@ -266,33 +267,13 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		db.deleteAllMovies();
 
 		// Delete all downloaded images files from the device
-		MizLib.deleteRecursive(MizuuApplication.getMovieThumbFolder(this));
-		MizLib.deleteRecursive(MizuuApplication.getMovieBackdropFolder(this));
+		MizLib.deleteRecursive(MizuuApplication.getMovieThumbFolder(this), false);
+		MizLib.deleteRecursive(MizuuApplication.getMovieBackdropFolder(this), false);
 	}
 
 	private void removeUnavailableFiles() {
 		for (MovieFileSource<?> movieFileSource : mMovieFileSources) {
 			movieFileSource.removeUnavailableFiles();
-		}
-	}
-
-	private void getTMDbConfiguration() {
-		String mBaseUrl = "";
-		try {
-			if (MizLib.isOnline(getApplicationContext())) {
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + MizLib.getTmdbApiKey(getApplicationContext()));
-				try {
-					mBaseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) {
-					mBaseUrl = MizLib.TMDB_BASE_URL;
-				}
-			}
-		} catch (Exception e) {
-			mBaseUrl = MizLib.TMDB_BASE_URL;
-		} finally {
-			mEditor = mSettings.edit();
-			mEditor.putString(TMDB_BASE_URL, mBaseUrl);
-			mEditor.commit();
 		}
 	}
 
@@ -344,7 +325,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
 		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.refresh));
-		mBuilder.addAction(R.drawable.remove, getString(android.R.string.cancel), contentIntent);
+		mBuilder.addAction(R.drawable.ic_action_discard, getString(android.R.string.cancel), contentIntent);
 
 		// Build notification
 		Notification updateNotification = mBuilder.build();

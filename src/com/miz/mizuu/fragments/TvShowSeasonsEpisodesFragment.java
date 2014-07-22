@@ -79,10 +79,14 @@ public class TvShowSeasonsEpisodesFragment extends Fragment {
 		super.onViewCreated(v, savedInstanceState);
 
 		mDualPane = v.findViewById(R.id.episode) == null ? false : true;
-		
-		v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
 
-		MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		if (!MizLib.isPortrait(getActivity()))
+			v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
+
+		if (!MizuuApplication.isFullscreen(getActivity()))
+			MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.container));
+		else
+			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
 
 		FragmentTransaction ft = mFragmentManager.beginTransaction();
 		ft.replace(R.id.seasons, TvShowSeasonsFragment.newInstance(mShowId, mDualPane));

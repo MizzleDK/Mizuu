@@ -1,5 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:icon="@drawable/overview" >
+    android:icon="@drawable/ic_action_settings" >
 
     <PreferenceCategory android:title="@string/prefsUIGeneral" >
         <ListPreference

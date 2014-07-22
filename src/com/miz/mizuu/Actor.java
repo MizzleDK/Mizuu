@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -124,7 +125,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 
 			mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		} else {
-			new ActorLoader().execute(mActorId);
+			new ActorLoader(getApplicationContext()).execute(mActorId);
 		}
 	}
 	
@@ -237,22 +238,22 @@ public class Actor extends MizActivity implements OnNavigationListener {
 	}
 
 	private class ActorLoader extends AsyncTask<Object, Object, String> {
+		
+		private Context mContext;
+		
+		public ActorLoader(Context context) {
+			mContext = context;
+		}
+		
 		@Override
 		protected String doInBackground(Object... params) {
-			try {				
+			try {
+				mBaseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=movie_credits,tv_credits,images,tagged_images");
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				mBaseUrl = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(mBaseUrl);
-				try { mBaseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { mBaseUrl = MizLib.TMDB_BASE_URL; }
-
-				httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=movie_credits,tv_credits,images,tagged_images");
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
 
 				mJson = httpclient.execute(httppost, responseHandler);
 

@@ -340,6 +340,5 @@ public class NfoMovie {
 		intent.putExtra("backdrop", temp.getBackdrop());
 
 		LocalBroadcastManager.getInstance(c).sendBroadcast(intent);
-		LocalBroadcastManager.getInstance(c).sendBroadcast(new Intent("mizuu-movies-update"));
 	}
 }

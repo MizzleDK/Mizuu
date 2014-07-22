@@ -64,6 +64,6 @@
         android:background="@drawable/buttonstyle"
         android:focusable="true"
         android:padding="8dp"
-        android:src="@drawable/remove" />
+        android:src="@drawable/ic_action_discard" />
 
 </LinearLayout>

@@ -20,9 +20,9 @@ import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
 import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
-import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
-import static com.miz.functions.PreferenceKeys.TRAKT_PASSWORD;
 import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
+import static com.miz.functions.PreferenceKeys.TMDB_BASE_URL;
+import static com.miz.functions.PreferenceKeys.TMDB_BASE_URL_TIME;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -43,7 +43,6 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -55,19 +54,7 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
@@ -76,6 +63,7 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -99,12 +87,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -132,8 +117,11 @@ import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.apache.OkApacheClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 @SuppressLint("NewApi")
 public class MizLib {
@@ -151,7 +139,6 @@ public class MizLib {
 	public static final String tvdbLanguages = "en,sv,no,da,fi,nl,de,it,es,fr,pl,hu,el,tr,ru,he,ja,pt,zh,cs,sl,hr,ko";
 	public static final String allFileTypes = ".3gp.aaf.mp4.ts.webm.m4v.mkv.divx.xvid.rec.avi.flv.f4v.moi.mpeg.mpg.mts.m2ts.ogv.rm.rmvb.mov.wmv.iso.vob.ifo.wtv.pyv.ogm.img";
 	public static final String IMAGE_CACHE_DIR = "thumbs";
-	public static final String TMDB_BASE_URL = "http://image.tmdb.org/t/p/";
 	public static final String CHARACTER_REGEX = "[^\\w\\s]";
 	public static final String[] prefixes = new String[]{"the ", "a ", "an "};
 
@@ -164,19 +151,24 @@ public class MizLib {
 	private MizLib() {} // No instantiation
 
 	public static String getTmdbApiKey(Context context) {
-		return context.getString(R.string.tmdb_api_key);
-	}
-
-	public static String getTraktApiKey(Context context) {
-		return context.getString(R.string.trakt_api_key);
+		String key = context.getString(R.string.tmdb_api_key);
+		if (key.isEmpty() || key.equals("add_your_own"))
+			throw new RuntimeException("You need to add a TMDb API key!");
+		return key;
 	}
 
 	public static String getTvdbApiKey(Context context) {
-		return context.getString(R.string.tvdb_api_key);
+		String key = context.getString(R.string.tvdb_api_key);
+		if (key.isEmpty() || key.equals("add_your_own"))
+			throw new RuntimeException("You need to add a TVDb API key!");
+		return key;
 	}
 
 	public static String getYouTubeApiKey(Context context) {
-		return context.getString(R.string.youtube_api_key);
+		String key = context.getString(R.string.youtube_api_key);
+		if (key.isEmpty() || key.equals("add_your_own"))
+			throw new RuntimeException("You need to add a YouTube API key!");
+		return key;
 	}
 
 	public static String[] getPrefixes(Context c) {
@@ -462,6 +454,28 @@ public class MizLib {
 
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		params.setMargins(0, mActionBarHeight, 0, 0);
+		v.setLayoutParams(params);
+	}
+	
+	/**
+	 * Add a margin with a combined height of the ActionBar and Status bar to the top of a given View contained in a FrameLayout
+	 * @param c
+	 * @param v
+	 */
+	public static void addActionBarAndStatusBarMargin(Context c, View v) {
+		int mActionBarHeight = 0, mStatusBarHeight = 0;
+		TypedValue tv = new TypedValue();
+		if (c.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+			mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, c.getResources().getDisplayMetrics());
+		else
+			mActionBarHeight = 0; // No ActionBar style (pre-Honeycomb or ActionBar not in theme)
+
+		if (hasKitKat())
+			mStatusBarHeight = convertDpToPixels(c, 25);
+
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		params.setMargins(0, mActionBarHeight + mStatusBarHeight, 0, 0);
+		
 		v.setLayoutParams(params);
 	}
 
@@ -1157,68 +1171,65 @@ public class MizLib {
 	}
 
 	public static boolean downloadFile(String url, String savePath) {
-		// the size of my buffer in bits
-		int bufferSize = 8192;
-		byte[] retVal = null;
+		if (isEmpty(url))
+			return false;
+		
 		InputStream in = null;
 		OutputStream fileos = null;
-		OkHttpClient client = new OkHttpClient();
-		HttpURLConnection urlConnection = null;
-
+		
 		try {
-			urlConnection = client.open(new URL(url));
+			int bufferSize = 8192;
+			byte[] retVal = null;
+			
+			OkHttpClient client = new OkHttpClient();
+			
+			Request request = new Request.Builder()
+			.url(url)
+			.build();
+			
+			Response response = client.newCall(request).execute();
+			if (!response.isSuccessful())
+				return false;
+			
 			fileos = new BufferedOutputStream(new FileOutputStream(savePath));
-
-			in = new BufferedInputStream(urlConnection.getInputStream(), bufferSize);
+			in = new BufferedInputStream(response.body().byteStream(), bufferSize);
 
 			retVal = new byte[bufferSize];
 			int length = 0;
 			while((length = in.read(retVal)) > -1) {
 				fileos.write(retVal, 0, length);
 			}
-
-		} catch(IOException e) {
+		} catch(Exception e) {
 			return false;
 		} finally {
-			if(fileos != null) {
+			if (fileos != null) {
 				try {
 					fileos.flush();
 					fileos.close();
 				} catch (IOException e) {}
 			}
-			if(in != null) {
+			
+			if (in != null) {
 				try {
 					in.close();
 				} catch (IOException e) {}
 			}
-			if (urlConnection != null)
-				urlConnection.disconnect();
 		}
 
 		return true;
 	}
 
 	public static JSONObject getJSONObject(String url) {
+		final OkHttpClient client = new OkHttpClient();
+
+		Request request = new Request.Builder()
+		.url(url)
+		.build();
+
 		try {
-			// Hack to work around bug with secure HTTP connections: https://github.com/square/okhttp/issues/184
-			if (url.startsWith("https")) {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet(url);
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String html = httpclient.execute(httppost, responseHandler);
-
-				return new JSONObject(html);
-			} else {
-				OkApacheClient httpclient = new OkApacheClient();
-				HttpGet httppost = new HttpGet(url);
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String html = httpclient.execute(httppost, responseHandler);
-
-				return new JSONObject(html);
-			}
-		} catch (Exception e) {
+			Response response = client.newCall(request).execute();
+			return new JSONObject(response.body().string());
+		} catch (Exception e) { // IOException and JSONException
 			return new JSONObject();
 		}
 	}
@@ -1645,621 +1656,24 @@ public class MizLib {
 		}
 	}
 
-	public static boolean checkInMovieTrakt(String tmdbId, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		// Cancel the current check in to allow this one
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/cancelcheckin/" + getTraktApiKey(c));
-		httppost.setHeader("Content-type", "application/json");
-
-		try {
-
-			JSONObject holder = new JSONObject();
-			holder.put("username", username);
-			holder.put("password", password);
-
-			StringEntity se = new StringEntity(holder.toString());
-			se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-			httppost.setEntity(se);
-
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-		} catch (Exception e) {}
-
-		// Check in with the movie
-		httpclient = new OkApacheClient();
-		httppost = new HttpPost("http://api.trakt.tv/movie/checkin/" + getTraktApiKey(c));
-
-		try {
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-			nameValuePairs.add(new BasicNameValuePair("username", username));
-			nameValuePairs.add(new BasicNameValuePair("password", password));
-			nameValuePairs.add(new BasicNameValuePair("tmdb_id", tmdbId));
-			nameValuePairs.add(new BasicNameValuePair("app_version", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName));
-			nameValuePairs.add(new BasicNameValuePair("app_date", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName));
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
+	public static Request getJsonPostRequest(String url, JSONObject holder) {
+		return new Request.Builder()
+		.url(url)
+		.addHeader("Content-type", "application/json")
+		.post(RequestBody.create(MediaType.parse("application/json"), holder.toString()))
+		.build();
 	}
-
-	public static boolean checkInMovieTrakt(Movie movie, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		// Cancel the current check in to allow this one
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/cancelcheckin/" + getTraktApiKey(c));
-		httppost.setHeader("Content-type", "application/json");
-
-		try {
-
-			JSONObject holder = new JSONObject();
-			holder.put("username", username);
-			holder.put("password", password);
-
-			StringEntity se = new StringEntity(holder.toString());
-			se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-			httppost.setEntity(se);
-
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-		} catch (Exception e) {}
-
-		// Check in with the movie
-		httpclient = new OkApacheClient();
-		httppost = new HttpPost("http://api.trakt.tv/movie/checkin/" + getTraktApiKey(c));
-
-		try {
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-			nameValuePairs.add(new BasicNameValuePair("username", username));
-			nameValuePairs.add(new BasicNameValuePair("password", password));
-			nameValuePairs.add(new BasicNameValuePair("imdb_id", movie.getImdbId()));
-			nameValuePairs.add(new BasicNameValuePair("tmdb_id", movie.getTmdbId()));
-			nameValuePairs.add(new BasicNameValuePair("title", movie.getTitle()));
-			nameValuePairs.add(new BasicNameValuePair("year", movie.getReleaseYear().replace("(", "").replace(")", "")));
-			nameValuePairs.add(new BasicNameValuePair("app_version", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName));
-			nameValuePairs.add(new BasicNameValuePair("app_date", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName));
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean checkInEpisodeTrakt(TvShowEpisode episode, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		// Cancel the current check in to allow this one
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/cancelcheckin/" + getTraktApiKey(c));
-		httppost.setHeader("Content-type", "application/json");
-
-		try {
-
-			JSONObject holder = new JSONObject();
-			holder.put("username", username);
-			holder.put("password", password);
-
-			StringEntity se = new StringEntity(holder.toString());
-			se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-			httppost.setEntity(se);
-
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-		} catch (Exception e) {}
-
-		// Check in with the movie
-		httpclient = new OkApacheClient();
-		httppost = new HttpPost("http://api.trakt.tv/show/checkin/" + getTraktApiKey(c));
-
-		try {
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-			nameValuePairs.add(new BasicNameValuePair("username", username));
-			nameValuePairs.add(new BasicNameValuePair("password", password));
-			nameValuePairs.add(new BasicNameValuePair("tvdb_id", episode.getShowId()));
-			nameValuePairs.add(new BasicNameValuePair("title", ""));
-			nameValuePairs.add(new BasicNameValuePair("year", ""));
-			nameValuePairs.add(new BasicNameValuePair("season", episode.getSeason()));
-			nameValuePairs.add(new BasicNameValuePair("episode", episode.getEpisode()));
-			nameValuePairs.add(new BasicNameValuePair("app_version", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName));
-			nameValuePairs.add(new BasicNameValuePair("app_date", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName));
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean markMovieAsWatched(List<Movie> movies, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		if (movies.size() == 0)
-			return false;
-
-		// Mark as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = null;
-		if (movies.get(0).hasWatched())
-			httppost = new HttpPost("http://api.trakt.tv/movie/seen/" + getTraktApiKey(c));
-		else
-			httppost = new HttpPost("http://api.trakt.tv/movie/unseen/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-
-			JSONArray array = new JSONArray();
-			int count = movies.size();
-			for (int i = 0; i < count; i++) {
-				JSONObject jsonMovie = new JSONObject();
-				jsonMovie.put("imdb_id", movies.get(i).getImdbId());
-				jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
-				jsonMovie.put("year", movies.get(i).getReleaseYear());
-				jsonMovie.put("title", movies.get(i).getTitle());
-				array.put(jsonMovie);
-			}
-			json.put("movies", array);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean changeSeasonWatchedStatus(String showId, int season, Context c, boolean watched) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		// Mark episode as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/season/" + (!watched ? "un" : "") + "seen/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-			json.put("imdb_id", "");
-			json.put("tvdb_id", showId);
-			json.put("title", "");
-			json.put("year", "");
-			json.put("season", season);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean markEpisodeAsWatched(String showId, List<com.miz.functions.TvShowEpisode> episodes, Context c, boolean watched) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		if (!settings.getBoolean(SYNC_WITH_TRAKT, false))
-			return false;
-
-		if (episodes.size() == 0)
-			return false;
-
-		// Mark episodes as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/" + (!watched ? "un" : "") + "seen/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-			json.put("imdb_id", "");
-			json.put("tvdb_id", showId);
-			json.put("title", "");
-			json.put("year", "");
-
-			JSONArray array = new JSONArray();
-			int count = episodes.size();
-			for (int i = 0; i < count; i++) {
-				JSONObject jsonMovie = new JSONObject();
-				jsonMovie.put("season", episodes.get(i).getSeason());
-				jsonMovie.put("episode", episodes.get(i).getEpisode());
-				array.put(jsonMovie);
-			}
-			json.put("episodes", array);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean markTvShowAsWatched(TraktTvShow show, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		// Mark episode as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/seen/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-			json.put("tvdb_id", show.getId());
-			json.put("title", show.getTitle());
-
-			JSONArray array = new JSONArray();
-			for (String season : show.getSeasons().keySet()) {
-				Collection<String> episodes = show.getSeasons().get(season);
-				for (String episode : episodes) {
-					JSONObject jsonShow = new JSONObject();
-					jsonShow.put("season", season);
-					jsonShow.put("episode", episode);
-					array.put(jsonShow);
-				}
-			}
-			json.put("episodes", array);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean addMoviesToTraktLibrary(List<Movie> movies, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		if (movies.size() == 0)
-			return false;
-
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/movie/library/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-
-			JSONArray array = new JSONArray();
-			int count = movies.size();
-			for (int i = 0; i < count; i++) {
-				JSONObject jsonMovie = new JSONObject();
-				jsonMovie.put("imdb_id", movies.get(i).getImdbId());
-				jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
-				jsonMovie.put("year", movies.get(i).getReleaseYear());
-				jsonMovie.put("title", movies.get(i).getTitle());
-				array.put(jsonMovie);
-			}
-			json.put("movies", array);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean movieWatchlist(List<Movie> movies, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		if (movies.size() == 0)
-			return false;
-
-		// Mark as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = null;
-		if (movies.get(0).toWatch())
-			httppost = new HttpPost("http://api.trakt.tv/movie/watchlist/" + getTraktApiKey(c));
-		else
-			httppost = new HttpPost("http://api.trakt.tv/movie/unwatchlist/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-
-			JSONArray array = new JSONArray();
-			int count = movies.size();
-			for (int i = 0; i < count; i++) {
-				JSONObject jsonMovie = new JSONObject();
-				jsonMovie.put("imdb_id", movies.get(i).getImdbId());
-				jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
-				jsonMovie.put("year", movies.get(i).getReleaseYear());
-				jsonMovie.put("title", movies.get(i).getTitle());
-				array.put(jsonMovie);
-			}
-			json.put("movies", array);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean movieFavorite(List<Movie> movies, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		if (movies.size() == 0)
-			return false;
-
-		// Mark as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/rate/movies/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-
-			JSONArray array = new JSONArray();
-			int count = movies.size();
-			for (int i = 0; i < count; i++) {
-				JSONObject jsonMovie = new JSONObject();
-				jsonMovie.put("imdb_id", movies.get(i).getImdbId());
-				jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
-				jsonMovie.put("year", movies.get(i).getReleaseYear());
-				jsonMovie.put("title", movies.get(i).getTitle());
-				jsonMovie.put("rating", movies.get(i).isFavourite() ? "love" : "unrate");
-				array.put(jsonMovie);
-			}
-			json.put("movies", array);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean hasTraktAccount(Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		return true;
-	}
-
-	public static boolean addTvShowToLibrary(TraktTvShow show, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		// Mark as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/show/episode/library/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-			json.put("tvdb_id", show.getId());
-			json.put("title", show.getTitle());
-
-			JSONArray array = new JSONArray();
-			for (String season : show.getSeasons().keySet()) {
-				Collection<String> episodes = show.getSeasons().get(season);
-				for (String episode : episodes) {
-					JSONObject jsonShow = new JSONObject();
-					jsonShow.put("season", season);
-					jsonShow.put("episode", episode);
-					array.put(jsonShow);
-				}
-			}
-			json.put("episodes", array);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static boolean tvShowFavorite(List<TvShow> shows, Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return false;
-
-		if (shows.size() == 0)
-			return false;
-
-		// Mark as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/rate/shows/" + getTraktApiKey(c));
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-
-			JSONArray array = new JSONArray();
-			int count = shows.size();
-			for (int i = 0; i < count; i++) {
-				JSONObject jsonShow = new JSONObject();
-				jsonShow.put("tvdb_id", shows.get(i).getId());
-				jsonShow.put("title", shows.get(i).getTitle());
-				jsonShow.put("rating", shows.get(i).isFavorite() ? "love" : "unrate");
-				array.put(jsonShow);
-			}
-			json.put("shows", array);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			httpclient.execute(httppost, responseHandler);
-
-			return true;
-		} catch (Exception e) {}
-
-		return false;
-	}
-
-	public static int WATCHED = 1, RATINGS = 2, WATCHLIST = 3, COLLECTION = 4;
-	public static JSONArray getTraktMovieLibrary(Context c, int type) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return new JSONArray();
-
-		// Mark as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = null;
-		if (type == WATCHED) {
-			httppost = new HttpPost("http://api.trakt.tv/user/library/movies/watched.json/" + getTraktApiKey(c) + "/" + username);
-		} else if (type == RATINGS) {
-			httppost = new HttpPost("http://api.trakt.tv/user/ratings/movies.json/" + getTraktApiKey(c) + "/" + username + "/love");
-		} else if (type == WATCHLIST) {
-			httppost = new HttpPost("http://api.trakt.tv/user/watchlist/movies.json/" + getTraktApiKey(c) + "/" + username);
-		} else if (type == COLLECTION) {
-			httppost = new HttpPost("http://api.trakt.tv/user/library/movies/collection.json/" + getTraktApiKey(c) + "/" + username);
-		}
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			String result = httpclient.execute(httppost, responseHandler);
-
-			return new JSONArray(result);
-		} catch (Exception e) {}
-
-		return new JSONArray();
-	}
-
-	public static JSONArray getTraktTvShowLibrary(Context c, int type) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return new JSONArray();
-
-		// Mark as seen / unseen
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = null;
-		if (type == WATCHED) {
-			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/watched.json/" + getTraktApiKey(c) + "/" + username);
-		} else if (type == RATINGS) {
-			httppost = new HttpPost("http://api.trakt.tv/user/ratings/shows.json/" + getTraktApiKey(c) + "/" + username + "/love");
-		} else if (type == COLLECTION) {
-			httppost = new HttpPost("http://api.trakt.tv/user/library/shows/collection.json/" + getTraktApiKey(c) + "/" + username);
-		}
-
-		try {
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-
-			httppost.setEntity(new StringEntity(json.toString()));
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			String result = httpclient.execute(httppost, responseHandler);
-
-			return new JSONArray(result);
-		} catch (Exception e) {}
-
-		return new JSONArray();
+	
+	public static Request getTraktAuthenticationRequest(String url, String username, String password) throws JSONException {
+		JSONObject holder = new JSONObject();
+		holder.put("username", username);
+		holder.put("password", password);
+
+		return new Request.Builder()
+		.url(url)
+		.addHeader("Content-type", "application/json")
+		.post(RequestBody.create(MediaType.parse("application/json"), holder.toString()))
+		.build();
 	}
 
 	public static boolean isMovieLibraryBeingUpdated(Context c) {
@@ -2428,55 +1842,24 @@ public class MizLib {
 		src.delete();
 	}
 
-	public static void deleteRecursive(File fileOrDirectory) {
+	public static void deleteRecursive(File fileOrDirectory, boolean deleteTopFolder) {
 		if (fileOrDirectory.isDirectory()) {
 			File[] listFiles = fileOrDirectory.listFiles();
 			if (listFiles != null) {
 				int count = listFiles.length;
 				for (int i = 0; i < count; i++)
-					deleteRecursive(listFiles[i]);
+					deleteRecursive(listFiles[i], true);
 			}
 		}
 
-		fileOrDirectory.delete();
+		if (deleteTopFolder)
+			fileOrDirectory.delete();
 	}
 
 	public static String getTraktUserName(Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		return username;
-	}
-
-	public static JSONArray getTraktCalendar(Context c) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		String password = settings.getString(TRAKT_PASSWORD, "");
-
-		if (username.isEmpty() || password.isEmpty())
-			return new JSONArray();
-
-		// Cancel the current check in to allow this one
-		OkApacheClient httpclient = new OkApacheClient();
-		HttpPost httppost = new HttpPost("http://api.trakt.tv/user/calendar/shows.json/" + getTraktApiKey(c) + "/" + username);
-		httppost.setHeader("Content-type", "application/json");
-
-		try {
-
-			JSONObject holder = new JSONObject();
-			holder.put("username", username);
-			holder.put("password", password);
-
-			StringEntity se = new StringEntity(holder.toString());
-			se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-			httppost.setEntity(se);
-
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			String result = httpclient.execute(httppost, responseHandler);
-
-			return new JSONArray(result);
-		} catch (Exception e) {}
-
-		return new JSONArray();
 	}
 
 	public static String removeWikipediaNotes(String original) {
@@ -3419,9 +2802,9 @@ public class MizLib {
 			}
 	}
 
-	public static Spanned getPrettyRuntime(Context context, int minutes) {
+	public static String getPrettyRuntime(Context context, int minutes) {
 		if (minutes == 0) {
-			return Html.fromHtml("<b>" + context.getString(R.string.stringNA) + "</b>");
+			return context.getString(R.string.stringNA);
 		}
 
 		int hours = (minutes / 60);
@@ -3429,12 +2812,12 @@ public class MizLib {
 
 		if (hours > 0) {
 			if (minutes == 0) {
-				return Html.fromHtml("<b>" + hours + "</b> " + context.getResources().getQuantityString(R.plurals.hour, hours, hours));
+				return hours + " " + context.getResources().getQuantityString(R.plurals.hour, hours, hours);
 			} else {
-				return Html.fromHtml("<b>" + hours + "</b> " + context.getResources().getQuantityString(R.plurals.hour_short, hours, hours) + " <b>" + minutes + "</b> " + context.getResources().getQuantityString(R.plurals.minute_short, minutes, minutes));
+				return hours + " " + context.getResources().getQuantityString(R.plurals.hour_short, hours, hours) + " " + minutes + " " + context.getResources().getQuantityString(R.plurals.minute_short, minutes, minutes);
 			}
 		} else {
-			return Html.fromHtml("<b>" + minutes + "</b> " + context.getResources().getQuantityString(R.plurals.minute, minutes, minutes));
+			return minutes + " " + context.getResources().getQuantityString(R.plurals.minute, minutes, minutes);
 		}
 	}
 
@@ -3444,8 +2827,24 @@ public class MizLib {
 				String[] dateArray = date.split("-");
 				Calendar cal = Calendar.getInstance();
 				cal.set(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
-
-				return cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + cal.get(Calendar.YEAR);
+				
+				return MizLib.toCapitalFirstChar(cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + cal.get(Calendar.YEAR));
+			} catch (Exception e) { // Fall back if something goes wrong
+				return date;
+			}
+		} else {
+			return context.getString(R.string.stringNA);
+		}
+	}
+	
+	public static String getPrettyDatePrecise(Context context, String date) {
+		if (!MizLib.isEmpty(date)) {
+			try {
+				String[] dateArray = date.split("-");
+				Calendar cal = Calendar.getInstance();
+				cal.set(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
+				
+				return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault()).format(cal.getTime());
 			} catch (Exception e) { // Fall back if something goes wrong
 				return date;
 			}
@@ -3641,6 +3040,33 @@ public class MizLib {
 			vto.removeOnGlobalLayoutListener(victim);
 		} else {
 			vto.removeGlobalOnLayoutListener(victim);
+		}
+	}
+
+	public static String getTmdbImageBaseUrl(Context context) {
+		long time = PreferenceManager.getDefaultSharedPreferences(context).getLong(TMDB_BASE_URL_TIME, 0);
+		long currentTime = System.currentTimeMillis();
+
+		// We store the TMDb base URL for 24 hours
+		if (((currentTime - time) < DAY && PreferenceManager.getDefaultSharedPreferences(context).contains(TMDB_BASE_URL)) |
+				Looper.getMainLooper().getThread() == Thread.currentThread()) {
+			return PreferenceManager.getDefaultSharedPreferences(context).getString(TMDB_BASE_URL, "");
+		}
+
+		try {
+			JSONObject configuration = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + getTmdbApiKey(context));
+			String baseUrl = configuration.getJSONObject("images").getString("secure_base_url");
+
+			System.out.println("BASE: " + baseUrl);
+
+			Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+			editor.putString(TMDB_BASE_URL, baseUrl);
+			editor.putLong(TMDB_BASE_URL_TIME, System.currentTimeMillis());
+			editor.commit();
+
+			return baseUrl;
+		} catch (JSONException e) {
+			return null;
 		}
 	}
 }

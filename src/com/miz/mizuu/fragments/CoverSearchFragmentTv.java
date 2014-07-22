@@ -274,7 +274,6 @@ public class CoverSearchFragmentTv extends Fragment {
 				MizLib.resizeBitmapFileToCoverSize(getActivity(), path);
 				
 				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-show-cover-change"));
-				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-shows-update"));
 
 				updateWidgets();
 			}

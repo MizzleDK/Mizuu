@@ -36,10 +36,11 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.common.collect.Multimap;
+import com.miz.apis.trakt.Trakt;
+import com.miz.apis.trakt.TraktTvShow;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.MizLib;
-import com.miz.functions.TraktTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShow;
@@ -218,7 +219,7 @@ public class TraktTvShowsSyncService extends IntentService {
 	}
 
 	private void downloadTvShowCollection() {
-		JSONArray jsonArray = MizLib.getTraktTvShowLibrary(this, MizLib.COLLECTION);
+		JSONArray jsonArray = Trakt.getTvShowLibrary(this, Trakt.COLLECTION);
 		if (jsonArray.length() > 0) {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				try {
@@ -273,7 +274,7 @@ public class TraktTvShowsSyncService extends IntentService {
 
 			count = collection.size();
 			for (int i = 0; i < count; i++) {
-				MizLib.addTvShowToLibrary(collection.get(i), getApplicationContext());
+				Trakt.addTvShowToLibrary(collection.get(i), getApplicationContext());
 			}
 
 			// Clean up
@@ -286,7 +287,7 @@ public class TraktTvShowsSyncService extends IntentService {
 	}
 
 	private void downloadWatchedTvShows() {
-		JSONArray jsonArray = MizLib.getTraktTvShowLibrary(this, MizLib.WATCHED);
+		JSONArray jsonArray = Trakt.getTvShowLibrary(this, Trakt.WATCHED);
 		if (jsonArray.length() > 0) {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				try {
@@ -352,7 +353,7 @@ public class TraktTvShowsSyncService extends IntentService {
 
 			count = watched.size();
 			for (int i = 0; i < count; i++) {
-				MizLib.markTvShowAsWatched(watched.get(i), getApplicationContext());
+				Trakt.markTvShowAsWatched(watched.get(i), getApplicationContext());
 			}
 
 			// Clean up
@@ -365,7 +366,7 @@ public class TraktTvShowsSyncService extends IntentService {
 	}
 
 	private void downloadTvShowFavorites() {
-		JSONArray jsonArray = MizLib.getTraktTvShowLibrary(this, MizLib.RATINGS);
+		JSONArray jsonArray = Trakt.getTvShowLibrary(this, Trakt.RATINGS);
 		if (jsonArray.length() > 0) {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				try {
@@ -386,7 +387,7 @@ public class TraktTvShowsSyncService extends IntentService {
 			if (mShows.get(i).isFavorite() && !mTraktFavorites.contains(mShows.get(i).getId()))
 				favs.add(mShows.get(i));
 
-		MizLib.tvShowFavorite(favs, this);
+		Trakt.tvShowFavorite(favs, this);
 
 		favs.clear();
 		favs = null;

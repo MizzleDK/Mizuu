@@ -1,8 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/title"
-    style="@style/DrawerListHeader"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/personalizedArea"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:text="@string/stringMenu" />
+    android:layout_height="160dp" >
+
+    <ImageView
+        android:id="@+id/userCover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:id="@+id/drawer_user_info"
+        android:layout_width="match_parent"
+        android:layout_height="114dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/gradient_black_to_transparent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <com.miz.views.CircularImageView
+            android:id="@+id/userPhoto"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/unknown_user" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/greeting"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </LinearLayout>
+
+</RelativeLayout>

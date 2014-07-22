@@ -17,17 +17,7 @@
 package com.miz.mizuu.fragments;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 import android.app.Fragment;
@@ -50,11 +40,15 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.miz.apis.trakt.Trakt;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 import com.miz.service.TraktMoviesSyncService;
 import com.miz.service.TraktTvShowsSyncService;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
 import static com.miz.functions.PreferenceKeys.TRAKT_PASSWORD;
@@ -74,7 +68,7 @@ public class AccountsFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		mTraktApiKey = MizLib.getTraktApiKey(getActivity());
+		mTraktApiKey = Trakt.getApiKey(getActivity());
 	}
 
 	@Override
@@ -165,24 +159,18 @@ public class AccountsFragment extends Fragment {
 
 			boolean success = false;
 
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost("http://api.trakt.tv/account/test/" + mTraktApiKey);
-
+			OkHttpClient client = new OkHttpClient();
+			
 			try {
-				// Add your data
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-				nameValuePairs.add(new BasicNameValuePair("username", username));
-				nameValuePairs.add(new BasicNameValuePair("password", MizLib.SHA1(password)));
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String html = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(html);
-
-				String status = jObject.getString("status");
-				success = status.equals("success");
-
+				
+				Request request = MizLib.getTraktAuthenticationRequest("http://api.trakt.tv/account/test/" + mTraktApiKey, username, MizLib.SHA1(password));
+				Response response = client.newCall(request).execute();
+				JSONObject jObject = new JSONObject(response.body().string());
+				
+				if (response.isSuccessful()) {
+					String status = jObject.getString("status");
+					success = status.equals("success");
+				}
 			} catch (Exception e) {
 				success = false;
 			}
@@ -194,32 +182,23 @@ public class AccountsFragment extends Fragment {
 				editor.putString(TRAKT_PASSWORD, MizLib.SHA1(password));
 				editor.commit();
 
-				httpclient = new DefaultHttpClient();
-				httppost = new HttpPost("http://api.trakt.tv/user/profile.json/" + mTraktApiKey + "/" + username);
-
 				try {
-					// Add your data
-					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-					nameValuePairs.add(new BasicNameValuePair("username", username));
-					nameValuePairs.add(new BasicNameValuePair("password", MizLib.SHA1(password)));
-					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+					Request request = MizLib.getTraktAuthenticationRequest("http://api.trakt.tv/user/profile.json/" + mTraktApiKey + "/" + username, username, MizLib.SHA1(password));
+					Response response = client.newCall(request).execute();
+					JSONObject jObject = new JSONObject(response.body().string());
+					
+					if (response.isSuccessful()) {
+						String name = jObject.getString("full_name");
+						if (name.equals("null") || name.isEmpty())
+							name = jObject.getString("username");
+						String avatar = jObject.getString("avatar");
 
-					ResponseHandler<String> responseHandler = new BasicResponseHandler();
-					String html = httpclient.execute(httppost, responseHandler);
+						editor.putString(TRAKT_FULL_NAME, name);
+						editor.commit();
 
-					JSONObject jObject = new JSONObject(html);
-
-					String name = jObject.getString("full_name");
-					if (name.equals("null") || name.isEmpty())
-						name = jObject.getString("username");
-					String avatar = jObject.getString("avatar");
-
-					editor.putString(TRAKT_FULL_NAME, name);
-					editor.commit();
-
-					if (isAdded() && (avatar.contains("gravatar") || (avatar.contains("trakt") && !avatar.contains("avatar-large.jpg"))))
-						MizLib.downloadFile(avatar, new File(MizLib.getCacheFolder(getActivity()), "avatar.jpg").getAbsolutePath());
-
+						if (isAdded() && (avatar.contains("gravatar") || (avatar.contains("trakt") && !avatar.contains("avatar-large.jpg"))))
+							MizLib.downloadFile(avatar, new File(MizLib.getCacheFolder(getActivity()), "avatar.jpg").getAbsolutePath());
+					}
 				} catch (Exception e) {
 					success = false;
 				}
@@ -260,7 +239,10 @@ public class AccountsFragment extends Fragment {
 
 		editor.putString(TRAKT_USERNAME, "");
 		editor.putString(TRAKT_PASSWORD, "");
+		editor.putString(TRAKT_FULL_NAME, "");
 		editor.commit();
+		
+		new File(MizLib.getCacheFolder(getActivity()), "avatar.jpg").delete();
 
 		traktUser.setText("");
 		traktUser.setEnabled(true);

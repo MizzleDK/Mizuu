@@ -3,12 +3,12 @@
     <PreferenceCategory android:title="@string/prefsUIGeneral" >
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/root"
+            android:icon="@drawable/ic_action_key"
             android:key="prefsRootAccess"
             android:summary="@string/enableRootAccessDescription"
             android:title="@string/enableRootAccess" />
         <CheckBoxPreference
-            android:icon="@drawable/overview"
+            android:icon="@drawable/ic_action_settings"
             android:key="prefsConfirmBackPress"
             android:summary="@string/confirmBackPressDescription"
             android:title="@string/confirmBackPressTitle" />
@@ -24,7 +24,7 @@
             android:defaultValue="@string/_16kb"
             android:entries="@array/bufferSizes"
             android:entryValues="@array/bufferSizes"
-            android:icon="@drawable/ic_action_bargraph"
+            android:icon="@drawable/buffer_size"
             android:key="prefsBufferSize"
             android:summary="@string/bufferSizeDescription"
             android:title="@string/bufferSize" />

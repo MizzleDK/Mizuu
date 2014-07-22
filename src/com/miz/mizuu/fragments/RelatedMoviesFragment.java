@@ -128,9 +128,6 @@ public class RelatedMoviesFragment extends Fragment {
 			MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.container));
 		else
 			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
-		
-		if (!MizLib.isTablet(getActivity()) && MizLib.isPortrait(getActivity()))
-			MizLib.addActionBarMarginBottom(getActivity(), mGridView);
 
 		pbar = (ProgressBar) v.findViewById(R.id.progress);
 		if (pics_sources.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
@@ -175,7 +172,7 @@ public class RelatedMoviesFragment extends Fragment {
 			json = getArguments().getString("json");
 			loadJson(getArguments().getString("baseUrl"));
 		} else {
-			new GetMovies().execute(getArguments().getString("tmdbId"));
+			new GetMovies(getActivity()).execute(getArguments().getString("tmdbId"));
 		}
 	}
 
@@ -256,25 +253,25 @@ public class RelatedMoviesFragment extends Fragment {
 	}
 
 	protected class GetMovies extends AsyncTask<String, String, String> {
+		
+		private Context mContext;
+		
+		public GetMovies(Context context) {
+			mContext = context;
+		}
+		
 		@Override
 		protected String doInBackground(String... params) {
 			try {
+				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+				
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
+				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/similar_movies?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String baseUrl = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/similar_movies?api_key=" + mTmdbApiKey);
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
 				String html = httpclient.execute(httppost, responseHandler);
 
-				jObject = new JSONObject(html);
+				JSONObject jObject = new JSONObject(html);
 
 				JSONArray jArray = jObject.getJSONArray("results");
 

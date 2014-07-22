@@ -33,6 +33,8 @@ import org.w3c.dom.NodeList;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
+import com.miz.apis.trakt.Show;
+import com.miz.apis.trakt.Trakt;
 import com.miz.mizuu.R;
 
 import static com.miz.functions.PreferenceKeys.TVSHOWS_RATINGS_SOURCE;
@@ -380,8 +382,8 @@ public class TheTVDb {
 			// Trakt.tv
 			if (mRatingsProvider.equals(mContext.getString(R.string.ratings_option_2))) {
 				try {
-					JSONObject jObject = MizLib.getJSONObject("http://api.trakt.tv/show/summary.json/" + MizLib.getTraktApiKey(mContext) + "/" + showId);
-					double rating = Double.valueOf(MizLib.getStringFromJSONObject(jObject.getJSONObject("ratings"), "percentage", "0")) / 10;
+					Show showSummary = Trakt.getShowSummary(mContext, showId);
+					double rating = Double.valueOf(showSummary.getRating() / 10);
 
 					if (rating > 0 || show.getRating().equals("0.0"))
 						show.setRating(String.valueOf(rating));	

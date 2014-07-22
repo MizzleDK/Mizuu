@@ -410,7 +410,7 @@ public class FileSourceBrowserFragment extends Fragment {
 				if (MizLib.isVideoFile(mItems.get(position).getName()))
 					holder.icon.setImageResource(R.drawable.ic_action_movie);
 				else if (MizLib.isSubtitleFile(mItems.get(position).getName()))
-					holder.icon.setImageResource(R.drawable.ic_action_font_smaller);
+					holder.icon.setImageResource(R.drawable.ic_action_subtitles);
 				else
 					holder.icon.setImageResource(R.drawable.file);
 				holder.size.setText(MizLib.filesizeToString(mItems.get(position).getSize()));

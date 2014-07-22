@@ -104,9 +104,9 @@ public class ActorBrowserFragment extends Fragment {
 
 		if (!getArguments().containsKey("json")) {		
 			if (getArguments().getString("movieId") == null) {
-				new GetActorDetails().execute(getActivity().getIntent().getExtras().getString("movieId"));
+				new GetActorDetails(getActivity()).execute(getActivity().getIntent().getExtras().getString("movieId"));
 			} else {
-				new GetActorDetails().execute(getArguments().getString("movieId"));
+				new GetActorDetails(getActivity()).execute(getArguments().getString("movieId"));
 			}
 		}
 	}
@@ -243,25 +243,25 @@ public class ActorBrowserFragment extends Fragment {
 	}
 
 	protected class GetActorDetails extends AsyncTask<String, String, String> {
+		
+		private Context mContext;
+		
+		public GetActorDetails(Context context) {
+			mContext = context;
+		}
+		
 		@Override
 		protected String doInBackground(String... params) {
-			try {				
+			try {
+				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+				
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
+				HttpGet  httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/casts?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String baseUrl = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/casts?api_key=" + mTmdbApiKey);
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
 				String html = httpclient.execute(httppost, responseHandler);
 
-				jObject = new JSONObject(html);
+				JSONObject jObject = new JSONObject(html);
 
 				JSONArray jArray = jObject.getJSONArray("cast");
 

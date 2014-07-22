@@ -141,7 +141,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginRight="@dimen/movie_details_padding"
                                 android:layout_weight="0.6"
-                                android:drawableLeft="@drawable/ic_action_star_10"
+                                android:drawableLeft="@drawable/fav"
                                 android:drawablePadding="@dimen/movie_details_padding"
                                 android:focusable="false"
                                 android:textAppearance="?android:attr/textAppearanceSmall"

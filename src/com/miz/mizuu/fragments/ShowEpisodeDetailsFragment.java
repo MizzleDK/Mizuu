@@ -49,6 +49,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
@@ -453,7 +454,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 			public void run() {
 				ArrayList<com.miz.functions.TvShowEpisode> episode = new ArrayList<com.miz.functions.TvShowEpisode>();
 				episode.add(new com.miz.functions.TvShowEpisode(thisEpisode.getShowId(), Integer.valueOf(thisEpisode.getEpisode()), Integer.valueOf(thisEpisode.getSeason())));
-				MizLib.markEpisodeAsWatched(thisEpisode.getShowId(), episode, getActivity(), false);
+				Trakt.markEpisodeAsWatched(thisEpisode.getShowId(), episode, getActivity(), false);
 			}
 		}.start();
 	}
@@ -466,7 +467,7 @@ public class ShowEpisodeDetailsFragment extends Fragment {
 		new Thread() {
 			@Override
 			public void run() {
-				MizLib.checkInEpisodeTrakt(thisEpisode, getActivity());
+				Trakt.performEpisodeCheckin(thisEpisode, getActivity());
 			}
 		}.start();
 	}

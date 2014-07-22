@@ -34,6 +34,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapter;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
@@ -203,7 +204,7 @@ public class TraktMoviesSyncService extends IntentService {
 	 * Get movie collection from Trakt
 	 */
 	private void downloadMovieCollection() {
-		JSONArray jsonArray = MizLib.getTraktMovieLibrary(this, MizLib.COLLECTION);
+		JSONArray jsonArray = Trakt.getMovieLibrary(this, Trakt.COLLECTION);
 		if (jsonArray.length() > 0) {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				try {
@@ -230,7 +231,7 @@ public class TraktMoviesSyncService extends IntentService {
 
 			if (count > 0) {
 				// Add to Trakt movie collection
-				MizLib.addMoviesToTraktLibrary(collection, getApplicationContext());
+				Trakt.addMoviesToLibrary(collection, getApplicationContext());
 			}
 
 			// Clean up
@@ -240,7 +241,7 @@ public class TraktMoviesSyncService extends IntentService {
 	}
 
 	private void downloadWatchedMovies() {
-		JSONArray jsonArray = MizLib.getTraktMovieLibrary(this, MizLib.WATCHED);
+		JSONArray jsonArray = Trakt.getMovieLibrary(this, Trakt.WATCHED);
 		if (jsonArray.length() > 0) {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				try {
@@ -267,7 +268,7 @@ public class TraktMoviesSyncService extends IntentService {
 				watchedMovies.add(mMovies.get(i));
 
 		if (watchedMovies.size() > 0)
-			MizLib.markMovieAsWatched(watchedMovies, this);
+			Trakt.markMovieAsWatched(watchedMovies, this);
 
 		// Clean up
 		watchedMovies.clear();
@@ -278,7 +279,7 @@ public class TraktMoviesSyncService extends IntentService {
 	}
 
 	private void downloadMovieFavorites() {
-		JSONArray jsonArray = MizLib.getTraktMovieLibrary(this, MizLib.RATINGS);
+		JSONArray jsonArray = Trakt.getMovieLibrary(this, Trakt.RATINGS);
 		if (jsonArray.length() > 0) {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				try {
@@ -305,7 +306,7 @@ public class TraktMoviesSyncService extends IntentService {
 				favs.add(mMovies.get(i));
 
 		if (favs.size() > 0)
-			MizLib.movieFavorite(favs, this);
+			Trakt.movieFavorite(favs, this);
 
 		// Clean up
 		favs.clear();
@@ -316,7 +317,7 @@ public class TraktMoviesSyncService extends IntentService {
 	}
 
 	private void downloadWatchlist() {
-		JSONArray jsonArray = MizLib.getTraktMovieLibrary(this, MizLib.WATCHLIST);
+		JSONArray jsonArray = Trakt.getMovieLibrary(this, Trakt.WATCHLIST);
 		if (jsonArray.length() > 0) {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				try {
@@ -342,7 +343,7 @@ public class TraktMoviesSyncService extends IntentService {
 				watchlistMovies.add(mMovies.get(i));
 
 		if (watchlistMovies.size() > 0)
-			MizLib.movieWatchlist(watchlistMovies, this);
+			Trakt.movieWatchlist(watchlistMovies, this);
 
 		// Clean up
 		watchlistMovies.clear();

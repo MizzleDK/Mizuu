@@ -21,10 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -38,6 +35,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
 
 import com.miz.db.DbAdapterTvShow;
 import com.miz.functions.MizLib;
@@ -45,7 +43,9 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
 import com.miz.views.ObservableScrollView;
+import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
+import com.squareup.otto.Bus;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -55,12 +55,12 @@ public class TvShowDetailsFragment extends Fragment {
 
 	private DbAdapterTvShow dbHelper;
 	private TvShow thisShow;
-	private TextView textTitle, textPlot, textGenre, textRuntime, textReleaseDate, textRating, textTagline, textCertification;
+	private TextView textTitle, textPlot, textGenre, textRuntime, textReleaseDate, textRating, textCertification;
 	private ImageView background, cover;
 	private boolean ignorePrefixes;
 	private Picasso mPicasso;
-	private Typeface mLight;
-	private Drawable mActionBarBackgroundDrawable;
+	private Typeface mLight, mLightItalic, mMedium;
+	private Bus mBus;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -80,8 +80,12 @@ public class TvShowDetailsFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-		
+
+		mBus = MizuuApplication.getBus();
+
 		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
+		mLightItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-LightItalic.ttf");
+		mMedium = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Medium.ttf");
 
 		ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_TITLE_PREFIXES, false);
 
@@ -107,7 +111,7 @@ public class TvShowDetailsFragment extends Fragment {
 		}
 
 		cursor.close();
-		
+
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-cover-change"));
@@ -122,6 +126,13 @@ public class TvShowDetailsFragment extends Fragment {
 	};
 
 	@Override
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(getActivity());
+	}
+
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
@@ -129,29 +140,39 @@ public class TvShowDetailsFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.show_details, container, false);
+		return inflater.inflate(R.layout.movie_and_tv_show_details, container, false);
 	}
-	
+
 	public void onViewCreated(final View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
+
+		// TV shows don't include a tagline or filepath
+		v.findViewById(R.id.textView3).setVisibility(View.GONE); // Filepath
+		v.findViewById(R.id.textView6).setVisibility(View.GONE); // Tagline
 		
 		if (MizLib.isPortrait(getActivity())) {
-			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
-			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
+			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
 
 			ObservableScrollView sv = (ObservableScrollView) v.findViewById(R.id.scrollView1);
 			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
 				@Override
 				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-					final int headerHeight = v.findViewById(R.id.imageBackground).getHeight() - getActivity().getActionBar().getHeight();
+					final int headerHeight = background.getHeight() - height;
 					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
 					final int newAlpha = (int) (ratio * 255);
-					mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "080808"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "080808") : 0xaa080808});
-					getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+
+					// We only want to update the ActionBar if it would actually make a change (times 1.2 to handle fast flings)
+					if (t <= headerHeight * 1.2) {
+						mBus.post(Integer.valueOf(newAlpha));
+
+						// Such parallax, much wow
+						background.setPadding(0, (int) (t / 1.5), 0, 0);
+					}
 				}
 			});
 		}
-		
+
 		background = (ImageView) v.findViewById(R.id.imageBackground);
 		textTitle = (TextView) v.findViewById(R.id.movieTitle);
 		textPlot = (TextView) v.findViewById(R.id.textView2);
@@ -159,7 +180,6 @@ public class TvShowDetailsFragment extends Fragment {
 		textRuntime = (TextView) v.findViewById(R.id.textView9);
 		textReleaseDate = (TextView) v.findViewById(R.id.textReleaseDate);
 		textRating = (TextView) v.findViewById(R.id.textView12);
-		textTagline = (TextView) v.findViewById(R.id.textView6);
 		textCertification = (TextView) v.findViewById(R.id.textView11);
 		cover = (ImageView) v.findViewById(R.id.traktIcon);
 
@@ -170,45 +190,52 @@ public class TvShowDetailsFragment extends Fragment {
 		textTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
 		textPlot.setTypeface(mLight);
-		textGenre.setTypeface(mLight);
 		textRuntime.setTypeface(mLight);
-		textReleaseDate.setTypeface(mLight);
 		textRating.setTypeface(mLight);
 		textCertification.setTypeface(mLight);
 		
+		textRuntime.setTypeface(mMedium);
+		textCertification.setTypeface(mMedium);
+		textRating.setTypeface(mMedium);
+
 		// Set the show plot
-		textPlot.setText(thisShow.getDescription());
-		textPlot.setBackgroundResource(R.drawable.selectable_background);
-		textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
-		textPlot.setTag(true); // true = collapsed
-		textPlot.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (((Boolean) textPlot.getTag())) {
-					textPlot.setMaxLines(1000);
-					textPlot.setTag(false);
-				} else {
-					textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
-					textPlot.setTag(true);
+		if (!MizLib.isPortrait(getActivity())) {
+			textPlot.setBackgroundResource(R.drawable.selectable_background);
+			textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
+			textPlot.setTag(true); // true = collapsed
+			textPlot.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (((Boolean) textPlot.getTag())) {
+						textPlot.setMaxLines(1000);
+						textPlot.setTag(false);
+					} else {
+						textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
+						textPlot.setTag(true);
+					}
 				}
-			}
-		});
-		textPlot.setEllipsize(TextUtils.TruncateAt.END);
-		textPlot.setFocusable(true);
+			});
+			textPlot.setEllipsize(TextUtils.TruncateAt.END);
+			textPlot.setFocusable(true);
+		} else {
+			if (MizLib.isTablet(getActivity()))
+				textPlot.setLineSpacing(0, 1.15f);
+		}
+		textPlot.setText(thisShow.getDescription());
 
-		textTagline.setVisibility(TextView.GONE);
-
-		// Set the show genre
+		// Set the show genres
+		textGenre.setTypeface(mLightItalic);
 		if (!MizLib.isEmpty(thisShow.getGenres())) {
 			textGenre.setText(thisShow.getGenres());
 		} else {
-			textGenre.setText(R.string.stringNA);
+			textGenre.setVisibility(View.GONE);
 		}
 
 		// Set the show runtime
-		textRuntime.setText(MizLib.getPrettyTime(getActivity(), Integer.parseInt(thisShow.getRuntime())));
+		textRuntime.setText(MizLib.getPrettyRuntime(getActivity(), Integer.parseInt(thisShow.getRuntime())));
 
-		// Set the first aired date
+		// Set the show release date
+		textReleaseDate.setTypeface(mMedium);
 		textReleaseDate.setText(MizLib.getPrettyDate(getActivity(), thisShow.getFirstAirdate()));
 
 		// Set the show rating
@@ -246,11 +273,14 @@ public class TvShowDetailsFragment extends Fragment {
 			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 				@Override
 				public void onError() {
-					mPicasso.load(thisShow.getCoverPhoto()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
+					((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
+					mPicasso.load(thisShow.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 				}
 
 				@Override
-				public void onSuccess() {}					
+				public void onSuccess() {
+					((PanningView) background).startPanning();
+				}
 			});
 		}
 	}

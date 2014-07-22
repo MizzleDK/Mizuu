@@ -29,13 +29,6 @@
             android:scaleType="centerCrop"
             android:src="@drawable/nobackdrop" />
 
-        <FrameLayout
-            android:id="@+id/coverLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/episode_details_small_margin" >
-        </FrameLayout>
-
         <ScrollView
             android:id="@+id/scrollView1"
             android:layout_width="match_parent"
@@ -44,10 +37,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="false"
             android:layout_centerVertical="true"
-            android:layout_marginBottom="@dimen/episode_details_large_margin"
-            android:layout_marginLeft="@dimen/episode_details_small_margin"
-            android:layout_marginRight="@dimen/episode_details_small_margin"
-            android:layout_marginTop="@dimen/episode_details_large_margin"
+            android:layout_margin="@dimen/details_large_padding"
             android:layout_toRightOf="@+id/episodePhoto"
             android:clipToPadding="false" >
 
@@ -56,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:gravity="top"
                 android:orientation="vertical" >
 
                 <TextView
@@ -64,26 +53,26 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:ellipsize="end"
                     android:focusable="false"
                     android:shadowColor="#000000"
                     android:shadowDx="1.0"
                     android:shadowDy="1.0"
                     android:shadowRadius="1.0"
-                    android:singleLine="true"
                     android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#f0f0f0"
                     android:textIsSelectable="false"
-                    android:textSize="@dimen/large_text_headline_details_tv" />
+                    android:textSize="@dimen/details_large_font_size" />
 
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/details_medium_padding"
                     android:focusable="false"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#ddd"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#f0f0f0"
                     android:textIsSelectable="false"
-                    android:textSize="@dimen/details_text_size" />
+                    android:textSize="@dimen/details_description_font_size" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -94,87 +83,89 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/details_medium_padding"
                         android:baselineAligned="false" >
 
                         <TextView
                             android:id="@+id/textReleaseDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
                             android:layout_marginRight="@dimen/details_padding"
                             android:drawableLeft="@drawable/ic_action_calendar_day"
                             android:drawablePadding="@dimen/movie_details_padding"
                             android:focusable="false"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="#ddd"
-                            android:textSize="@dimen/details_text_size" />
+                            android:gravity="center_vertical"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textSize="@dimen/details_description_font_size" />
 
                         <TextView
                             android:id="@+id/textView12"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
                             android:layout_marginRight="@dimen/movie_details_padding"
-                            android:drawableLeft="@drawable/ic_action_star_10"
+                            android:drawableLeft="@drawable/fav"
                             android:drawablePadding="@dimen/movie_details_padding"
                             android:focusable="false"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:textColor="#ddd"
-                            android:textSize="@dimen/details_text_size" />
+                            android:gravity="center_vertical"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textSize="@dimen/details_description_font_size" />
                     </LinearLayout>
 
                     <TextView
                         android:id="@+id/director"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/details_medium_padding"
                         android:layout_marginRight="@dimen/movie_details_padding"
                         android:layout_marginTop="@dimen/movie_details_padding"
                         android:drawableLeft="@drawable/director"
                         android:drawablePadding="@dimen/movie_details_padding"
                         android:focusable="false"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="#ddd"
-                        android:textSize="@dimen/details_text_size" />
+                        android:gravity="center_vertical"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="@dimen/details_description_font_size" />
 
                     <TextView
                         android:id="@+id/writer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/details_medium_padding"
                         android:layout_marginRight="@dimen/movie_details_padding"
                         android:layout_marginTop="@dimen/movie_details_padding"
                         android:drawableLeft="@drawable/ic_action_edit"
                         android:drawablePadding="@dimen/movie_details_padding"
                         android:focusable="false"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="#ddd"
-                        android:textSize="@dimen/details_text_size" />
+                        android:gravity="center_vertical"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="@dimen/details_description_font_size" />
 
                     <TextView
                         android:id="@+id/guest_stars"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/details_medium_padding"
                         android:layout_marginRight="@dimen/movie_details_padding"
                         android:layout_marginTop="@dimen/movie_details_padding"
                         android:drawableLeft="@drawable/ic_action_users"
                         android:drawablePadding="@dimen/movie_details_padding"
                         android:focusable="false"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="#ddd"
-                        android:textSize="@dimen/details_text_size" />
+                        android:gravity="center_vertical"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="@dimen/details_description_font_size" />
 
                     <TextView
                         android:id="@+id/textView3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
+                        android:layout_marginBottom="@dimen/details_medium_padding"
                         android:layout_marginRight="@dimen/movie_details_padding"
                         android:layout_marginTop="@dimen/movie_details_padding"
                         android:drawableLeft="@drawable/file"
                         android:drawablePadding="@dimen/movie_details_padding"
                         android:focusable="false"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="#ddd"
-                        android:textSize="@dimen/details_text_size" />
+                        android:gravity="center_vertical"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="@dimen/details_description_font_size" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

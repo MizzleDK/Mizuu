@@ -171,31 +171,12 @@ public class MovieDetailsFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.new_movie_details, container, false);
+		return inflater.inflate(R.layout.movie_and_tv_show_details, container, false);
 	}
 
 	@Override
 	public void onViewCreated(final View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
-		if (MizLib.isPortrait(getActivity())) {
-			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
-			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
-
-			ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.scrollView1);
-			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
-				@Override
-				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-					final int headerHeight = view.findViewById(R.id.imageBackground).getHeight() - height;
-					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
-					final int newAlpha = (int) (ratio * 255);
-
-					// We only want to update the ActionBar if it would actually make a change (times 1.2 to handle fast flings)
-					if (t <= headerHeight * 1.2)
-						mBus.post(Integer.valueOf(newAlpha));
-				}
-			});
-		}
 
 		background = (ImageView) view.findViewById(R.id.imageBackground);
 		textTitle = (TextView) view.findViewById(R.id.movieTitle);
@@ -209,6 +190,29 @@ public class MovieDetailsFragment extends Fragment {
 		textCertification = (TextView) view.findViewById(R.id.textView11);
 		cover = (ImageView) view.findViewById(R.id.traktIcon);
 
+		if (MizLib.isPortrait(getActivity())) {
+			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
+			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
+
+			ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.scrollView1);
+			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
+				@Override
+				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+					final int headerHeight = background.getHeight() - height;
+					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+					final int newAlpha = (int) (ratio * 255);
+
+					// We only want to update the ActionBar if it would actually make a change (times 1.2 to handle fast flings)
+					if (t <= headerHeight * 1.2) {
+						mBus.post(Integer.valueOf(newAlpha));
+
+						// Such parallax, much wow
+						background.setPadding(0, (int) (t / 1.5), 0, 0);
+					}
+				}
+			});
+		}
+
 		// Set the movie title
 		textTitle.setVisibility(View.VISIBLE);
 		textTitle.setText(thisMovie.getTitle());
@@ -217,11 +221,10 @@ public class MovieDetailsFragment extends Fragment {
 
 		textPlot.setTypeface(mLight);
 		textSrc.setTypeface(mLight);
-		textGenre.setTypeface(mLight);
-		textRuntime.setTypeface(mLight);
-		textReleaseDate.setTypeface(mLight);
-		textRating.setTypeface(mLight);
-		textCertification.setTypeface(mLight);
+		
+		textRuntime.setTypeface(mMedium);
+		textCertification.setTypeface(mMedium);
+		textRating.setTypeface(mMedium);
 
 		// Set the movie plot
 		if (!MizLib.isPortrait(getActivity())) {
@@ -296,7 +299,7 @@ public class MovieDetailsFragment extends Fragment {
 			if (thisMovie.getRating().contains("/")) {
 				try {
 					int rating = (int) (Double.parseDouble(thisMovie.getRating().substring(0, thisMovie.getRating().indexOf("/"))) * 10);
-					textRating.setText(Html.fromHtml("<b>" + rating + "</b><small> %</small>"));
+					textRating.setText(Html.fromHtml(+ rating + "<small> %</small>"));
 				} catch (NumberFormatException e) {
 					textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
 				}
@@ -309,9 +312,9 @@ public class MovieDetailsFragment extends Fragment {
 
 		// Set the movie certification
 		if (!MizLib.isEmpty(thisMovie.getCertification())) {
-			textCertification.setText(Html.fromHtml("<b>" + thisMovie.getCertification() + "</b>"));
+			textCertification.setText(thisMovie.getCertification());
 		} else {
-			textCertification.setText(Html.fromHtml("<b>" + getString(R.string.stringNA) + "</b>"));
+			textCertification.setText(R.string.stringNA);
 		}
 
 		loadImages();
@@ -353,7 +356,7 @@ public class MovieDetailsFragment extends Fragment {
 					@Override
 					public void onSuccess() {
 						((PanningView) background).startPanning();
-					}					
+					}				
 				});
 			}
 		}

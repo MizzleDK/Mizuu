@@ -73,6 +73,14 @@ public class MizuuApplication extends Application {
 		sDbTvShowEpisode = new DbAdapterTvShowEpisode(this);
 		sDbSources = new DbAdapterSources(this);
 		sDb = new DbAdapter(this);
+		
+		getMovieThumbFolder(this);
+		getMovieBackdropFolder(this);
+		getTvShowThumbFolder(this);
+		getTvShowBackdropFolder(this);
+		getTvShowEpisodeFolder(this);
+		getTvShowSeasonFolder(this);
+		getAvailableOfflineFolder(this);
 	}
 
 	@Override
@@ -208,7 +216,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getMovieThumbFolder(Context c) {
 		if (sMovieThumbFolder == null) {
-			sMovieThumbFolder = new File(c.getExternalFilesDir(null) + "/movie-thumbs");
+			sMovieThumbFolder = new File(c.getExternalFilesDir(null), "movie-thumbs");
 			sMovieThumbFolder.mkdirs();
 		}
 		return sMovieThumbFolder;
@@ -220,7 +228,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getMovieBackdropFolder(Context c) {
 		if (sMovieBackdropFolder == null) {
-			sMovieBackdropFolder = new File(c.getExternalFilesDir(null) + "/movie-backdrops");
+			sMovieBackdropFolder = new File(c.getExternalFilesDir(null), "movie-backdrops");
 			sMovieBackdropFolder.mkdirs();
 		}
 		return sMovieBackdropFolder;
@@ -231,7 +239,10 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getTvShowThumbFolder(Context c) {
 		if (sTvShowThumbFolder == null) {
-			sTvShowThumbFolder = new File(c.getExternalFilesDir(null) + "/tvshows-thumbs");
+			sTvShowThumbFolder = new File(c.getExternalFilesDir(null), "tvshows-thumbs");
+			
+			System.out.println("mkdir " + sTvShowThumbFolder.getAbsolutePath());
+			
 			sTvShowThumbFolder.mkdirs();
 		}
 		return sTvShowThumbFolder;
@@ -242,7 +253,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getTvShowBackdropFolder(Context c) {
 		if (sTvShowBackdropFolder == null) {
-			sTvShowBackdropFolder = new File(c.getExternalFilesDir(null) + "/tvshows-backdrops");
+			sTvShowBackdropFolder = new File(c.getExternalFilesDir(null), "tvshows-backdrops");
 			sTvShowBackdropFolder.mkdirs();
 		}
 		return sTvShowBackdropFolder;
@@ -251,9 +262,9 @@ public class MizuuApplication extends Application {
 	/*
 	 * Please refrain from using this when you need a File object for a specific image.
 	 */
-	public static File getTvShowEpisodeFolder(Context c) {
+	public static File getTvShowEpisodeFolder(Context c) {		
 		if (sTvShowEpisodeFolder == null) {
-			sTvShowEpisodeFolder = new File(c.getExternalFilesDir(null) + "/tvshows-episodes");
+			sTvShowEpisodeFolder = new File(c.getExternalFilesDir(null), "tvshows-episodes");
 			sTvShowEpisodeFolder.mkdirs();
 		}
 		return sTvShowEpisodeFolder;
@@ -264,7 +275,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getTvShowSeasonFolder(Context c) {
 		if (sTvShowSeasonFolder == null) {
-			sTvShowSeasonFolder = new File(c.getExternalFilesDir(null) + "/tvshows-seasons");
+			sTvShowSeasonFolder = new File(c.getExternalFilesDir(null), "tvshows-seasons");
 			sTvShowSeasonFolder.mkdirs();
 		}
 		return sTvShowSeasonFolder;
@@ -275,7 +286,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getAvailableOfflineFolder(Context c) {
 		if (sAvailableOfflineFolder == null) {
-			sAvailableOfflineFolder = new File(c.getExternalFilesDir(null) + "/offline_storage");
+			sAvailableOfflineFolder = new File(c.getExternalFilesDir(null), "offline_storage");
 			sAvailableOfflineFolder.mkdirs();
 		}
 		return sAvailableOfflineFolder;

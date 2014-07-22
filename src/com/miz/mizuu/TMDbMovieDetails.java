@@ -18,11 +18,6 @@ package com.miz.mizuu;
 
 import java.util.ArrayList;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,12 +25,15 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import com.miz.base.MizActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -43,108 +41,171 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
+import com.miz.apis.trakt.Trakt;
+import com.miz.base.MizActivity;
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.RelatedMoviesFragment;
 import com.miz.mizuu.fragments.TmdbMovieDetailsFragment;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 public class TMDbMovieDetails extends MizActivity implements OnNavigationListener {
 
-	private ViewPager awesomePager;
-	private ProgressBar pbar;
-	private String movieId, baseUrl = "", json = "", mTmdbApiKey, mYouTubeApiKey;
-	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
-	private ActionBarSpinner spinnerAdapter;
-	private ActionBar actionBar;
+	private ViewPager mViewPager;
+	private ProgressBar mProgressBar;
+	private String mMovieId, mBaseUrl = "", mJson = "", mTmdbApiKey, mYouTubeApiKey;
+	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
+	private ActionBarSpinner mSpinnerAdapter;
+	private ActionBar mActionBar;
+	private Bus mBus;
+	private Drawable mActionBarBackgroundDrawable;
+	private ImageView mActionBarOverlay;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.isPortrait(this))
-			if (isFullscreen())
-				setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
-			else
-				setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
+		mBus = MizuuApplication.getBus();
+		mBus.register(getApplicationContext());
+		
+		if (isFullscreen())
+			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 		else
-			if (isFullscreen())
-				setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
-			else
-				setTheme(R.style.Mizuu_Theme_Transparent);
+			setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
+
+		if (MizLib.isPortrait(this)) {
+			getWindow().setBackgroundDrawableResource(R.drawable.bg);
+		}
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
+		
+		mActionBarOverlay = (ImageView) findViewById(R.id.actionbar_overlay);
+		mActionBarOverlay.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, isFullscreen() ? MizLib.getActionBarHeight(this) : MizLib.getActionBarAndStatusBarHeight(this)));
 
+		mActionBar = getActionBar();
+		
 		setTitle(getIntent().getExtras().getString("title"));
 
 		// Fetch the database ID of the movie to view
-		movieId = getIntent().getExtras().getString("tmdbid");
+		mMovieId = getIntent().getExtras().getString("tmdbid");
 		mTmdbApiKey = MizLib.getTmdbApiKey(this);
 		mYouTubeApiKey = MizLib.getYouTubeApiKey(this);
 
 		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(R.drawable.bg);
 
-		pbar = (ProgressBar) findViewById(R.id.progressbar);
-		pbar.setVisibility(View.VISIBLE);
+		mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
+		mProgressBar.setVisibility(View.VISIBLE);
 
-		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
-		awesomePager.setOffscreenPageLimit(2);
-		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
+		mViewPager.setOffscreenPageLimit(2);
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				actionBar.setSelectedNavigationItem(position);
+				mActionBar.setSelectedNavigationItem(position);
+				
+				updateActionBarDrawable(1, false, false);
 			}
 		});
 
 		if (savedInstanceState != null) {	
-			json = savedInstanceState.getString("json", "");
-			baseUrl = savedInstanceState.getString("baseUrl");
+			mJson = savedInstanceState.getString("json", "");
+			mBaseUrl = savedInstanceState.getString("baseUrl");
 			setupActionBarStuff();
 
-			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+			mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		} else {
-			new MovieLoader().execute(movieId);
+			new MovieLoader(getApplicationContext()).execute(mMovieId);
 		}
 	}
 
+	@Subscribe
+	public void onScrollChanged(Integer newAlpha) {
+		updateActionBarDrawable(newAlpha, true, false);
+	}
+
+	private void updateActionBarDrawable(int newAlpha, boolean setBackground, boolean showActionBar) {
+		if (mViewPager.getCurrentItem() == 0) { // Details page
+			mActionBarOverlay.setVisibility(View.VISIBLE);
+
+			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
+				if (newAlpha == 0)
+					mActionBar.hide();
+				else
+					mActionBar.show();
+
+			if (setBackground) {
+				mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
+				mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
+			}
+		} else { // Actors page
+			mActionBarOverlay.setVisibility(View.GONE);
+
+			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
+				mActionBar.show();
+		}
+		
+		if (showActionBar) {
+			mActionBar.show();
+		}
+	}
+	
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(this);
+		updateActionBarDrawable(0, true, true);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		mBus.unregister(this);
+	}
+	
 	private void setupSpinnerItems() {
 		String movieName = getIntent().getExtras().getString("title");
-		spinnerItems.clear();
-		spinnerItems.add(new SpinnerItem(movieName, getString(R.string.overview), TmdbMovieDetailsFragment.newInstance(movieId, json)));
+		mSpinnerItems.clear();
+		mSpinnerItems.add(new SpinnerItem(movieName, getString(R.string.overview), TmdbMovieDetailsFragment.newInstance(mMovieId, mJson)));
 		
 		try {
-			JSONObject j = new JSONObject(json);
+			JSONObject j = new JSONObject(mJson);
 			if (j.getJSONObject("casts").getJSONArray("cast").length() > 0) {
-				spinnerItems.add(new SpinnerItem(movieName, getString(R.string.detailsActors), ActorBrowserFragment.newInstance(movieId, json, baseUrl)));
+				mSpinnerItems.add(new SpinnerItem(movieName, getString(R.string.detailsActors), ActorBrowserFragment.newInstance(mMovieId, mJson, mBaseUrl)));
 			}
 		} catch (JSONException e) {}
 		
 		try {
-			JSONObject j = new JSONObject(json);
+			JSONObject j = new JSONObject(mJson);
 			if (j.getJSONObject("similar_movies").getJSONArray("results").length() > 0) {
-				spinnerItems.add(new SpinnerItem(movieName, getString(R.string.relatedMovies), RelatedMoviesFragment.newInstance(movieId, true, json, baseUrl)));
+				mSpinnerItems.add(new SpinnerItem(movieName, getString(R.string.relatedMovies), RelatedMoviesFragment.newInstance(mMovieId, true, mJson, mBaseUrl)));
 			}
 		} catch (JSONException e) {}
 
-		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		mActionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt("tab", awesomePager.getCurrentItem());
-		outState.putString("json", json);
-		outState.putString("baseUrl", baseUrl);
+		outState.putInt("tab", mViewPager.getCurrentItem());
+		outState.putString("json", mJson);
+		outState.putString("baseUrl", mBaseUrl);
 	}
 
 	@SuppressLint("NewApi")
@@ -152,7 +213,13 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.tmdb_details, menu);
 		
-		if (!MizLib.hasTraktAccount(this))
+		if (MizLib.isTablet(this)) {
+			menu.findItem(R.id.share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			menu.findItem(R.id.checkIn).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			menu.findItem(R.id.openInBrowser).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		}
+		
+		if (!Trakt.hasTraktAccount(this))
 			menu.findItem(R.id.checkIn).setVisible(false);
 		
 		return true;
@@ -161,26 +228,26 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 	public void shareMovie(MenuItem item) {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
-		intent.putExtra(Intent.EXTRA_TEXT, "http://www.themoviedb.org/movie/" + movieId);
+		intent.putExtra(Intent.EXTRA_TEXT, "http://www.themoviedb.org/movie/" + mMovieId);
 		startActivity(Intent.createChooser(intent, getString(R.string.shareWith)));
 	}
 
 	public void openInBrowser(MenuItem item) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(Uri.parse("http://www.themoviedb.org/movie/" + movieId));
+		intent.setData(Uri.parse("http://www.themoviedb.org/movie/" + mMovieId));
 		startActivity(Intent.createChooser(intent, getString(R.string.openWith)));
 	}
 
 	public void watchTrailer(MenuItem item) {
 		Toast.makeText(this, getString(R.string.searching), Toast.LENGTH_SHORT).show();
-		new TmdbTrailerSearch().execute(movieId);
+		new TmdbTrailerSearch().execute(mMovieId);
 	}
 
 	public void checkIn(MenuItem item) {
 		new AsyncTask<Void, Void, Boolean>() {
 			@Override
 			protected Boolean doInBackground(Void... params) {
-				return MizLib.checkInMovieTrakt(movieId, getApplicationContext());
+				return Trakt.performMovieCheckin(mMovieId, getApplicationContext());
 			}
 
 			@Override
@@ -310,42 +377,35 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 
 		@Override  
 		public Fragment getItem(int index) {			
-			return spinnerItems.get(index).getFragment();
+			return mSpinnerItems.get(index).getFragment();
 		}  
 
 		@Override  
 		public int getCount() {  
-			return spinnerItems.size();
+			return mSpinnerItems.size();
 		}
 	}
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		awesomePager.setCurrentItem(itemPosition);
+		mViewPager.setCurrentItem(itemPosition);
 		return true;
 	}
 
 	private class MovieLoader extends AsyncTask<Object, Object, String> {
+		
+		private Context mContext;
+		
+		public MovieLoader(Context context) {
+			mContext = context;
+		}
+		
 		@Override
 		protected String doInBackground(Object... params) {
 			try {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/configuration?api_key=" + mTmdbApiKey);
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				baseUrl = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(baseUrl);
-				try { baseUrl = jObject.getJSONObject("images").getString("base_url");
-				} catch (Exception e) { baseUrl = MizLib.TMDB_BASE_URL; }
-
-				httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=releases,trailers,images,casts,similar_movies");
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
-
-				json = httpclient.execute(httppost, responseHandler);
-
-				return json;
+				mBaseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+				mJson = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=releases,trailers,images,casts,similar_movies").toString();
+				return "";
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
 
 			return null;
@@ -360,21 +420,20 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 			}
 		}
 	}
-
+	
 	private void setupActionBarStuff() {
-		actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		if (spinnerAdapter == null)
-			spinnerAdapter = new ActionBarSpinner(getApplicationContext(), spinnerItems);
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		if (mSpinnerAdapter == null)
+			mSpinnerAdapter = new ActionBarSpinner(getApplicationContext(), mSpinnerItems);
 
 		setTitle(null);
 
 		if (!MizLib.isPortrait(getApplicationContext()))
 			findViewById(R.id.layout).setBackgroundResource(0);
-		pbar.setVisibility(View.GONE);
+		mProgressBar.setVisibility(View.GONE);
 
 		setupSpinnerItems();
 		
-		awesomePager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
+		mViewPager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
 	}
 }

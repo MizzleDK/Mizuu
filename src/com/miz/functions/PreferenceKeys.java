@@ -43,6 +43,7 @@ public class PreferenceKeys {
 	public static final String USE_LOCALIZED_DATA = "prefsUseLocalData";
 	public static final String IGNORED_FILENAME_TAGS = "ignoredTags";
 	public static final String TMDB_BASE_URL = "tmdbBaseUrl";
+	public static final String TMDB_BASE_URL_TIME = "tmdbBaseUrlTime";
 	public static final String CLEAR_LIBRARY_TVSHOWS = "prefsClearLibraryTv";
 	public static final String CLEAR_LIBRARY_MOVIES = "prefsClearLibrary";
 	public static final String ENABLE_SUBFOLDER_SEARCH = "prefsEnableSubFolderSearch";

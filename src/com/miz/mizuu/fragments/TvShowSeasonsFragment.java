@@ -57,6 +57,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.CoverItem;
@@ -269,7 +270,7 @@ public class TvShowSeasonsFragment extends Fragment {
 			db.setSeasonWatchStatus(mShowId, mItems.get(season).getSeasonZeroIndex(), watched);
 		}
 
-		if (MizLib.isOnline(mContext) && MizLib.hasTraktAccount(mContext))
+		if (MizLib.isOnline(mContext) && Trakt.hasTraktAccount(mContext))
 			syncWatchedStatusWithTrakt(mCheckedSeasons, watched);
 
 		loadSeasons(true);
@@ -506,9 +507,9 @@ public class TvShowSeasonsFragment extends Fragment {
 
 			@Override
 			protected Boolean doInBackground(Void... params) {
-				boolean result = MizLib.markEpisodeAsWatched(mShowId, mEpisodes, mContext, watched);
+				boolean result = Trakt.markEpisodeAsWatched(mShowId, mEpisodes, mContext, watched);
 				if (!result) // Try again if it failed
-					result = MizLib.markEpisodeAsWatched(mShowId, mEpisodes, mContext, watched);
+					result = Trakt.markEpisodeAsWatched(mShowId, mEpisodes, mContext, watched);
 
 				return result;
 			}

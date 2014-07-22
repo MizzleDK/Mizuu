@@ -146,10 +146,9 @@ public class TheMovieDb {
 				callback.onMovieAdded(movie.getTitle(), MizLib.getMovieThumb(context, movie.getId()).getAbsolutePath(), backdropFile.getAbsolutePath());
 		} else {
 			sendUpdateBroadcast(new Intent("mizuu-movies-identification"));
+			sendUpdateBroadcast(new Intent("mizuu-library-change"));
 			updateWidgets();
 		}
-
-		sendUpdateBroadcast(new Intent("mizuu-movies-update"));
 	}
 
 	private void sendUpdateBroadcast(Intent i) {

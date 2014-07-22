@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:padding="8dp" >
+                android:padding="@dimen/details_large_padding" >
 
                 <com.miz.views.AspectRatioImageViewCover
                     android:id="@+id/traktIcon"
@@ -81,9 +81,11 @@
             android:layout_marginTop="8dp"
             android:paddingLeft="@dimen/episode_details_small_margin"
             android:paddingRight="@dimen/episode_details_small_margin"
+            android:paddingTop="@dimen/episode_details_small_margin"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textIsSelectable="true"
             android:textSize="@dimen/details_text_size" />
+
     </LinearLayout>
 
 </com.miz.views.ObservableScrollView>

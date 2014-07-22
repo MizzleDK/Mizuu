@@ -16,10 +16,7 @@
 
 package com.miz.mizuu.fragments;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -40,7 +38,9 @@ import com.miz.functions.TMDbMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.views.ObservableScrollView;
+import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
+import com.squareup.otto.Bus;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -56,14 +56,14 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private boolean isRetained = false;
 	private Picasso mPicasso;
 	private Typeface mLight, mLightItalic, mMedium, mBoldItalic;
-	private Drawable mActionBarBackgroundDrawable;
+	private Bus mBus;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public TmdbMovieDetailsFragment() {}
 
-	public static TmdbMovieDetailsFragment newInstance(String movieId) { 
+	public static TmdbMovieDetailsFragment newInstance(String movieId) {
 		TmdbMovieDetailsFragment pageFragment = new TmdbMovieDetailsFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("movieId", movieId);
@@ -71,7 +71,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		return pageFragment;
 	}
 
-	public static TmdbMovieDetailsFragment newInstance(String movieId, String json) { 
+	public static TmdbMovieDetailsFragment newInstance(String movieId, String json) {
 		TmdbMovieDetailsFragment pageFragment = new TmdbMovieDetailsFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("movieId", movieId);
@@ -85,6 +85,8 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
+		
+		mBus = MizuuApplication.getBus();
 
 		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
 		mLightItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-LightItalic.ttf");
@@ -98,12 +100,19 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(getActivity());
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View v = inflater.inflate(R.layout.new_movie_details, container, false);
+		final View v = inflater.inflate(R.layout.movie_and_tv_show_details, container, false);
 
-		movieDetailsLayout = v.findViewById(R.id.movieDetailsLayout);
+		movieDetailsLayout = MizLib.isPortrait(getActivity()) ? v.findViewById(R.id.movieDetailsLayout_portrait) : v.findViewById(R.id.movieDetailsLayout);
 		progressBar = v.findViewById(R.id.progressBar1);
 
 		this.container = (FrameLayout) v.findViewById(R.id.container);
@@ -121,6 +130,29 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 		// Get rid of these...
 		v.findViewById(R.id.textView3).setVisibility(View.GONE); // File
+		
+		if (MizLib.isPortrait(getActivity())) {
+			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
+			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
+
+			ObservableScrollView sv = (ObservableScrollView) v.findViewById(R.id.scrollView1);
+			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
+				@Override
+				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+					final int headerHeight = background.getHeight() - height;
+					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+					final int newAlpha = (int) (ratio * 255);
+
+					// We only want to update the ActionBar if it would actually make a change (times 1.2 to handle fast flings)
+					if (t <= headerHeight * 1.2) {
+						mBus.post(Integer.valueOf(newAlpha));
+
+						// Such parallax, much wow
+						background.setPadding(0, (int) (t / 1.5), 0, 0);
+					}
+				}
+			});
+		}
 
 		if (!isRetained) { // Nothing has been retained - load the data
 			setLoading(true);
@@ -131,31 +163,6 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		}
 
 		return v;
-	}
-	
-	@Override
-	public void onViewCreated(final View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		
-		if (MizLib.isPortrait(getActivity())) {
-			if (!MizLib.isTablet(getActivity()))
-				MizLib.addActionBarPaddingBottom(getActivity(), view.findViewById(R.id.scrollView1));
-			
-			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x00000000, 0xaa000000});
-			getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
-			
-			ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.scrollView1);
-			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
-				@Override
-				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-					final int headerHeight = view.findViewById(R.id.imageBackground).getHeight() - getActivity().getActionBar().getHeight();
-					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
-					final int newAlpha = (int) (ratio * 255);
-					mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "080808"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "080808") : 0xaa080808});
-					getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
-				}
-			});
-		}
 	}
 
 	private class MovieLoader extends AsyncTask<String, Object, Object> {
@@ -180,36 +187,41 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			textTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
 			textPlot.setTypeface(mLight);
-			textGenre.setTypeface(mLight);
-			textRuntime.setTypeface(mLight);
 			textReleaseDate.setTypeface(mLight);
-			textRating.setTypeface(mLight);
-			textCertification.setTypeface(mLight);
+			
+			textRuntime.setTypeface(mMedium);
+			textCertification.setTypeface(mMedium);
+			textRating.setTypeface(mMedium);
 			
 			// Set the movie plot
-			textPlot.setBackgroundResource(R.drawable.selectable_background);
-			if (!thisMovie.getTagline().isEmpty())
-				textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.movie_details_max_lines));
-			else
-				textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
-			textPlot.setTag(true); // true = collapsed
-			textPlot.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (((Boolean) textPlot.getTag())) {
-						textPlot.setMaxLines(1000);
-						textPlot.setTag(false);
-					} else {
-						if (!thisMovie.getTagline().isEmpty())
-							textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.movie_details_max_lines));
-						else
-							textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
-						textPlot.setTag(true);
+			if (!MizLib.isPortrait(getActivity())) {
+				textPlot.setBackgroundResource(R.drawable.selectable_background);
+				if (!thisMovie.getTagline().isEmpty())
+					textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.movie_details_max_lines));
+				else
+					textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
+				textPlot.setTag(true); // true = collapsed
+				textPlot.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if (((Boolean) textPlot.getTag())) {
+							textPlot.setMaxLines(1000);
+							textPlot.setTag(false);
+						} else {
+							if (!thisMovie.getTagline().isEmpty())
+								textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.movie_details_max_lines));
+							else
+								textPlot.setMaxLines(getActivity().getResources().getInteger(R.integer.show_details_max_lines));
+							textPlot.setTag(true);
+						}
 					}
-				}
-			});
-			textPlot.setEllipsize(TextUtils.TruncateAt.END);
-			textPlot.setFocusable(true);
+				});
+				textPlot.setEllipsize(TextUtils.TruncateAt.END);
+				textPlot.setFocusable(true);
+			} else {
+				if (MizLib.isTablet(getActivity()))
+					textPlot.setLineSpacing(0, 1.15f);
+			}
 			textPlot.setText(thisMovie.getPlot());
 
 			// Set movie tag line
@@ -238,7 +250,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			if (!thisMovie.getRating().equals("0.0")) {
 				try {
 					int rating = (int) (Double.parseDouble(thisMovie.getRating()) * 10);
-					textRating.setText(Html.fromHtml("<b>" + rating + "</b><small> %</small>"));
+					textRating.setText(Html.fromHtml(rating + "<small> %</small>"));
 				} catch (NumberFormatException e) {
 					thisMovie.setRating(thisMovie.getRating() + "/10");
 					textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
@@ -249,9 +261,9 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 			// Set the movie certification
 			if (!MizLib.isEmpty(thisMovie.getCertification())) {
-				textCertification.setText(Html.fromHtml("<b>" + thisMovie.getCertification() + "</b>"));
+				textCertification.setText(thisMovie.getCertification());
 			} else {
-				textCertification.setText(Html.fromHtml("<b>" + getString(R.string.stringNA) + "</b>"));
+				textCertification.setText(R.string.stringNA);
 			}
 
 			setLoading(false);
@@ -265,6 +277,10 @@ public class TmdbMovieDetailsFragment extends Fragment {
 				mPicasso.load(thisMovie.getBackdrop()).placeholder(R.drawable.gray).error(R.drawable.bg).into(background, new Callback() {
 					@Override
 					public void onError() {
+						if (MizLib.isPortrait(getActivity())) {
+							((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
+						}
+						
 						if (!thisMovie.getCover().isEmpty())
 							mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 						else
@@ -272,12 +288,19 @@ public class TmdbMovieDetailsFragment extends Fragment {
 					}
 
 					@Override
-					public void onSuccess() {}
+					public void onSuccess() {
+						if (MizLib.isPortrait(getActivity())) {
+							((PanningView) background).startPanning();
+						}
+					}
 				});
 			else {
-				if (!thisMovie.getCover().isEmpty())
+				if (!thisMovie.getCover().isEmpty()) {
+					if (MizLib.isPortrait(getActivity())) {
+						((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
+					}
 					mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
-				else
+				} else
 					background.setImageResource(R.drawable.bg);
 			}
 		}

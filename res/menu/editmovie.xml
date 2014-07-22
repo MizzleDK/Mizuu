@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/cancel_editing"
-        android:icon="@drawable/remove"
+        android:icon="@drawable/ic_action_discard"
         android:showAsAction="ifRoom|withText"
         android:title="@string/cancel" />
     <item

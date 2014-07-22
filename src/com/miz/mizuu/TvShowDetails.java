@@ -26,11 +26,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+
+import com.miz.apis.trakt.Trakt;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
@@ -41,8 +44,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.FrameLayout.LayoutParams;
 
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
@@ -50,53 +57,63 @@ import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragmentTv;
 import com.miz.mizuu.fragments.TvShowDetailsFragment;
 import com.miz.mizuu.fragments.TvShowSeasonsEpisodesFragment;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.TVSHOWS_START_PAGE;
 
 public class TvShowDetails extends MizActivity implements OnNavigationListener {
 
-	private ViewPager awesomePager;
+	private ViewPager mViewPager;
 	private TvShow thisShow;
 	private DbAdapterTvShow dbHelper;
 	private boolean ignorePrefixes;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
-	private ActionBar actionBar;
+	private ActionBar mActionBar;
+	private Bus mBus;
+	private Drawable mActionBarBackgroundDrawable;
+	private ImageView mActionBarOverlay;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.isPortrait(this))
-			if (isFullscreen())
-				setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
-			else
-				setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
+		mBus = MizuuApplication.getBus();
+
+		if (isFullscreen())
+			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 		else
-			if (isFullscreen())
-				setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
-			else
-				setTheme(R.style.Mizuu_Theme_Transparent);
+			setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
+
+		if (MizLib.isPortrait(this)) {
+			getWindow().setBackgroundDrawableResource(R.drawable.bg);
+		}
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
+		
+		mActionBarOverlay = (ImageView) findViewById(R.id.actionbar_overlay);
+		mActionBarOverlay.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, isFullscreen() ? MizLib.getActionBarHeight(this) : MizLib.getActionBarAndStatusBarHeight(this)));
 
-		actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar = getActionBar();
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		if (spinnerAdapter == null)
 			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
 		
 		setTitle(null);
 
-		awesomePager = (ViewPager) findViewById(R.id.awesomepager);
-		awesomePager.setOffscreenPageLimit(3); // Required in order to retain all fragments when swiping between them
-		awesomePager.setAdapter(new ShowDetailsAdapter(getSupportFragmentManager()));
-		awesomePager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
+		mViewPager.setOffscreenPageLimit(3); // Required in order to retain all fragments when swiping between them
+		mViewPager.setAdapter(new ShowDetailsAdapter(getSupportFragmentManager()));
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				actionBar.setSelectedNavigationItem(position);
+				mActionBar.setSelectedNavigationItem(position);
 				invalidateOptionsMenu();
+				
+				updateActionBarDrawable(1, false, false);
 			}
 		});
 
@@ -146,12 +163,57 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		setupSpinnerItems();
 
 		if (savedInstanceState != null) {
-			awesomePager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+			mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		}
 
 		// Set the current page item to 1 (episode page) if the TV show start page setting has been changed from TV show details
 		if (!PreferenceManager.getDefaultSharedPreferences(this).getString(TVSHOWS_START_PAGE, getString(R.string.showDetails)).equals(getString(R.string.showDetails)))
-			awesomePager.setCurrentItem(1);
+			mViewPager.setCurrentItem(1);
+	}
+	
+	@Subscribe
+	public void onScrollChanged(Integer newAlpha) {
+		updateActionBarDrawable(newAlpha, true, false);
+	}
+	
+	private void updateActionBarDrawable(int newAlpha, boolean setBackground, boolean showActionBar) {
+		if (mViewPager.getCurrentItem() == 0) { // Details page
+			mActionBarOverlay.setVisibility(View.VISIBLE);
+
+			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
+				if (newAlpha == 0)
+					mActionBar.hide();
+				else
+					mActionBar.show();
+
+			if (setBackground) {
+				mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
+				mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
+			}
+		} else { // Actors page
+			mActionBarOverlay.setVisibility(View.GONE);
+
+			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
+				mActionBar.show();
+		}
+		
+		if (showActionBar) {
+			mActionBar.show();
+		}
+	}
+
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(this);
+		updateActionBarDrawable(0, true, true);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		mBus.unregister(this);
 	}
 
 	private void setupSpinnerItems() {
@@ -160,13 +222,13 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.seasons)));
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.detailsActors)));
 
-		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		mActionBar.setListNavigationCallbacks(spinnerAdapter, this);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt("tab", awesomePager.getCurrentItem());
+		outState.putInt("tab", mViewPager.getCurrentItem());
 	}
 
 	@Override
@@ -178,7 +240,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		switch (awesomePager.getCurrentItem()) {
+		switch (mViewPager.getCurrentItem()) {
 		case 0:
 			getMenuInflater().inflate(R.menu.tv_show_details, menu);
 
@@ -187,7 +249,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 					menu.findItem(R.id.show_fav).setIcon(R.drawable.fav);
 					menu.findItem(R.id.show_fav).setTitle(R.string.menuFavouriteTitleRemove);
 				} else {
-					menu.findItem(R.id.show_fav).setIcon(R.drawable.reviews);
+					menu.findItem(R.id.show_fav).setIcon(R.drawable.ic_action_star_0);
 					menu.findItem(R.id.show_fav).setTitle(R.string.menuFavouriteTitle);
 				}
 
@@ -279,7 +341,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 			public void run() {
 				ArrayList<TvShow> show = new ArrayList<TvShow>();
 				show.add(thisShow);
-				MizLib.tvShowFavorite(show, getApplicationContext());
+				Trakt.tvShowFavorite(show, getApplicationContext());
 			}
 		}.start();
 	}
@@ -347,12 +409,8 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		if (itemPosition == 0)
-			actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
-		else
-			actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#aa000000")));
+		mViewPager.setCurrentItem(itemPosition);
 		
-		awesomePager.setCurrentItem(itemPosition);
 		return true;
 	}
 }

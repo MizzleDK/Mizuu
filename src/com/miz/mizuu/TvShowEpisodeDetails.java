@@ -1,20 +1,46 @@
+/*
+ * Copyright (C) 2014 Michell Bak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.miz.mizuu;
 
 import java.util.ArrayList;
 
+import android.app.ActionBar;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.ImageView;
 
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.TvShowEpisodeDetailsFragment;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 public class TvShowEpisodeDetails extends MizActivity {
 
@@ -25,32 +51,41 @@ public class TvShowEpisodeDetails extends MizActivity {
 	private String mShowId, mShowTitle;
 	private ViewPager mViewPager;
 	private DbAdapterTvShowEpisode mDatabaseHelper;
+	private Bus mBus;
+	private Drawable mActionBarBackgroundDrawable;
+	private ImageView mActionBarOverlay;
+	private ActionBar mActionBar;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!MizLib.isPortrait(this))
-			if (isFullscreen())
-				setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
-			else
-				setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
+		mBus = MizuuApplication.getBus();
+
+		if (isFullscreen())
+			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
 		else
-			if (isFullscreen())
-				setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
-			else
-				setTheme(R.style.Mizuu_Theme_Transparent);
+			setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
+
+		if (MizLib.isPortrait(this)) {
+			getWindow().setBackgroundDrawableResource(R.drawable.bg);
+		}
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
+
+		mActionBar = getActionBar();
+
+		mActionBarOverlay = (ImageView) findViewById(R.id.actionbar_overlay);
+		mActionBarOverlay.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, isFullscreen() ? MizLib.getActionBarHeight(this) : MizLib.getActionBarAndStatusBarHeight(this)));
 
 		mShowId = getIntent().getExtras().getString(SHOW_ID);
 		mSeason = getIntent().getExtras().getInt("season");
 		mEpisode = getIntent().getExtras().getInt("episode");
 
 		mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
-		
+
 		Cursor cursor = mDatabaseHelper.getAllEpisodes(mShowId, DbAdapterTvShowEpisode.OLDEST_FIRST);	
 		try {
 			while (cursor.moveToNext()) {
@@ -77,14 +112,16 @@ public class TvShowEpisodeDetails extends MizActivity {
 		}
 
 		mShowTitle = MizuuApplication.getTvDbAdapter().getShowTitle(mShowId);
-		getActionBar().setTitle(mShowTitle);
-		
+		mActionBar.setTitle(mShowTitle);
+
 		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
 		mViewPager.setAdapter(new TvShowEpisodeDetailsAdapter(getSupportFragmentManager()));
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
 				updateActionBar(position);
+
+				updateActionBarDrawable(1, true, false);
 			}
 		});
 
@@ -100,7 +137,45 @@ public class TvShowEpisodeDetails extends MizActivity {
 			}
 		}
 	}
-	
+
+	@Subscribe
+	public void onScrollChanged(Integer newAlpha) {
+		updateActionBarDrawable(newAlpha, true, false);
+	}
+
+	private void updateActionBarDrawable(int newAlpha, boolean setBackground, boolean showActionBar) {
+		mActionBarOverlay.setVisibility(View.VISIBLE);
+
+		if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
+			if (newAlpha == 0)
+				mActionBar.hide();
+			else
+				mActionBar.show();
+
+		if (setBackground) {
+			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
+			mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
+		}
+
+		if (showActionBar) {
+			mActionBar.show();
+		}
+	}
+
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(this);
+		updateActionBarDrawable(0, true, true);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		mBus.unregister(this);
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -115,7 +190,7 @@ public class TvShowEpisodeDetails extends MizActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		mActionBar.setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -123,9 +198,9 @@ public class TvShowEpisodeDetails extends MizActivity {
 		super.onSaveInstanceState(outState);
 		outState.putInt("tab", mViewPager.getCurrentItem());
 	}
-	
+
 	private void updateActionBar(int position) {
-		getActionBar().setSubtitle("S" + mEpisodes.get(position).getSeason() + "E" + mEpisodes.get(position).getEpisode());
+		mActionBar.setSubtitle("S" + mEpisodes.get(position).getSeason() + "E" + mEpisodes.get(position).getEpisode());
 	}
 
 	private class TvShowEpisodeDetailsAdapter extends FragmentPagerAdapter {

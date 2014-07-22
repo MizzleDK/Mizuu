@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.miz.apis.trakt.Trakt;
 import com.miz.mizuu.R;
 
 import android.content.Context;
@@ -30,7 +31,6 @@ import android.preference.PreferenceManager;
 import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
 import static com.miz.functions.PreferenceKeys.MOVIE_RATINGS_SOURCE;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
-import static com.miz.functions.PreferenceKeys.TMDB_BASE_URL;
 
 public class TMDb {
 
@@ -123,7 +123,7 @@ public class TMDb {
 		ArrayList<TMDbMovie> results = new ArrayList<TMDbMovie>();
 
 		try {
-			String baseImgUrl = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TMDB_BASE_URL, MizLib.TMDB_BASE_URL);
+			String baseImgUrl = MizLib.getTmdbImageBaseUrl(mContext);
 			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + mTmdbApiKey + (!MizLib.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : ""));
 
 			for (int i = 0; i < jObject.getJSONArray("results").length(); i++) {
@@ -158,7 +158,7 @@ public class TMDb {
 
 		try {
 			// Get the base URL from the preferences
-			String baseUrl = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TMDB_BASE_URL, MizLib.TMDB_BASE_URL);
+			String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 
 			JSONObject jObject = null;
 			if (json != null)
@@ -273,8 +273,8 @@ public class TMDb {
 			// Trakt.tv
 			if (ratingsProvider.equals(mContext.getString(R.string.ratings_option_2)) && json == null) {
 				try {
-					jObject = MizLib.getJSONObject("http://api.trakt.tv/movie/summary.json/" + MizLib.getTraktApiKey(mContext) + "/" + id);
-					double rating = Double.valueOf(MizLib.getStringFromJSONObject(jObject.getJSONObject("ratings"), "percentage", "0")) / 10;
+					com.miz.apis.trakt.Movie movieSummary = Trakt.getMovieSummary(mContext, id);
+					double rating = Double.valueOf(movieSummary.getRating() / 10);
 
 					if (rating > 0 || movie.getRating().equals("0.0"))
 						movie.setRating(String.valueOf(rating));	
