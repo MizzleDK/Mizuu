@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="1014"
-    android:versionName="2.9-beta2" >
+    android:versionCode="1015"
+    android:versionName="2.9-beta2_fixed" >
 
     <uses-sdk
         android:minSdkVersion="13"
