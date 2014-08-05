@@ -169,7 +169,7 @@ public class Main extends MizActivity {
 	private void loadFragment(int type) {
 		if (type == 0)
 			type = 1;
-		
+
 		setTitle(null);
 
 		Fragment frag = getSupportFragmentManager().findFragmentByTag("frag" + type);
@@ -231,7 +231,7 @@ public class Main extends MizActivity {
 		// We only want to add a header if there's a backdrop image and we're not running on Google TV or a non-tablet in landscape mode
 		if (!MizLib.getLatestBackdropPath(getApplicationContext()).isEmpty() && !((!MizLib.isTablet(this) && !MizLib.isPortrait(this)) || MizLib.isGoogleTV(this)))
 			mMenuItems.add(new MenuItem(null, -1, MenuItem.HEADER, null));
-		
+
 		// Regular menu items
 		mMenuItems.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, MenuItem.SECTION, null, MOVIES));
 		mMenuItems.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, MenuItem.SECTION, null, SHOWS));
@@ -282,7 +282,7 @@ public class Main extends MizActivity {
 	protected void selectListIndex(int index) {
 		if (!(!MizLib.getLatestBackdropPath(getApplicationContext()).isEmpty() && !((!MizLib.isTablet(this) && !MizLib.isPortrait(this)) || MizLib.isGoogleTV(this))))
 			index--;
-		
+
 		if (mMenuItems.get(index).getType() == MenuItem.SECTION) {
 			selectedIndex = mMenuItems.get(index).getFragment();
 			mDrawerList.setItemChecked(index, true);
@@ -409,23 +409,25 @@ public class Main extends MizActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if (mMenuItems.get(position).getType() == MenuItem.HEADER) {
 				convertView = mInflater.inflate(R.layout.menu_drawer_header, parent, false);
-				
+
 				final String fullName = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(TRAKT_FULL_NAME, "");
 				final ImageView backgroundImage = ((ImageView) convertView.findViewById(R.id.userCover));
 				final ImageView userImage = ((ImageView) convertView.findViewById(R.id.userPhoto));
 				final TextView userName = ((TextView) convertView.findViewById(R.id.username));
-				
+
 				userName.setTextSize(26f);
 				userName.setTypeface(mTfCondensed);
-				
+
 				if (!MizLib.isEmpty(fullName)) {
 					userName.setText(fullName);
 					mPicasso.load(new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg")).resize(MizLib.convertDpToPixels(getApplicationContext(), 72), MizLib.convertDpToPixels(getApplicationContext(), 72)).error(R.drawable.unknown_user).into(userImage);
 				} else
 					convertView.findViewById(R.id.drawer_user_info).setVisibility(View.GONE);
 
-				mPicasso.load(MizLib.getLatestBackdropPath(getApplicationContext())).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 180)).into(backgroundImage);
-				
+				String backdropPath = MizLib.getLatestBackdropPath(getApplicationContext());
+				if (!backdropPath.isEmpty())
+					mPicasso.load(backdropPath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 180)).into(backgroundImage);
+
 			} else if (mMenuItems.get(position).getType() == MenuItem.SEPARATOR) {	
 				convertView = mInflater.inflate(R.layout.menu_drawer_header_item, parent, false);
 				TextView title = (TextView) convertView.findViewById(R.id.title);

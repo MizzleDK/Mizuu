@@ -16,23 +16,29 @@
 
 package com.miz.functions;
 
-public class MovieVersion {
+public class MovieFilepath {
 	
-	private int rowId;
-	private String filepath;
+	private int mRowId;
+	private String mFilepath;
+	private boolean mIgnored;
 
-	public MovieVersion(int rowId, String filepath) {
-		this.rowId = rowId;
-		this.filepath = filepath;
+	public MovieFilepath(int rowId, String filepath, boolean ignored) {
+		mRowId = rowId;
+		mFilepath = filepath;
+		mIgnored = ignored;
 	}
 
 	public int getRowId() {
-		return rowId;
+		return mRowId;
 	}
 
 	public String getFilepath() {
-		String temp = filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[1] : filepath;
-		filepath = MizLib.transformSmbPath(temp);
-		return filepath;
+		String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[1] : mFilepath;
+		mFilepath = MizLib.transformSmbPath(temp);
+		return mFilepath;
+	}
+	
+	public boolean isIgnored() {
+		return mIgnored;
 	}
 }

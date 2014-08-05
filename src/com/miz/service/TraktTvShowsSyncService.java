@@ -40,6 +40,7 @@ import com.miz.apis.trakt.Trakt;
 import com.miz.apis.trakt.TraktTvShow;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -159,33 +160,35 @@ public class TraktTvShowsSyncService extends IntentService {
 		// Get shows
 		mShowDatabase = MizuuApplication.getTvDbAdapter();
 		Cursor cursor = mShowDatabase.getAllShows();
-
+		ColumnIndexCache cache = new ColumnIndexCache();
+		
 		try {
 			while (cursor.moveToNext()) {
-				mShowIds.add(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)));
+				mShowIds.add(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)));
 
 				// Full TV shows
 				mShows.add(new TvShow(
 						this,
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_TITLE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_PLOT)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RATING)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_GENRES)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ACTORS)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RUNTIME)),
 						false,
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
-						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_EXTRA1)),
+						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)))
 						));
 
-				if (cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)).equals("1"))
-					mLocalFavorites.add(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)));
+				if (cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_EXTRA1)).equals("1"))
+					mLocalFavorites.add(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)));
 			}
 		} catch (Exception e) {} finally {
 			cursor.close();
+			cache.clear();
 		}
 
 		mEpisodeDatabase = MizuuApplication.getTvEpisodeDbAdapter();
@@ -197,12 +200,12 @@ public class TraktTvShowsSyncService extends IntentService {
 			Cursor c = mEpisodeDatabase.getAllEpisodes(mShows.get(i).getId(), DbAdapterTvShowEpisode.OLDEST_FIRST);
 			try {
 				while (c.moveToNext()) {
-					collectionShow.addEpisode(c.getString(c.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON)),
-							c.getString(c.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)));
+					collectionShow.addEpisode(c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_SEASON)),
+							c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_EPISODE)));
 
-					if (c.getString(c.getColumnIndex(DbAdapterTvShowEpisode.KEY_HAS_WATCHED)).equals("1")) {
-						watchedShow.addEpisode(c.getString(c.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON)),
-								c.getString(c.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)));
+					if (c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_HAS_WATCHED)).equals("1")) {
+						watchedShow.addEpisode(c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_SEASON)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_EPISODE)));
 					}
 				}
 			} catch (Exception ignored) {

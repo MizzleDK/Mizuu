@@ -26,13 +26,12 @@ import com.miz.functions.MizLib;
 public abstract class BaseMovie implements Comparable<BaseMovie> {
 
 	protected Context mContext;
-	protected String mRowId, mFilepath, mTitle, mTmdbId;
+	protected String mFilepath, mTitle, mTmdbId;
 	protected boolean mIgnorePrefixes, mIgnoreNfo;
 
-	public BaseMovie(Context context, String rowId, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
+	public BaseMovie(Context context, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
 		// Set up movie fields based on constructor
 		mContext = context;
-		mRowId = rowId;
 		mFilepath = filepath;
 		mTitle = title;
 		mTmdbId = tmdbId;
@@ -58,10 +57,6 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 				}
 			}
 		}
-	}
-
-	public String getRowId() {
-		return mRowId;
 	}
 
 	public String getTitle() {
@@ -127,6 +122,10 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 
 		// New naming style
 		return MizLib.getMovieThumb(mContext, mTmdbId);
+	}
+	
+	public String getTmdbId() {
+		return mTmdbId;
 	}
 
 	public String getBackdrop() {

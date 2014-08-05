@@ -43,7 +43,9 @@
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/movie_details_padding" >
+            android:layout_marginTop="@dimen/movie_details_padding"
+            android:divider="@null" >
+
         </ListView>
 
         <ProgressBar

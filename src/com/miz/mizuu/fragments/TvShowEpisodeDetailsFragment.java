@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -77,7 +78,7 @@ import com.squareup.otto.Bus;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-public class TvShowEpisodeDetailsFragment extends Fragment {
+@SuppressLint("InflateParams") public class TvShowEpisodeDetailsFragment extends Fragment {
 
 	private TvShowEpisode mEpisode;
 	private ImageView mBackdrop, mEpisodePhoto;
@@ -127,6 +128,7 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 
 		if (!getArguments().getString("showId").isEmpty() && getArguments().getInt("season") >= 0 && getArguments().getInt("episode") > 0) {
 			Cursor cursor = mDatabaseHelper.getEpisode(getArguments().getString("showId"), getArguments().getInt("season"), getArguments().getInt("episode"));
+			
 			if (cursor.moveToFirst()) {
 				mEpisode = new TvShowEpisode(getActivity(),
 						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_ROWID)),
@@ -221,23 +223,29 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 			mRating.setTypeface(mLight);
 		}
 
-		mDescription.setBackgroundResource(R.drawable.selectable_background);
-		mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
-		mDescription.setTag(true); // true = collapsed
-		mDescription.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (((Boolean) mDescription.getTag())) {
-					mDescription.setMaxLines(1000);
-					mDescription.setTag(false);
-				} else {
-					mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
-					mDescription.setTag(true);
+		// Set the movie plot
+		if (!MizLib.isPortrait(getActivity())) {
+			mDescription.setBackgroundResource(R.drawable.selectable_background);
+			mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
+			mDescription.setTag(true); // true = collapsed
+			mDescription.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (((Boolean) mDescription.getTag())) {
+						mDescription.setMaxLines(1000);
+						mDescription.setTag(false);
+					} else {
+						mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
+						mDescription.setTag(true);
+					}
 				}
-			}
-		});
-		mDescription.setEllipsize(TextUtils.TruncateAt.END);
-		mDescription.setFocusable(true);
+			});
+			mDescription.setEllipsize(TextUtils.TruncateAt.END);
+			mDescription.setFocusable(true);
+		} else {
+			if (MizLib.isTablet(getActivity()))
+				mDescription.setLineSpacing(0, 1.15f);
+		}
 		mDescription.setText(mEpisode.getDescription());
 
 		mFileSource.setText(mEpisode.getFilepath());
@@ -326,7 +334,7 @@ public class TvShowEpisodeDetailsFragment extends Fragment {
 						}
 					});
 				}
-				
+
 				@Override
 				public void onSuccess() {
 					if (!isAdded())

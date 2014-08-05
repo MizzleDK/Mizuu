@@ -64,6 +64,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.graphics.Bitmap.Config;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -91,9 +92,12 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
 import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovieMapping;
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbHelper;
+import com.miz.functions.ActionBarSpinnerViewHolder;
 import com.miz.functions.AsyncTask;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.CoverItem;
 import com.miz.functions.FileSource;
 import com.miz.functions.MediumMovie;
@@ -227,7 +231,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 			mLoading = true;
 			return new SQLiteCursorLoader(getActivity(), DbHelper.getHelper(getActivity()), DbAdapter.DATABASE_TABLE, DbAdapter.SELECT_ALL,
-					DbAdapter.KEY_EXTRA_2 + " = '" + mCollectionId + "'", null, DbAdapter.KEY_TITLE, null, DbAdapter.KEY_TITLE + " ASC");
+					DbAdapter.KEY_COLLECTION_ID + " = '" + mCollectionId + "'", null, null, null, DbAdapter.KEY_COLLECTION + " ASC");
 		}
 
 		@Override
@@ -236,29 +240,32 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 				@Override
 				protected void onPreExecute() {
 					mMovies.clear();
+					mMovieKeys.clear();
 				}
 
 				@Override
 				protected Void doInBackground(Void... params) {
+					
+					ColumnIndexCache cache = new ColumnIndexCache();
+					
 					try {
 						while (cursor.moveToNext()) {
 							mMovies.add(new MediumMovie(getActivity(),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RATING)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_GENRES)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CAST)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_2)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
-									cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
+									MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID))),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RATING)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RELEASEDATE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_GENRES)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_FAVOURITE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_ACTORS)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_COLLECTION)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_COLLECTION_ID)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TO_WATCH)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_HAS_WATCHED)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_DATE_ADDED)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_CERTIFICATION)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RUNTIME)),
 									mIgnorePrefixes,
 									mIgnoreNfo
 									));
@@ -266,9 +273,8 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 					} catch (Exception e) {
 					} finally {
 						cursor.close();
+						cache.clear();
 					}
-
-					mMovieKeys.clear();
 
 					for (int i = 0; i < mMovies.size(); i++)
 						mMovieKeys.add(i);
@@ -345,7 +351,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	private void showDetails(int arg2) {
 		Intent intent = new Intent();
-		intent.putExtra("rowId", Integer.parseInt(mMovies.get(mMovieKeys.get(arg2)).getRowId()));
+		intent.putExtra("tmdbId", mMovies.get(mMovieKeys.get(arg2)).getTmdbId());
 		intent.setClass(getActivity(), MovieDetails.class);
 		startActivityForResult(intent, 0);	
 	}
@@ -383,7 +389,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 		@Override
 		public boolean isEmpty() {
-			return (!mLoading && mMovies.size() == 0);
+			return (!mLoading && mMovieKeys.size() == 0);
 		}
 
 		@Override
@@ -614,6 +620,8 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		
 		setupActionBar();
 		inflater.inflate(R.menu.menu, menu);
 
@@ -647,7 +655,8 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 			@Override
 			public boolean onQueryTextSubmit(String query) { return false; }
 		});
-		super.onCreateOptionsMenu(menu, inflater);
+		
+		menu.findItem(R.id.view_collection_online).setVisible(true);
 	}
 
 	private void onSearchViewCollapsed() {
@@ -705,6 +714,11 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 				int random = new Random().nextInt(mMovieKeys.size());
 				showDetails(random);
 			}
+			break;
+		case R.id.view_collection_online:
+			Intent i = new Intent(Intent.ACTION_VIEW);
+			i.setData(Uri.parse("http://www.themoviedb.org/collection/" + mCollectionId));
+			startActivity(i);
 			break;
 		}
 
@@ -982,25 +996,24 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 						mTempKeys.add(i);
 				}
 			} else if (mSearchQuery.equalsIgnoreCase("multiple_versions")) {
-				DbAdapter db = MizuuApplication.getMovieAdapter();
+				DbAdapterMovieMapping db = MizuuApplication.getMovieMappingAdapter();
 
 				for (int i = 0; i < mMovies.size(); i++) {
 					if (isCancelled())
 						return null;
 
-					if (db.hasMultipleVersions(mMovies.get(i).getTmdbId()))
+					if (db.hasMultipleFilepaths(mMovies.get(i).getTmdbId()))
 						mTempKeys.add(i);
 				}
 			} else {
-				String lowerCase = "", filepath; // Reuse String variables
 				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
 
 				for (int i = 0; i < mMovies.size(); i++) {
 					if (isCancelled())
 						return null;
 
-					lowerCase = mMovies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
-					filepath = mMovies.get(i).getFilepath().toLowerCase(Locale.ENGLISH);
+					String lowerCase = mMovies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
+					String filepath = mMovies.get(i).getFilepath().toLowerCase(Locale.ENGLISH);
 
 					if (lowerCase.indexOf(mSearchQuery) != -1 || filepath.indexOf(mSearchQuery) != -1 || p.matcher(lowerCase).replaceAll("").indexOf(mSearchQuery) != -1)
 						mTempKeys.add(i);
@@ -1100,19 +1113,38 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
-			((TextView) convertView.findViewById(R.id.title)).setText(mSpinnerItems.get(position).getTitle());
+			
+			ActionBarSpinnerViewHolder holder;
+			
+			if (convertView == null) {
+				convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
+				
+				holder = new ActionBarSpinnerViewHolder();
+				holder.title = (TextView) convertView.findViewById(R.id.title);
+				holder.subtitle = (TextView) convertView.findViewById(R.id.subtitle);
+				
+				convertView.setTag(holder);
+			} else {
+				holder = (ActionBarSpinnerViewHolder) convertView.getTag();
+			}
+			
+			holder.title.setText(mSpinnerItems.get(position).getTitle());
 
 			int size = mMovieKeys.size();
-			((TextView) convertView.findViewById(R.id.subtitle)).setText(size + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, size, size));
+			holder.subtitle.setText(size + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, size, size));
 
 			return convertView;
 		}
 
 		@Override
-		public View getDropDownView(int position, View convertView, ViewGroup parent) {			
-			convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			
+			if (convertView == null) {
+				convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+			}
+			
 			((TextView) convertView.findViewById(android.R.id.text1)).setText(mSpinnerItems.get(position).getSubtitle());
+			
 			return convertView;
 		}
 	}

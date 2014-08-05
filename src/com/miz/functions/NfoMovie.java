@@ -48,6 +48,8 @@ public class NfoMovie {
 		this.is = is;
 		this.c = c;
 		this.callback = callback;
+		
+		System.out.println("HAHA AWESOME!");
 
 		readFile();
 	}
@@ -96,6 +98,7 @@ public class NfoMovie {
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
 						movie.setCollectionTitle(((Node) tag.item(0)).getNodeValue().trim());
+						movie.setCollectionId(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
 						movie.setCollectionTitle("");
 					}
@@ -302,33 +305,18 @@ public class NfoMovie {
 	private void addToDatabase() {
 		// Create and open database
 		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
-		long rowId = dbHelper.createMovie(filepath, movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
-
-		Movie temp = new Movie(c,
-				String.valueOf(rowId),
-				filepath,
-				movie.getTitle(),
-				movie.getPlot(),
-				movie.getTagline(),
-				movie.getId(),
-				movie.getImdbId(),
-				movie.getRating(),
-				movie.getReleasedate(),
-				movie.getCertification(),
-				movie.getRuntime(),
-				movie.getTrailer(),
-				movie.getGenres(),
-				"0",
-				movie.getCast(),
-				movie.getCollectionTitle(),
-				movie.getCollectionId(),
-				"0",
-				"0",
-				movie.getCover(),
-				String.valueOf(System.currentTimeMillis()),
-				false,
-				false
-				);
+		
+		// Create the movie entry
+		dbHelper.createMovie(movie.getId().isEmpty() ? filepath : movie.getId(), movie.getTitle(), movie.getPlot(), movie.getImdbId(),
+				movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(),
+				movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
+		
+		// Create the filepath mapping
+		MizuuApplication.getMovieMappingAdapter().createFilepathMapping(filepath, movie.getId().isEmpty() ? filepath : movie.getId());
+		
+		Movie temp = new Movie(c, filepath, movie.getTitle(), movie.getPlot(), movie.getTagline(), movie.getId(), movie.getImdbId(), movie.getRating(),
+				movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(),
+				movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()), false, false);
 
 		if (callback != null)
 			callback.onMovieAdded(movie.getTitle(), temp.getThumbnail().getAbsolutePath(), temp.getBackdrop());

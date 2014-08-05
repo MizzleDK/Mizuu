@@ -24,22 +24,28 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
 
+import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.squareup.otto.Bus;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class ActorPhotoFragment extends Fragment {
 
-	private String photoUrl;
+	private String mPhotoUrl;
 	private Picasso mPicasso;
+	private Bus mBus;
+	private boolean mPortraitPhotos;
 	
-	public static ActorPhotoFragment newInstance(String url) {
+	public static ActorPhotoFragment newInstance(String url, boolean portraitPhotos) {
 		ActorPhotoFragment frag = new ActorPhotoFragment();
 		Bundle b = new Bundle();
 		b.putString("photo", url);
+		b.putBoolean("portrait", portraitPhotos);
 		frag.setArguments(b);
 		return frag;
 	}
@@ -51,10 +57,20 @@ public class ActorPhotoFragment extends Fragment {
 		super.onCreate(savedInstanceState);		
 
 		setRetainInstance(true);
+		
+		mBus = MizuuApplication.getBus();
 
-		photoUrl = getArguments().getString("photo");
+		mPhotoUrl = getArguments().getString("photo");
+		mPortraitPhotos = getArguments().getBoolean("portrait");
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		mBus.register(getActivity());
 	}
 
 	@Override
@@ -68,7 +84,10 @@ public class ActorPhotoFragment extends Fragment {
 		final ProgressBar pbar = (ProgressBar) v.findViewById(R.id.progressBar1);
 		ImageView img = (ImageView) v.findViewById(R.id.imageView1);
 		
-		mPicasso.load(photoUrl).error(R.drawable.noactor).into(img, new Callback() {
+		if (MizLib.isPortrait(getActivity()) && mPortraitPhotos || !MizLib.isPortrait(getActivity()) && !mPortraitPhotos)
+			img.setScaleType(ScaleType.CENTER_CROP);
+		
+		mPicasso.load(mPhotoUrl).error(R.drawable.noactor).into(img, new Callback() {
 
 			@Override
 			public void onError() {
@@ -86,6 +105,9 @@ public class ActorPhotoFragment extends Fragment {
 			public void onClick(View v) {
 				if (isAdded()) {
 					ActionBar ab = getActivity().getActionBar();
+					
+					mBus.post(Boolean.valueOf(!ab.isShowing()));
+					
 					if (ab.isShowing()) {
 						ab.hide();
 					} else {

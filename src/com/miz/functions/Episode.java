@@ -18,25 +18,26 @@ package com.miz.functions;
 
 public class Episode {
 	
-	private String season = "", episode = "", title = "", airdate = "", description = "",
+	private int mSeason = -1, mEpisode = -1;
+	private String title = "", airdate = "", description = "",
 	screenshot_url = "", rating = "", director = "", writer = "", gueststars = "";
 	
 	public Episode() {}
 
-	public String getSeason() {
-		return season;
+	public int getSeason() {
+		return mSeason;
 	}
 
-	public void setSeason(String season) {
-		this.season = season;
+	public void setSeason(int season) {
+		mSeason = season;
 	}
 
-	public String getEpisode() {
-		return episode;
+	public int getEpisode() {
+		return mEpisode;
 	}
 
-	public void setEpisode(String episode) {
-		this.episode = episode;
+	public void setEpisode(int episode) {
+		mEpisode = episode;
 	}
 	
 	public String getTitle() {

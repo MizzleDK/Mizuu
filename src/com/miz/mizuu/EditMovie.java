@@ -33,109 +33,104 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.miz.functions.MovieVersion;
-
 public class EditMovie extends MizActivity {
 
-	private DbAdapter dbHelper;
-	private Cursor cursor;
-	private int rowID;
-	private TextView release;
-	private EditText title, tagline, plot, runtime, rating, genres;
-	private Spinner certification;
-	private String tmdbId;
-	private String[] certifications = new String[]{"G", "PG", "PG-13", "R", "NC-17", "X", "Unknown"};
+	private DbAdapter mDatabaseHelper;
+	private Cursor mCursor;
+	private TextView mRelease;
+	private EditText mTitle, mTagline, mPlot, mRuntime, mRating, mGenres;
+	private Spinner mCertification;
+	private String mTmdbId, mToWatch, mHasWatched;
+	private String[] mCertifications = new String[]{"G", "PG", "PG-13", "R", "NC-17", "X", "Unknown"};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		setContentView(R.layout.editmovie);
 
-		title = (EditText) findViewById(R.id.titleText);
-		tagline = (EditText) findViewById(R.id.taglineText);
-		plot = (EditText) findViewById(R.id.plotText);
-		runtime = (EditText) findViewById(R.id.runtimeText);
-		rating = (EditText) findViewById(R.id.ratingText);
-		genres = (EditText) findViewById(R.id.genresText);
-		release = (TextView) findViewById(R.id.releasedateText);
-		certification = (Spinner) findViewById(R.id.certificationSpinner);
+		mTitle = (EditText) findViewById(R.id.titleText);
+		mTagline = (EditText) findViewById(R.id.taglineText);
+		mPlot = (EditText) findViewById(R.id.plotText);
+		mRuntime = (EditText) findViewById(R.id.runtimeText);
+		mRating = (EditText) findViewById(R.id.ratingText);
+		mGenres = (EditText) findViewById(R.id.genresText);
+		mRelease = (TextView) findViewById(R.id.releasedateText);
+		mCertification = (Spinner) findViewById(R.id.certificationSpinner);
 
-		rowID = getIntent().getExtras().getInt("rowId");
-		tmdbId = getIntent().getExtras().getString("tmdbId");
+		mTmdbId = getIntent().getExtras().getString("tmdbId");
 
 		// Create and open database
-		dbHelper = MizuuApplication.getMovieAdapter();
+		mDatabaseHelper = MizuuApplication.getMovieAdapter();
 
-		cursor = dbHelper.fetchMovie(rowID);
+		mCursor = mDatabaseHelper.fetchMovie(mTmdbId);
 
-		if (cursor.moveToFirst()) {
+		if (mCursor.moveToFirst()) {
+
+			// Watchlist
+			mToWatch = mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_TO_WATCH));
+
+			// Has watched
+			mHasWatched = mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED));
 
 			// Set the title
-			title.setText(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)));
+			mTitle.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_TITLE)));
 
 			// Set the plot
-			plot.setText(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_PLOT)));
+			mPlot.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_PLOT)));
 
 			// Set the tag line
-			tagline.setText(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TAGLINE)));
-			if (tagline.getText().toString().equals("NOTAGLINE") || !(tagline.getText().toString().length() > 0))
-				tagline.setText("");
+			mTagline.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_TAGLINE)));
+			if (mTagline.getText().toString().equals("NOTAGLINE") || !(mTagline.getText().toString().length() > 0))
+				mTagline.setText("");
 
 			// Set the run time
-			runtime.setText(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RUNTIME)));
+			mRuntime.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_RUNTIME)));
 
 			// Set the rating
 			try {
-				rating.setText(
+				mRating.setText(
 						String.valueOf(
-								Float.valueOf(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RATING)).trim()).floatValue()
+								Float.valueOf(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_RATING)).trim()).floatValue()
 								)
 						);
 			} catch (Exception e) { // In case it's not a valid float
-				rating.setText("0.0");
+				mRating.setText("0.0");
 			}
 
 			// Set the certification
 			boolean found = false;
 
-			for (int i = 0; i < certifications.length; i++) {
-				if (certifications[i].equals(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)))) {
-					certification.setSelection(i);
+			for (int i = 0; i < mCertifications.length; i++) {
+				if (mCertifications[i].equals(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)))) {
+					mCertification.setSelection(i);
 					found = true;
 					break;
 				}
 			}
 
 			if (!found)
-				certification.setSelection(certifications.length - 1);
+				mCertification.setSelection(mCertifications.length - 1);
 
 			// Set the release date
-			release.setText(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)));
+			mRelease.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)));
 
 			// Set the genres
-			genres.setText(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_GENRES)));
+			mGenres.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_GENRES)));
 		}
 
-		cursor.close();
+		mCursor.close();
 	}
 
 	private void doneEditing() {
-		if (rating.getText().toString().isEmpty())
-			rating.setText("0.0");
+		if (mRating.getText().toString().isEmpty())
+			mRating.setText("0.0");
 
-		if (dbHelper.hasMultipleVersions(tmdbId)) {
-			MovieVersion[] versions = dbHelper.getRowIdsForMovie(tmdbId);
-			for (int i = 0; i < versions.length; i++) {
-				dbHelper.editUpdateMovie(versions[i].getRowId(), title.getText().toString(), plot.getText().toString(), rating.getText().toString(), tagline.getText().toString(),
-						release.getText().toString(), certifications[certification.getSelectedItemPosition()], runtime.getText().toString(), genres.getText().toString(), "0", "0", String.valueOf(System.currentTimeMillis()));
-			}
-		} else {
-			dbHelper.editUpdateMovie(rowID, title.getText().toString(), plot.getText().toString(), rating.getText().toString(), tagline.getText().toString(),
-					release.getText().toString(), certifications[certification.getSelectedItemPosition()], runtime.getText().toString(), genres.getText().toString(), "0", "0", String.valueOf(System.currentTimeMillis()));
-		}		
+		mDatabaseHelper.editUpdateMovie(mTmdbId, mTitle.getText().toString(), mPlot.getText().toString(), mRating.getText().toString(),
+				mTagline.getText().toString(), mRelease.getText().toString(), mCertifications[mCertification.getSelectedItemPosition()],
+				mRuntime.getText().toString(), mGenres.getText().toString(), mToWatch, mHasWatched, String.valueOf(System.currentTimeMillis()));
 
 		setResult(4);
 		finish();
@@ -148,20 +143,22 @@ public class EditMovie extends MizActivity {
 	public void showDatePicker(View v) {
 		int year, month, day;
 
+		String release = mRelease.getText().toString();
+
 		try {
-			year = Integer.valueOf(release.getText().toString().substring(0, release.getText().toString().indexOf("-")));
+			year = Integer.valueOf(release.substring(0, release.indexOf("-")));
 		} catch (Exception e) {
 			year = Calendar.getInstance().get(Calendar.YEAR);
 		}
-		
+
 		try {
-			month = Integer.valueOf(release.getText().toString().substring(release.getText().toString().indexOf("-") + 1, release.getText().toString().lastIndexOf("-"))) - 1;
+			month = Integer.valueOf(release.substring(release.indexOf("-") + 1, release.lastIndexOf("-"))) - 1;
 		} catch (Exception e) {
 			month = Calendar.getInstance().get(Calendar.MONTH);
 		}
-		
+
 		try {
-			day = Integer.valueOf(release.getText().toString().substring(release.getText().toString().lastIndexOf("-") + 1));
+			day = Integer.valueOf(release.substring(release.lastIndexOf("-") + 1));
 		} catch (Exception e) {
 			day = Calendar.getInstance().get(Calendar.DATE);
 		}
@@ -173,7 +170,7 @@ public class EditMovie extends MizActivity {
 				if (day.length() == 1) day = "0" + day;
 				if (month.length() == 1) month = "0" + month;
 
-				release.setText(year + "-" + month + "-" + day);
+				mRelease.setText(year + "-" + month + "-" + day);
 			}
 		}, year, month, day);
 
@@ -191,7 +188,7 @@ public class EditMovie extends MizActivity {
 		getMenuInflater().inflate(R.menu.editmovie, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

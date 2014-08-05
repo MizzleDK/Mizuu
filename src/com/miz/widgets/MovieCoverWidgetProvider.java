@@ -41,7 +41,7 @@ public class MovieCoverWidgetProvider extends AppWidgetProvider {
 			Intent openMovie = new Intent();
 			openMovie.setClass(context, MovieDetails.class);
 			openMovie.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-			openMovie.putExtra("rowId", intent.getIntExtra("rowId", -1));
+			openMovie.putExtra("tmdbId", intent.getStringExtra("tmdbId"));
 			openMovie.putExtra("isFromWidget", true);
 			context.startActivity(openMovie);
 		} else {

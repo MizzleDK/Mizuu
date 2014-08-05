@@ -116,7 +116,7 @@ public class ActorBiographyFragment extends Fragment {
 			else
 				MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
 		} else
-			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
+			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.frameLayout1));
 
 		if (MizLib.isPortrait(getActivity())) {
 			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());

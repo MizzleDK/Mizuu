@@ -31,10 +31,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	protected String mGetReleaseYear, mGetFilePath, mWeightedCompatibility, mDateAdded, mRuntime, mReleaseDate;
 	protected boolean mIsNetworkFile;
 	
-	public MediumBaseMovie(Context context, String rowId, String filepath, String title, String tmdbId, String rating, String releasedate,
+	public MediumBaseMovie(Context context, String filepath, String title, String tmdbId, String rating, String releasedate,
 			String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
 			String date_added, String certification, String runtime, boolean ignorePrefixes, boolean ignoreNfo) {
-		super(context, rowId, filepath, title, tmdbId, ignorePrefixes, ignoreNfo);
+		super(context, filepath, title, tmdbId, ignorePrefixes, ignoreNfo);
 		
 		RATING = rating;
 		RELEASEDATE = releasedate;
@@ -194,10 +194,6 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	
 	public String getCast() {
 		return CAST;
-	}
-	
-	public String getTmdbId() {
-		return mTmdbId;
 	}
 	
 	public String getCertification() {

@@ -93,24 +93,27 @@ public class TvShowDetailsFragment extends Fragment {
 		dbHelper = MizuuApplication.getTvDbAdapter();
 
 		Cursor cursor = dbHelper.getShow(getArguments().getString("showId"));
-		while (cursor.moveToNext()) {
-			thisShow = new TvShow(getActivity(),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
-					ignorePrefixes,
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
-					MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
-					);
+		try {
+			if (cursor.moveToFirst()) {
+				thisShow = new TvShow(getActivity(),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+						ignorePrefixes,
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
+						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
+						);
+			}
+		} catch (Exception e) {
+		} finally {
+			cursor.close();
 		}
-
-		cursor.close();
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
@@ -149,7 +152,7 @@ public class TvShowDetailsFragment extends Fragment {
 		// TV shows don't include a tagline or filepath
 		v.findViewById(R.id.textView3).setVisibility(View.GONE); // Filepath
 		v.findViewById(R.id.textView6).setVisibility(View.GONE); // Tagline
-		
+
 		if (MizLib.isPortrait(getActivity())) {
 			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
 			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
@@ -193,7 +196,7 @@ public class TvShowDetailsFragment extends Fragment {
 		textRuntime.setTypeface(mLight);
 		textRating.setTypeface(mLight);
 		textCertification.setTypeface(mLight);
-		
+
 		textRuntime.setTypeface(mMedium);
 		textCertification.setTypeface(mMedium);
 		textRating.setTypeface(mMedium);

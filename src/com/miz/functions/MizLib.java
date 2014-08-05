@@ -136,7 +136,6 @@ public class MizLib {
 	public static final String SERVER = "server";
 	public static final String SERIAL_NUMBER = "serial_number";
 
-	public static final String tvdbLanguages = "en,sv,no,da,fi,nl,de,it,es,fr,pl,hu,el,tr,ru,he,ja,pt,zh,cs,sl,hr,ko";
 	public static final String allFileTypes = ".3gp.aaf.mp4.ts.webm.m4v.mkv.divx.xvid.rec.avi.flv.f4v.moi.mpeg.mpg.mts.m2ts.ogv.rm.rmvb.mov.wmv.iso.vob.ifo.wtv.pyv.ogm.img";
 	public static final String IMAGE_CACHE_DIR = "thumbs";
 	public static final String CHARACTER_REGEX = "[^\\w\\s]";
@@ -456,7 +455,7 @@ public class MizLib {
 		params.setMargins(0, mActionBarHeight, 0, 0);
 		v.setLayoutParams(params);
 	}
-	
+
 	/**
 	 * Add a margin with a combined height of the ActionBar and Status bar to the top of a given View contained in a FrameLayout
 	 * @param c
@@ -475,7 +474,7 @@ public class MizLib {
 
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		params.setMargins(0, mActionBarHeight + mStatusBarHeight, 0, 0);
-		
+
 		v.setLayoutParams(params);
 	}
 
@@ -887,12 +886,16 @@ public class MizLib {
 	}
 
 	public static boolean isEmpty(String string) {
-		if (string == null)
+		if (null == string)
 			return true;
 		return string.length() == 0;
 	}
 
 	public static boolean checkFileTypes(String file) {
+		// We don't want to include files that start with ._ or .DS_Store
+		if (file.matches("(?i).*[/][\\.](?:_|DS_Store).*[\\.].*$"))
+			return false;
+
 		if (file.contains(".")) { // Must have a file type
 			String type = file.substring(file.lastIndexOf("."));
 			String[] filetypes = allFileTypes.split("\\.");
@@ -1173,24 +1176,24 @@ public class MizLib {
 	public static boolean downloadFile(String url, String savePath) {
 		if (isEmpty(url))
 			return false;
-		
+
 		InputStream in = null;
 		OutputStream fileos = null;
-		
+
 		try {
 			int bufferSize = 8192;
 			byte[] retVal = null;
-			
+
 			OkHttpClient client = new OkHttpClient();
-			
+
 			Request request = new Request.Builder()
 			.url(url)
 			.build();
-			
+
 			Response response = client.newCall(request).execute();
 			if (!response.isSuccessful())
 				return false;
-			
+
 			fileos = new BufferedOutputStream(new FileOutputStream(savePath));
 			in = new BufferedInputStream(response.body().byteStream(), bufferSize);
 
@@ -1208,7 +1211,7 @@ public class MizLib {
 					fileos.close();
 				} catch (IOException e) {}
 			}
-			
+
 			if (in != null) {
 				try {
 					in.close();
@@ -1242,6 +1245,14 @@ public class MizLib {
 			return s;
 		} catch (Exception e) {
 			return fallback;
+		}
+	}
+
+	public static int getInteger(String number) {
+		try {
+			return Integer.valueOf(number);
+		} catch (NumberFormatException nfe) {
+			return 0;
 		}
 	}
 
@@ -1301,32 +1312,39 @@ public class MizLib {
 		else
 			c = dbHelperSources.fetchAllShowSources();
 
-		while (c.moveToNext()) {
-			if (onlyNetworkSources) {
-				if (c.getInt(c.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)) == FileSource.SMB) {
+		ColumnIndexCache cache = new ColumnIndexCache();
+
+		try {
+			while (c.moveToNext()) {
+				if (onlyNetworkSources) {
+					if (c.getInt(cache.getColumnIndex(c, DbAdapterSources.KEY_FILESOURCE_TYPE)) == FileSource.SMB) {
+						filesources.add(new FileSource(
+								c.getLong(cache.getColumnIndex(c, DbAdapterSources.KEY_ROWID)),
+								c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_FILEPATH)),
+								c.getInt(cache.getColumnIndex(c, DbAdapterSources.KEY_FILESOURCE_TYPE)),
+								c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_USER)),
+								c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_PASSWORD)),
+								c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_DOMAIN)),
+								c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_TYPE))
+								));
+					}
+				} else {
 					filesources.add(new FileSource(
-							c.getLong(c.getColumnIndex(DbAdapterSources.KEY_ROWID)),
-							c.getString(c.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-							c.getInt(c.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
-							c.getString(c.getColumnIndex(DbAdapterSources.KEY_USER)),
-							c.getString(c.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
-							c.getString(c.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),
-							c.getString(c.getColumnIndex(DbAdapterSources.KEY_TYPE))
+							c.getLong(cache.getColumnIndex(c, DbAdapterSources.KEY_ROWID)),
+							c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_FILEPATH)),
+							c.getInt(cache.getColumnIndex(c, DbAdapterSources.KEY_FILESOURCE_TYPE)),
+							c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_USER)),
+							c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_PASSWORD)),
+							c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_DOMAIN)),
+							c.getString(cache.getColumnIndex(c, DbAdapterSources.KEY_TYPE))
 							));
 				}
-			} else {
-				filesources.add(new FileSource(
-						c.getLong(c.getColumnIndex(DbAdapterSources.KEY_ROWID)),
-						c.getString(c.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-						c.getInt(c.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
-						c.getString(c.getColumnIndex(DbAdapterSources.KEY_USER)),
-						c.getString(c.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
-						c.getString(c.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),
-						c.getString(c.getColumnIndex(DbAdapterSources.KEY_TYPE))
-						));
 			}
+		} catch (Exception e) {
+		} finally {
+			c.close();
+			cache.clear();
 		}
-		c.close();
 
 		return filesources;
 	}
@@ -1663,7 +1681,7 @@ public class MizLib {
 		.post(RequestBody.create(MediaType.parse("application/json"), holder.toString()))
 		.build();
 	}
-	
+
 	public static Request getTraktAuthenticationRequest(String url, String username, String password) throws JSONException {
 		JSONObject holder = new JSONObject();
 		holder.put("username", username);
@@ -1806,11 +1824,19 @@ public class MizLib {
 	}
 
 	public static File getTvShowEpisode(Context c, String showId, String season, String episode) {
-		return new File(MizuuApplication.getTvShowEpisodeFolder(c), showId + "_S" + season + "E" + episode + ".jpg");
+		return new File(MizuuApplication.getTvShowEpisodeFolder(c), showId + "_S" + MizLib.addIndexZero(season) + "E" + MizLib.addIndexZero(episode) + ".jpg");
+	}
+
+	public static File getTvShowEpisode(Context c, String showId, int season, int episode) {
+		return getTvShowEpisode(c, showId, String.valueOf(season), String.valueOf(episode));
 	}
 
 	public static File getTvShowSeason(Context c, String showId, String season) {
-		return new File(MizuuApplication.getTvShowSeasonFolder(c), showId + "_S" + season + ".jpg");
+		return new File(MizuuApplication.getTvShowSeasonFolder(c), showId + "_S" + MizLib.addIndexZero(season) + ".jpg");
+	}
+
+	public static File getTvShowSeason(Context c, String showId, int season) {
+		return getTvShowSeason(c, showId, String.valueOf(season));
 	}
 
 	public static File getOfflineFile(Context c, String filepath) {
@@ -2049,6 +2075,7 @@ public class MizLib {
 
 		output = output.replaceAll("\\s\\-\\s|\\.|\\,|\\_", " "); // Remove separators
 		output = output.trim().replaceAll("(?i)(part)$", ""); // Remove "part" in the end of the string
+		output = output.trim().replaceAll("(?i)(?:s|season[ ._-]*)\\d{1,4}.*", ""); // Remove "season####" in the end of the string
 
 		return output.replaceAll(" +", " ").trim(); // replaceAll() needed to remove all instances of multiple spaces
 	}
@@ -2827,7 +2854,7 @@ public class MizLib {
 				String[] dateArray = date.split("-");
 				Calendar cal = Calendar.getInstance();
 				cal.set(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
-				
+
 				return MizLib.toCapitalFirstChar(cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + cal.get(Calendar.YEAR));
 			} catch (Exception e) { // Fall back if something goes wrong
 				return date;
@@ -2836,14 +2863,14 @@ public class MizLib {
 			return context.getString(R.string.stringNA);
 		}
 	}
-	
+
 	public static String getPrettyDatePrecise(Context context, String date) {
 		if (!MizLib.isEmpty(date)) {
 			try {
 				String[] dateArray = date.split("-");
 				Calendar cal = Calendar.getInstance();
 				cal.set(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
-				
+
 				return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault()).format(cal.getTime());
 			} catch (Exception e) { // Fall back if something goes wrong
 				return date;
@@ -3027,6 +3054,10 @@ public class MizLib {
 	public static boolean isNumber(String runtime) {
 		return TextUtils.isDigitsOnly(runtime);
 	}
+	
+	public static boolean isValidTmdbId(String id) {
+		return !isEmpty(id) && !id.equals("invalid") && isNumber(id);
+	}
 
 	/**
 	 * Helper method to remove a ViewTreeObserver correctly, i.e.
@@ -3056,8 +3087,6 @@ public class MizLib {
 		try {
 			JSONObject configuration = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + getTmdbApiKey(context));
 			String baseUrl = configuration.getJSONObject("images").getString("secure_base_url");
-
-			System.out.println("BASE: " + baseUrl);
 
 			Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 			editor.putString(TMDB_BASE_URL, baseUrl);

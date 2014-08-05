@@ -17,26 +17,25 @@
 package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -58,8 +57,6 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
 import com.squareup.picasso.Picasso;
 
-import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
-
 public class SearchWebMoviesFragment extends Fragment {
 
 	public String filename;
@@ -68,10 +65,7 @@ public class SearchWebMoviesFragment extends Fragment {
 	private EditText searchText;
 	private ProgressBar pbar;
 	private StartSearch startSearch;
-	private boolean localizedInfo;
 	private ListAdapter mAdapter;
-	private CheckBox useSystemLanguage;
-	private Locale locale;
 	private Picasso mPicasso;
 	private Config mConfig;
 
@@ -91,12 +85,11 @@ public class SearchWebMoviesFragment extends Fragment {
 
 		setRetainInstance(true);
 
-		localizedInfo = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(USE_LOCALIZED_DATA, false);
+		// Hide the keyboard
+		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
-
-		locale = Locale.getDefault();
 
 		startSearch = new StartSearch();
 	}
@@ -110,14 +103,12 @@ public class SearchWebMoviesFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		pbar = (ProgressBar) v.findViewById(R.id.pbar);
+		pbar = (ProgressBar) v.findViewById(R.id.progressBar1);
+		v.findViewById(R.id.languageSection).setVisibility(View.GONE);
 
-		useSystemLanguage = (CheckBox) v.findViewById(R.id.searchLanguage);
-		useSystemLanguage.setText(getString(R.string.searchIn) + " " + locale.getDisplayLanguage(Locale.ENGLISH));
-		if (localizedInfo)
-			useSystemLanguage.setChecked(true);
+		lv = (ListView) v.findViewById(R.id.listView1);
+		hideProgressBar();
 
-		lv = (ListView) v.findViewById(android.R.id.list);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -127,7 +118,7 @@ public class SearchWebMoviesFragment extends Fragment {
 		lv.setEmptyView(v.findViewById(R.id.no_results));
 		v.findViewById(R.id.no_results).setVisibility(View.GONE);
 
-		searchText = (EditText) v.findViewById(R.id.search);
+		searchText = (EditText) v.findViewById(R.id.editText1);
 		searchText.setSelection(searchText.length());
 		searchText.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -186,7 +177,10 @@ public class SearchWebMoviesFragment extends Fragment {
 				startSearch.cancel(true);
 				startSearch = new StartSearch();
 				startSearch.execute(searchText.getText().toString());
-			} else mAdapter.notifyDataSetChanged();
+			} else {
+				hideProgressBar();
+				mAdapter.notifyDataSetChanged();
+			}
 		} else Toast.makeText(getActivity().getApplicationContext(), getString(R.string.noInternet), Toast.LENGTH_SHORT).show();
 	}
 
@@ -205,10 +199,7 @@ public class SearchWebMoviesFragment extends Fragment {
 
 				TMDb tmdb = new TMDb(getActivity().getApplicationContext());
 				ArrayList<TMDbMovie> movieResults;
-				if (useSystemLanguage.isChecked())
-					movieResults = tmdb.searchForMovies(params[0], "", getLocaleShortcode());
-				else
-					movieResults = tmdb.searchForMovies(params[0], "", "en");
+				movieResults = tmdb.searchForMovies(params[0], "", "en");
 
 				if (isCancelled())
 					return null;
@@ -219,7 +210,7 @@ public class SearchWebMoviesFragment extends Fragment {
 							movieResults.get(i).getTitle(),
 							movieResults.get(i).getId(),
 							movieResults.get(i).getCover(),
-							movieResults.get(i).getOriginalTitle(),
+							movieResults.get(i).getRating() + "/10",
 							movieResults.get(i).getReleasedate())
 							);
 				}
@@ -249,15 +240,8 @@ public class SearchWebMoviesFragment extends Fragment {
 		}
 	}
 
-	private String getLocaleShortcode() {
-		String language = locale.toString();
-		if (language.contains("_"))
-			language = language.substring(0, language.indexOf("_"));
-		return language;
-	}
-
 	static class ViewHolder {
-		TextView title, orig_title, release;
+		TextView title, rating, release, originalTitle;
 		ImageView cover;
 		LinearLayout layout;
 	}
@@ -288,11 +272,17 @@ public class SearchWebMoviesFragment extends Fragment {
 				convertView = inflater.inflate(R.layout.list_item_movie, parent, false);
 
 				holder = new ViewHolder();
-				holder.title = (TextView) convertView.findViewById(R.id.text);
-				holder.orig_title = (TextView) convertView.findViewById(R.id.origTitle);
-				holder.release = (TextView) convertView.findViewById(R.id.releasedate);
+				holder.title = (TextView) convertView.findViewById(R.id.movieTitle);
+				holder.rating = (TextView) convertView.findViewById(R.id.textView7);
+				holder.release = (TextView) convertView.findViewById(R.id.textReleaseDate);
+				holder.originalTitle = (TextView) convertView.findViewById(R.id.originalTitle);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.layout = (LinearLayout) convertView.findViewById(R.id.cover_layout);
+
+				holder.title.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf"));
+				holder.release.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-LightItalic.ttf"));
+				holder.rating.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-LightItalic.ttf"));
+				holder.originalTitle.setVisibility(View.GONE);
 
 				// Check the height matches our calculated column width
 				if (holder.layout.getLayoutParams().height != mItemHeight) {
@@ -305,10 +295,25 @@ public class SearchWebMoviesFragment extends Fragment {
 			}
 
 			holder.title.setText(results.get(position).getName());
-			holder.orig_title.setText(results.get(position).getOriginalTitle());
 			holder.release.setText(results.get(position).getRelease());
 
-			mPicasso.load(results.get(position).getPic()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
+			holder.rating.setVisibility(View.VISIBLE);
+			if (!results.get(position).getRating().equals("0.0/10")) {
+				if (results.get(position).getRating().contains("/")) {
+					try {
+						int rating = (int) (Double.parseDouble(results.get(position).getRating().substring(0, results.get(position).getRating().indexOf("/"))) * 10);
+						holder.rating.setText(Html.fromHtml(getString(R.string.detailsRating) + ": " + rating + "<small> %</small>"));
+					} catch (NumberFormatException e) {
+						holder.rating.setVisibility(View.GONE);
+					}
+				} else {
+					holder.rating.setVisibility(View.GONE);
+				}
+			} else {
+				holder.rating.setVisibility(View.GONE);
+			}
+
+			mPicasso.load(results.get(position).getImage()).placeholder(R.drawable.gray).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}
@@ -331,36 +336,37 @@ public class SearchWebMoviesFragment extends Fragment {
 	}
 
 	public class Result {
-		String name, id, pic, originaltitle, release;
 
-		public Result(String name, String id, String pic, String originalTitle, String release) {
-			this.name = name;
-			this.id = id;
-			this.pic = pic;
-			this.originaltitle = originalTitle;
-			this.release = release;
+		private String mName, mId, mImage, mRating, mRelease;
+
+		public Result(String name, String id, String image, String rating, String release) {
+			mName = name;
+			mId = id;
+			mImage = image;
+			mRating = rating;
+			mRelease = MizLib.getPrettyDate(getActivity(), release);
 		}
 
 		public String getName() {
-			return name;
+			return mName;
 		}
 
 		public String getId() {
-			return id;
+			return mId;
 		}
 
-		public String getPic() {
-			return pic;
+		public String getImage() {
+			return mImage;
 		}
 
-		public String getOriginalTitle() {
-			return originaltitle;
+		public String getRating() {
+			return mRating;
 		}
 
 		public String getRelease() {
-			if (release.equals("null"))
+			if (mRelease.equals("null"))
 				return getString(R.string.unknownYear);
-			return release;
+			return mRelease;
 		}
 	}
 

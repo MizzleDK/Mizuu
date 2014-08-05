@@ -33,6 +33,6 @@ public class TheMovieDB extends IntentService {
 		Bundle bundle = intent.getExtras();
 
 		new TheMovieDb(this, bundle.getString("filepath"), bundle.getBoolean("isFromManualIdentify", false),
-				bundle.getLong("rowId", 0), bundle.getString("language", ""), bundle.getString("tmdbId", "invalid"));
+				bundle.getString("language", ""), bundle.getString("oldTmdbId"), bundle.getString("tmdbId", "invalid"));
 	}
 }

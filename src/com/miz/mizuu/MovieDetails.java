@@ -88,7 +88,7 @@ import com.miz.db.DbAdapter;
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
-import com.miz.functions.MovieVersion;
+import com.miz.functions.MovieFilepath;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
@@ -101,17 +101,16 @@ import com.miz.widgets.MovieStackWidgetProvider;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-public class MovieDetails extends MizActivity implements OnNavigationListener {
+@SuppressLint("InflateParams") public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager mViewPager;
-	private int mMovieId;
 	private Movie mMovie;
 	private DbAdapter mDatabase;
 	private boolean mIgnorePrefixes, mRemoveMoviesFromWatchlist, mIgnoreDeletedFiles, mIgnoreNfo, mWildcard, mDisableEthernetWiFiCheck;
 	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner mSpinnerAdater;
 	private ActionBar mActionBar;
-	private String mYouTubeApiKey;
+	private String mMovieId, mYouTubeApiKey;
 	private long mVideoPlaybackStarted, mVideoPlaybackEnded;
 	private Context mContext;
 	private Bus mBus;
@@ -159,43 +158,23 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		// Fetch the database ID of the movie to view
 		if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
-			mMovieId = Integer.valueOf(getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY));
+			mMovieId = getIntent().getStringExtra(SearchManager.EXTRA_DATA_KEY);
 		} else {
-			mMovieId = getIntent().getExtras().getInt("rowId");
-		}
-
-		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
-		mViewPager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
-		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				mActionBar.setSelectedNavigationItem(position);
-
-				updateActionBarDrawable(1, false, false);
-			}
-		});
-
-		if (savedInstanceState != null) {
-			mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+			mMovieId = getIntent().getExtras().getString("tmdbId");
 		}
 
 		// Set up database and open it
 		mDatabase = MizuuApplication.getMovieAdapter();
 
-		Cursor cursor = null;
+		Cursor cursor = mDatabase.fetchMovie(mMovieId);
 		try {
-			if (mMovieId > 0)
-				cursor = mDatabase.fetchMovie(mMovieId);
-			else
-				cursor = mDatabase.fetchMovie(getIntent().getExtras().getString("tmdbId"));
 			mMovie = new Movie(this,
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
+					MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID))),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_PLOT)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TAGLINE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_IMDBID)),
+					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID)),
+					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_IMDB_ID)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RATING)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
@@ -203,13 +182,12 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TRAILER)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_GENRES)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CAST)),
+					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ACTORS)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_2)),
+					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION_ID)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
 					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COVERPATH)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
+					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_DATE_ADDED)),
 					mIgnorePrefixes,
 					mIgnoreNfo
 					);
@@ -221,11 +199,23 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		}
 
 		if (mMovie != null) {
-			// The the row ID again, if the MovieDetails activity was launched based on a TMDB ID
-			mMovieId = Integer.parseInt(mMovie.getRowId());
+			mViewPager = (ViewPager) findViewById(R.id.awesomepager);
+			mViewPager.setAdapter(new MovieDetailsAdapter(getSupportFragmentManager()));
+			mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+				@Override
+				public void onPageSelected(int position) {
+					mActionBar.setSelectedNavigationItem(position);
 
-			if (mDatabase.hasMultipleVersions(mMovie.getTmdbId())) {
-				mMovie.setMultipleVersions(mDatabase.getRowIdsForMovie(mMovie.getTmdbId()));
+					updateActionBarDrawable(1, false, false);
+				}
+			});
+
+			if (savedInstanceState != null) {
+				mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
+			}
+			
+			if (MizuuApplication.getMovieMappingAdapter().hasMultipleFilepaths(mMovie.getTmdbId())) {
+				mMovie.setFilepaths(MizuuApplication.getMovieMappingAdapter().getMovieFilepaths(mMovie.getTmdbId()));
 			}
 
 			setupSpinnerItems();
@@ -261,7 +251,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
 				mActionBar.show();
 		}
-		
+
 		if (showActionBar) {
 			mActionBar.show();
 		}
@@ -344,7 +334,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
 			}
 
-			if (mMovie.getTmdbId().isEmpty() || mMovie.getTmdbId().equals("invalid"))
+			if (MizLib.isValidTmdbId(mMovie.getTmdbId()))
 				menu.findItem(R.id.change_cover).setVisible(false);
 
 		} catch (Exception e) {} // This can happen if mMovie is null for whatever reason
@@ -413,25 +403,16 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			public void onClick(DialogInterface dialog, int id) {
 
 				boolean deleted = true;
-				if (mMovie.hasMultipleVersions()) {
-					MovieVersion[] versions = mMovie.getMultipleVersions();
-					for (int i = 0; i < versions.length; i++) {
-						if (mIgnoreDeletedFiles)
-							deleted = deleted && mDatabase.ignoreMovie(Long.valueOf(versions[i].getRowId()));
-						else
-							deleted = deleted && mDatabase.deleteMovie(Long.valueOf(versions[i].getRowId()));
-					}
+				if (mIgnoreDeletedFiles) {
+					deleted = mDatabase.ignoreMovie(mMovie.getTmdbId());
 				} else {
-					if (mIgnoreDeletedFiles)
-						deleted = mDatabase.ignoreMovie(Long.valueOf(mMovie.getRowId()));
-					else
-						deleted = mDatabase.deleteMovie(Long.valueOf(mMovie.getRowId()));
+					deleted = mDatabase.deleteMovie(mMovie.getTmdbId());
 				}
 
 				if (deleted) {
 					if (cb.isChecked()) {
 						if (mMovie.hasMultipleVersions()) {
-							MovieVersion[] versions = mMovie.getMultipleVersions();
+							MovieFilepath[] versions = mMovie.getMultipleVersions();
 							for (int i = 0; i < versions.length; i++) {
 								Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
 								deleteIntent.putExtra("filepath", versions[i].getFilepath());
@@ -488,7 +469,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	public void identifyMovie(MenuItem item) {
 		if (mMovie.hasMultipleVersions()) {
-			final MovieVersion[] versions = mMovie.getMultipleVersions();
+			final MovieFilepath[] versions = mMovie.getMultipleVersions();
 			CharSequence[] items = new CharSequence[versions.length];
 			for (int i = 0; i < versions.length; i++)
 				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
@@ -513,7 +494,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		} else {
 			Intent intent = new Intent();
 			intent.putExtra("fileName", mMovie.getManualIdentificationQuery());
-			intent.putExtra("rowId", mMovie.getRowId());
+			intent.putExtra("tmdbId", mMovie.getTmdbId());
 			intent.setClass(this, IdentifyMovie.class);
 			startActivityForResult(intent, 0);
 		}
@@ -529,14 +510,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	public void favAction(MenuItem item) {
 		mMovie.setFavourite(!mMovie.isFavourite()); // Reverse the favourite boolean
 
-		boolean success = true;
-		if (mMovie.hasMultipleVersions()) {
-			MovieVersion[] versions = mMovie.getMultipleVersions();
-			for (int i = 0; i < versions.length; i++)
-				success = success && mDatabase.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_FAVOURITE, mMovie.getFavourite());
-		} else {
-			success = mDatabase.updateMovieSingleItem(Long.valueOf(mMovie.getRowId()), DbAdapter.KEY_FAVOURITE, mMovie.getFavourite());
-		}
+		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapter.KEY_FAVOURITE, mMovie.getFavourite());
 
 		if (success) {
 			invalidateOptionsMenu();
@@ -569,14 +543,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	private void watched(boolean showToast) {
 		mMovie.setHasWatched(!mMovie.hasWatched()); // Reverse the hasWatched boolean
 
-		boolean success = true;
-		if (mMovie.hasMultipleVersions()) {
-			MovieVersion[] versions = mMovie.getMultipleVersions();
-			for (int i = 0; i < versions.length; i++)
-				success = success && mDatabase.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_HAS_WATCHED, mMovie.getHasWatched());
-		} else {
-			success = mDatabase.updateMovieSingleItem(Long.valueOf(mMovie.getRowId()), DbAdapter.KEY_HAS_WATCHED, mMovie.getHasWatched());
-		}
+		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapter.KEY_HAS_WATCHED, mMovie.getHasWatched());
 
 		if (success) {
 			invalidateOptionsMenu();
@@ -608,14 +575,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	public void watchList(MenuItem item) {
 		mMovie.setToWatch(!mMovie.toWatch()); // Reverse the toWatch boolean
 
-		boolean success = true;
-		if (mMovie.hasMultipleVersions()) {
-			MovieVersion[] versions = mMovie.getMultipleVersions();
-			for (int i = 0; i < versions.length; i++)
-				success = success && mDatabase.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
-		} else {
-			success = mDatabase.updateMovieSingleItem(Long.valueOf(mMovie.getRowId()), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
-		}
+		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
 
 		if (success) {
 			invalidateOptionsMenu();
@@ -643,14 +603,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	public void removeFromWatchlist() {
 		mMovie.setToWatch(false); // Remove it
 
-		boolean success = true;
-		if (mMovie.hasMultipleVersions()) {
-			MovieVersion[] versions = mMovie.getMultipleVersions();
-			for (int i = 0; i < versions.length; i++)
-				success = success && mDatabase.updateMovieSingleItem(Long.valueOf(versions[i].getRowId()), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
-		} else {
-			success = mDatabase.updateMovieSingleItem(Long.valueOf(mMovie.getRowId()), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
-		}
+		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
 
 		if (success) {
 			invalidateOptionsMenu();
@@ -828,7 +781,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	}
 
 	public void searchCover(MenuItem mi) {
-		if (mMovie.getTmdbId() != null && !mMovie.getTmdbId().isEmpty() && MizLib.isOnline(getApplicationContext())) { // Make sure that the device is connected to the web and has the TMDb ID
+		if (MizLib.isOnline(getApplicationContext())) { // Make sure that the device is connected to the web
 			Intent intent = new Intent();
 			intent.putExtra("tmdbId", mMovie.getTmdbId());
 			intent.putExtra("collectionId", mMovie.getCollectionId());
@@ -854,7 +807,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			// Create a new Intent with the Bundle
 			Intent intent = new Intent();
 			intent.setClass(getApplicationContext(), MovieDetails.class);
-			intent.putExtra("rowId", mMovieId);
+			intent.putExtra("tmdbId", mMovieId);
 
 			// Start the Intent for result
 			startActivity(intent);
@@ -877,7 +830,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	public void showEditMenu(MenuItem mi) {
 		Intent intent = new Intent(this, EditMovie.class);
-		intent.putExtra("rowId", Integer.valueOf(mMovie.getRowId()));
 		intent.putExtra("tmdbId", mMovie.getTmdbId());
 		startActivityForResult(intent, 1);
 	}
@@ -900,7 +852,9 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		}  
 
 		@Override  
-		public int getCount() {  
+		public int getCount() {
+			if (!MizLib.isValidTmdbId(mMovie.getTmdbId()))
+				return 1;
 			return 2;
 		}
 	}
@@ -935,7 +889,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		if (mMovie.hasOfflineCopy()) {
 			playMovie(mMovie.getOfflineCopyUri(), false);
 		} else if (mMovie.hasMultipleVersions() && !mMovie.isUnidentified()) {
-			final MovieVersion[] versions = mMovie.getMultipleVersions();
+			final MovieFilepath[] versions = mMovie.getMultipleVersions();
 			CharSequence[] items = new CharSequence[versions.length];
 			for (int i = 0; i < versions.length; i++)
 				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
@@ -966,12 +920,10 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					startActivity(MizLib.getVideoIntent(filepath, mWildcard, mMovie));
 					checkIn();
 				} catch (Exception e) {
-					System.out.println(e);
 					try { // Attempt to launch intent based on wildcard MIME type
 						startActivity(MizLib.getVideoIntent(filepath, "video/*", mMovie));
 						checkIn();
 					} catch (Exception e2) {
-						System.out.println(e2);
 						Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 					}
 				}
@@ -1082,13 +1034,12 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 
-			convertView = inflater.inflate(R.layout.split_file_item, parent, false);
+			if (convertView == null)
+				convertView = inflater.inflate(R.layout.split_file_item, parent, false);
 
-			TextView title = (TextView) convertView.findViewById(R.id.title);
-			TextView description = (TextView) convertView.findViewById(R.id.description);
-
-			title.setText(getString(R.string.part) + " " + mFiles.get(position).getPartNumber());
-			description.setText(mFiles.get(position).getUserFilepath());
+			// Don't care about the ViewHolder pattern here
+			((TextView) convertView.findViewById(R.id.title)).setText(getString(R.string.part) + " " + mFiles.get(position).getPartNumber());
+			((TextView) convertView.findViewById(R.id.description)).setText(mFiles.get(position).getUserFilepath());
 
 			return convertView;
 		}

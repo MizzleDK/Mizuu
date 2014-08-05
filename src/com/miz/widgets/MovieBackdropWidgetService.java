@@ -32,6 +32,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.miz.db.DbAdapter;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.functions.SmallMovie;
 import com.miz.mizuu.MizuuApplication;
@@ -99,18 +100,18 @@ public class MovieBackdropWidgetService extends RemoteViewsService {
 				options.inSampleSize = 4;
 			else
 				options.inSampleSize = 2;
-			
+
 			Bitmap cover = BitmapFactory.decodeFile(movies.get(position).getBackdrop(), options);
-			
+
 			view.setImageViewBitmap(R.id.thumb, cover);
-			
+
 			// Text
 			view.setTextViewText(R.id.widgetTitle, movies.get(position).getTitle());
 			view.setViewVisibility(R.id.widgetTitle, View.VISIBLE);
 
 			// Intent
 			Intent i = new Intent(MovieBackdropWidgetProvider.MOVIE_BACKDROP_WIDGET);
-			i.putExtra("rowId", Integer.parseInt(movies.get(position).getRowId()));
+			i.putExtra("tmdbId", movies.get(position).getTmdbId());
 			view.setOnClickFillInIntent(R.id.list_item, i);
 
 			return view;
@@ -122,23 +123,24 @@ public class MovieBackdropWidgetService extends RemoteViewsService {
 			// Create and open database
 			DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
 
-			Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
+			Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			ColumnIndexCache cache = new ColumnIndexCache();
 
-			while (cursor.moveToNext()) {
-				try {
+			try {
+				while (cursor.moveToNext()) {
 					movies.add(new SmallMovie(mContext,
-							cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-							cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-							cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
-							cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
+							MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID))),
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE)),
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)),
 							ignorePrefixes,
 							ignoreNfo
 							));
-				} catch (NullPointerException e) {}
+				}
+			} catch (NullPointerException e) {} finally {
+				cursor.close();
+				cache.clear();
 			}
-			
-			cursor.close();
-			
+
 			Collections.sort(movies);
 		}
 

@@ -31,6 +31,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.miz.db.DbAdapter;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.SmallMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -91,7 +92,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 		}
 
 		Intent fillInIntent = new Intent(MovieStackWidgetProvider.MOVIE_STACK_WIDGET);
-		fillInIntent.putExtra("rowId", Integer.parseInt(movies.get(position).getRowId()));
+		fillInIntent.putExtra("tmdbId", movies.get(position).getTmdbId());
 		view.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
 
 		return view;
@@ -103,22 +104,23 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 		// Create and open database
 		dbHelper = MizuuApplication.getMovieAdapter();
 
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
+		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+		ColumnIndexCache cache = new ColumnIndexCache();
 
-		while (cursor.moveToNext()) {
-			try {
+		try {
+			while (cursor.moveToNext()) {
 				movies.add(new SmallMovie(mContext,
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
+						MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID))),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)),
 						ignorePrefixes,
 						ignoreNfo
 						));
-			} catch (NullPointerException e) {}
+			}
+		} catch (NullPointerException e) {} finally {
+			cursor.close();
+			cache.clear();
 		}
-
-		cursor.close();
 
 		Collections.sort(movies);
 	}

@@ -19,7 +19,7 @@
     <dimen name="episode_details_background_overlay_width">612dp</dimen>
     <dimen name="episode_details_large_margin">64dp</dimen>
     <dimen name="actor_backdrop_height">600dp</dimen>
-    
+
     <!-- Movie / show details -->
     <dimen name="backdrop_portrait_height">528dp</dimen>
     <dimen name="movie_details_landscape_width">1000dp</dimen>

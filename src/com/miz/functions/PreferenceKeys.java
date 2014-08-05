@@ -40,7 +40,6 @@ public class PreferenceKeys {
 	public static final String INCLUDE_ADULT_CONTENT = "prefsIncludeAdultContent";
 	public static final String MOVIE_RATINGS_SOURCE = "prefsMovieRatingsSource";
 	public static final String TVSHOWS_RATINGS_SOURCE = "prefsShowsRatingsSource";
-	public static final String USE_LOCALIZED_DATA = "prefsUseLocalData";
 	public static final String IGNORED_FILENAME_TAGS = "ignoredTags";
 	public static final String TMDB_BASE_URL = "tmdbBaseUrl";
 	public static final String TMDB_BASE_URL_TIME = "tmdbBaseUrlTime";
@@ -74,5 +73,6 @@ public class PreferenceKeys {
 	public static final String TVSHOWS_START_PAGE = "prefsTvShowsStartPage";
 	public static final String IGNORE_FILESIZE_CHECK = "prefsIgnoreFilesizeCheck";
 	public static final String SHOW_FILE_LOCATION = "prefsShowFileLocation";
+	public static final String LANGUAGE_PREFERENCE = "prefsLanguagePreference";
 	
 }

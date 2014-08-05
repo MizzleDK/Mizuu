@@ -17,9 +17,11 @@
 package com.miz.mizuu;
 
 import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
+import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -28,11 +30,14 @@ import java.util.concurrent.TimeUnit;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 
 import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovieMapping;
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
@@ -48,6 +53,7 @@ public class MizuuApplication extends Application {
 	private static DbAdapterTvShowEpisode sDbTvShowEpisode;
 	private static DbAdapterSources sDbSources;
 	private static DbAdapter sDb;
+	private static DbAdapterMovieMapping sDbMovieMapping;
 	private static HashMap<String, String[]> sMap = new HashMap<String, String[]>();
 	private static Picasso sPicasso, sPicassoDetailsView;
 	private static LruCache sLruCache;
@@ -67,8 +73,9 @@ public class MizuuApplication extends Application {
 		sDbTvShow = new DbAdapterTvShow(this);
 		sDbTvShowEpisode = new DbAdapterTvShowEpisode(this);
 		sDbSources = new DbAdapterSources(this);
+		sDbMovieMapping = new DbAdapterMovieMapping(this); // IMPORTANT that this is initialized before the DbAdapter below
 		sDb = new DbAdapter(this);
-		
+
 		getMovieThumbFolder(this);
 		getMovieBackdropFolder(this);
 		getTvShowThumbFolder(this);
@@ -76,6 +83,84 @@ public class MizuuApplication extends Application {
 		getTvShowEpisodeFolder(this);
 		getTvShowSeasonFolder(this);
 		getAvailableOfflineFolder(this);
+
+		transitionLocalizationPreference();
+
+		
+		/**
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * MERGE ALL DATABASES INTO ONE!!!!
+		 * http://stackoverflow.com/a/3851344/762442
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+
+		File dbFile = getDatabasePath("mizuu_tv_show_data");
+		System.out.println("DATABASE EXISTS: " + dbFile.exists());
+		if (dbFile.exists()) {
+			String KEY_SHOW_ID = "show_id";
+			String KEY_SHOW_TITLE = "show_title";
+			String KEY_SHOW_PLOT = "show_description";
+			String KEY_SHOW_ACTORS = "show_actors";
+			String KEY_SHOW_GENRES = "show_genres";
+			String KEY_SHOW_RATING = "show_rating";
+			String KEY_SHOW_CERTIFICATION = "show_certification";
+			String KEY_SHOW_RUNTIME = "show_runtime";
+			String KEY_SHOW_FIRST_AIRDATE = "show_first_airdate";
+			String KEY_SHOW_EXTRA1 = "extra1"; // Favorite
+			
+			String[] SELECT_ALL = new String[]{KEY_SHOW_ID, KEY_SHOW_TITLE, KEY_SHOW_PLOT, KEY_SHOW_ACTORS,
+					KEY_SHOW_GENRES, KEY_SHOW_RATING, KEY_SHOW_RATING, KEY_SHOW_CERTIFICATION, KEY_SHOW_RUNTIME,
+					KEY_SHOW_FIRST_AIRDATE, KEY_SHOW_EXTRA1};
+			
+			SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
+			Cursor c = db.query("tvshows", SELECT_ALL, null, null, null, null, KEY_SHOW_TITLE + " ASC");
+			
+			
+			
+			while (c.moveToNext()) {
+				System.out.println(c.getString(c.getColumnIndex(KEY_SHOW_TITLE)));
+			}
+			
+			c.close();
+		}
+
 	}
 
 	@Override
@@ -86,6 +171,20 @@ public class MizuuApplication extends Application {
 		sDbTvShowEpisode.close();
 		sDbSources.close();
 		sDb.close();
+	}
+
+	private void transitionLocalizationPreference() {
+		// Transition from the old localization preference if such exists
+		String languagePref;
+		boolean oldLocalizedPref = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefsUseLocalData", false);
+		if (oldLocalizedPref) {
+			languagePref = Locale.getDefault().getLanguage();
+			PreferenceManager.getDefaultSharedPreferences(this).edit().remove("prefsUseLocalData").commit();
+		} else {
+			languagePref = PreferenceManager.getDefaultSharedPreferences(this).getString(LANGUAGE_PREFERENCE, "en");
+		}
+
+		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(LANGUAGE_PREFERENCE, languagePref).commit();
 	}
 
 	public static DbAdapterTvShow getTvDbAdapter() {
@@ -102,6 +201,10 @@ public class MizuuApplication extends Application {
 
 	public static DbAdapter getMovieAdapter() {
 		return sDb;
+	}
+
+	public static DbAdapterMovieMapping getMovieMappingAdapter() {
+		return sDbMovieMapping;
 	}
 
 	public static String[] getCifsFilesList(String parentPath) {
@@ -194,10 +297,10 @@ public class MizuuApplication extends Application {
 	}
 
 	public static void setupTheme(Context context) {
-			if (isFullscreen(context))
-				context.setTheme(R.style.Mizuu_Theme_FullScreen);
-			else
-				context.setTheme(R.style.Mizuu_Theme);
+		if (isFullscreen(context))
+			context.setTheme(R.style.Mizuu_Theme_FullScreen);
+		else
+			context.setTheme(R.style.Mizuu_Theme);
 	}
 
 	public static Bus getBus() {
@@ -235,9 +338,6 @@ public class MizuuApplication extends Application {
 	public static File getTvShowThumbFolder(Context c) {
 		if (sTvShowThumbFolder == null) {
 			sTvShowThumbFolder = new File(c.getExternalFilesDir(null), "tvshows-thumbs");
-			
-			System.out.println("mkdir " + sTvShowThumbFolder.getAbsolutePath());
-			
 			sTvShowThumbFolder.mkdirs();
 		}
 		return sTvShowThumbFolder;
@@ -275,7 +375,7 @@ public class MizuuApplication extends Application {
 		}
 		return sTvShowSeasonFolder;
 	}
-	
+
 	/*
 	 * Please refrain from using this when you need a File object for a specific video.
 	 */

@@ -64,7 +64,6 @@ import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 import com.squareup.picasso.Picasso;
 
-import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 
 public class IdentifyTvShow extends MizActivity {
@@ -77,7 +76,7 @@ public class IdentifyTvShow extends MizActivity {
 	private ProgressBar pbar;
 	private StartSearch startSearch;
 	private long rowId;
-	private boolean localizedInfo, isShow, includeShowData;
+	private boolean isShow, includeShowData;
 	private ListAdapter mAdapter;
 	private SharedPreferences settings;
 	private CheckBox useSystemLanguage;
@@ -95,7 +94,6 @@ public class IdentifyTvShow extends MizActivity {
 
 		// Initialize the PreferenceManager variable and preference variable(s)
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
-		localizedInfo = settings.getBoolean(USE_LOCALIZED_DATA, false);
 
 		isShow = getIntent().getExtras().getBoolean("isShow");
 		includeShowData = getIntent().getExtras().getBoolean("includeShowData");
@@ -115,8 +113,6 @@ public class IdentifyTvShow extends MizActivity {
 
 		useSystemLanguage = (CheckBox) findViewById(R.id.searchLanguage);
 		useSystemLanguage.setText(getString(R.string.searchIn) + " " + locale.getDisplayLanguage(Locale.ENGLISH));
-		if (localizedInfo)
-			useSystemLanguage.setChecked(true);
 
 		lv = (ListView) findViewById(android.R.id.list);
 		lv.setOnItemClickListener(new OnItemClickListener() {
@@ -317,10 +313,10 @@ public class IdentifyTvShow extends MizActivity {
 
 				holder = new ViewHolder();
 				holder.title = (TextView) convertView.findViewById(R.id.text);
-				holder.description = (TextView) convertView.findViewById(R.id.origTitle);
+				holder.description = (TextView) convertView.findViewById(R.id.textView7);
 				holder.descriptionTitle = (TextView) convertView.findViewById(R.id.overviewMessage);
 				holder.descriptionTitle.setText(getString(R.string.overview));
-				holder.release = (TextView) convertView.findViewById(R.id.releasedate);
+				holder.release = (TextView) convertView.findViewById(R.id.textReleaseDate);
 				holder.releasedate = (TextView) convertView.findViewById(R.id.TextView01);
 				holder.releasedate.setText(getString(R.string.detailsFirstAired));
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);

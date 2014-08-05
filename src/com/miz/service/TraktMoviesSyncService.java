@@ -17,7 +17,6 @@
 package com.miz.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 
 import org.json.JSONArray;
@@ -32,10 +31,9 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapter;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.mizuu.MizuuApplication;
@@ -44,9 +42,8 @@ import com.miz.mizuu.R;
 public class TraktMoviesSyncService extends IntentService {
 
 	private ArrayList<Movie> mMovies;
-	private Multimap<String, String> mTmdbIdRowIdMap;
+	private ArrayList<String> mTmdbIds;
 	private HashSet<String> mMovieCollection, mWatchedMovies, mMovieFavorites, mWatchlist;
-	private StringBuilder rowId;
 	private NotificationCompat.Builder mBuilder;
 	private NotificationManager mNotificationManager;
 	private DbAdapter mMovieDatabase;
@@ -129,8 +126,7 @@ public class TraktMoviesSyncService extends IntentService {
 
 	private void setup() {
 		mMovies = new ArrayList<Movie>();
-		mTmdbIdRowIdMap = LinkedListMultimap.create();
-		rowId = new StringBuilder();
+		mTmdbIds = new ArrayList<String>();
 		mMovieCollection = new HashSet<String>();
 		mWatchedMovies = new HashSet<String>();
 		mMovieFavorites = new HashSet<String>();
@@ -162,41 +158,41 @@ public class TraktMoviesSyncService extends IntentService {
 	private void loadMovieLibrary() {
 		// Get movies
 		mMovieDatabase = MizuuApplication.getMovieAdapter();
-		Cursor cursor = mMovieDatabase.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
-
+		Cursor cursor = mMovieDatabase.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+		ColumnIndexCache cache = new ColumnIndexCache();
+		
 		try {
 			while (cursor.moveToNext()) {
-				mTmdbIdRowIdMap.put(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)), cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)));
+				mTmdbIds.add(cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)));
 
 				// Full movies
 				mMovies.add(new Movie(this,
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_PLOT)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TAGLINE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_IMDBID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RATING)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TRAILER)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_GENRES)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CAST)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_2)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COVERPATH)),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
+						MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID))),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_PLOT)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TAGLINE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_IMDB_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RATING)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RELEASEDATE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_CERTIFICATION)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RUNTIME)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TRAILER)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_GENRES)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_FAVOURITE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_ACTORS)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_COLLECTION)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_COLLECTION_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TO_WATCH)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_HAS_WATCHED)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_DATE_ADDED)),
 						false,
 						true
 						));
 			}
 		} catch (Exception e) {} finally {
 			cursor.close();
+			cache.clear();
 		}
 	}
 
@@ -247,13 +243,7 @@ public class TraktMoviesSyncService extends IntentService {
 				try {
 					String tmdbId = String.valueOf(jsonArray.getJSONObject(i).get("tmdb_id"));
 					mWatchedMovies.add(tmdbId);
-					Collection<String> rowIds = mTmdbIdRowIdMap.get(tmdbId);
-					for (String id : rowIds) {
-						rowId.delete(0, rowId.length());
-						rowId.append(id);
-						if (rowId.toString() != null)
-							mMovieDatabase.updateMovieSingleItem(Long.valueOf(rowId.toString()), DbAdapter.KEY_HAS_WATCHED, "1");
-					}
+					mMovieDatabase.updateMovieSingleItem(tmdbId, DbAdapter.KEY_HAS_WATCHED, "1");
 				} catch (Exception e) {}
 			}
 		}
@@ -285,13 +275,7 @@ public class TraktMoviesSyncService extends IntentService {
 				try {
 					String tmdbId = String.valueOf(jsonArray.getJSONObject(i).get("tmdb_id"));
 					mMovieFavorites.add(tmdbId);
-					Collection<String> rowIds = mTmdbIdRowIdMap.get(tmdbId);
-					for (String id : rowIds) {
-						rowId.delete(0, rowId.length());
-						rowId.append(id);
-						if (rowId.toString() != null)
-							mMovieDatabase.updateMovieSingleItem(Long.valueOf(rowId.toString()), DbAdapter.KEY_FAVOURITE, "1");
-					}
+					mMovieDatabase.updateMovieSingleItem(tmdbId, DbAdapter.KEY_FAVOURITE, "1");
 				} catch (Exception e) {}
 			}
 		}
@@ -323,13 +307,7 @@ public class TraktMoviesSyncService extends IntentService {
 				try {
 					String tmdbId = String.valueOf(jsonArray.getJSONObject(i).get("tmdb_id"));
 					mWatchlist.add(tmdbId);
-					Collection<String> rowIds = mTmdbIdRowIdMap.get(tmdbId);
-					for (String id : rowIds) {
-						rowId.delete(0, rowId.length());
-						rowId.append(id);
-						if (rowId.toString() != null)
-							mMovieDatabase.updateMovieSingleItem(Long.valueOf(rowId.toString()), DbAdapter.KEY_TO_WATCH, "1");
-					}
+					mMovieDatabase.updateMovieSingleItem(tmdbId, DbAdapter.KEY_TO_WATCH, "1");
 				} catch (Exception e) {}
 			}
 		}

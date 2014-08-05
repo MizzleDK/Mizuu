@@ -19,7 +19,6 @@ package com.miz.functions;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.appwidget.AppWidgetManager;
@@ -37,7 +36,7 @@ import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 
-import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 
 public class TheTVDbObject {
@@ -45,7 +44,6 @@ public class TheTVDbObject {
 	private TvShowLibraryUpdateCallback callback;
 	private Context context;
 	private String LOCALE = "", language = "", ignoredTags = "";
-	private boolean localizedInfo = false;
 	private TheTVDb tvdb;
 	private Tvshow thisShow;
 	private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
@@ -72,7 +70,7 @@ public class TheTVDbObject {
 		for (String file : queue) {
 			if (file == null)
 				continue;
-			
+
 			DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file.contains("<MiZ>") ? file.split("<MiZ>")[0] : file, ignoredTags);
 			downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file);
 
@@ -85,27 +83,19 @@ public class TheTVDbObject {
 		File backdropFile = MizLib.getTvShowBackdrop(context, thisShow.getId());
 		if (!backdropFile.exists())
 			backdropFile = coverFile;
-		
+
 		cover = MizLib.getNotificationImageThumbnail(context, coverFile.getAbsolutePath());
 		backdrop = MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight());
-		
+
 		callback.onTvShowAdded(thisShow.getId(), thisShow.getTitle(), cover, backdrop, count);
 	}
 
 	private void setup() {
-		localizedInfo = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(USE_LOCALIZED_DATA, false);
-
-		if (language == null || language.isEmpty())
-			if (localizedInfo) {
-				LOCALE = Locale.getDefault().toString();
-				if (LOCALE.contains("_"))
-					LOCALE = LOCALE.substring(0, LOCALE.indexOf("_"));
-
-				if (!MizLib.tvdbLanguages.contains(LOCALE)) // Check if system language is supported by TheTVDb
-					LOCALE = "en";
-			} else LOCALE = "en";
-		else
+		if (MizLib.isEmpty(language)) {
+			LOCALE = PreferenceManager.getDefaultSharedPreferences(context).getString(LANGUAGE_PREFERENCE, "en");
+		} else {
 			LOCALE = language;
+		}
 	}
 
 	private void createShow() {
@@ -159,9 +149,9 @@ public class TheTVDbObject {
 			}
 		}
 
-		if (thisEpisode.getEpisode().isEmpty()) {
-			thisEpisode.setEpisode(episode);
-			thisEpisode.setSeason(season);
+		if (thisEpisode.getEpisode() == -1) {
+			thisEpisode.setEpisode(MizLib.getInteger(episode));
+			thisEpisode.setSeason(MizLib.getInteger(season));
 		}
 
 		// Download the episode screenshot file and try again if it fails
@@ -170,7 +160,7 @@ public class TheTVDbObject {
 			if (!MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile))
 				MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile);
 		}
-		
+
 		// Download season cover if it hasn't already been downloaded
 		if (thisShow.hasSeason(Integer.valueOf(thisEpisode.getSeason()))) {
 			File seasonFile = MizLib.getTvShowSeason(context, thisShow.getId(), season);
@@ -199,7 +189,7 @@ public class TheTVDbObject {
 
 		cover = MizLib.getNotificationImageThumbnail(context, coverFile.getAbsolutePath());
 		backdrop = MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight());
-		
+
 		callback.onEpisodeAdded(thisShow.getId(), thisShow.getId().equals("invalid") ? filepath : thisShow.getTitle() + " S" + MizLib.addIndexZero(ep.getSeason()) + "E" + MizLib.addIndexZero(ep.getEpisode()), cover, backdrop);
 	}
 

@@ -74,6 +74,12 @@
             android:title="@string/random_movie">
         </item>
         <item
+            android:id="@+id/view_collection_online"
+            android:visible="false"
+            android:icon="@drawable/ic_action_globe"
+            android:title="@string/view_collection_online">
+        </item>
+        <item
             android:id="@+id/menuSettings"
             android:enabled="true"
             android:icon="@drawable/ic_action_settings"

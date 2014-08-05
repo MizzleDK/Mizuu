@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/details_top_margin"
-            android:background="#CC000000"
+            android:background="@drawable/top_rounded_corner"
             android:overScrollMode="never"
             android:paddingLeft="@dimen/details_left_padding_large" >
 

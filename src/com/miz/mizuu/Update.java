@@ -37,6 +37,7 @@ import android.widget.TextView;
 import com.miz.base.MizActivity;
 import com.miz.functions.MizLib;
 import com.miz.service.MovieLibraryUpdate;
+import com.miz.service.NewTvShowsLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
 
 public class Update extends MizActivity {
@@ -111,7 +112,7 @@ public class Update extends MizActivity {
 		if (mIsMovie && !MizLib.isMovieLibraryBeingUpdated(this))
 			getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));
 		else if (!mIsMovie && !MizLib.isTvShowLibraryBeingUpdated(this))
-			getApplicationContext().startService(new Intent(getApplicationContext(), TvShowsLibraryUpdate.class));
+			getApplicationContext().startService(new Intent(getApplicationContext(), NewTvShowsLibraryUpdate.class));
 		setResult(1); // end activity and reload Main activity
 
 		finish(); // Leave the Update screen once the update has been started

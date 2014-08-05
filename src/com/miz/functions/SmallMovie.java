@@ -22,15 +22,7 @@ import android.content.Context;
 
 public class SmallMovie extends BaseMovie {
 
-	public SmallMovie(Context context, String rowId, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
-		super(context, tmdbId, tmdbId, tmdbId, tmdbId, ignoreNfo, ignoreNfo);
-		// Set up movie fields based on constructor
-		mContext = context;
-		mRowId = rowId;
-		mFilepath = filepath;
-		mTitle = title;
-		mTmdbId = tmdbId;
-		mIgnorePrefixes = ignorePrefixes;
-		mIgnoreNfo = ignoreNfo;
+	public SmallMovie(Context context, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
+		super(context, filepath, title, tmdbId, ignorePrefixes, ignoreNfo);
 	}
 }

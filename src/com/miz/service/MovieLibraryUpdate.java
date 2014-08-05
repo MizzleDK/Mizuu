@@ -317,6 +317,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+		mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
 		mBuilder.setSmallIcon(R.drawable.refresh);
 		mBuilder.setTicker(getString(R.string.updatingMovies));
 		mBuilder.setContentTitle(getString(R.string.updatingMovies));
@@ -375,6 +376,9 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			if (mIgnoreNfoFiles) {
 				newMovieDbObject(sb.toString());
 			} else {
+				
+				System.out.println("WE HAVE A NFO FILE! " + sb.toString());
+				
 				sb1.delete(0, sb1.length());
 				sb1.append(MizLib.removeExtension(sb.toString().replaceAll("part[1-9]|cd[1-9]", "").trim()));
 

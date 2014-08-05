@@ -108,6 +108,8 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
+		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-shows-update"));
+		
 		showPostUpdateNotification();
 
 		AppWidgetManager awm = AppWidgetManager.getInstance(this);
@@ -312,6 +314,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+		mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
 		mBuilder.setSmallIcon(R.drawable.refresh);
 		mBuilder.setTicker(getString(R.string.updatingTvShows));
 		mBuilder.setContentTitle(getString(R.string.updatingTvShows));

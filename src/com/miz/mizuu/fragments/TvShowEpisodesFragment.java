@@ -237,7 +237,7 @@ public class TvShowEpisodesFragment extends Fragment {
 			holder.subtext.setText(mItems.get(position).getSubtitleText());
 			
 			holder.watchedColor.setBackgroundColor(Color.parseColor(mItems.get(position).hasWatched() ? "#669900" : "#CC0000"));
-
+			
 			if (mResizedWidth > 0)
 				mPicasso.load(mItems.get(position).getCover()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder.cover);
 			else

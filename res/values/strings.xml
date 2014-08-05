@@ -154,6 +154,7 @@
     <string name="updatedMovie">Successfully updated movie!</string>
     <string name="updatingMovies">Updating Movies</string>
     <string name="updatingTvShows">Updating TV Shows</string>
+    <string name="analyzing_files">Analyzing files…</string>
     <string name="updateLookingForFiles">Looking for files…</string>
     <string name="editMovieTitle">Title</string>
     <string name="editMovieTagline">Tagline</string>
@@ -492,5 +493,9 @@
     <string name="more">More</string>
     <string name="show_file_location">Show file location(s)</string>
     <string name="show_file_location_description">Make file location(s) visible in the movie details view</string>
+    <string name="language">Language:</string>
+    <string name="set_pref_language_title">Set preferred language</string>
+    <string name="set_pref_language_description">Localize movie and TV show information into selected language. Defaults to English.</string>
+    <string name="view_collection_online">View collection online</string>
 
 </resources>

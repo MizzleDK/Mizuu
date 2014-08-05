@@ -16,49 +16,46 @@
 
 package com.miz.functions;
 
-import java.io.File;
-
-import com.miz.mizuu.MizuuApplication;
-
 import android.content.Context;
 
 public class DbEpisode {
 
-	private Context context;
-	private String filepath, rowId, showId, episodeCoverPath;
+	private Context mContext;
+	private String mFilepath, mRowId, mShowId, mSeason, mEpisode;
 
-	public DbEpisode(Context context, String filepath, String rowId, String showId, String episodeCoverPath) {
-		this.context = context;
-		this.filepath = filepath;
-		this.rowId = rowId;
-		this.showId = showId;
-		this.episodeCoverPath = episodeCoverPath;
+	public DbEpisode(Context context, String filepath, String rowId, String showId, String season, String episode) {
+		mContext = context;
+		mFilepath = filepath;
+		mRowId = rowId;
+		mShowId = showId;
+		mSeason = season;
+		mEpisode = episode;
 	}
 
 	public String getFilepath() {
-		if (filepath.contains("smb") && filepath.contains("@"))
-			return "smb://" + filepath.substring(filepath.indexOf("@") + 1);
-		return filepath.replace("/smb:/", "smb://");
+		if (mFilepath.contains("smb") && mFilepath.contains("@"))
+			return "smb://" + mFilepath.substring(mFilepath.indexOf("@") + 1);
+		return mFilepath.replace("/smb:/", "smb://");
 	}
 
 	public String getRowId() {
-		return rowId;
+		return mRowId;
 	}
 
 	public String getShowId() {
-		return showId;
+		return mShowId;
 	}
 
 	public String getEpisodeCoverPath() {
-		return new File(MizuuApplication.getTvShowEpisodeFolder(context), episodeCoverPath).getAbsolutePath();
+		return MizLib.getTvShowEpisode(mContext, mShowId, mSeason, mEpisode).getAbsolutePath();
 	}
 
 	public String getThumbnail() {
-		return MizLib.getTvShowThumb(context, getShowId()).getAbsolutePath();
+		return MizLib.getTvShowThumb(mContext, getShowId()).getAbsolutePath();
 	}
 
 	public String getBackdrop() {
-		return MizLib.getTvShowBackdrop(context, getShowId()).getAbsolutePath();
+		return MizLib.getTvShowBackdrop(mContext, getShowId()).getAbsolutePath();
 	}
 
 	public boolean isNetworkFile() {

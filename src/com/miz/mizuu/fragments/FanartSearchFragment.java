@@ -249,8 +249,6 @@ public class FanartSearchFragment extends Fragment {
 						Toast.makeText(getActivity(), getString(R.string.addingCover), Toast.LENGTH_SHORT).show();
 					}}
 						);
-				
-				System.out.println("URL: " + url);
 
 				MizLib.downloadFile(url, MizLib.getMovieBackdrop(getActivity(), TMDB_ID).getAbsolutePath());
 				

@@ -52,6 +52,8 @@ import android.os.IBinder;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovieMapping;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
@@ -77,7 +79,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 		int count = dbMovies.size();
 		for (int i = 0; i < count; i++) {
 			if (dbMovies.get(i).isUpnpFile() && dbMovies.get(i).isUnidentified() && MizLib.exists(dbMovies.get(i).getFilepath()))
-				db.deleteMovie(dbMovies.get(i).getRowId());
+				db.deleteMovie(dbMovies.get(i).getTmdbId());
 		}
 	}
 
@@ -90,7 +92,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 		int count = dbMovies.size();
 		for (int i = 0; i < count; i++) {
 			if (dbMovies.get(i).isUpnpFile() && !MizLib.exists(dbMovies.get(i).getFilepath())) {
-				deleted = db.deleteMovie(dbMovies.get(i).getRowId());
+				deleted = db.deleteMovie(dbMovies.get(i).getTmdbId());
 				if (deleted)
 					deletedMovies.add(dbMovies.get(i));
 			}
@@ -110,16 +112,18 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 	@Override
 	public List<String> searchFolder() {
-		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles(), true); // Query database to return all movies to a cursor
-
+		DbAdapterMovieMapping dbHelper = MizuuApplication.getMovieMappingAdapter();
+		Cursor cursor = dbHelper.getAllFilepaths(ignoreRemovedFiles()); // Query database to return all filepaths in a cursor
+		ColumnIndexCache cache = new ColumnIndexCache();
+		
 		try {
 			while (cursor.moveToNext()) {// Add all movies in cursor to ArrayList of all existing movies
-				existingMovies.put(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)), "");
+				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMapping.KEY_FILEPATH)), "");
 			}
 		} catch (Exception e) {
 		} finally {
 			cursor.close(); // Close cursor
+			cache.clear();
 		}
 
 		// Do a recursive search in the file source folder

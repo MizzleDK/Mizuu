@@ -25,6 +25,8 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovieMapping;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
@@ -54,21 +56,22 @@ public abstract class MovieFileSource<T> extends AbstractFileSource<T> {
 		// Fetch all the movies from the database
 		DbAdapter db = MizuuApplication.getMovieAdapter();
 
-		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles(), true);
+		ColumnIndexCache cache = new ColumnIndexCache();
+		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles());
 		try {
 			while (tempCursor.moveToNext()) {
 				mDbMovies.add(new DbMovie(getContext(),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-						tempCursor.getLong(tempCursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_GENRES)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapter.KEY_TITLE))));
+						MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterMovieMapping.KEY_TMDB_ID))),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_TMDB_ID)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_RUNTIME)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_RELEASEDATE)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_GENRES)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_TITLE))));
 			}
 		} catch (NullPointerException e) {
 		} finally {
 			tempCursor.close();
+			cache.clear();
 		}
 	}
 	

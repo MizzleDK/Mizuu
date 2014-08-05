@@ -291,10 +291,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 					}
 
 					@Override
-					public void onSuccess() {
-						
-						System.out.println("onSuccess() ADDED " + isAdded());
-						
+					public void onSuccess() {						
 						if (!isAdded())
 							return;
 						

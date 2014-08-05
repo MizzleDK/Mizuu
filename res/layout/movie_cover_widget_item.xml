@@ -8,7 +8,6 @@
         android:id="@+id/thumb"
         android:layout_width="match_parent"
         android:layout_height="@dimen/widgetCoverHeight"
-        android:cropToPadding="true"
         android:scaleType="centerCrop"
         android:src="@drawable/loading_image" />
 

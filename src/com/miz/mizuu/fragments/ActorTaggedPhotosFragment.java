@@ -113,6 +113,7 @@ public class ActorTaggedPhotosFragment extends Fragment {
 				intent.setClass(getActivity(), ImageViewer.class);
 				intent.putExtra("photos", photos);
 				intent.putExtra("actorName", getArguments().getString("actorName"));
+				intent.putExtra("portraitPhotos", false);
 				intent.putExtra("selectedIndex", arg2);
 				startActivity(intent);
 			}

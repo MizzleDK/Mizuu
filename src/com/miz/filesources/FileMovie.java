@@ -31,6 +31,8 @@ import android.database.Cursor;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovieMapping;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
@@ -56,7 +58,7 @@ public class FileMovie extends MovieFileSource<File> {
 			if (!dbMovies.get(i).isNetworkFile() && !dbMovies.get(i).isUpnpFile()) {
 				temp = new File(dbMovies.get(i).getFilepath());
 				if (temp.exists() && dbMovies.get(i).isUnidentified())
-					db.deleteMovie(dbMovies.get(i).getRowId());
+					db.deleteMovie(dbMovies.get(i).getTmdbId());
 			}
 		}
 	}
@@ -73,7 +75,7 @@ public class FileMovie extends MovieFileSource<File> {
 			if (!dbMovies.get(i).isNetworkFile()) {
 				temp = new File(dbMovies.get(i).getFilepath());
 				if (!temp.exists()) {
-					deleted = db.deleteMovie(dbMovies.get(i).getRowId());
+					deleted = db.deleteMovie(dbMovies.get(i).getTmdbId());
 					if (deleted)
 						deletedMovies.add(dbMovies.get(i));
 				}
@@ -95,16 +97,18 @@ public class FileMovie extends MovieFileSource<File> {
 	@Override
 	public List<String> searchFolder() {
 
-		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles(), true); // Query database to return all movies to a cursor
-
+		DbAdapterMovieMapping dbHelper = MizuuApplication.getMovieMappingAdapter();
+		Cursor cursor = dbHelper.getAllFilepaths(ignoreRemovedFiles()); // Query database to return all filepaths in a cursor
+		ColumnIndexCache cache = new ColumnIndexCache();
+		
 		try {
 			while (cursor.moveToNext()) {// Add all movies in cursor to ArrayList of all existing movies
-				existingMovies.put(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)), "");
+				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMapping.KEY_FILEPATH)), "");
 			}
 		} catch (Exception e) {
 		} finally {
 			cursor.close(); // Close cursor
+			cache.clear();
 		}
 
 		TreeSet<String> results = new TreeSet<String>();

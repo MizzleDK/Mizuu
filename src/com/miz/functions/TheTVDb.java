@@ -170,6 +170,29 @@ public class TheTVDb {
 			}
 		} catch (Exception e) {}
 	}
+	
+	public int getSearchResultCount(String showTitle) {
+		try {
+			// Connection set-up
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			URL url = new URL("http://thetvdb.com/api/GetSeries.php?seriesname=" + URLEncoder.encode(showTitle, "utf-8") + "&language=all");
+
+			URLConnection con = url.openConnection();
+			con.setReadTimeout(60000);
+			con.setConnectTimeout(60000);
+
+			Document doc = db.parse(con.getInputStream());
+			doc.getDocumentElement().normalize();
+
+			// Check if there's an element with the "id" tag
+			NodeList nodeList = doc.getElementsByTagName("id");
+
+			return nodeList.getLength();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
 
 	public ArrayList<Tvshow> searchForShows(String query, String language) {
 		ArrayList<Tvshow> results = new ArrayList<Tvshow>();
@@ -179,6 +202,87 @@ public class TheTVDb {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			URL url = new URL("http://thetvdb.com/api/GetSeries.php?seriesname=" + URLEncoder.encode(query, "utf-8") + "&language=" + language);
+
+			URLConnection con = url.openConnection();
+			con.setReadTimeout(60000);
+			con.setConnectTimeout(60000);
+
+			Document doc = db.parse(con.getInputStream());
+			doc.getDocumentElement().normalize();
+
+			// Check if there's an element with the "id" tag
+			NodeList nodeList = doc.getElementsByTagName("Series");
+
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				if (nodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
+					Tvshow show = new Tvshow();
+
+					Element firstElement = (Element) nodeList.item(i);
+					NodeList list;
+					Element element;
+					NodeList tag;
+
+					try {
+						list = firstElement.getElementsByTagName("SeriesName");
+						element = (Element) list.item(0);
+						tag = element.getChildNodes();
+						show.setTitle(((Node) tag.item(0)).getNodeValue());
+					} catch(Exception e) {
+						show.setTitle(mContext.getString(R.string.stringNA));
+					}
+
+					try {
+						list = firstElement.getElementsByTagName("Overview");
+						element = (Element) list.item(0);
+						tag = element.getChildNodes();
+						show.setDescription(((Node) tag.item(0)).getNodeValue());
+					} catch(Exception e) {
+						show.setDescription(mContext.getString(R.string.stringNA));
+					}
+
+					try {
+						list = firstElement.getElementsByTagName("id");
+						element = (Element) list.item(0);
+						tag = element.getChildNodes();
+						show.setId(((Node) tag.item(0)).getNodeValue());
+					} catch(Exception e) {
+						show.setId("invalid");
+					}
+
+					try {
+						list = firstElement.getElementsByTagName("id");
+						element = (Element) list.item(0);
+						tag = element.getChildNodes();
+						show.setCover_url("http://thetvdb.com/banners/posters/" + ((Node) tag.item(0)).getNodeValue() + "-1.jpg");
+					} catch(Exception e) {
+						show.setCover_url("");
+					}
+
+					try {
+						list = firstElement.getElementsByTagName("FirstAired");
+						element = (Element) list.item(0);
+						tag = element.getChildNodes();
+						show.setFirst_aired(((Node) tag.item(0)).getNodeValue());
+					} catch(Exception e) {
+						show.setFirst_aired(mContext.getString(R.string.stringNA));
+					}
+
+					results.add(show);
+				}
+			}
+		} catch (Exception e) {}
+
+		return results;
+	}
+	
+	public ArrayList<Tvshow> searchForShowsByImdbId(String imdbId, String language) {
+		ArrayList<Tvshow> results = new ArrayList<Tvshow>();
+
+		try {
+			// Connection set-up
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			URL url = new URL("http://thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=" + URLEncoder.encode(imdbId, "utf-8") + "&language=" + language);
 
 			URLConnection con = url.openConnection();
 			con.setReadTimeout(60000);
@@ -430,18 +534,18 @@ public class TheTVDb {
 						list = firstElement.getElementsByTagName("EpisodeNumber");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setEpisode(((Node) tag.item(0)).getNodeValue());
+						episode.setEpisode(MizLib.getInteger(((Node) tag.item(0)).getNodeValue()));
 					} catch(Exception e) {
-						episode.setEpisode("0");
+						episode.setEpisode(0);
 					}
 
 					try {
 						list = firstElement.getElementsByTagName("SeasonNumber");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setSeason(((Node) tag.item(0)).getNodeValue());
+						episode.setSeason(MizLib.getInteger(((Node) tag.item(0)).getNodeValue()));
 					} catch(Exception e) {
-						episode.setSeason("0");
+						episode.setSeason(0);
 					}
 
 					try {

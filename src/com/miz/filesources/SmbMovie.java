@@ -33,6 +33,8 @@ import android.database.Cursor;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovieMapping;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
@@ -71,7 +73,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 						if (source == null) {
 							if (dbMovies.get(i).isUnidentified())
-								db.deleteMovie(dbMovies.get(i).getRowId());
+								db.deleteMovie(dbMovies.get(i).getTmdbId());
 							continue;
 						}
 
@@ -85,7 +87,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 										));
 
 						if (temp.exists() && dbMovies.get(i).isUnidentified())
-							db.deleteMovie(dbMovies.get(i).getRowId());
+							db.deleteMovie(dbMovies.get(i).getTmdbId());
 					} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
 				}
 			}
@@ -115,7 +117,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 							}
 
 						if (source == null) {
-							deleted = db.deleteMovie(dbMovies.get(i).getRowId());
+							deleted = db.deleteMovie(dbMovies.get(i).getTmdbId());
 							if (deleted)
 								deletedMovies.add(dbMovies.get(i));
 							continue;
@@ -131,7 +133,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 										));
 
 						if (!temp.exists()) {
-							deleted = db.deleteMovie(dbMovies.get(i).getRowId());
+							deleted = db.deleteMovie(dbMovies.get(i).getTmdbId());
 							if (deleted)
 								deletedMovies.add(dbMovies.get(i));
 						}
@@ -158,16 +160,18 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 		if (getFolder() == null)
 			return new ArrayList<String>(); // Return empty List
 
-		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles(), true); // Query database to return all movies to a cursor
-
+		DbAdapterMovieMapping dbHelper = MizuuApplication.getMovieMappingAdapter();
+		Cursor cursor = dbHelper.getAllFilepaths(ignoreRemovedFiles()); // Query database to return all filepaths in a cursor
+		ColumnIndexCache cache = new ColumnIndexCache();
+		
 		try {
 			while (cursor.moveToNext()) {// Add all movies in cursor to ArrayList of all existing movies
-				existingMovies.put(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)), "");
+				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMapping.KEY_FILEPATH)), "");
 			}
 		} catch (Exception e) {
 		} finally {
 			cursor.close(); // Close cursor
+			cache.clear();
 		}
 
 		TreeSet<String> results = new TreeSet<String>();

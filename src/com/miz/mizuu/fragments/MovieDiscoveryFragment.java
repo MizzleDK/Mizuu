@@ -144,10 +144,9 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 				if (mMovieMap.get(Integer.valueOf(mMovies.get(arg2).getId()))) {
 					Intent intent = new Intent();
 					intent.setClass(getActivity(), MovieDetails.class);
-					intent.putExtra("tmdbid", mMovies.get(arg2).getId());
+					intent.putExtra("tmdbId", mMovies.get(arg2).getId());
 
-					// Start the Intent for result
-					startActivityForResult(intent, 0);
+					startActivity(intent);
 				} else {
 					Intent i = new Intent(Intent.ACTION_VIEW);
 					i.setClass(getActivity(), TMDbMovieDetails.class);

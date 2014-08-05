@@ -18,7 +18,6 @@ package com.miz.service;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.Service;
@@ -45,13 +44,13 @@ import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 
-import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 
 public class TheTVDB extends Service {
 
 	private String LOCALE = "", language = "";
-	private boolean localizedInfo = false, isEpisodeIdentify = false, isShowIdentify = false, isUpdate = false, isUnidentifiedIdentify = false;
+	private boolean isEpisodeIdentify = false, isShowIdentify = false, isUpdate = false, isUnidentifiedIdentify = false;
 	private long rowId;
 	private String[] files, rowsToDrop;
 	private TheTVDb tvdb;
@@ -134,7 +133,7 @@ public class TheTVDB extends Service {
 						String file = queue.poll();
 						if (file == null)
 							stopSelf();
-						
+
 						if (season.isEmpty() && episode.isEmpty()) {
 							DecryptedShowEpisode decrypted = MizLib.decryptEpisode(file.contains("<MiZ>") ? file.split("<MiZ>")[0] : file, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(IGNORED_FILENAME_TAGS, ""));
 							downloadEpisode(MizLib.addIndexZero(decrypted.getSeason()), MizLib.addIndexZero(decrypted.getEpisode()), file);
@@ -151,19 +150,11 @@ public class TheTVDB extends Service {
 	}
 
 	private void setup() {
-		localizedInfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(USE_LOCALIZED_DATA, false);
-
-		if (language.isEmpty())
-			if (localizedInfo) {
-				LOCALE = Locale.getDefault().toString();
-				if (LOCALE.contains("_"))
-					LOCALE = LOCALE.substring(0, LOCALE.indexOf("_"));
-
-				if (!MizLib.tvdbLanguages.contains(LOCALE)) // Check if system language is supported by TheTVDb
-					LOCALE = "en";
-			} else LOCALE = "en";
-		else
+		if (language.isEmpty()) {
+			LOCALE = PreferenceManager.getDefaultSharedPreferences(this).getString(LANGUAGE_PREFERENCE, "en");
+		} else {
 			LOCALE = language;
+		}
 	}
 
 	private void createShow(String season, String episode) {
@@ -217,9 +208,9 @@ public class TheTVDB extends Service {
 			}
 		}
 
-		if (thisEpisode.getEpisode().isEmpty()) {
-			thisEpisode.setEpisode(episode);
-			thisEpisode.setSeason(season);
+		if (thisEpisode.getEpisode() == -1) {
+			thisEpisode.setEpisode(MizLib.getInteger(episode));
+			thisEpisode.setSeason(MizLib.getInteger(season));
 		}
 
 		// Download the episode screenshot file and try again if it fails

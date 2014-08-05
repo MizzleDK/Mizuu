@@ -117,20 +117,23 @@ public class TvShowSeasonsFragment extends Fragment {
 		mPicasso = MizuuApplication.getPicasso(mContext);
 		mConfig = MizuuApplication.getBitmapConfig();
 
-		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+		if (!MizLib.isTablet(mContext))
+			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.5);
+		else
+			mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mShowId = getArguments().getString(SHOW_ID);
 		mDualPane = getArguments().getBoolean(DUAL_PANE);
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		
+
 		mBus.unregister(this);
 	}
-	
+
 	@Subscribe
 	public void refreshData(com.miz.mizuu.TvShowEpisode episode) {		
 		loadSeasons(false);
@@ -152,6 +155,7 @@ public class TvShowSeasonsFragment extends Fragment {
 		mGridView.setEmptyView(v.findViewById(R.id.progress));
 		mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
 		mGridView.setAdapter(mAdapter);
+		mGridView.setColumnWidth(mImageThumbSize);
 
 		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -378,7 +382,7 @@ public class TvShowSeasonsFragment extends Fragment {
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup container) {
-			
+
 			final GridSeason mSeason = mItems.get(position);
 			final CoverItem holder;
 
@@ -439,13 +443,13 @@ public class TvShowSeasonsFragment extends Fragment {
 	}
 
 	private class SeasonLoader extends AsyncTask<Void, Void, Void> {
-		
+
 		private boolean mSelectFirstSeason;
-		
+
 		public SeasonLoader(boolean selectFirstSeason) {
 			mSelectFirstSeason = selectFirstSeason;
 		}
-		
+
 		@Override
 		protected void onPreExecute() {
 			mItems.clear();

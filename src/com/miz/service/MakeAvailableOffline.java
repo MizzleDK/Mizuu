@@ -238,6 +238,9 @@ public class MakeAvailableOffline extends IntentService {
 
 	private boolean beginTransfer() {
 		return false;
+		
+		// TODO FIX THIS
+		
 		/*
 		 * if (file.startsWith("http")) {
 			// the size of my buffer in bits

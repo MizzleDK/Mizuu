@@ -15,11 +15,24 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <com.miz.views.PanningView
-                android:id="@+id/episodePhoto"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/backdrop_portrait_height"
-                android:src="@drawable/bg" />
+                android:layout_height="wrap_content" >
+
+                <com.miz.views.PanningView
+                    android:id="@+id/episodePhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/backdrop_portrait_height"
+                    android:src="@drawable/bg" />
+
+                <ImageView
+                    android:id="@+id/shadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_gravity="bottom"
+                    android:src="@drawable/bottom_shadow" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

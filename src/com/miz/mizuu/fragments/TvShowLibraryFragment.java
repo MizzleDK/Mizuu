@@ -86,7 +86,9 @@ import android.widget.TextView;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
 import com.miz.db.DbHelperTvShow;
+import com.miz.functions.ActionBarSpinnerViewHolder;
 import com.miz.functions.AsyncTask;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.CoverItem;
 import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MizLib;
@@ -222,35 +224,38 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				@Override
 				protected void onPreExecute() {
 					mTvShows.clear();
+					mTvShowKeys.clear();
 				}
 
 				@Override
 				protected Void doInBackground(Void... params) {
+					
+					ColumnIndexCache cache = new ColumnIndexCache();
+					
 					try {
 						while (cursor.moveToNext()) {
 							mTvShows.add(new TvShow(
 									getActivity(),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_TITLE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_PLOT)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RATING)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_GENRES)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ACTORS)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RUNTIME)),
 									mIgnorePrefixes,
-									cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
-									MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_EXTRA1)),
+									MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)))
 									));
 						}
 					} catch (Exception e) {
-					}finally {
+					} finally {
 						cursor.close();
+						cache.clear();
 					}
-
-					mTvShowKeys.clear();
-
+					
 					for (int i = 0; i < mTvShows.size(); i++)
 						mTvShowKeys.add(i);
 
@@ -372,7 +377,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		@Override
 		public boolean isEmpty() {
-			return (!mLoading && mTvShows.size() == 0);
+			return (!mLoading && mTvShowKeys.size() == 0);
 		}
 
 		@Override
@@ -849,14 +854,13 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 						mTempKeys.add(i);
 				}
 			} else {
-				String lowerCase = ""; // Reuse String variable
 				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x)
 
 				for (int i = 0; i < mTvShows.size(); i++) {
 					if (isCancelled())
 						return null;
 
-					lowerCase = mTvShows.get(i).getTitle().toLowerCase(Locale.ENGLISH);
+					String lowerCase = mTvShows.get(i).getTitle().toLowerCase(Locale.ENGLISH);
 
 					if (lowerCase.indexOf(mSearchQuery) != -1 ||  p.matcher(lowerCase).replaceAll("").indexOf(mSearchQuery) != -1)
 						mTempKeys.add(i);
@@ -955,19 +959,38 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
-			((TextView) convertView.findViewById(R.id.title)).setText(mSpinnerItems.get(position).getTitle());
+			
+			ActionBarSpinnerViewHolder holder;
+			
+			if (convertView == null) {
+				convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
+				
+				holder = new ActionBarSpinnerViewHolder();
+				holder.title = (TextView) convertView.findViewById(R.id.title);
+				holder.subtitle = (TextView) convertView.findViewById(R.id.subtitle);
+				
+				convertView.setTag(holder);
+			} else {
+				holder = (ActionBarSpinnerViewHolder) convertView.getTag();
+			}
+			
+			holder.title.setText(mSpinnerItems.get(position).getTitle());
 
 			int size = mTvShowKeys.size();
-			((TextView) convertView.findViewById(R.id.subtitle)).setText(size + " " + getResources().getQuantityString(R.plurals.showsInLibrary, size, size));
+			holder.subtitle.setText(size + " " + getResources().getQuantityString(R.plurals.showsInLibrary, size, size));
+
 			return convertView;
 		}
 
 		@Override
-		public View getDropDownView(int position, View convertView, ViewGroup parent) {			
-			convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			
+			if (convertView == null) {
+				convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+			}
+			
 			((TextView) convertView.findViewById(android.R.id.text1)).setText(mSpinnerItems.get(position).getSubtitle());
-
+			
 			return convertView;
 		}
 	}

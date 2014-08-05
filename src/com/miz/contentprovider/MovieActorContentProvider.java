@@ -33,6 +33,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.miz.db.DbAdapter;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -52,7 +53,7 @@ public class MovieActorContentProvider extends SearchRecentSuggestionsProvider {
 		SearchManager.SUGGEST_COLUMN_INTENT_ACTION,
 		SearchManager.SUGGEST_COLUMN_SHORTCUT_ID };
 	private String mActor;
-	
+
 	public MovieActorContentProvider() {
 		setupSuggestions(AUTHORITY, MODE);
 	}
@@ -60,7 +61,7 @@ public class MovieActorContentProvider extends SearchRecentSuggestionsProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		
+
 		mActor = getContext().getString(R.string.actor);
 
 		String query = selectionArgs[0];
@@ -121,17 +122,23 @@ public class MovieActorContentProvider extends SearchRecentSuggestionsProvider {
 
 			query = query.toLowerCase(Locale.ENGLISH);
 
-			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
-			String actors = ""; // Reuse String variable
-			
-			while (c.moveToNext()) {
-				actors = c.getString(c.getColumnIndex(DbAdapter.KEY_CAST)).toLowerCase(Locale.ENGLISH);
+			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			ColumnIndexCache cache = new ColumnIndexCache();
 
-				if (actors.indexOf(query) != -1) {
-					for (String actor : c.getString(c.getColumnIndex(DbAdapter.KEY_CAST)).split("\\|"))
-						if (actor.toLowerCase(Locale.ENGLISH).startsWith(query))
-							actorMap.put(actor, actor);
+			try {
+				while (c.moveToNext()) {
+					String actors = c.getString(cache.getColumnIndex(c, DbAdapter.KEY_ACTORS)).toLowerCase(Locale.ENGLISH);
+
+					if (actors.indexOf(query) != -1) {
+						for (String actor : c.getString(cache.getColumnIndex(c, DbAdapter.KEY_ACTORS)).split("\\|"))
+							if (actor.toLowerCase(Locale.ENGLISH).startsWith(query))
+								actorMap.put(actor, actor);
+					}
 				}
+			} catch (Exception e) {
+			} finally {
+				c.close();
+				cache.clear();
 			}
 
 			actorList = new ArrayList<String>(actorMap.values());

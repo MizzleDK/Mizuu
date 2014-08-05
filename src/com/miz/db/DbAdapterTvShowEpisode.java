@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.EpisodeCounter;
 import com.miz.functions.GridEpisode;
 import com.miz.functions.MizLib;
@@ -61,6 +62,9 @@ public class DbAdapterTvShowEpisode {
 			KEY_EPISODE_WRITER, KEY_EPISODE_GUESTSTARS};
 
 	private SQLiteDatabase database;
+	
+	// Only use this when dealing with all rows
+	private ColumnIndexCache mCache = new ColumnIndexCache();
 
 	public DbAdapterTvShowEpisode(Context context) {
 		database = DbHelperTvShowEpisode.getHelper(context).getWritableDatabase();
@@ -161,11 +165,12 @@ public class DbAdapterTvShowEpisode {
 	public HashMap<String, EpisodeCounter> getSeasons(String showId) {
 		HashMap<String, EpisodeCounter> results = new HashMap<String, EpisodeCounter>();
 		
+		ColumnIndexCache cache = new ColumnIndexCache();
 		Cursor c = null;
 		try {
 			c = database.query(DATABASE_TABLE, new String[]{KEY_SHOW_ID, KEY_EPISODE_TITLE, KEY_SEASON, KEY_HAS_WATCHED}, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc");
 			while (c.moveToNext()) {
-				String season = c.getString(c.getColumnIndex(KEY_SEASON));
+				String season = c.getString(cache.getColumnIndex(c, KEY_SEASON));
 				
 				EpisodeCounter counter = results.get(season);
 				if (counter == null)
@@ -175,7 +180,7 @@ public class DbAdapterTvShowEpisode {
 				counter.incrementEpisodeCount();
 				
 				// Increment watched counter if the episode has been watched
-				if (c.getString(c.getColumnIndex(KEY_HAS_WATCHED)).equals("1"))
+				if (c.getString(cache.getColumnIndex(c, KEY_HAS_WATCHED)).equals("1"))
 					counter.incrementWatchedCount();
 				
 				results.put(season, counter);
@@ -192,22 +197,27 @@ public class DbAdapterTvShowEpisode {
 	public List<GridEpisode> getEpisodesInSeason(Context context, String showId, int season) {
 		List<GridEpisode> episodes = new ArrayList<GridEpisode>();
 		
+		ColumnIndexCache cache = new ColumnIndexCache();
 		Cursor cursor = null;
 		try {
-			cursor = database.query(DATABASE_TABLE, allRows, KEY_SHOW_ID + "='" + showId + "' and " + KEY_SEASON + "='" + MizLib.addIndexZero(season) + "'", null, KEY_EPISODE, null, KEY_EPISODE + " asc");
+			
+			String seasonWithIndex = MizLib.addIndexZero(season);
+			
+			cursor = database.query(DATABASE_TABLE, allRows, KEY_SHOW_ID + "='" + showId + "' and " + KEY_SEASON + "='" + seasonWithIndex + "'", null, KEY_EPISODE, null, KEY_EPISODE + " asc");
 			
 			File temp;
 			while (cursor.moveToNext()) {
-				temp = MizLib.getTvShowEpisode(context, showId, cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON)), cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)));
+				temp = MizLib.getTvShowEpisode(context, showId, cursor.getString(cache.getColumnIndex(cursor, KEY_SEASON)), cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE)));
+				
 				if (!temp.exists())
 					temp = MizLib.getTvShowBackdrop(context, showId);
 					
 				episodes.add(new GridEpisode(context,
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_TITLE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_FILEPATH)),
+						cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE_TITLE)),
+						cursor.getString(cache.getColumnIndex(cursor, KEY_FILEPATH)),
 						season,
-						Integer.valueOf(cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE))),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_HAS_WATCHED)).equals("1"),
+						Integer.valueOf(cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE))),
+						cursor.getString(cache.getColumnIndex(cursor, KEY_HAS_WATCHED)).equals("1"),
 						temp));
 			}
 		} catch (Exception e) {
@@ -223,7 +233,7 @@ public class DbAdapterTvShowEpisode {
 		String s = "";
 		Cursor c = database.query(DATABASE_TABLE, allRows, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_EPISODE_AIRDATE + " LIKE '%-%'", null, null, null, KEY_EPISODE_AIRDATE + " desc"); // %-% hack to make sure that the airdate includes a hyphen and is an actual date
 		if (c.moveToFirst())
-			s = c.getString((c.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_AIRDATE)));
+			s = c.getString(mCache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_EPISODE_AIRDATE));
 		c.close();
 		return s;
 	}

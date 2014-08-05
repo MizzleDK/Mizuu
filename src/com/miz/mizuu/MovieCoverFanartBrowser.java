@@ -129,7 +129,7 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 
 		@Override  
 		public int getCount() {
-			if (collectionId.equals("null") || collectionId.isEmpty())
+			if (!MizLib.isValidTmdbId(collectionId))
 				return 2;
 			return 3;  
 		}
@@ -155,7 +155,7 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 
 				json = httpclient.execute(httppost, responseHandler);
 
-				if (!collectionId.equals("null") && !collectionId.isEmpty()) {
+				if (MizLib.isValidTmdbId(collectionId)) {
 					httppost = new HttpGet("https://api.themoviedb.org/3/collection/" + params[1] + "/images?api_key=" + mTmdbApiKey);
 					httppost.setHeader("Accept", "application/json");
 					responseHandler = new BasicResponseHandler();

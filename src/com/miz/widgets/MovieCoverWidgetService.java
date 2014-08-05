@@ -16,6 +16,10 @@
 
 package com.miz.widgets;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -26,18 +30,18 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.miz.db.DbAdapter;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.SmallMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
-import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
+import com.squareup.picasso.Picasso;
 
 public class MovieCoverWidgetService extends RemoteViewsService {
 
@@ -55,11 +59,19 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 		private Context mContext;
 		private ArrayList<SmallMovie> movies = new ArrayList<SmallMovie>();
 		private boolean ignorePrefixes, ignoreNfo;
+		private Picasso mPicasso;
+		private Bitmap.Config mConfig;
+		private RemoteViews mLoadingView;
 
 		public BookmarkFactory(Context context, int widgetId) {
 			mContext = context.getApplicationContext();
 			ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
 			ignoreNfo = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_NFO_FILES, true);
+			
+			mPicasso = MizuuApplication.getPicasso(mContext);
+			mConfig = MizuuApplication.getBitmapConfig();
+			
+			mLoadingView = new RemoteViews(mContext.getPackageName(), R.layout.movie_cover_widget_item);
 		}
 
 		public void onCreate() {
@@ -81,15 +93,27 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 
 		@Override
 		public RemoteViews getLoadingView() {
-			return new RemoteViews(mContext.getPackageName(), R.layout.movie_cover_widget_item);
+			return mLoadingView;
 		}
 
 		@Override
 		public RemoteViews getViewAt(int position) {
 			RemoteViews view = new RemoteViews(mContext.getPackageName(), R.layout.movie_cover_widget_item);
 
+			
+			try {
+				Bitmap cover = mPicasso.load(movies.get(position).getThumbnail()).config(mConfig).get();
+				view.setImageViewBitmap(R.id.thumb, cover);
+			} catch (IOException e) {
+				view.setImageViewResource(R.id.thumb, R.drawable.loading_image);
+
+				// Text
+				view.setTextViewText(R.id.widgetTitle, movies.get(position).getTitle());
+				view.setViewVisibility(R.id.widgetTitle, View.VISIBLE);
+			}
+			
 			// Image
-			BitmapFactory.Options options = new BitmapFactory.Options();
+			/*BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inPreferredConfig = Config.RGB_565;
 			options.inPreferQualityOverSpeed = true;
 			
@@ -103,11 +127,11 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 				// Text
 				view.setTextViewText(R.id.widgetTitle, movies.get(position).getTitle());
 				view.setViewVisibility(R.id.widgetTitle, View.VISIBLE);
-			}
+			}*/
 
 			// Intent
 			Intent i = new Intent(MovieCoverWidgetProvider.MOVIE_COVER_WIDGET);
-			i.putExtra("rowId", Integer.parseInt(movies.get(position).getRowId()));
+			i.putExtra("tmdbId", movies.get(position).getTmdbId());
 			view.setOnClickFillInIntent(R.id.list_item, i);
 
 			return view;
@@ -119,22 +143,23 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 			// Create and open database
 			DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
 
-			Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
+			Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			ColumnIndexCache cache = new ColumnIndexCache();
 
-			while (cursor.moveToNext()) {
-				try {
+			try {
+				while (cursor.moveToNext()) {
 					movies.add(new SmallMovie(mContext,
-							cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
-							cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-							cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
-							cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID)),
+							MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID))),
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE)),
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)),
 							ignorePrefixes,
 							ignoreNfo
 							));
-				} catch (NullPointerException e) {}
+				}
+			} catch (NullPointerException e) {} finally {
+				cursor.close();
+				cache.clear();
 			}
-
-			cursor.close();
 
 			Collections.sort(movies);
 		}

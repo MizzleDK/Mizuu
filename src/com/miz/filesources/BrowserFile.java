@@ -37,9 +37,6 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 
 	@Override
 	public boolean browse(File folder) {
-		if (folder.getName().equals("/"))
-			return false;
-		
 		List<BrowserFileObject> list = new ArrayList<BrowserFileObject>();
 		List<File> orderedArray = new ArrayList<File>();
 		List<File> temp = new ArrayList<File>();
@@ -79,7 +76,10 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 			temp.clear();
 			orderedArray.clear();
 
-			setParentFolder(new File(folder.getParent()));
+			if (folder.getAbsolutePath().equals("/"))
+				setParentFolder(null);
+			else
+				setParentFolder(new File(folder.getParent()));
 			setCurrentFolder(folder);
 			setCurrentFiles(listFiles);
 
@@ -91,7 +91,7 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 
 		return browseParent();
 	}
-	
+
 	@Override
 	public String getSubtitle() {
 		return getCurrentFolder().getAbsolutePath();
@@ -104,7 +104,7 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 		List<File> orderedArray = new ArrayList<File>();
 		List<File> temp = new ArrayList<File>();
 
-		if (folder.getName().equals("/")) {
+		if (folder == null) {
 			setBrowserParentFiles(list);
 			return true;
 		}
@@ -113,7 +113,7 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 			File[] listFiles = folder.listFiles();
 			if (listFiles == null)
 				return false;
-			
+
 			for (File f : listFiles)
 				if (f.isDirectory())
 					orderedArray.add(f);
@@ -133,7 +133,7 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 			listFiles = temp.toArray(new File[temp.size()]);
 			temp.clear();
 			orderedArray.clear();
-			
+
 			setCurrentParentFiles(listFiles);
 			setBrowserParentFiles(list);
 		} catch (Exception e) {

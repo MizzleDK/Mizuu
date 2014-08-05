@@ -50,9 +50,9 @@ import android.database.Cursor;
 import android.os.IBinder;
 
 import com.miz.abstractclasses.TvShowFileSource;
-import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterTvShow;
 import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbEpisode;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
@@ -90,17 +90,24 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 		// Fetch all the episodes from the database
 		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
 
+		ColumnIndexCache cache = new ColumnIndexCache();
 		Cursor tempCursor = db.getAllEpisodesInDatabase(ignoreRemovedFiles());
 		while (tempCursor.moveToNext()) {
 			try {
 				dbEpisodes.add(new DbEpisode(getContext(),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_FILEPATH)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_ROWID)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SHOW_ID)),
-						tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SHOW_ID)) + "_S" + tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON)) + "E" + tempCursor.getString(tempCursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)) + ".jpg"));
-			} catch (NullPointerException e) {}
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_FILEPATH)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_ROWID)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_SHOW_ID)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_SEASON)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_EPISODE))
+						)
+						);
+			} catch (NullPointerException e) {
+			} finally {
+				tempCursor.close();
+				cache.clear();
+			}
 		}
-		tempCursor.close();
 
 		int count = dbEpisodes.size();
 		for (int i = 0; i < dbEpisodes.size(); i++) {
@@ -135,12 +142,15 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 	public List<String> searchFolder() {
 		DbAdapterTvShowEpisode dbHelper = MizuuApplication.getTvEpisodeDbAdapter();
 		Cursor cursor = dbHelper.getAllEpisodesInDatabase(ignoreRemovedFiles()); // Query database to return all show episodes to a cursor
+		ColumnIndexCache cache = new ColumnIndexCache();
+		
 		try {
 			while (cursor.moveToNext()) // Add all show episodes in cursor to ArrayList of all existing episodes
-				existingEpisodes.put(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FILEPATH)), "");
+				existingEpisodes.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShowEpisode.KEY_FILEPATH)), "");
 		} catch (Exception e) {
 		} finally {
 			cursor.close(); // Close cursor
+			cache.clear();
 		}
 
 		// Do a recursive search in the file source folder
@@ -232,12 +242,12 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 	private class BrowseCallback extends Browse {
 
 		private Service<?, ?> mService;
-		private String mPrefix;
+		private String mPrefix = "";
 
 		public BrowseCallback(String prefix, Service<?, ?> service, String containerId) {
 			super(service, containerId, BrowseFlag.DIRECT_CHILDREN, "*", 0, null, new SortCriterion(true, "dc:title"));
 			mService = service;
-			mPrefix = prefix;
+			mPrefix = mPrefix + prefix + "/";
 		}
 
 		@SuppressWarnings("rawtypes")
@@ -246,11 +256,11 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 			try {
 				for (Container childContainer : didl.getContainers()) {
 					mFolderCount++;
-					mUpnpService.getControlPoint().execute(new BrowseCallback(mPrefix + "/" + childContainer.getTitle(), mService, childContainer.getId()));
+					mUpnpService.getControlPoint().execute(new BrowseCallback((mPrefix.startsWith("/") ? mPrefix : "/" + mPrefix) + childContainer.getTitle(), mService, childContainer.getId()));
 				}
 
 				for (Item childItem : didl.getItems()) {
-					addToResults(mPrefix + "/" + childItem.getTitle() + "<MiZ>" + childItem.getFirstResource().getValue(), childItem.getFirstResource().getSize(), results);
+					addToResults(mPrefix + childItem.getTitle() + "<MiZ>" + childItem.getFirstResource().getValue(), childItem.getFirstResource().getSize(), results);
 				}
 
 				mScannedCount++;

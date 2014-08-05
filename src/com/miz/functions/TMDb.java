@@ -124,7 +124,7 @@ public class TMDb {
 
 		try {
 			String baseImgUrl = MizLib.getTmdbImageBaseUrl(mContext);
-			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + mTmdbApiKey + (!MizLib.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : ""));
+			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + mTmdbApiKey + (!MizLib.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : "") + (!MizLib.isEmpty(language) ? "&language=" + language : ""));
 
 			for (int i = 0; i < jObject.getJSONArray("results").length(); i++) {
 				if (!MizLib.isAdultContent(mContext, jObject.getJSONArray("results").getJSONObject(0).getString("title")) && !MizLib.isAdultContent(mContext, jObject.getJSONArray("results").getJSONObject(0).getString("original_title"))) {

@@ -17,9 +17,9 @@
 package com.miz.functions;
 
 import java.io.File;
-import java.util.Locale;
 
 import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovieMapping;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.widgets.MovieBackdropWidgetProvider;
@@ -34,7 +34,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 
-import static com.miz.functions.PreferenceKeys.USE_LOCALIZED_DATA;
+import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 
 public class TheMovieDb {
@@ -42,17 +42,16 @@ public class TheMovieDb {
 	private MovieLibraryUpdateCallback callback;
 	private Context context;
 	private TMDbMovie movie;
-	private String LOCALE = "", filepath = "", language = "";
-	private boolean localizedInfo = false, isFromManualIdentify = false;
-	private long rowId;
+	private String LOCALE = "", filepath = "", language = "", mOldTmdbId;
+	private boolean isFromManualIdentify = false;
 	private SharedPreferences settings;
 
-	public TheMovieDb(Context context, String filepath, boolean isFromManualIdentify, long rowId, String language, String tmdbId) {
+	public TheMovieDb(Context context, String filepath, boolean isFromManualIdentify, String language, String oldTmdbId, String tmdbId) {
 		this.context = context;
 		this.filepath = filepath;
 		this.isFromManualIdentify = isFromManualIdentify;
-		this.rowId = rowId;
 		this.language = language;
+		mOldTmdbId = oldTmdbId;
 
 		setup();
 
@@ -70,7 +69,6 @@ public class TheMovieDb {
 	public TheMovieDb(Context context, String filepath, MovieLibraryUpdateCallback callback) {
 		this.context = context;
 		this.filepath = filepath;
-		this.rowId = 0;
 		this.language = "";
 		this.callback = callback;
 
@@ -85,14 +83,9 @@ public class TheMovieDb {
 
 	private void setup() {
 		settings = PreferenceManager.getDefaultSharedPreferences(context);
-		localizedInfo = settings.getBoolean(USE_LOCALIZED_DATA, false);
 
 		if (language.isEmpty()) {
-			if (localizedInfo) {
-				LOCALE = Locale.getDefault().toString();
-				if (LOCALE.contains("_")) LOCALE = LOCALE.substring(0, LOCALE.indexOf("_"));
-				else LOCALE = "en";
-			} else LOCALE = "en";
+			LOCALE = PreferenceManager.getDefaultSharedPreferences(context).getString(LANGUAGE_PREFERENCE, "en");
 		} else {
 			LOCALE = language;
 		}
@@ -125,13 +118,28 @@ public class TheMovieDb {
 	}
 
 	private void addToDatabase() {
-		// Create and open database
+
+		DbAdapterMovieMapping dbHelperMovieMapping = MizuuApplication.getMovieMappingAdapter();
 		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
+
+		if (isFromManualIdentify) {
+			// Update the mapping TMDb ID to the new one
+			dbHelperMovieMapping.updateTmdbId(filepath, movie.getId());
+			
+			// Let's check if the old TMDb ID is mapped to
+			// any other file paths - if not, remove the movie
+			// entry in the movie database
+			if (!dbHelperMovieMapping.exists(mOldTmdbId))
+				dbHelper.deleteMovie(mOldTmdbId);
+		} else {
+			// Create the mapping
+			dbHelperMovieMapping.createFilepathMapping(filepath, movie.getId());
+		}
 		
-		if (!isFromManualIdentify)
-			dbHelper.createMovie(filepath, movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
-		else
-			dbHelper.updateMovie(rowId, movie.getCover(), movie.getTitle(), movie.getPlot(), movie.getId(), movie.getImdbId(), movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
+		// Finally, create or update the movie
+		dbHelper.createOrUpdateMovie(movie.getId(), movie.getTitle(), movie.getPlot(), movie.getImdbId(), movie.getRating(), movie.getTagline(),
+				movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0",
+				movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
 
 		updateNotification();
 	}

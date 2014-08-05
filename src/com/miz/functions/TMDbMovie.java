@@ -22,6 +22,8 @@ public class TMDbMovie {
 			certification = "", runtime = "0", trailer = "", genres = "", cast = "", collectionTitle = "", collectionId = "", collectionImage = "", year = "";
 
 	public String getId() {
+		if (id.isEmpty())
+			return title;
 		return id;
 	}
 

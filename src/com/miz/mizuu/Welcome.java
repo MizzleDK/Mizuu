@@ -91,12 +91,12 @@ public class Welcome extends MizActivity implements ViewFactory {
 		dbHelper = MizuuApplication.getMovieAdapter();
 		dbHelperTv = MizuuApplication.getTvDbAdapter();
 
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
+		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
 		while (cursor.moveToNext()) {
 			try {
 				backdrops.add(new Backdrop(
-						MizLib.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID))).getAbsolutePath(),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ROWID)),
+						MizLib.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID))).getAbsolutePath(),
+						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID)),
 						true,
 						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE))
 						));
@@ -172,7 +172,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 					if (index == -1)
 						index = 0;
 					if (backdrops.get(index).isMovie()) {
-						intent.putExtra("rowId", Integer.parseInt(backdrops.get(index).getId()));
+						intent.putExtra("tmdbId", backdrops.get(index).getId());
 						intent.setClass(getApplicationContext(), MovieDetails.class);
 					} else {
 						intent.putExtra("showId", backdrops.get(index).getId());
@@ -383,30 +383,30 @@ public class Welcome extends MizActivity implements ViewFactory {
 	}
 
 	private class Backdrop {
-		String path, id, title;
-		boolean isMovie;
+		private String mPath, mId, mTitle;
+		private boolean mMovie;
 
 		public Backdrop(String path, String id, boolean isMovie, String title) {
-			this.path = path;
-			this.id = id;
-			this.isMovie = isMovie;
-			this.title = title;
+			mPath = path;
+			mPath = id;
+			mMovie = isMovie;
+			mTitle = title;
 		}
 
 		public String getTitle() {
-			return title;
+			return mTitle;
+		}
+		
+		public String getId() {
+			return mPath;
 		}
 
 		public String getPath() {
-			return path;
-		}
-
-		public String getId() {
-			return id;
+			return mPath;
 		}
 
 		public boolean isMovie() {
-			return isMovie;
+			return mMovie;
 		}
 	}
 

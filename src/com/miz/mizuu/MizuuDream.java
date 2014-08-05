@@ -16,6 +16,7 @@
 
 package com.miz.mizuu;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -37,70 +38,78 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 import com.miz.db.DbAdapter;
 import com.miz.db.DbAdapterTvShow;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 
 @SuppressLint("NewApi")
 public class MizuuDream extends DreamService implements ViewFactory {
 
-	private DbAdapter dbHelper;
-	private DbAdapterTvShow dbHelperTv;
-	private ArrayList<Backdrop> backdrops = new ArrayList<Backdrop>();
-	private long interval = 10000;
-	private int index = 0;
-	private boolean isRunning = false;
-	private TextView title;
+	private DbAdapter mDatabaseHelper;
+	private DbAdapterTvShow mDatabaseHelperTv;
+	private ArrayList<Backdrop> mBackdrops = new ArrayList<Backdrop>();
+	private long mInterval = 7500;
+	private int mIndex = 0;
+	private boolean mRunning = false;
+	private TextView mTitle;
 
 	@Override
 	public void onDreamingStopped() {
-		isRunning = false;
-		backdrops.clear();
+		mRunning = false;
+		mBackdrops.clear();
 	}
 
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 
-		isRunning = true;
+		mRunning = true;
 
 		// Exit dream upon user touch
 		setInteractive(false);
 		// Hide system UI
 		setFullscreen(true);
 		// Set the dream layout
-		setContentView(R.layout.welcome);
+		setContentView(R.layout.dream);
 
-		findViewById(R.id.list).setVisibility(View.GONE);
-		
-		title = (TextView) findViewById(R.id.title);
-		if (MizLib.isTablet(this))
-			title.setTextSize(26f);
+		mTitle = (TextView) findViewById(R.id.title);
+		mTitle.setTypeface(MizuuApplication.getOrCreateTypeface(this, "RobotoCondensed-Regular.ttf"));
 
-		dbHelper = MizuuApplication.getMovieAdapter();
-		dbHelperTv = MizuuApplication.getTvDbAdapter();
+		mDatabaseHelper = MizuuApplication.getMovieAdapter();
+		mDatabaseHelperTv = MizuuApplication.getTvDbAdapter();
 
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
+		File temp = null;
+
+		ColumnIndexCache cache = new ColumnIndexCache();
+		Cursor cursor = mDatabaseHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
 		while (cursor.moveToNext()) {
 			try {
-				backdrops.add(new Backdrop(MizLib.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDBID))).getAbsolutePath(),
-								cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE))
-						));
-			} catch (NullPointerException e) {}
-		}
-		cursor = dbHelperTv.getAllShows();
-		while (cursor.moveToNext()) {
-			try {
-				backdrops.add(new Backdrop(MizLib.getTvShowBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID))).getAbsolutePath(),
-								cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE))
-						));
+				temp = MizLib.getMovieBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)));
+				if (temp.exists())
+					mBackdrops.add(new Backdrop(temp.getAbsolutePath(),
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE))
+							));
 			} catch (NullPointerException e) {}
 		}
 		cursor.close();
 
-		Collections.shuffle(backdrops, new Random(System.nanoTime()));
+		cursor = mDatabaseHelperTv.getAllShows();
+		while (cursor.moveToNext()) {
+			try {
+				temp = MizLib.getTvShowBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)));
+				if (temp.exists())
+					mBackdrops.add(new Backdrop(temp.getAbsolutePath(),
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_TITLE))
+							));
+			} catch (NullPointerException e) {}
+		}
+		cursor.close();
+		cache.clear();
 
-		if (backdrops.size() > 0) {
-			title.setText(backdrops.get(index).getTitle());
+		Collections.shuffle(mBackdrops, new Random(System.nanoTime()));
+
+		if (mBackdrops.size() > 0) {
+			mTitle.setText(mBackdrops.get(mIndex).getTitle());
 			startAnimatedBackground();
 		}
 	}
@@ -115,24 +124,24 @@ public class MizuuDream extends DreamService implements ViewFactory {
 		imageSwitcher.setInAnimation(aniIn);
 		imageSwitcher.setOutAnimation(aniOut);
 		imageSwitcher.setFactory(this);
-		imageSwitcher.setImageURI(Uri.parse(backdrops.get(index).getPath()));
+		imageSwitcher.setImageURI(Uri.parse(mBackdrops.get(mIndex).getPath()));
 
 		final Handler handler = new Handler();
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
-				if (isRunning) {
-					index++;
-					index = index % backdrops.size();
-					imageSwitcher.setImageURI(Uri.parse(backdrops.get(index).getPath()));
-					
+				if (mRunning) {
+					mIndex++;
+					mIndex = mIndex % mBackdrops.size();
+					imageSwitcher.setImageURI(Uri.parse(mBackdrops.get(mIndex).getPath()));
+
 					final Animation aniIn = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
 					Animation aniOut = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
 					aniOut.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation animation) {
-							title.setText(backdrops.get(index).getTitle());
-							title.startAnimation(aniIn);
+							mTitle.setText(mBackdrops.get(mIndex).getTitle());
+							mTitle.startAnimation(aniIn);
 						}
 
 						@Override
@@ -142,13 +151,13 @@ public class MizuuDream extends DreamService implements ViewFactory {
 						public void onAnimationStart(Animation animation) {}
 					});
 
-					title.startAnimation(aniOut);
-					
-					handler.postDelayed(this, interval);
+					mTitle.startAnimation(aniOut);
+
+					handler.postDelayed(this, mInterval);
 				}
 			}
 		};
-		handler.postDelayed(runnable, interval);
+		handler.postDelayed(runnable, mInterval);
 
 	}
 

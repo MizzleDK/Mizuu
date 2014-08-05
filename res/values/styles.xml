@@ -30,6 +30,7 @@
         <item name="android:windowBackground">@drawable/bg</item>
         <item name="android:actionBarStyle">@style/ActionBar.Solid</item>
         <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
+        <item name="android:editTextStyle">@style/RobotoEditTextStyle</item>
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
         <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_holo_dark</item>
@@ -41,6 +42,10 @@
     </style>
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    
+    <style name="RobotoEditTextStyle" parent="android:Widget.EditText">
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
@@ -70,6 +75,7 @@
         <item name="android:shadowDx">1.0</item>
         <item name="android:shadowDy">1.0</item>
         <item name="android:shadowRadius">1.0</item>
+        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="ActionBar.Subtitle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle">
@@ -78,6 +84,7 @@
         <item name="android:shadowDx">1.0</item>
         <item name="android:shadowDy">1.0</item>
         <item name="android:shadowRadius">1.0</item>
+        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="MenuHeader">

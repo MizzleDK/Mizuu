@@ -3,6 +3,6 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal" >
 
-    <include layout="@layout/identify" />
+    <include layout="@layout/new_identify" />
 
 </LinearLayout>

@@ -26,16 +26,16 @@ import com.miz.mizuu.R;
 
 public class Movie extends MediumBaseMovie {
 
-	private MovieVersion[] mVersions = new MovieVersion[0];
-	private String PLOT, TAGLINE, IMDB_ID, TRAILER, COVER;
+	private MovieFilepath[] mFilepaths = new MovieFilepath[0];
+	private String PLOT, TAGLINE, IMDB_ID, TRAILER;
 	
 	private String mGetPlot, mGetTagline;
 
-	public Movie(Context context, String rowId, String filepath, String title, String plot, String tagline, String tmdbId, String imdbId, String rating, String releasedate,
+	public Movie(Context context, String filepath, String title, String plot, String tagline, String tmdbId, String imdbId, String rating, String releasedate,
 			String certification, String runtime, String trailer, String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
-			String cover, String date_added, boolean ignorePrefixes, boolean ignoreNfo) {
+			String date_added, boolean ignorePrefixes, boolean ignoreNfo) {
 
-		super(context, rowId, filepath, title, tmdbId, rating, releasedate,
+		super(context, filepath, title, tmdbId, rating, releasedate,
 				genres, favourite, cast, collection, collectionId, toWatch, hasWatched,
 				date_added, certification, runtime, ignorePrefixes, ignoreNfo);
 		
@@ -45,7 +45,6 @@ public class Movie extends MediumBaseMovie {
 		mTmdbId = tmdbId;
 		IMDB_ID = imdbId;
 		TRAILER = trailer;
-		COVER = cover;
 		
 		// getPlot()
 		if (PLOT == null || PLOT.isEmpty()) {
@@ -72,10 +71,6 @@ public class Movie extends MediumBaseMovie {
 
 	public File getPoster() {
 		return getThumbnail();
-	}
-
-	public String getCoverUrl() {
-		return COVER;
 	}
 
 	public String getImdbId() {
@@ -165,15 +160,15 @@ public class Movie extends MediumBaseMovie {
 		return "";
 	}
 	
-	public void setMultipleVersions(MovieVersion[] rowIds) {
-		mVersions = rowIds;
+	public void setFilepaths(MovieFilepath[] rowIds) {
+		mFilepaths = rowIds;
 	}
 	
-	public MovieVersion[] getMultipleVersions() {
-		return mVersions;
+	public MovieFilepath[] getMultipleVersions() {
+		return mFilepaths;
 	}
 	
 	public boolean hasMultipleVersions() {
-		return mVersions.length > 1;
+		return mFilepaths.length > 1;
 	}
 }

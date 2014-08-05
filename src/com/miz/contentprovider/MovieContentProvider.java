@@ -32,6 +32,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.miz.db.DbAdapter;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
@@ -69,7 +70,7 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 		try {
 			List<MediumMovie> list = getSearchResults(query);
 			for (int i = 0; i < list.size(); i++) {
-				cursor.addRow(createRow(Integer.valueOf(i), list.get(i).getTitle(), list.get(i).getReleaseYear().replace("(", "").replace(")", ""), Uri.fromFile(list.get(i).getThumbnail()).toString(), list.get(i).getRowId()));
+				cursor.addRow(createRow(Integer.valueOf(i), list.get(i).getTitle(), list.get(i).getReleaseYear().replace("(", "").replace(")", ""), Uri.fromFile(list.get(i).getThumbnail()).toString(), list.get(i).getTmdbId()));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to lookup " + query, e);
@@ -93,14 +94,14 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 		throw new UnsupportedOperationException();
 	}
 
-	private Object[] createRow(Integer id, String text1, String text2, String icon, String rowId) {
+	private Object[] createRow(Integer id, String text1, String text2, String icon, String tmdbId) {
 		return new Object[] {
 				id, // _id
 				text1, // text1
 				text2, // text2
 				icon,
 				icon,
-				rowId,
+				tmdbId,
 				"android.intent.action.SEARCH", // action
 				SearchManager.SUGGEST_NEVER_MAKE_SHORTCUT };
 	}
@@ -113,37 +114,42 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 
 			query = query.toLowerCase(Locale.ENGLISH);
 
-			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false, false);
-			String title = ""; // Reuse String variable
+			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
 			Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
-			
-			while (c.moveToNext()) {
-				title = c.getString(c.getColumnIndex(DbAdapter.KEY_TITLE)).toLowerCase(Locale.ENGLISH);
+			ColumnIndexCache cache = new ColumnIndexCache();
 
-				if (title.indexOf(query) != -1 ||  p.matcher(title).replaceAll("").indexOf(query) != -1) {
-					movies.add(new MediumMovie(getContext(),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_ROWID)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_FILEPATH)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_TITLE)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_TMDBID)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_RATING)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_GENRES)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_CAST)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_COLLECTION)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_EXTRA_2)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_EXTRA_1)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
-							c.getString(c.getColumnIndex(DbAdapter.KEY_RUNTIME)),
-							false,
-							true
-							));
+			try {
+				while (c.moveToNext()) {
+					String title = c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TITLE)).toLowerCase(Locale.ENGLISH);
+
+					if (title.indexOf(query) != -1 ||  p.matcher(title).replaceAll("").indexOf(query) != -1) {
+						movies.add(new MediumMovie(getContext(),
+								MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TMDB_ID))),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TITLE)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TMDB_ID)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_RATING)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_RELEASEDATE)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_GENRES)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_FAVOURITE)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_ACTORS)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_COLLECTION)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_COLLECTION_ID)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TO_WATCH)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_HAS_WATCHED)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_DATE_ADDED)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_CERTIFICATION)),
+								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_RUNTIME)),
+								false,
+								true
+								));
+					}
 				}
+			} catch (Exception e) {
+			} finally {
+				c.close();
+				cache.clear();
 			}
-			
+
 			Collections.sort(movies);
 		}
 		return movies;

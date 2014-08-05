@@ -203,7 +203,7 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getRuntime() {
-		if (!MizLib.isNumber(RUNTIME))
+		if (!MizLib.isNumber(RUNTIME) || MizLib.isEmpty(RUNTIME))
 			return "0";
 		return RUNTIME;
 	}
