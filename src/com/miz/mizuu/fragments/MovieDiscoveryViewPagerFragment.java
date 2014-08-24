@@ -49,7 +49,6 @@ import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.Main;
-import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 import com.miz.mizuu.SearchWebMovies;
 
@@ -163,9 +162,6 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menuSettings:
-			startActivity(new Intent(getActivity(), Preferences.class));
-			break;
 		case R.id.search_textbox:
 			Intent i = new Intent(getActivity().getApplicationContext(), SearchWebMovies.class);
 			startActivity(i);

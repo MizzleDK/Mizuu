@@ -72,6 +72,16 @@
     </PreferenceCategory>
         <PreferenceCategory android:title="@string/chooserTVShows" >
 
+            <ListPreference
+            android:defaultValue="@string/ratings_option_0"
+            android:dialogTitle="@string/select_data_source_shows"
+            android:entries="@array/show_data_source"
+            android:entryValues="@array/show_data_source"
+            android:icon="@drawable/ic_action_tv"
+            android:key="prefsShowsDataSource"
+            android:summary="@string/data_source_shows_description"
+            android:title="@string/data_source_shows" />
+            
         <ListPreference
             android:defaultValue="@string/ratings_option_2"
             android:dialogTitle="@string/selectSourceForShowRatings"
@@ -81,6 +91,8 @@
             android:key="prefsShowsRatingsSource"
             android:summary="@string/dataSourceOfShowRatings"
             android:title="@string/sourceForShowRatings" />
+        
+   
     </PreferenceCategory>
 
 </PreferenceScreen>

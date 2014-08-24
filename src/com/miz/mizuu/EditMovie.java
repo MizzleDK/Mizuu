@@ -22,7 +22,7 @@ import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import com.miz.base.MizActivity;
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +35,7 @@ import android.widget.TextView;
 
 public class EditMovie extends MizActivity {
 
-	private DbAdapter mDatabaseHelper;
+	private DbAdapterMovies mDatabaseHelper;
 	private Cursor mCursor;
 	private TextView mRelease;
 	private EditText mTitle, mTagline, mPlot, mRuntime, mRating, mGenres;
@@ -70,30 +70,30 @@ public class EditMovie extends MizActivity {
 		if (mCursor.moveToFirst()) {
 
 			// Watchlist
-			mToWatch = mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_TO_WATCH));
+			mToWatch = mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_TO_WATCH));
 
 			// Has watched
-			mHasWatched = mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED));
+			mHasWatched = mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_HAS_WATCHED));
 
 			// Set the title
-			mTitle.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_TITLE)));
+			mTitle.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_TITLE)));
 
 			// Set the plot
-			mPlot.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_PLOT)));
+			mPlot.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_PLOT)));
 
 			// Set the tag line
-			mTagline.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_TAGLINE)));
+			mTagline.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_TAGLINE)));
 			if (mTagline.getText().toString().equals("NOTAGLINE") || !(mTagline.getText().toString().length() > 0))
 				mTagline.setText("");
 
 			// Set the run time
-			mRuntime.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_RUNTIME)));
+			mRuntime.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_RUNTIME)));
 
 			// Set the rating
 			try {
 				mRating.setText(
 						String.valueOf(
-								Float.valueOf(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_RATING)).trim()).floatValue()
+								Float.valueOf(mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_RATING)).trim()).floatValue()
 								)
 						);
 			} catch (Exception e) { // In case it's not a valid float
@@ -104,7 +104,7 @@ public class EditMovie extends MizActivity {
 			boolean found = false;
 
 			for (int i = 0; i < mCertifications.length; i++) {
-				if (mCertifications[i].equals(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)))) {
+				if (mCertifications[i].equals(mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_CERTIFICATION)))) {
 					mCertification.setSelection(i);
 					found = true;
 					break;
@@ -115,10 +115,10 @@ public class EditMovie extends MizActivity {
 				mCertification.setSelection(mCertifications.length - 1);
 
 			// Set the release date
-			mRelease.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)));
+			mRelease.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_RELEASEDATE)));
 
 			// Set the genres
-			mGenres.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapter.KEY_GENRES)));
+			mGenres.setText(mCursor.getString(mCursor.getColumnIndex(DbAdapterMovies.KEY_GENRES)));
 		}
 
 		mCursor.close();

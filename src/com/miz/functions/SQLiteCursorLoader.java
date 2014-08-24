@@ -18,15 +18,15 @@ package com.miz.functions;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase;
 
 public class SQLiteCursorLoader extends AbstractCursorLoader {
 
-	SQLiteOpenHelper db = null;
+	SQLiteDatabase db = null;
 	String table, selection, groupBy, having, orderBy;
 	String[] columns, selectionArgs;
 
-	public SQLiteCursorLoader(Context context, SQLiteOpenHelper db, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+	public SQLiteCursorLoader(Context context, SQLiteDatabase db, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
 		super(context);
 		this.db = db;
 		this.table = table;
@@ -40,6 +40,6 @@ public class SQLiteCursorLoader extends AbstractCursorLoader {
 
 	@Override
 	protected Cursor buildCursor() {
-		return db.getWritableDatabase().query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
+		return db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
 	}
 }

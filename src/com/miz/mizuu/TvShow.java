@@ -16,14 +16,15 @@
 
 package com.miz.mizuu;
 
-import android.content.Context;
-
 import java.io.File;
 import java.util.Locale;
 
+import android.content.Context;
+import android.text.TextUtils;
+
 import com.miz.functions.MizLib;
 import com.miz.functions.SortingKeys;
-import com.miz.mizuu.R;
+import com.miz.utils.StringUtils;
 
 public class TvShow implements Comparable<TvShow> {
 
@@ -53,7 +54,7 @@ public class TvShow implements Comparable<TvShow> {
 		mThumbnail = MizLib.getTvShowThumb(mContext, mId);
 
 		// Title		
-		if (MizLib.isEmpty(TITLE)) {
+		if (TextUtils.isEmpty(TITLE)) {
 			mTitle = "";
 		} else {
 			mTitle = TITLE;
@@ -71,7 +72,7 @@ public class TvShow implements Comparable<TvShow> {
 		}
 
 		// getReleaseYear()
-		if (!MizLib.isEmpty(FIRST_AIR_DATE)) {
+		if (!TextUtils.isEmpty(FIRST_AIR_DATE)) {
 			String YEAR = FIRST_AIR_DATE.trim();
 			try {
 				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
@@ -118,12 +119,33 @@ public class TvShow implements Comparable<TvShow> {
 		}
 	}
 
+	/**
+	 * Get the TV show ID
+	 * @param includeHacks Include information about the service provider in the ID, i.e. "tmdb_" at the start of the ID.
+	 * @return
+	 */
 	public String getId() {
 		if (mId == null || mId.isEmpty()) {
 			return "NOSHOW";
 		} else {
 			return mId;
 		}
+	}
+	
+	public String getIdWithoutHack() {
+		return mId.replace("tmdb_", "");
+	}
+	
+	public static final int TMDB = 1, THETVDB = 2;
+	
+	/**
+	 * Get the service provider for the ID.
+	 * @return
+	 */
+	public int getIdType() {
+		if (mId.startsWith("tmdb_"))
+			return TMDB;
+		return THETVDB;
 	}
 
 	public String getDescription() {
@@ -165,21 +187,11 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getGenres() {
-		return convertToCommas(GENRES);
+		return StringUtils.replacePipesWithCommas(GENRES);
 	}
 
 	public String getActors() {
-		return convertToCommas(ACTORS);
-	}
-
-	private String convertToCommas(String input) {
-		input = input.replace("|", ", ");
-		if (input.startsWith(","))
-			input = input.substring(1);
-		input = input.trim();
-		if (input.endsWith(","))
-			input = input.substring(0, input.length() - 1);
-		return input;
+		return StringUtils.replacePipesWithCommas(ACTORS);
 	}
 
 	public String getCertification() {
@@ -203,7 +215,7 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getRuntime() {
-		if (!MizLib.isNumber(RUNTIME) || MizLib.isEmpty(RUNTIME))
+		if (!MizLib.isNumber(RUNTIME) || TextUtils.isEmpty(RUNTIME))
 			return "0";
 		return RUNTIME;
 	}

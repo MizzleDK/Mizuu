@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,16 +27,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.SpinnerItem;
-import com.miz.mizuu.Main;
-import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
 
 public class WebVideosViewPagerFragment extends Fragment implements OnNavigationListener {
@@ -115,31 +109,6 @@ public class WebVideosViewPagerFragment extends Fragment implements OnNavigation
 		if (savedInstanceState != null) {
 			awesomePager.setCurrentItem(savedInstanceState.getInt("selectedIndex", 0));
 		}
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if (((Main) getActivity()).isDrawerOpen()) {
-			if (actionBar == null && getActivity() != null)
-				actionBar = getActivity().getActionBar();
-			actionBar.setNavigationMode(ActionBar.DISPLAY_SHOW_TITLE);
-			((Main) getActivity()).showDrawerOptionsMenu(menu, inflater);
-		} else {
-			setupActionBar();
-			inflater.inflate(R.menu.menuweb, menu);
-		}
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menuSettings:
-			startActivity(new Intent(getActivity(), Preferences.class));
-			break;
-		}
-
-		return super.onOptionsItemSelected(item);	
 	}
 
 	@Override

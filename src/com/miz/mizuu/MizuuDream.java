@@ -36,8 +36,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
@@ -45,8 +45,8 @@ import com.miz.mizuu.R;
 @SuppressLint("NewApi")
 public class MizuuDream extends DreamService implements ViewFactory {
 
-	private DbAdapter mDatabaseHelper;
-	private DbAdapterTvShow mDatabaseHelperTv;
+	private DbAdapterMovies mDatabaseHelper;
+	private DbAdapterTvShows mDatabaseHelperTv;
 	private ArrayList<Backdrop> mBackdrops = new ArrayList<Backdrop>();
 	private long mInterval = 7500;
 	private int mIndex = 0;
@@ -81,13 +81,13 @@ public class MizuuDream extends DreamService implements ViewFactory {
 		File temp = null;
 
 		ColumnIndexCache cache = new ColumnIndexCache();
-		Cursor cursor = mDatabaseHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+		Cursor cursor = mDatabaseHelper.fetchAllMovies(DbAdapterMovies.KEY_TITLE + " ASC", false);
 		while (cursor.moveToNext()) {
 			try {
-				temp = MizLib.getMovieBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)));
+				temp = MizLib.getMovieBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TMDB_ID)));
 				if (temp.exists())
 					mBackdrops.add(new Backdrop(temp.getAbsolutePath(),
-							cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE))
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TITLE))
 							));
 			} catch (NullPointerException e) {}
 		}
@@ -96,10 +96,10 @@ public class MizuuDream extends DreamService implements ViewFactory {
 		cursor = mDatabaseHelperTv.getAllShows();
 		while (cursor.moveToNext()) {
 			try {
-				temp = MizLib.getTvShowBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)));
+				temp = MizLib.getTvShowBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)));
 				if (temp.exists())
 					mBackdrops.add(new Backdrop(temp.getAbsolutePath(),
-							cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_TITLE))
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_TITLE))
 							));
 			} catch (NullPointerException e) {}
 		}

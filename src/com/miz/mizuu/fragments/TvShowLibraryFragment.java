@@ -20,18 +20,17 @@ import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
 import static com.miz.functions.PreferenceKeys.SORTING_TVSHOWS;
-
-import static com.miz.functions.SortingKeys.CERTIFICATION;
-import static com.miz.functions.SortingKeys.GENRES;
 import static com.miz.functions.SortingKeys.ALL_SHOWS;
-import static com.miz.functions.SortingKeys.FAVORITES;
-import static com.miz.functions.SortingKeys.UNWATCHED_SHOWS;
+import static com.miz.functions.SortingKeys.CERTIFICATION;
 import static com.miz.functions.SortingKeys.DURATION;
+import static com.miz.functions.SortingKeys.FAVORITES;
+import static com.miz.functions.SortingKeys.GENRES;
+import static com.miz.functions.SortingKeys.NEWEST_EPISODE;
 import static com.miz.functions.SortingKeys.RATING;
 import static com.miz.functions.SortingKeys.RELEASE;
 import static com.miz.functions.SortingKeys.TITLE;
+import static com.miz.functions.SortingKeys.UNWATCHED_SHOWS;
 import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
-import static com.miz.functions.SortingKeys.NEWEST_EPISODE;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +64,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -83,9 +83,9 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
-import com.miz.db.DbHelperTvShow;
+import com.miz.db.DatabaseHelper;
+import com.miz.db.DbAdapterTvShowEpisodes;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.ActionBarSpinnerViewHolder;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.ColumnIndexCache;
@@ -97,12 +97,11 @@ import com.miz.functions.SpinnerItem;
 import com.miz.functions.TvShowSortHelper;
 import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
-import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
-import com.miz.mizuu.TvShowDetails;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowActorSearchActivity;
-import com.miz.mizuu.UnidentifiedFiles;
+import com.miz.mizuu.TvShowDetails;
+import com.miz.mizuu.UnidentifiedTvShows;
 import com.miz.mizuu.Update;
 import com.squareup.picasso.Picasso;
 
@@ -215,7 +214,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		@Override
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 			mLoading = true;
-			return new SQLiteCursorLoader(getActivity(), DbHelperTvShow.getHelper(getActivity()), DbAdapterTvShow.DATABASE_TABLE, DbAdapterTvShow.SELECT_ALL, "NOT(" + DbAdapterTvShow.KEY_SHOW_ID + " = 'invalid')", null, null, null, DbAdapterTvShow.KEY_SHOW_TITLE + " ASC");
+			return new SQLiteCursorLoader(getActivity(), DatabaseHelper.getHelper(getActivity()).getWritableDatabase(), DbAdapterTvShows.DATABASE_TABLE, DbAdapterTvShows.SELECT_ALL, "NOT(" + DbAdapterTvShows.KEY_SHOW_ID + " = 'invalid')", null, null, null, DbAdapterTvShows.KEY_SHOW_TITLE + " ASC");
 		}
 
 		@Override
@@ -236,18 +235,18 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 						while (cursor.moveToNext()) {
 							mTvShows.add(new TvShow(
 									getActivity(),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_TITLE)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_PLOT)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RATING)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_GENRES)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ACTORS)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_TITLE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_PLOT)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RATING)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_GENRES)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ACTORS)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RUNTIME)),
 									mIgnorePrefixes,
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_EXTRA1)),
-									MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)))
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
+									MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)))
 									));
 						}
 					} catch (Exception e) {
@@ -408,7 +407,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				holder.text.setSingleLine(true);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext.setSingleLine(true);
 
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 
@@ -416,7 +417,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
-
+			
 			if (!mShowTitles) {
 				holder.text.setVisibility(View.GONE);
 				holder.subtext.setVisibility(View.GONE);
@@ -506,7 +507,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				break;
 
 			case UNWATCHED_SHOWS:
-				DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
+				DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 				for (int i = 0; i < mTvShows.size(); i++)
 					if (db.hasUnwatchedEpisodes(mTvShows.get(i).getId()))
 						mTempKeys.add(i);
@@ -622,10 +623,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			showCertifications();
 			break;
 		case R.id.unidentifiedFiles:
-			startActivity(new Intent(getActivity(), UnidentifiedFiles.class));
-			break;
-		case R.id.menuSettings:
-			startActivity(new Intent(getActivity(), Preferences.class));
+			startActivity(new Intent(getActivity(), UnidentifiedTvShows.class));
 			break;
 		case R.id.clear_filters:
 			showTvShowSection(mActionBar.getSelectedNavigationIndex());
@@ -739,7 +737,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
 		for (int i = 0; i < mTvShowKeys.size(); i++) {
 			String certification = mTvShows.get(mTvShowKeys.get(i)).getCertification();
-			if (!MizLib.isEmpty(certification) && !certification.equalsIgnoreCase(getString(R.string.stringNA))) {
+			if (!TextUtils.isEmpty(certification) && !certification.equalsIgnoreCase(getString(R.string.stringNA))) {
 				if (map.containsKey(certification.trim())) {
 					map.put(certification.trim(), map.get(certification.trim()) + 1);
 				} else {

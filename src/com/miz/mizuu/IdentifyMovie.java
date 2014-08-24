@@ -26,15 +26,15 @@ import com.miz.mizuu.fragments.IdentifyMovieFragment;
 
 public class IdentifyMovie extends MizActivity {
 
-private static String TAG = "IdentifyMovieFragment";
-	
+	private static String TAG = "IdentifyMovieFragment";
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		String tmdbId = getIntent().getExtras().getString("tmdbId");
 		String filepath = getIntent().getExtras().getString("fileName");
-		
+
 		Fragment frag = getSupportFragmentManager().findFragmentByTag(TAG);
 		if (frag == null) {
 			final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -42,7 +42,7 @@ private static String TAG = "IdentifyMovieFragment";
 			ft.commit();
 		}
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -53,7 +53,7 @@ private static String TAG = "IdentifyMovieFragment";
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();

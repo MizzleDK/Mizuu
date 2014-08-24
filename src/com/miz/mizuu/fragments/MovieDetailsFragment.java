@@ -37,10 +37,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
 
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
-import com.miz.functions.MovieFilepath;
+import com.miz.functions.PaletteTransformation;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.views.ObservableScrollView;
@@ -51,15 +51,15 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
 import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
 public class MovieDetailsFragment extends Fragment {
 
 	private Movie mMovie;
-	private DbAdapter mDatabase;
+	private DbAdapterMovies mDatabase;
 	private TextView mTitle, mPlot, mSrc, mGenre, mRuntime, mReleaseDate, mRating, mTagline, mCertification;
-	private boolean mIgnorePrefixes, mIgnoreNfo, mShowFileLocation;
+	private View mDetailsArea;
+	private boolean mIgnorePrefixes, mShowFileLocation;
 	private ImageView mBackground, mCover;
 	private Picasso mPicasso;
 	private Typeface mLight, mLightItalic, mMedium, mBoldItalic;
@@ -87,7 +87,6 @@ public class MovieDetailsFragment extends Fragment {
 		mBus = MizuuApplication.getBus();
 
 		mIgnorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_TITLE_PREFIXES, false);
-		mIgnoreNfo = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_NFO_FILES, true);
 		mShowFileLocation = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SHOW_FILE_LOCATION, true);
 
 		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
@@ -102,27 +101,25 @@ public class MovieDetailsFragment extends Fragment {
 		try {
 			cursor = mDatabase.fetchMovie(getArguments().getString("tmdbId"));
 			mMovie = new Movie(getActivity(),
-					MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID))),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_PLOT)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TAGLINE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_IMDB_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RATING)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TRAILER)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_GENRES)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ACTORS)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_DATE_ADDED)),
-					mIgnorePrefixes,
-					mIgnoreNfo
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TITLE)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_PLOT)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TAGLINE)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_IMDB_ID)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RATING)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RELEASEDATE)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_CERTIFICATION)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RUNTIME)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TRAILER)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_GENRES)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_FAVOURITE)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_ACTORS)),
+					MizuuApplication.getCollectionsAdapter().getCollection(cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_COLLECTION_ID))),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_COLLECTION_ID)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TO_WATCH)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_HAS_WATCHED)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_DATE_ADDED)),
+					mIgnorePrefixes
 					);
 		} catch (Exception e) {
 			getActivity().finish();
@@ -172,6 +169,7 @@ public class MovieDetailsFragment extends Fragment {
 	public void onViewCreated(final View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
+		mDetailsArea = view.findViewById(R.id.details_area);
 		mBackground = (ImageView) view.findViewById(R.id.imageBackground);
 		mTitle = (TextView) view.findViewById(R.id.movieTitle);
 		mPlot = (TextView) view.findViewById(R.id.textView2);
@@ -215,7 +213,7 @@ public class MovieDetailsFragment extends Fragment {
 
 		mPlot.setTypeface(mLight);
 		mSrc.setTypeface(mLight);
-		
+
 		mRuntime.setTypeface(mMedium);
 		mCertification.setTypeface(mMedium);
 		mRating.setTypeface(mMedium);
@@ -253,15 +251,7 @@ public class MovieDetailsFragment extends Fragment {
 
 		// Set the movie file source
 		if (mShowFileLocation) {
-			if (mMovie.hasMultipleVersions() && !mMovie.isUnidentified()) {
-				StringBuilder sb = new StringBuilder();
-				MovieFilepath[] versions = mMovie.getMultipleVersions();
-				for (int i = 0; i < versions.length; i++)
-					sb.append(MizLib.transformSmbPath(versions[i].getFilepath()) + "\n");
-				mSrc.setText(sb.toString().trim());
-			} else {
-				mSrc.setText(mMovie.getFilepath());
-			}
+			mSrc.setText(mMovie.getAllFilepaths());
 		} else {
 			mSrc.setVisibility(View.GONE);
 		}
@@ -275,7 +265,7 @@ public class MovieDetailsFragment extends Fragment {
 
 		// Set the movie genre
 		mGenre.setTypeface(mLightItalic);
-		if (!MizLib.isEmpty(mMovie.getGenres())) {
+		if (!TextUtils.isEmpty(mMovie.getGenres())) {
 			mGenre.setText(mMovie.getGenres());
 		} else {
 			mGenre.setVisibility(View.GONE);
@@ -305,7 +295,7 @@ public class MovieDetailsFragment extends Fragment {
 		}
 
 		// Set the movie certification
-		if (!MizLib.isEmpty(mMovie.getCertification())) {
+		if (!TextUtils.isEmpty(mMovie.getCertification())) {
 			mCertification.setText(mMovie.getCertification());
 		} else {
 			mCertification.setText(R.string.stringNA);
@@ -316,51 +306,26 @@ public class MovieDetailsFragment extends Fragment {
 
 	private void loadImages() {
 		if (!MizLib.isPortrait(getActivity())) {
-			if (!mIgnoreNfo && mMovie.isNetworkFile()) {
-				mPicasso.load(mMovie.getFilepath() + "<MiZ>" + mMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(mCover);
-				mPicasso.load(mMovie.getFilepath() + "MIZ_BG<MiZ>" + mMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(mBackground);
-			} else {
-				mPicasso.load(mMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(mCover);
-				mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(mBackground);
-			}
+			mPicasso.load(mMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).transform(new PaletteTransformation(mMovie.getThumbnail().getAbsolutePath(), mDetailsArea)).into(mCover);
+			mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(mBackground);		
 		} else {
-			if (!mIgnoreNfo && mMovie.isNetworkFile()) {
-				mPicasso.load(mMovie.getFilepath() + "<MiZ>" + mMovie.getThumbnail()).placeholder(R.drawable.loading_image).error(R.drawable.loading_image).into(mCover);
-				mPicasso.load(mMovie.getFilepath() + "MIZ_BG<MiZ>" + mMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(mBackground, new Callback() {
-					@Override
-					public void onError() {
-						if (!isAdded())
-							return;
-						((PanningView) mBackground).setScaleType(ScaleType.CENTER_CROP);
-						mPicasso.load(mMovie.getFilepath() + "<MiZ>" + mMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(mBackground);
-					}
+			mPicasso.load(mMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).transform(new PaletteTransformation(mMovie.getThumbnail().getAbsolutePath(), mDetailsArea)).into(mCover);
+			mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(mBackground, new Callback() {
+				@Override
+				public void onError() {
+					if (!isAdded())
+						return;
+					((PanningView) mBackground).setScaleType(ScaleType.CENTER_CROP);
+					mPicasso.load(mMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(mBackground);
+				}
 
-					@Override
-					public void onSuccess() {
-						if (!isAdded())
-							return;
-						((PanningView) mBackground).startPanning();
-					}					
-				});
-			} else {
-				mPicasso.load(mMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).into(mCover);
-				mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(mBackground, new Callback() {
-					@Override
-					public void onError() {
-						if (!isAdded())
-							return;
-						((PanningView) mBackground).setScaleType(ScaleType.CENTER_CROP);
-						mPicasso.load(mMovie.getThumbnail()).skipMemoryCache().placeholder(R.drawable.bg).error(R.drawable.bg).into(mBackground);
-					}
-
-					@Override
-					public void onSuccess() {
-						if (!isAdded())
-							return;
-						((PanningView) mBackground).startPanning();
-					}				
-				});
-			}
+				@Override
+				public void onSuccess() {
+					if (!isAdded())
+						return;
+					((PanningView) mBackground).startPanning();
+				}				
+			});
 		}
 	}
 }

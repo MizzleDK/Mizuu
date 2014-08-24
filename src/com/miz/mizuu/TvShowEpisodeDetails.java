@@ -36,7 +36,7 @@ import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 
 import com.miz.base.MizActivity;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.TvShowEpisodeDetailsFragment;
 import com.squareup.otto.Bus;
@@ -50,7 +50,7 @@ public class TvShowEpisodeDetails extends MizActivity {
 	private int mSeason, mEpisode;
 	private String mShowId, mShowTitle;
 	private ViewPager mViewPager;
-	private DbAdapterTvShowEpisode mDatabaseHelper;
+	private DbAdapterTvShowEpisodes mDatabaseHelper;
 	private Bus mBus;
 	private Drawable mActionBarBackgroundDrawable;
 	private ImageView mActionBarOverlay;
@@ -86,24 +86,21 @@ public class TvShowEpisodeDetails extends MizActivity {
 
 		mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
 
-		Cursor cursor = mDatabaseHelper.getAllEpisodes(mShowId, DbAdapterTvShowEpisode.OLDEST_FIRST);	
+		Cursor cursor = mDatabaseHelper.getAllEpisodes(mShowId, DbAdapterTvShowEpisodes.OLDEST_FIRST);	
 		try {
 			while (cursor.moveToNext()) {
-				mEpisodes.add(new TvShowEpisode(this,
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_ROWID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SHOW_ID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_FILEPATH)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_TITLE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_PLOT)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_AIRDATE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_DIRECTOR)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_WRITER)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_GUESTSTARS)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_RATING)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_HAS_WATCHED)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EXTRA_1))
+				mEpisodes.add(new TvShowEpisode(this, mShowId,
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_TITLE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_PLOT)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_AIRDATE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_DIRECTOR)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_WRITER)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_GUESTSTARS)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_RATING)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_HAS_WATCHED)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_FAVOURITE))
 						));
 			}
 		} catch (Exception e) {
@@ -147,9 +144,10 @@ public class TvShowEpisodeDetails extends MizActivity {
 		mActionBarOverlay.setVisibility(View.VISIBLE);
 
 		if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
-			if (newAlpha == 0)
+			if (newAlpha == 0) {
 				mActionBar.hide();
-			else
+				mActionBarOverlay.setVisibility(View.GONE);
+			} else
 				mActionBar.show();
 
 		if (setBackground) {
@@ -166,7 +164,7 @@ public class TvShowEpisodeDetails extends MizActivity {
 		super.onResume();
 
 		mBus.register(this);
-		updateActionBarDrawable(0, true, true);
+		updateActionBarDrawable(1, true, true);
 	}
 
 	@Override

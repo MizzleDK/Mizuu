@@ -20,24 +20,23 @@ import java.io.File;
 import java.util.Locale;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.miz.abstractclasses.MediumBaseMovie;
 import com.miz.mizuu.R;
 
 public class Movie extends MediumBaseMovie {
 
-	private MovieFilepath[] mFilepaths = new MovieFilepath[0];
 	private String PLOT, TAGLINE, IMDB_ID, TRAILER;
 	
 	private String mGetPlot, mGetTagline;
 
-	public Movie(Context context, String filepath, String title, String plot, String tagline, String tmdbId, String imdbId, String rating, String releasedate,
+	public Movie(Context context, String title, String plot, String tagline, String tmdbId, String imdbId, String rating, String releasedate,
 			String certification, String runtime, String trailer, String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
-			String date_added, boolean ignorePrefixes, boolean ignoreNfo) {
+			String date_added, boolean ignorePrefixes) {
 
-		super(context, filepath, title, tmdbId, rating, releasedate,
-				genres, favourite, cast, collection, collectionId, toWatch, hasWatched,
-				date_added, certification, runtime, ignorePrefixes, ignoreNfo);
+		super(context, title, tmdbId, rating, releasedate, genres, favourite, cast, collection,
+				collectionId, toWatch, hasWatched, date_added, certification, runtime, ignorePrefixes);
 		
 		// Set up movie fields based on constructor
 		PLOT = plot;
@@ -78,7 +77,7 @@ public class Movie extends MediumBaseMovie {
 	}
 
 	public String getRating() {
-		if (!MizLib.isEmpty(RATING))
+		if (!TextUtils.isEmpty(RATING))
 			return RATING + "/10";
 		return "0.0/10";
 	}
@@ -124,19 +123,19 @@ public class Movie extends MediumBaseMovie {
 			TO_WATCH = "0";
 	}
 
-	public boolean isSplitFile() {
-		return getFilepath().matches(".*(cd1|part1).*");
+	public boolean isSplitFile(String path) {
+		return path.matches(".*(cd1|part1).*");
 	}
 
 	public boolean isPartOfCollection() {
 		return !COLLECTION_ID.isEmpty() || COLLECTION_ID == null;
 	}
 	
-	public String getLocalTrailer() {
+	public String getLocalTrailer(String path) {
 		try {
 			// Check if there's a custom cover art image
-			String filename = mFilepath.substring(0, mFilepath.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
-			File parentFolder = new File(mFilepath).getParentFile();
+			String filename = path.substring(0, path.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
+			File parentFolder = new File(path).getParentFile();
 
 			if (parentFolder != null) {
 				File[] list = parentFolder.listFiles();
@@ -158,17 +157,5 @@ public class Movie extends MediumBaseMovie {
 			}
 		} catch (Exception e) {}
 		return "";
-	}
-	
-	public void setFilepaths(MovieFilepath[] rowIds) {
-		mFilepaths = rowIds;
-	}
-	
-	public MovieFilepath[] getMultipleVersions() {
-		return mFilepaths;
-	}
-	
-	public boolean hasMultipleVersions() {
-		return mFilepaths.length > 1;
 	}
 }

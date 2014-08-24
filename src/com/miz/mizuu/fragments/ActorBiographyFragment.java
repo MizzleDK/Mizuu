@@ -25,13 +25,12 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ScrollView;
-import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.miz.functions.BlurTransformation;
@@ -39,7 +38,6 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.views.ObservableScrollView;
-import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Callback;
@@ -111,12 +109,9 @@ public class ActorBiographyFragment extends Fragment {
 		mActorImageBackground = (ImageView) v.findViewById(R.id.imageView2);
 
 		if (!MizuuApplication.isFullscreen(getActivity())) {
-			if (MizLib.isPortrait(getActivity()))
-				MizLib.addActionBarAndStatusBarMargin(getActivity(), mActorImage, (LayoutParams) mActorImage.getLayoutParams());
-			else
+			if (!MizLib.isPortrait(getActivity()))
 				MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.linearLayout1));
-		} else
-			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.frameLayout1));
+		}
 
 		if (MizLib.isPortrait(getActivity())) {
 			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
@@ -126,7 +121,7 @@ public class ActorBiographyFragment extends Fragment {
 			sv.setOnScrollChangedListener(new OnScrollChangedListener() {
 				@Override
 				public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-					final int headerHeight = mActorImageBackground.getHeight() - height;
+					final int headerHeight = mActorImage.getHeight() - height;
 					final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
 					final int newAlpha = (int) (ratio * 255);
 
@@ -135,7 +130,7 @@ public class ActorBiographyFragment extends Fragment {
 						mBus.post(Integer.valueOf(newAlpha));
 
 						// Such parallax, much wow
-						mActorImageBackground.setPadding(0, (int) (t / 1.5), 0, 0);
+						mActorImage.setPadding(0, (int) (t / 1.5), 0, 0);
 					}
 				}
 			});
@@ -202,7 +197,7 @@ public class ActorBiographyFragment extends Fragment {
 
 			mActorName.setText(mName);
 
-			if (!MizLib.isEmpty(mBio))
+			if (!TextUtils.isEmpty(mBio))
 				mActorBio.setText(mBio);
 			else
 				mActorBio.setText(R.string.no_biography);
@@ -210,46 +205,42 @@ public class ActorBiographyFragment extends Fragment {
 			if (MizLib.isTablet(getActivity()) && MizLib.isPortrait(getActivity()))
 				mActorBio.setLineSpacing(0, 1.15f);
 
-			if (!MizLib.isEmpty(mBirth))
+			if (!TextUtils.isEmpty(mBirth))
 				mActorBirth.setText(mBirth);
 			else
 				mActorBirth.setVisibility(View.GONE);
 
-			if (!MizLib.isEmpty(mBirthday))
+			if (!TextUtils.isEmpty(mBirthday))
 				mActorBirthday.setText(MizLib.getPrettyDate(getActivity(), mBirthday));
 			else
 				mActorBirthday.setVisibility(View.GONE);
 
-			if (!MizLib.isEmpty(mImage)) {
+			if (!TextUtils.isEmpty(mImage)) {
 				mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(mActorImage);
 
-				if (!mBackgroundImage.isEmpty()) {
-					mPicasso.load(mBackgroundImage).placeholder(R.drawable.bg).transform(new BlurTransformation(getActivity(), mBackgroundImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground, new Callback() {
-						@Override
-						public void onError() {
-							if (!isAdded())
-								return;
-							mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity(), mImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground);
-							mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-							if (MizLib.isPortrait(getActivity()))
-								((PanningView) mActorImageBackground).setScaleType(ScaleType.CENTER_CROP);
-						}
+				if (!MizLib.isPortrait(getActivity())) {
+					if (!mBackgroundImage.isEmpty()) {
+						mPicasso.load(mBackgroundImage).placeholder(R.drawable.bg).transform(new BlurTransformation(getActivity(), mBackgroundImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground, new Callback() {
+							@Override
+							public void onError() {
+								if (!isAdded())
+									return;
+								mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity(), mImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground);
+								mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+							}
 
-						@Override
-						public void onSuccess() {
-							if (!isAdded())
-								return;
-							mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-							if (MizLib.isPortrait(getActivity()))
-								((PanningView) mActorImageBackground).startPanning();
-						}
+							@Override
+							public void onSuccess() {
+								if (!isAdded())
+									return;
+								mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+							}
 
-					});
-				} else {
-					mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity(), mImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground);
-					mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-					if (MizLib.isPortrait(getActivity()))
-						((PanningView) mActorImageBackground).setScaleType(ScaleType.CENTER_CROP);
+						});
+					} else {
+						mPicasso.load(mImage).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity(), mImage + "-blur", 2)).config(MizuuApplication.getBitmapConfig()).into(mActorImageBackground);
+						mActorImageBackground.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
+					}
 				}
 			}
 		} catch (Exception ignored) {}

@@ -30,7 +30,7 @@ import android.widget.RemoteViewsService;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
@@ -50,7 +50,7 @@ class StackRemoteViewsFactoryTv implements RemoteViewsService.RemoteViewsFactory
 	private Context mContext;
 	private ArrayList<TvShow> shows = new ArrayList<TvShow>();
 	private Cursor cursor;
-	private DbAdapterTvShow dbHelper;
+	private DbAdapterTvShows dbHelper;
 	private boolean ignorePrefixes;
 
 	public StackRemoteViewsFactoryTv(Context context, Intent intent) {
@@ -111,18 +111,18 @@ class StackRemoteViewsFactoryTv implements RemoteViewsService.RemoteViewsFactory
 			while (cursor.moveToNext()) {
 				shows.add(new TvShow(
 						mContext,
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_TITLE)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_PLOT)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RATING)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_GENRES)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ACTORS)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_TITLE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_PLOT)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RATING)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_GENRES)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ACTORS)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RUNTIME)),
 						ignorePrefixes,
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_EXTRA1)),
-						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)))
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
+						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)))
 						));
 			}
 		} catch (NullPointerException e) {} finally {

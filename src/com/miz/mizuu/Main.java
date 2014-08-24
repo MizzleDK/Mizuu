@@ -16,6 +16,10 @@
 
 package com.miz.mizuu;
 
+import static com.miz.functions.PreferenceKeys.CONFIRM_BACK_PRESS;
+import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
+import static com.miz.functions.PreferenceKeys.TRAKT_FULL_NAME;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +37,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -40,6 +45,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,19 +60,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miz.base.MizActivity;
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
+import com.miz.mizuu.fragments.ContactDeveloperFragment;
 import com.miz.mizuu.fragments.MovieDiscoveryViewPagerFragment;
 import com.miz.mizuu.fragments.MovieLibraryFragment;
 import com.miz.mizuu.fragments.TvShowLibraryFragment;
 import com.miz.mizuu.fragments.WebVideosViewPagerFragment;
 import com.squareup.picasso.Picasso;
-
-import static com.miz.functions.PreferenceKeys.TRAKT_FULL_NAME;
-import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
-import static com.miz.functions.PreferenceKeys.CONFIRM_BACK_PRESS;
 
 @SuppressLint("NewApi")
 public class Main extends MizActivity {
@@ -77,8 +80,8 @@ public class Main extends MizActivity {
 	private DrawerLayout mDrawerLayout;
 	protected ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
-	private DbAdapter mDbHelper;
-	private DbAdapterTvShow mDbHelperTv;
+	private DbAdapterMovies mDbHelper;
+	private DbAdapterTvShows mDbHelperTv;
 	private boolean mConfirmExit, mTriedOnce = false;
 	private ArrayList<MenuItem> mMenuItems = new ArrayList<MenuItem>();
 	private List<ApplicationInfo> mApplicationList;
@@ -127,6 +130,21 @@ public class Main extends MizActivity {
 						startActivity(i);
 					}
 					break;
+				case MenuItem.SMALL_SECTION:
+
+					Intent smallIntent = new Intent(getApplicationContext(), Preferences.class);
+					if (mMenuItems.get(arg2).getIcon() == R.drawable.support_small) {
+						smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, ContactDeveloperFragment.class.getName());
+						smallIntent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+						smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, getString(R.string.menuAboutContact));
+						smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_SHORT_TITLE, getString(R.string.menuAboutContact));
+					}
+
+					startActivity(smallIntent);
+
+					mDrawerLayout.closeDrawers();
+
+					break;
 				}
 			}
 		});
@@ -149,7 +167,7 @@ public class Main extends MizActivity {
 
 			public void onDrawerOpened(View drawerView) {
 				invalidateOptionsMenu();
-				if (MizLib.isGoogleTV(getApplicationContext()))
+				if (MizLib.usesNavigationControl(getApplicationContext()))
 					mDrawerList.requestFocus();
 			}
 		};
@@ -229,7 +247,7 @@ public class Main extends MizActivity {
 
 		// Menu header
 		// We only want to add a header if there's a backdrop image and we're not running on Google TV or a non-tablet in landscape mode
-		if (!MizLib.getLatestBackdropPath(getApplicationContext()).isEmpty() && !((!MizLib.isTablet(this) && !MizLib.isPortrait(this)) || MizLib.isGoogleTV(this)))
+		if (!MizLib.getRandomBackdropPath(getApplicationContext()).isEmpty() && !((!MizLib.isTablet(this) && !MizLib.isPortrait(this)) || MizLib.usesNavigationControl(getApplicationContext())))
 			mMenuItems.add(new MenuItem(null, -1, MenuItem.HEADER, null));
 
 		// Regular menu items
@@ -270,6 +288,9 @@ public class Main extends MizActivity {
 
 		temp.clear();
 		temp = null;
+
+		mMenuItems.add(new MenuItem(getString(R.string.settings_name), MenuItem.SMALL_SECTION, R.drawable.settings_small));
+		mMenuItems.add(new MenuItem(getString(R.string.menuAboutContact), MenuItem.SMALL_SECTION, R.drawable.support_small));
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -280,7 +301,7 @@ public class Main extends MizActivity {
 	};
 
 	protected void selectListIndex(int index) {
-		if (!(!MizLib.getLatestBackdropPath(getApplicationContext()).isEmpty() && !((!MizLib.isTablet(this) && !MizLib.isPortrait(this)) || MizLib.isGoogleTV(this))))
+		if (!(!MizLib.getRandomBackdropPath(getApplicationContext()).isEmpty() && !((!MizLib.isTablet(this) && !MizLib.isPortrait(this)) || MizLib.usesNavigationControl(getApplicationContext()))))
 			index--;
 
 		if (mMenuItems.get(index).getType() == MenuItem.SECTION) {
@@ -358,12 +379,14 @@ public class Main extends MizActivity {
 
 	public class MenuAdapter extends BaseAdapter {
 
+		private String mBackdropPath;
 		private boolean mTablet;
 		private LayoutInflater mInflater;
 
 		public MenuAdapter() {
 			mInflater = LayoutInflater.from(getApplicationContext());
 			mTablet = MizLib.isTablet(getApplicationContext());
+			mBackdropPath = MizLib.getRandomBackdropPath(getApplicationContext());
 		}
 
 		@Override
@@ -383,7 +406,7 @@ public class Main extends MizActivity {
 
 		@Override
 		public int getViewTypeCount() {
-			return 3;
+			return 4;
 		}
 
 		@Override
@@ -393,8 +416,11 @@ public class Main extends MizActivity {
 				return 0;
 			case MenuItem.SEPARATOR:
 				return 1;
-			default:
+			case MenuItem.THIRD_PARTY_APP:
+			case MenuItem.SECTION:
 				return 2;
+			default:
+				return 3;
 			}
 		}
 
@@ -418,21 +444,20 @@ public class Main extends MizActivity {
 				userName.setTextSize(26f);
 				userName.setTypeface(mTfCondensed);
 
-				if (!MizLib.isEmpty(fullName)) {
+				if (!TextUtils.isEmpty(fullName)) {
 					userName.setText(fullName);
-					mPicasso.load(new File(MizLib.getCacheFolder(getApplicationContext()), "avatar.jpg")).resize(MizLib.convertDpToPixels(getApplicationContext(), 72), MizLib.convertDpToPixels(getApplicationContext(), 72)).error(R.drawable.unknown_user).into(userImage);
+					mPicasso.load(new File(MizuuApplication.getCacheFolder(getApplicationContext()), "avatar.jpg")).resize(MizLib.convertDpToPixels(getApplicationContext(), 72), MizLib.convertDpToPixels(getApplicationContext(), 72)).error(R.drawable.unknown_user).into(userImage);
 				} else
 					convertView.findViewById(R.id.drawer_user_info).setVisibility(View.GONE);
 
-				String backdropPath = MizLib.getLatestBackdropPath(getApplicationContext());
-				if (!backdropPath.isEmpty())
-					mPicasso.load(backdropPath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 180)).into(backgroundImage);
+				if (!mBackdropPath.isEmpty())
+					mPicasso.load(mBackdropPath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 180)).into(backgroundImage);
 
 			} else if (mMenuItems.get(position).getType() == MenuItem.SEPARATOR) {	
 				convertView = mInflater.inflate(R.layout.menu_drawer_header_item, parent, false);
 				TextView title = (TextView) convertView.findViewById(R.id.title);
 				title.setText(mMenuItems.get(position).getTitle());
-			} else {
+			} else if (mMenuItems.get(position).getType() == MenuItem.THIRD_PARTY_APP || mMenuItems.get(position).getType() == MenuItem.SECTION) {
 				convertView = mInflater.inflate(R.layout.menu_drawer_item, parent, false);
 
 				// Title
@@ -457,6 +482,16 @@ public class Main extends MizActivity {
 					description.setText(String.valueOf(mMenuItems.get(position).getCount()));
 				else
 					description.setVisibility(View.GONE);
+			} else {
+				convertView = mInflater.inflate(R.layout.menu_drawer_small_item, parent, false);
+
+				// Title
+				TextView title = (TextView) convertView.findViewById(R.id.title);
+				title.setText(mMenuItems.get(position).getTitle());
+
+				ImageView image = (ImageView) convertView.findViewById(R.id.icon);
+				image.setImageResource(mMenuItems.get(position).getIcon());
+
 			}
 
 			return convertView;
@@ -492,7 +527,7 @@ public class Main extends MizActivity {
 
 	public void showDrawerOptionsMenu(Menu menu, MenuInflater inflater) {
 		getActionBar().setTitle(R.string.app_name);
-		inflater.inflate(R.menu.drawer, menu);
+		menu.clear();
 	}
 
 	public boolean isDrawerOpen() {

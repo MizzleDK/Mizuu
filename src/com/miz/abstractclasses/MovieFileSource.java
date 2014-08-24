@@ -24,8 +24,8 @@ import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterMovieMapping;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterMovieMappings;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
@@ -43,7 +43,6 @@ public abstract class MovieFileSource<T> extends AbstractFileSource<T> {
 		mIgnoreRemovedFiles = ignoreRemovedFiles;
 		mSubFolderSearch = subFolderSearch;
 		mClearLibrary = clearLibrary;
-		mDisableEthernetWiFiCheck = disableEthernetWiFiCheck;
 
 		mFileSizeLimit = MizLib.getFileSizeLimit(getContext());
 
@@ -54,19 +53,19 @@ public abstract class MovieFileSource<T> extends AbstractFileSource<T> {
 		mDbMovies.clear();
 		
 		// Fetch all the movies from the database
-		DbAdapter db = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 
 		ColumnIndexCache cache = new ColumnIndexCache();
-		Cursor tempCursor = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", ignoreRemovedFiles());
+		Cursor tempCursor = db.fetchAllMovies(DbAdapterMovies.KEY_TITLE + " ASC", ignoreRemovedFiles());
 		try {
 			while (tempCursor.moveToNext()) {
 				mDbMovies.add(new DbMovie(getContext(),
-						MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterMovieMapping.KEY_TMDB_ID))),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_TMDB_ID)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_RUNTIME)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_RELEASEDATE)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_GENRES)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapter.KEY_TITLE))));
+						MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterMovieMappings.KEY_TMDB_ID))),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterMovies.KEY_TMDB_ID)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterMovies.KEY_RUNTIME)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterMovies.KEY_RELEASEDATE)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterMovies.KEY_GENRES)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterMovies.KEY_TITLE))));
 			}
 		} catch (NullPointerException e) {
 		} finally {

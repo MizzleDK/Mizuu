@@ -16,28 +16,20 @@
 
 package com.miz.mizuu.fragments;
 
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
-import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
-import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
-import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
+import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbFile;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -59,18 +51,20 @@ import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 
 import com.miz.apis.trakt.Trakt;
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterTvShows;
+import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.BlurTransformation;
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
+import com.miz.functions.PaletteTransformation;
 import com.miz.mizuu.IdentifyTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
-import com.miz.smbstreamer.Streamer;
+import com.miz.utils.VideoUtils;
 import com.miz.views.ObservableScrollView;
 import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
@@ -83,11 +77,12 @@ import com.squareup.picasso.Picasso;
 	private TvShowEpisode mEpisode;
 	private ImageView mBackdrop, mEpisodePhoto;
 	private TextView mTitle, mDescription, mFileSource, mAirDate, mRating, mDirector, mWriter, mGuestStars, mSeasonEpisodeNumber;
+	private View mDetailsArea;
 	private Picasso mPicasso;
 	private Typeface mLight, mLightItalic, mMedium;
-	private DbAdapterTvShowEpisode mDatabaseHelper;
+	private DbAdapterTvShowEpisodes mDatabaseHelper;
 	private long mVideoPlaybackStarted, mVideoPlaybackEnded;
-	private boolean mVideoWildcard, mDisableEthernetWiFiCheck, mIgnoreDeletedFiles;
+	private boolean mShowFileLocation;
 	private Bus mBus;
 
 	/**
@@ -114,9 +109,7 @@ import com.squareup.picasso.Picasso;
 
 		mBus = MizuuApplication.getBus();
 
-		mVideoWildcard = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
-		mDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
-		mIgnoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_FILES_ENABLED, false);
+		mShowFileLocation = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SHOW_FILE_LOCATION, true);
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
@@ -126,26 +119,30 @@ import com.squareup.picasso.Picasso;
 
 		mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
 
-		if (!getArguments().getString("showId").isEmpty() && getArguments().getInt("season") >= 0 && getArguments().getInt("episode") > 0) {
+		if (!getArguments().getString("showId").isEmpty() && getArguments().getInt("season") >= 0 && getArguments().getInt("episode") >= 0) {
 			Cursor cursor = mDatabaseHelper.getEpisode(getArguments().getString("showId"), getArguments().getInt("season"), getArguments().getInt("episode"));
 			
 			if (cursor.moveToFirst()) {
 				mEpisode = new TvShowEpisode(getActivity(),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_ROWID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SHOW_ID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_FILEPATH)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_TITLE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_PLOT)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_SEASON)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_AIRDATE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_DIRECTOR)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_WRITER)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_GUESTSTARS)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EPISODE_RATING)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_HAS_WATCHED)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_EXTRA_1))
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_TITLE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_PLOT)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_AIRDATE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_DIRECTOR)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_WRITER)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_GUESTSTARS)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_RATING)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_HAS_WATCHED)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_FAVOURITE))
 						);
+
+				mEpisode.setFilepaths(MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFilepathsForEpisode(
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE))
+						));
 			}
 			cursor.close();
 		}
@@ -162,6 +159,7 @@ import com.squareup.picasso.Picasso;
 
 		mBackdrop = (ImageView) view.findViewById(R.id.imageBackground);
 		mEpisodePhoto = (ImageView) view.findViewById(R.id.episodePhoto);
+		mDetailsArea = view.findViewById(R.id.details_area);
 
 		mTitle = (TextView) view.findViewById(R.id.movieTitle);
 		mSeasonEpisodeNumber = (TextView) view.findViewById(R.id.textView7);
@@ -248,7 +246,11 @@ import com.squareup.picasso.Picasso;
 		}
 		mDescription.setText(mEpisode.getDescription());
 
-		mFileSource.setText(mEpisode.getFilepath());
+		if (mShowFileLocation) {
+			mFileSource.setText(mEpisode.getAllFilepaths());
+		} else {
+			mFileSource.setVisibility(View.GONE);
+		}
 
 		// Set the episode air date
 		mAirDate.setText(MizLib.getPrettyDatePrecise(getActivity(), mEpisode.getReleasedate()));
@@ -269,25 +271,25 @@ import com.squareup.picasso.Picasso;
 			mRating.setText(R.string.stringNA);
 		}
 
-		if (MizLib.isEmpty(mEpisode.getDirector()) || mEpisode.getDirector().equals(getString(R.string.stringNA))) {
+		if (TextUtils.isEmpty(mEpisode.getDirector()) || mEpisode.getDirector().equals(getString(R.string.stringNA))) {
 			mDirector.setVisibility(View.GONE);
 		} else {
 			mDirector.setText(mEpisode.getDirector());
 		}
 
-		if (MizLib.isEmpty(mEpisode.getWriter()) || mEpisode.getWriter().equals(getString(R.string.stringNA))) {
+		if (TextUtils.isEmpty(mEpisode.getWriter()) || mEpisode.getWriter().equals(getString(R.string.stringNA))) {
 			mWriter.setVisibility(View.GONE);
 		} else {
 			mWriter.setText(mEpisode.getWriter());
 		}
 
-		if (MizLib.isEmpty(mEpisode.getGuestStars()) || mEpisode.getGuestStars().equals(getString(R.string.stringNA))) {
+		if (TextUtils.isEmpty(mEpisode.getGuestStars()) || mEpisode.getGuestStars().equals(getString(R.string.stringNA))) {
 			mGuestStars.setVisibility(View.GONE);
 		} else {
 			mGuestStars.setText(mEpisode.getGuestStars());
 		}
 
-		mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).config(MizuuApplication.getBitmapConfig()).into(mEpisodePhoto, new Callback() {
+		mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).config(MizuuApplication.getBitmapConfig()).transform(new PaletteTransformation(mEpisode.getEpisodePhoto().getAbsolutePath(), mDetailsArea)).into(mEpisodePhoto, new Callback() {
 			@Override
 			public void onError() {
 				if (!isAdded())
@@ -322,6 +324,9 @@ import com.squareup.picasso.Picasso;
 		if (!MizLib.isPortrait(getActivity()))
 			mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity().getApplicationContext(), mEpisode.getEpisodePhoto().getAbsolutePath() + "-blur", 4)).config(MizuuApplication.getBitmapConfig()).into(mBackdrop, new Callback() {
 				@Override public void onError() {
+					if (!isAdded())
+						return;
+
 					mPicasso.load(mEpisode.getTvShowBackdrop()).placeholder(R.drawable.bg).error(R.drawable.nobackdrop).transform(new BlurTransformation(getActivity().getApplicationContext(), mEpisode.getTvShowBackdrop().getAbsolutePath() + "-blur", 4)).config(MizuuApplication.getBitmapConfig()).config(MizuuApplication.getBitmapConfig()).into(mBackdrop, new Callback() {
 						@Override
 						public void onError() {}
@@ -356,28 +361,49 @@ import com.squareup.picasso.Picasso;
 	}
 
 	private void play() {
-		if (mEpisode.hasOfflineCopy()) {
-			playEpisode(mEpisode.getOfflineCopyUri(), false);
-		} else {
-			playEpisode(mEpisode.getFilepath(), mEpisode.isNetworkFile());
-		}
-	}
-
-	private void playEpisode(String filepath, boolean isNetworkFile) {
-		mVideoPlaybackStarted = System.currentTimeMillis();
-		if (isNetworkFile) {
-			playNetworkFile();
-		} else {
-			try { // Attempt to launch intent based on the MIME type
-				getActivity().startActivity(MizLib.getVideoIntent(filepath, mVideoWildcard, mEpisode));
-				checkIn();
-			} catch (Exception e) {
-				try { // Attempt to launch intent based on wildcard MIME type
-					getActivity().startActivity(MizLib.getVideoIntent(filepath, "video/*", mEpisode));
+		ArrayList<Filepath> paths = mEpisode.getFilepaths();
+		if (paths.size() == 1) {
+			Filepath path = paths.get(0);
+			if (mEpisode.hasOfflineCopy(path)) {
+				boolean playbackStarted = VideoUtils.playVideo(getActivity(), mEpisode.getOfflineCopyUri(path), false, mEpisode);
+				if (playbackStarted) {
+					mVideoPlaybackStarted = System.currentTimeMillis();
 					checkIn();
-				} catch (Exception e2) {
-					Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 				}
+			} else {
+				boolean playbackStarted = VideoUtils.playVideo(getActivity(), path.getFilepath(), path.isNetworkFile(), mEpisode);
+				if (playbackStarted) {
+					mVideoPlaybackStarted = System.currentTimeMillis();
+					checkIn();
+				}
+			}
+		} else {
+			boolean hasOfflineCopy = false;
+			for (Filepath path : paths) {
+				if (mEpisode.hasOfflineCopy(path)) {
+					boolean playbackStarted = VideoUtils.playVideo(getActivity(), mEpisode.getOfflineCopyUri(path), false, mEpisode);
+					if (playbackStarted) {
+						mVideoPlaybackStarted = System.currentTimeMillis();
+						checkIn();
+					}
+
+					hasOfflineCopy = true;
+					break;
+				}
+			}
+
+			if (!hasOfflineCopy) {
+				MizLib.showSelectFileDialog(getActivity(), mEpisode.getFilepaths(), new Dialog.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Filepath path = mEpisode.getFilepaths().get(which);
+						boolean playbackStarted = VideoUtils.playVideo(getActivity(), path.getFilepath(), path.isNetworkFile(), mEpisode);
+						if (playbackStarted) {
+							mVideoPlaybackStarted = System.currentTimeMillis();
+							checkIn();
+						}
+					}
+				});
 			}
 		}
 	}
@@ -406,13 +432,21 @@ import com.squareup.picasso.Picasso;
 				menu.findItem(R.id.watched).setTitle(R.string.stringMarkAsWatched);
 			}
 
-			if (mEpisode.isNetworkFile() || mEpisode.isUpnpFile()) {
-				menu.findItem(R.id.watchOffline).setVisible(true);
+			for (Filepath path : mEpisode.getFilepaths()) {
+				if (path.isNetworkFile()) {
 
-				if (mEpisode.hasOfflineCopy())
-					menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
-				else
-					menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
+					// Set the menu item visibility
+					menu.findItem(R.id.watchOffline).setVisible(true);
+
+					if (mEpisode.hasOfflineCopy(path))
+						// There's already an offline copy, so let's allow the user to remove it
+						menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
+					else
+						// There's no offline copy, so let the user download one
+						menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
+
+					break;
+				}
 			}
 		} catch (Exception e) {}
 	}
@@ -430,26 +464,44 @@ import com.squareup.picasso.Picasso;
 			watched(true);
 			break;
 		case R.id.identify:
-			identifyEpisode();
+			Toast.makeText(getActivity(), "Not yet!", Toast.LENGTH_LONG).show();
+			//identifyEpisode();
 			break;
 		case R.id.watchOffline:
-			watchOffline(item);
+			watchOffline();
 			break;
 		}
 		return false;
 	}
 
-	public void watchOffline(MenuItem m) {
-		if (mEpisode.hasOfflineCopy()) {
+	public void watchOffline() {
+
+		if (mEpisode.getFilepaths().size() == 1) {
+			watchOffline(mEpisode.getFilepaths().get(0));
+		} else {
+			MizLib.showSelectFileDialog(getActivity(), mEpisode.getFilepaths(), new Dialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					watchOffline(mEpisode.getFilepaths().get(which));
+
+					// Dismiss the dialog
+					dialog.dismiss();
+				}
+			});
+		}
+	}
+
+	private void watchOffline(final Filepath path) {
+		if (mEpisode.hasOfflineCopy(path)) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder.setMessage(getString(R.string.areYouSure))
 			.setTitle(getString(R.string.removeOfflineCopy))
 			.setCancelable(false)
 			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {	
-					boolean success = mEpisode.getOfflineCopyFile().delete();
+					boolean success = mEpisode.getOfflineCopyFile(path).delete();
 					if (!success)
-						mEpisode.getOfflineCopyFile().delete();
+						mEpisode.getOfflineCopyFile(path).delete();
 					getActivity().invalidateOptionsMenu();
 					return;
 				}
@@ -471,7 +523,7 @@ import com.squareup.picasso.Picasso;
 						Toast.makeText(getActivity(), R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
 
 					Intent i = new Intent(getActivity(), MakeAvailableOffline.class);
-					i.putExtra(MakeAvailableOffline.FILEPATH, mEpisode.getFilepath());
+					i.putExtra(MakeAvailableOffline.FILEPATH, path.getFilepath());
 					i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_SHOWS);
 					i.putExtra("thumb", mEpisode.getThumbnail());
 					i.putExtra("backdrop", mEpisode.getEpisodePhoto());
@@ -489,12 +541,26 @@ import com.squareup.picasso.Picasso;
 	}
 
 	private void identifyEpisode() {
-		Intent i = new Intent();
-		i.setClass(getActivity(), IdentifyTvShow.class);
-		i.putExtra("rowId", mEpisode.getRowId());
-		i.putExtra("files", new String[]{mEpisode.getFullFilepath()});
+		if (mEpisode.getFilepaths().size() == 1) {
+			startActivity(getIdentifyIntent(mEpisode.getFilepaths().get(0).getFullFilepath()));
+		} else {
+			MizLib.showSelectFileDialog(getActivity(), mEpisode.getFilepaths(), new Dialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					startActivity(getIdentifyIntent(mEpisode.getFilepaths().get(which).getFullFilepath()));
+
+					// Dismiss the dialog
+					dialog.dismiss();
+				}
+			});
+		}
+	}
+
+	private Intent getIdentifyIntent(String filepath) {
+		Intent i = new Intent(getActivity(), IdentifyTvShow.class);
+		i.putExtra("files", new String[]{filepath});
 		i.putExtra("isShow", false);
-		startActivity(i);
+		return i;
 	}
 
 	private void deleteEpisode() {
@@ -511,11 +577,12 @@ import com.squareup.picasso.Picasso;
 			public void onClick(DialogInterface dialog, int id) {	
 				// Create and open database
 				mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
-				boolean deleted = false;
-				if (mIgnoreDeletedFiles)
-					deleted = mDatabaseHelper.ignoreEpisode(mEpisode.getRowId());
-				else
-					deleted = mDatabaseHelper.deleteEpisode(mEpisode.getRowId());
+				boolean deleted = true;
+				//if (mIgnoreDeletedFiles) TODO fix this!
+				//deleted = mDatabaseHelper.ignoreEpisode(mEpisode.getRowId());
+				//else
+				for (Filepath path : mEpisode.getFilepaths())
+					deleted = deleted && MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteFilepath(path.getFullFilepath());
 
 				if (deleted) {
 					try {
@@ -527,7 +594,7 @@ import com.squareup.picasso.Picasso;
 					} catch (NullPointerException e) {} // No file to delete
 
 					if (mDatabaseHelper.getEpisodeCount(mEpisode.getShowId()) == 0) { // No more episodes for this show
-						DbAdapterTvShow dbShow = MizuuApplication.getTvDbAdapter();
+						DbAdapterTvShows dbShow = MizuuApplication.getTvDbAdapter();
 						boolean deletedShow = dbShow.deleteShow(mEpisode.getShowId());
 
 						if (deletedShow) {
@@ -537,9 +604,11 @@ import com.squareup.picasso.Picasso;
 					}
 
 					if (cb.isChecked()) {
-						Intent deleteIntent = new Intent(getActivity(), DeleteFile.class);
-						deleteIntent.putExtra("filepath", mEpisode.getFilepath());
-						getActivity().startService(deleteIntent);
+						for (Filepath path : mEpisode.getFilepaths()) {
+							Intent deleteIntent = new Intent(getActivity(), DeleteFile.class);
+							deleteIntent.putExtra("filepath", path.getFilepath());
+							getActivity().startService(deleteIntent);
+						}
 					}
 
 					notifyDatasetChanges();
@@ -564,7 +633,7 @@ import com.squareup.picasso.Picasso;
 
 		mEpisode.setHasWatched(!mEpisode.hasWatched()); // Reverse the hasWatched boolean
 
-		if (mDatabaseHelper.updateSingleItem(Long.valueOf(mEpisode.getRowId()), DbAdapter.KEY_HAS_WATCHED, mEpisode.getHasWatched())) {
+		if (mDatabaseHelper.updateSingleItem(mEpisode.getShowId(), DbAdapterMovies.KEY_HAS_WATCHED, mEpisode.getHasWatched())) {
 			getActivity().invalidateOptionsMenu();
 
 			if (showToast)
@@ -599,65 +668,6 @@ import com.squareup.picasso.Picasso;
 			@Override
 			public void run() {
 				Trakt.performEpisodeCheckin(mEpisode, getActivity());
-			}
-		}.start();
-	}
-
-	private void playNetworkFile() {
-		if (!MizLib.isWifiConnected(getActivity(), mDisableEthernetWiFiCheck)) {
-			Toast.makeText(getActivity(), getString(R.string.noConnection), Toast.LENGTH_LONG).show();
-			return;
-		}
-
-		int bufferSize;
-		String buff = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(BUFFER_SIZE, getString(R.string._16kb));
-		if (buff.equals(getString(R.string._16kb)))
-			bufferSize = 8192 * 2; // This appears to be the limit for most video players
-		else bufferSize = 8192;
-
-		final Streamer s = Streamer.getInstance();
-		if (s != null)
-			s.setBufferSize(bufferSize);
-		else {
-			Toast.makeText(getActivity(), getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
-			return;
-		}
-
-		final NtlmPasswordAuthentication auth = MizLib.getAuthFromFilepath(MizLib.TYPE_SHOWS, mEpisode.getFilepath());
-
-		new Thread(){
-			public void run(){
-				try{
-					final SmbFile file = new SmbFile(
-							MizLib.createSmbLoginString(
-									URLEncoder.encode(auth.getDomain(), "utf-8"),
-									URLEncoder.encode(auth.getUsername(), "utf-8"),
-									URLEncoder.encode(auth.getPassword(), "utf-8"),
-									mEpisode.getFilepath(),
-									false
-									));
-
-					s.setStreamSrc(file, MizLib.getSubtitleFiles(mEpisode.getFilepath(), auth)); //the second argument can be a list of subtitle files
-					getActivity().runOnUiThread(new Runnable(){
-						public void run(){
-							try{
-								Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(mEpisode.getFilepath()).getPath())).getEncodedPath());	
-								startActivity(MizLib.getVideoIntent(uri, mVideoWildcard, mEpisode));
-								checkIn();
-							} catch (Exception e) {
-								try { // Attempt to launch intent based on wildcard MIME type
-									Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(mEpisode.getFilepath()).getPath())).getEncodedPath());	
-									startActivity(MizLib.getVideoIntent(uri, "video/*", mEpisode));
-									checkIn();
-								} catch (Exception e2) {
-									Toast.makeText(getActivity(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
-								}
-							}
-						}
-					});
-				}
-				catch (MalformedURLException e) {}
-				catch (UnsupportedEncodingException e1) {}
 			}
 		}.start();
 	}

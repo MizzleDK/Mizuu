@@ -16,17 +16,18 @@
 
 package com.miz.functions;
 
+import com.miz.db.DbAdapterTvShows;
+
 import android.content.Context;
 
 public class DbEpisode {
 
-	private Context mContext;
-	private String mFilepath, mRowId, mShowId, mSeason, mEpisode;
+	private final Context mContext;
+	private final String mFilepath, mShowId, mSeason, mEpisode;
 
-	public DbEpisode(Context context, String filepath, String rowId, String showId, String season, String episode) {
+	public DbEpisode(Context context, String filepath, String showId, String season, String episode) {
 		mContext = context;
 		mFilepath = filepath;
-		mRowId = rowId;
 		mShowId = showId;
 		mSeason = season;
 		mEpisode = episode;
@@ -38,16 +39,20 @@ public class DbEpisode {
 		return mFilepath.replace("/smb:/", "smb://");
 	}
 
-	public String getRowId() {
-		return mRowId;
-	}
-
 	public String getShowId() {
 		return mShowId;
 	}
 
 	public String getEpisodeCoverPath() {
 		return MizLib.getTvShowEpisode(mContext, mShowId, mSeason, mEpisode).getAbsolutePath();
+	}
+	
+	public String getSeason() {
+		return mSeason;
+	}
+	
+	public String getEpisode() {
+		return mEpisode;
 	}
 
 	public String getThumbnail() {
@@ -67,6 +72,6 @@ public class DbEpisode {
 	}
 	
 	public boolean isUnidentified() {
-		return getShowId().equals("invalid");
+		return getShowId().equals(DbAdapterTvShows.UNIDENTIFIED_ID);
 	}
 }

@@ -20,10 +20,11 @@ import static com.miz.functions.PreferenceKeys.TVSHOWS_EPISODE_ORDER;
 
 import java.io.File;
 
-import com.miz.mizuu.R;
-
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
+
+import com.miz.mizuu.R;
 
 public class GridEpisode implements Comparable<GridEpisode> {
 
@@ -44,17 +45,16 @@ public class GridEpisode implements Comparable<GridEpisode> {
 
 		// Subtitle text
 		StringBuilder sb = new StringBuilder();
-		sb.append(mContext.getString(R.string.showEpisode));
-		sb.append(" ");
-		sb.append(getEpisode());
-		if (!hasWatched())
-			sb.append(" " + mContext.getString(R.string.unwatched));
+		sb.append(mContext.getString(R.string.showEpisode)).append(" ").append(getEpisode());
+		if (!hasWatched()) {
+			sb.append(" ").append(mContext.getString(R.string.unwatched));
+		}
 
 		mSubtitleText = sb.toString();
 	}
 	
 	public String getTitle() {
-		if (MizLib.isEmpty(mTitle)) {
+		if (TextUtils.isEmpty(mTitle)) {
 			String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[0] : mFilepath;
 			File fileName = new File(temp);
 			int pointPosition=fileName.getName().lastIndexOf(".");

@@ -50,8 +50,9 @@ import android.database.Cursor;
 import android.os.IBinder;
 
 import com.miz.abstractclasses.TvShowFileSource;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterTvShowEpisodeMappings;
+import com.miz.db.DbAdapterTvShows;
+import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbEpisode;
 import com.miz.functions.FileSource;
@@ -72,13 +73,13 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 
 	@Override
 	public void removeUnidentifiedFiles() {
-		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
+		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 		List<DbEpisode> dbEpisodes = getDbEpisodes();
 
 		int count = dbEpisodes.size();
 		for (int i = 0; i < count; i++) {
 			if (dbEpisodes.get(i).isUpnpFile() && dbEpisodes.get(i).isUnidentified() && MizLib.exists(dbEpisodes.get(i).getFilepath())) {
-				db.deleteEpisode(dbEpisodes.get(i).getRowId());
+				db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
 			}
 		}
 	}
@@ -88,18 +89,17 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 		ArrayList<DbEpisode> dbEpisodes = new ArrayList<DbEpisode>(), removedEpisodes = new ArrayList<DbEpisode>();
 
 		// Fetch all the episodes from the database
-		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
+		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
 		ColumnIndexCache cache = new ColumnIndexCache();
 		Cursor tempCursor = db.getAllEpisodesInDatabase(ignoreRemovedFiles());
 		while (tempCursor.moveToNext()) {
 			try {
 				dbEpisodes.add(new DbEpisode(getContext(),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_FILEPATH)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_ROWID)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_SHOW_ID)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_SEASON)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisode.KEY_EPISODE))
+						MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFirstFilepath(tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)),
+						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))
 						)
 						);
 			} catch (NullPointerException e) {
@@ -112,7 +112,7 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 		int count = dbEpisodes.size();
 		for (int i = 0; i < dbEpisodes.size(); i++) {
 			if (dbEpisodes.get(i).isUpnpFile() && !MizLib.exists(dbEpisodes.get(i).getFilepath())) {
-				boolean deleted = db.deleteEpisode(dbEpisodes.get(i).getRowId());
+				boolean deleted = db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
 				if (deleted)
 					removedEpisodes.add(dbEpisodes.get(i));
 			}
@@ -121,7 +121,7 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 		count = removedEpisodes.size();
 		for (int i = 0; i < count; i++) {
 			if (db.getEpisodeCount(removedEpisodes.get(i).getShowId()) == 0) { // No more episodes for this show
-				DbAdapterTvShow dbShow = MizuuApplication.getTvDbAdapter();
+				DbAdapterTvShows dbShow = MizuuApplication.getTvDbAdapter();
 				boolean deleted = dbShow.deleteShow(removedEpisodes.get(i).getShowId());
 
 				if (deleted) {
@@ -140,13 +140,12 @@ public class UpnpTvShow extends TvShowFileSource<String> {
 
 	@Override
 	public List<String> searchFolder() {
-		DbAdapterTvShowEpisode dbHelper = MizuuApplication.getTvEpisodeDbAdapter();
-		Cursor cursor = dbHelper.getAllEpisodesInDatabase(ignoreRemovedFiles()); // Query database to return all show episodes to a cursor
+		Cursor cursor = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getAllFilepaths();
 		ColumnIndexCache cache = new ColumnIndexCache();
 		
 		try {
 			while (cursor.moveToNext()) // Add all show episodes in cursor to ArrayList of all existing episodes
-				existingEpisodes.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShowEpisode.KEY_FILEPATH)), "");
+				existingEpisodes.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShowEpisodeMappings.KEY_FILEPATH)), "");
 		} catch (Exception e) {
 		} finally {
 			cursor.close(); // Close cursor

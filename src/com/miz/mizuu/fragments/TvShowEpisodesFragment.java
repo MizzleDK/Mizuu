@@ -42,9 +42,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.GridEpisode;
+import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisodeDetails;
@@ -219,7 +219,9 @@ public class TvShowEpisodesFragment extends Fragment {
 				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				holder.text.setSingleLine(true);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext.setSingleLine(true);
 				holder.watchedColor = (ImageView) convertView.findViewById(R.id.watched_color);
 
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
@@ -255,7 +257,7 @@ public class TvShowEpisodesFragment extends Fragment {
 		}
 	}
 
-	private class EpisodeLoader extends AsyncTask<Void, Void, Void> {
+	private class EpisodeLoader extends LibrarySectionAsyncTask<Void, Void, Void> {
 		@Override
 		protected void onPreExecute() {
 			mProgressBar.setVisibility(View.VISIBLE);

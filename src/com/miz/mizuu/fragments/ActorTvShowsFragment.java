@@ -44,7 +44,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.functions.WebMovie;
@@ -60,7 +60,7 @@ public class ActorTvShowsFragment extends Fragment {
 	private ArrayList<WebMovie> pics_sources = new ArrayList<WebMovie>();
 	private SparseBooleanArray mShowsMap = new SparseBooleanArray();
 	private GridView mGridView = null;
-	private DbAdapterTvShow mDatabase;
+	private DbAdapterTvShows mDatabase;
 	private Picasso mPicasso;
 	private Config mConfig;
 	private String json, baseUrl;
@@ -193,7 +193,9 @@ public class ActorTvShowsFragment extends Fragment {
 				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				holder.text.setSingleLine(true);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext.setSingleLine(true);
 
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 

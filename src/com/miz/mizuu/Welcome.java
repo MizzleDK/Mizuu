@@ -31,8 +31,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import com.miz.base.MizActivity;
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterTvShows;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,8 +64,8 @@ public class Welcome extends MizActivity implements ViewFactory {
 	private int mNumMovies, mNumShows, mNumWatchlist, index = -1;
 	private ListView list;
 	private Typeface tf;
-	private DbAdapter dbHelper;
-	private DbAdapterTvShow dbHelperTv;
+	private DbAdapterMovies dbHelper;
+	private DbAdapterTvShows dbHelperTv;
 	private ArrayList<Backdrop> backdrops = new ArrayList<Backdrop>();
 	private boolean isRunning = true, confirmExit, hasTriedOnce = false;
 	private ImageSwitcher imageSwitcher;
@@ -91,24 +91,24 @@ public class Welcome extends MizActivity implements ViewFactory {
 		dbHelper = MizuuApplication.getMovieAdapter();
 		dbHelperTv = MizuuApplication.getTvDbAdapter();
 
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+		Cursor cursor = dbHelper.fetchAllMovies(DbAdapterMovies.KEY_TITLE + " ASC", false);
 		while (cursor.moveToNext()) {
 			try {
 				backdrops.add(new Backdrop(
-						MizLib.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID))).getAbsolutePath(),
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID)),
+						MizLib.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID))).getAbsolutePath(),
+						cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID)),
 						true,
-						cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE))
+						cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TITLE))
 						));
 			} catch (NullPointerException e) {}
 		}
 		cursor = dbHelperTv.getAllShows();
 		while (cursor.moveToNext()) {
 			try {
-				backdrops.add(new Backdrop(MizLib.getTvShowBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID))).getAbsolutePath(),
-								cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
+				backdrops.add(new Backdrop(MizLib.getTvShowBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID))).getAbsolutePath(),
+								cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID)),
 								false,
-								cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE))
+								cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_TITLE))
 						));
 			} catch (NullPointerException e) {}
 		}
@@ -164,7 +164,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 		aniOut.setDuration(800);
 
 		imageSwitcher = (ImageSwitcher) findViewById(R.id.imageSwitcher1);
-		if (!MizLib.isGoogleTV(this))
+		if (!MizLib.usesNavigationControl(getApplicationContext()))
 			imageSwitcher.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -317,7 +317,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 		public View getView(int position, View convertView, ViewGroup parent) {
 
 			if (position == 0 || position == 4) {
-				convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row_header, null);
+				convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row_header, parent, false);
 				if (position == 0) {
 					((TextView) convertView.findViewById(R.id.options)).setText(getString(R.string.stringLocal));
 				} else {
@@ -326,7 +326,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 				return convertView;
 			}
 
-			convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row, null);
+			convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row, parent, false);
 			ImageView icon = (ImageView) convertView.findViewById(R.id.row_icon);
 			TextView title = (TextView) convertView.findViewById(R.id.row_title);
 			if (MizLib.isTablet(getApplicationContext()))
@@ -388,7 +388,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 
 		public Backdrop(String path, String id, boolean isMovie, String title) {
 			mPath = path;
-			mPath = id;
+			mId = id;
 			mMovie = isMovie;
 			mTitle = title;
 		}
@@ -398,7 +398,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 		}
 		
 		public String getId() {
-			return mPath;
+			return mId;
 		}
 
 		public String getPath() {

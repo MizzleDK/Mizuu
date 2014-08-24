@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.DialogInterface;
@@ -35,8 +36,8 @@ import android.support.v4.app.Fragment;
 
 import com.miz.apis.trakt.Trakt;
 import com.miz.base.MizActivity;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterTvShowEpisodeMappings;
+import com.miz.db.DbAdapterTvShows;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -67,7 +68,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager mViewPager;
 	private TvShow thisShow;
-	private DbAdapterTvShow dbHelper;
+	private DbAdapterTvShows dbHelper;
 	private boolean ignorePrefixes;
 	private ArrayList<SpinnerItem> spinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner spinnerAdapter;
@@ -93,7 +94,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.viewpager);
-		
+
 		mActionBarOverlay = (ImageView) findViewById(R.id.actionbar_overlay);
 		mActionBarOverlay.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, isFullscreen() ? MizLib.getActionBarHeight(this) : MizLib.getActionBarAndStatusBarHeight(this)));
 
@@ -101,7 +102,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		if (spinnerAdapter == null)
 			spinnerAdapter = new ActionBarSpinner(this, spinnerItems);
-		
+
 		setTitle(null);
 
 		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
@@ -112,7 +113,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 			public void onPageSelected(int position) {
 				mActionBar.setSelectedNavigationItem(position);
 				invalidateOptionsMenu();
-				
+
 				updateActionBarDrawable(1, false, false);
 			}
 		});
@@ -134,18 +135,18 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		try {
 			while (cursor.moveToNext()) {
 				thisShow = new TvShow(this,
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_TITLE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_PLOT)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RATING)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_GENRES)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ACTORS)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_TITLE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_PLOT)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_RATING)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_GENRES)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ACTORS)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_RUNTIME)),
 						ignorePrefixes,
-						cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_EXTRA1)),
-						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShow.KEY_SHOW_ID)))
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
+						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID)))
 						);
 			}
 		} catch (Exception e) {
@@ -170,20 +171,21 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		if (!PreferenceManager.getDefaultSharedPreferences(this).getString(TVSHOWS_START_PAGE, getString(R.string.showDetails)).equals(getString(R.string.showDetails)))
 			mViewPager.setCurrentItem(1);
 	}
-	
+
 	@Subscribe
 	public void onScrollChanged(Integer newAlpha) {
 		updateActionBarDrawable(newAlpha, true, false);
 	}
-	
+
 	private void updateActionBarDrawable(int newAlpha, boolean setBackground, boolean showActionBar) {
 		if (mViewPager.getCurrentItem() == 0) { // Details page
 			mActionBarOverlay.setVisibility(View.VISIBLE);
 
 			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
-				if (newAlpha == 0)
+				if (newAlpha == 0) {
 					mActionBar.hide();
-				else
+					mActionBarOverlay.setVisibility(View.GONE);
+				} else
 					mActionBar.show();
 
 			if (setBackground) {
@@ -196,7 +198,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
 				mActionBar.show();
 		}
-		
+
 		if (showActionBar) {
 			mActionBar.show();
 		}
@@ -206,7 +208,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		super.onResume();
 
 		mBus.register(this);
-		updateActionBarDrawable(0, true, true);
+		updateActionBarDrawable(1, true, true);
 	}
 
 	@Override
@@ -289,9 +291,13 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 			identifyShow();
 			break;
 		case R.id.openInBrowser:
-			Intent tmdbIntent = new Intent(Intent.ACTION_VIEW);
-			tmdbIntent.setData(Uri.parse("http://thetvdb.com/?tab=series&id=" + thisShow.getId()));
-			startActivity(tmdbIntent);
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+			if (thisShow.getIdType() == TvShow.TMDB) {
+				browserIntent.setData(Uri.parse("https://www.themoviedb.org/tv/" + thisShow.getIdWithoutHack()));
+			} else {
+				browserIntent.setData(Uri.parse("http://thetvdb.com/?tab=series&id=" + thisShow.getId()));
+			}
+			startActivity(browserIntent);
 			break;
 		}
 		return false;
@@ -300,29 +306,24 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 	private void identifyShow() {
 		ArrayList<String> files = new ArrayList<String>();
 
-		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
-
-		Cursor cursor = db.getAllEpisodes(thisShow.getId(), DbAdapterTvShowEpisode.OLDEST_FIRST);
+		Cursor cursor = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getAllFilepaths(thisShow.getId());
 		while (cursor.moveToNext())
-			files.add(cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisode.KEY_FILEPATH)));
+			files.add(cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_FILEPATH)));
 
 		cursor.close();
 
 		Intent i = new Intent();
 		i.setClass(this, IdentifyTvShow.class);
-		i.putExtra("rowId", "0");
-		i.putExtra("files", files.toArray(new String[files.size()]));
-		i.putExtra("showName", thisShow.getTitle());
-		i.putExtra("oldShowId", thisShow.getId());
-		i.putExtra("isShow", true);
-		startActivity(i);
+		i.putExtra("showTitle", thisShow.getTitle());
+		i.putExtra("showId", thisShow.getId());
+		startActivityForResult(i, 0);
 	}
 
 	public void favAction(MenuItem item) {
 		// Create and open database
 		thisShow.setFavorite(!thisShow.isFavorite()); // Reverse the favourite boolean
 
-		if (dbHelper.updateShowSingleItem(thisShow.getId(), DbAdapterTvShow.KEY_SHOW_EXTRA1, thisShow.getFavorite())) {
+		if (dbHelper.updateShowSingleItem(thisShow.getId(), DbAdapterTvShows.KEY_SHOW_FAVOURITE, thisShow.getFavorite())) {
 			invalidateOptionsMenu();
 
 			if (thisShow.isFavorite()) {
@@ -410,7 +411,15 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		mViewPager.setCurrentItem(itemPosition);
-		
+
 		return true;
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == Activity.RESULT_OK) {
+				finish();
+			}
+		}
 	}
 }

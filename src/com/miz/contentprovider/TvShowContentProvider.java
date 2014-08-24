@@ -29,9 +29,10 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
-import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
@@ -108,9 +109,9 @@ public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 
 	private List<TvShow> getSearchResults(String query) {
 		List<TvShow> shows = new ArrayList<TvShow>();
-		if (!MizLib.isEmpty(query)) {
+		if (!TextUtils.isEmpty(query)) {
 
-			DbAdapterTvShow db = MizuuApplication.getTvDbAdapter();
+			DbAdapterTvShows db = MizuuApplication.getTvDbAdapter();
 
 			query = query.toLowerCase(Locale.ENGLISH);
 
@@ -120,23 +121,23 @@ public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 
 			try {
 				while (c.moveToNext()) {
-					String title = c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_TITLE)).toLowerCase(Locale.ENGLISH);
+					String title = c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_TITLE)).toLowerCase(Locale.ENGLISH);
 
 					if (title.indexOf(query) != -1 ||  p.matcher(title).replaceAll("").indexOf(query) != -1) {
 						shows.add(new TvShow(
 								getContext(),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_ID)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_TITLE)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_PLOT)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_RATING)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_GENRES)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_ACTORS)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_ID)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_TITLE)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_PLOT)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_RATING)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_GENRES)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_ACTORS)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_RUNTIME)),
 								false,
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_EXTRA1)),
-								MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_ID)))
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
+								MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_ID)))
 								));
 					}
 				}

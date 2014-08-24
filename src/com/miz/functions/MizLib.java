@@ -16,18 +16,18 @@
 
 package com.miz.functions;
 
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
 import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
-import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
 import static com.miz.functions.PreferenceKeys.TMDB_BASE_URL;
 import static com.miz.functions.PreferenceKeys.TMDB_BASE_URL_TIME;
+import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,6 +47,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,13 +60,14 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -79,8 +81,6 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -91,24 +91,20 @@ import android.os.Looper;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
-import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterSources;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterTvShowEpisodes;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShow;
@@ -201,8 +197,9 @@ public class MizLib {
 	 * @return Input String with first character in upper case.
 	 */
 	public static String toCapitalFirstChar(String s) {
-		if (s == null || s.isEmpty())
+		if (TextUtils.isEmpty(s))
 			return "";
+		
 		return s.substring(0, 1).toUpperCase(Locale.ENGLISH) + s.substring(1, s.length());
 	}
 
@@ -213,14 +210,14 @@ public class MizLib {
 	 * @return Input string with first character of all words in upper case.
 	 */
 	public static String toCapitalWords(String s) {
-		if (s == null || s.isEmpty())
+		if (TextUtils.isEmpty(s))
 			return "";
 
 		StringBuilder result = new StringBuilder();
 		String[] split = s.split("\\s");
 		int count = split.length;
 		for (int i = 0; i < count; i++)
-			result.append(toCapitalFirstChar(split[i]) + " ");
+			result.append(toCapitalFirstChar(split[i])).append(" ");
 		return result.toString().trim();
 	}
 
@@ -230,7 +227,7 @@ public class MizLib {
 	 * @return Input string with spaces between capital characters.
 	 */
 	public static String addSpaceByCapital(String s) {
-		if (s == null || s.isEmpty())
+		if (TextUtils.isEmpty(s))
 			return "";
 
 		StringBuilder result = new StringBuilder();
@@ -238,7 +235,7 @@ public class MizLib {
 		for (int i = 0; i < chars.length; i++)
 			if (chars.length > (i+1))
 				if (Character.isUpperCase(chars[i]) && (Character.isLowerCase(chars[i+1]) && !Character.isSpaceChar(chars[i+1])))
-					result.append(" " + chars[i]);
+					result.append(" ").append(chars[i]);
 				else
 					result.append(chars[i]);
 			else
@@ -252,19 +249,22 @@ public class MizLib {
 	 * @return A string with any digits from the input string
 	 */
 	public static String getNumbersInString(String s) {
-		if (s == null || s.isEmpty()) return "";
+		if (TextUtils.isEmpty(s))
+			return "";
+		
 		StringBuilder result = new StringBuilder();
 		char[] charArray = s.toCharArray();
 		int count = charArray.length;
 		for (int i = 0; i < count; i++)
 			if (Character.isDigit(charArray[i]))
 				result.append(charArray[i]);
+		
 		return result.toString();
 	}
 
 	public static int getCharacterCountInString(String source, char c) {
 		int result = 0;
-		if (!isEmpty(source))
+		if (!TextUtils.isEmpty(source))
 			for (int i = 0; i < source.length(); i++)
 				if (source.charAt(i) == c)
 					result++;
@@ -318,9 +318,11 @@ public class MizLib {
 	 * @param c - Context of the application
 	 * @return True if connected to a network, else false
 	 */
-	public static boolean isWifiConnected(Context c, boolean disableCheck) {
+	public static boolean isWifiConnected(Context c) {
 		if (c!= null) {
-			if (disableCheck)
+			boolean disableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(c).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
+			
+			if (disableEthernetWiFiCheck)
 				return isOnline(c);
 
 			ConnectivityManager connManager = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -528,38 +530,6 @@ public class MizLib {
 		v.setLayoutParams(params);
 	}
 
-	public static boolean isGoogleTV(Context context) {
-		return context.getPackageManager().hasSystemFeature("com.google.android.tv");
-	}
-
-	public static boolean isGoogleTV_720p(Context c) {
-		return (isGoogleTV(c) && c.getResources().getDisplayMetrics().densityDpi == DisplayMetrics.DENSITY_TV);
-	}
-
-	public static boolean isGoogleTV_1080p(Context c) {
-		return (isGoogleTV(c) && c.getResources().getDisplayMetrics().densityDpi == DisplayMetrics.DENSITY_XHIGH);
-	}
-
-	public static boolean hasFroyo() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
-	}
-
-	public static boolean hasGingerbread() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
-	}
-
-	public static boolean hasHoneycomb() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
-	}
-
-	public static boolean hasHoneycombMR1() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
-	}
-
-	public static boolean hasHoneycombMR2() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2;
-	}
-
 	public static boolean hasICS() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 	}
@@ -666,14 +636,6 @@ public class MizLib {
 		return "";
 	}
 
-	public static int getGreatestNumber(int a, int b) {
-		return (a > b) ? a : b;
-	}
-
-	public static int getLowestNumber(int a, int b) {
-		return (a > b) ? b : a;
-	}
-
 	public static int getThumbnailSize(Context c) {
 		final int mImageThumbSize = c.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		final int mImageThumbSpacing = c.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -684,10 +646,10 @@ public class MizLib {
 		Point size = new Point();
 		d.getSize(size);
 
-		final int numColumns = (int) Math.floor(getGreatestNumber(size.x, size.y) / (mImageThumbSize + mImageThumbSpacing));
+		final int numColumns = (int) Math.floor(Math.max(size.x, size.y) / (mImageThumbSize + mImageThumbSpacing));
 
 		if (numColumns > 0) {
-			final int columnWidth = (getGreatestNumber(size.x, size.y) / numColumns) - mImageThumbSpacing;
+			final int columnWidth = (Math.max(size.x, size.y) / numColumns) - mImageThumbSpacing;
 
 			if (columnWidth > 320)
 				return 440;
@@ -711,10 +673,10 @@ public class MizLib {
 		Point size = new Point();
 		d.getSize(size);
 
-		final int numColumns = (int) Math.floor(getGreatestNumber(size.x, size.y) / (mImageThumbSize + mImageThumbSpacing));
+		final int numColumns = (int) Math.floor(Math.max(size.x, size.y) / (mImageThumbSize + mImageThumbSpacing));
 
 		if (numColumns > 0) {
-			final int columnWidth = (getGreatestNumber(size.x, size.y) / numColumns) - mImageThumbSpacing;
+			final int columnWidth = (Math.max(size.x, size.y) / numColumns) - mImageThumbSpacing;
 
 			int imageWidth = 0;
 
@@ -749,10 +711,10 @@ public class MizLib {
 		Point size = new Point();
 		d.getSize(size);
 
-		final int numColumns = (int) Math.floor(getGreatestNumber(size.x, size.y) / (mImageThumbSize + mImageThumbSpacing));
+		final int numColumns = (int) Math.floor(Math.max(size.x, size.y) / (mImageThumbSize + mImageThumbSpacing));
 
 		if (numColumns > 0) {
-			final int columnWidth = (getGreatestNumber(size.x, size.y) / numColumns) - mImageThumbSpacing;
+			final int columnWidth = (Math.max(size.x, size.y) / numColumns) - mImageThumbSpacing;
 
 			if (columnWidth > 300)
 				return "w500";
@@ -770,7 +732,7 @@ public class MizLib {
 		Point size = new Point();
 		d.getSize(size);
 
-		final int width = getGreatestNumber(size.x, size.y);
+		final int width = Math.max(size.x, size.y);
 
 		if (width > 1280 && isTablet(c)) // We only want to download full size images on tablets, as these are the only devices where you can see the difference
 			return "original";
@@ -786,7 +748,7 @@ public class MizLib {
 		Point size = new Point();
 		d.getSize(size);
 
-		final int width = getLowestNumber(size.x, size.y);
+		final int width = Math.min(size.x, size.y);
 
 		if (width >= 780)
 			return "w780";
@@ -805,10 +767,10 @@ public class MizLib {
 		Point size = new Point();
 		d.getSize(size);
 
-		final int numColumns = (int) Math.floor(getGreatestNumber(size.x, size.y) / (mImageThumbSize + mImageThumbSpacing));
+		final int numColumns = (int) Math.floor(Math.max(size.x, size.y) / (mImageThumbSize + mImageThumbSpacing));
 
 		if (numColumns > 0) {
-			final int columnWidth = (getGreatestNumber(size.x, size.y) / numColumns) - mImageThumbSpacing;
+			final int columnWidth = (Math.max(size.x, size.y) / numColumns) - mImageThumbSpacing;
 
 			if (columnWidth > 400)
 				return "h632";
@@ -883,12 +845,6 @@ public class MizLib {
 		b.putString("forcename", title);
 		b.putBoolean("forcedirect", true);
 		return b;
-	}
-
-	public static boolean isEmpty(String string) {
-		if (null == string)
-			return true;
-		return string.length() == 0;
 	}
 
 	public static boolean checkFileTypes(String file) {
@@ -1174,7 +1130,7 @@ public class MizLib {
 	}
 
 	public static boolean downloadFile(String url, String savePath) {
-		if (isEmpty(url))
+		if (TextUtils.isEmpty(url))
 			return false;
 
 		InputStream in = null;
@@ -1257,7 +1213,7 @@ public class MizLib {
 	}
 
 	public static String removeIndexZero(String s) {
-		if (!isEmpty(s))
+		if (!TextUtils.isEmpty(s))
 			try {
 				return String.valueOf(Integer.parseInt(s));
 			} catch (NumberFormatException e) {}
@@ -1265,7 +1221,7 @@ public class MizLib {
 	}
 
 	public static String addIndexZero(String s) {
-		if (isEmpty(s))
+		if (TextUtils.isEmpty(s))
 			return "00";
 		try {
 			return String.format(Locale.ENGLISH, "%02d", Integer.parseInt(s));
@@ -1284,19 +1240,6 @@ public class MizLib {
 
 	public static String URLEncodeUTF8(String s) {
 		return Uri.parse(s).toString();
-	}
-
-	public static Bitmap drawableToBitmap(Drawable drawable) {
-		if (drawable instanceof BitmapDrawable) {
-			return ((BitmapDrawable)drawable).getBitmap();
-		}
-
-		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Config.ARGB_8888);
-		Canvas canvas = new Canvas(bitmap); 
-		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-		drawable.draw(canvas);
-
-		return bitmap;
 	}
 
 	public static final int TYPE_MOVIE = 0, TYPE_SHOWS = 1;
@@ -1436,7 +1379,8 @@ public class MizLib {
 			for (int i = 0; i < list.length; i++) {
 				name = list[i];
 				absolutePath = parentPath + list[i];
-				if (name.equalsIgnoreCase("fanart.jpeg") ||
+				if (name.equalsIgnoreCase("fanart.jpg") ||
+						name.equalsIgnoreCase("fanart.jpeg") ||
 						name.equalsIgnoreCase("fanart.tbn") ||
 						name.equalsIgnoreCase("banner.jpg") ||
 						name.equalsIgnoreCase("banner.jpeg") ||
@@ -1547,14 +1491,14 @@ public class MizLib {
 		if (!user.isEmpty()) {
 			// Add the domain details
 			if (!domain.isEmpty())
-				sb.append(domain + ";");
+				sb.append(domain).append(";");
 
 			// Add username
 			sb.append(user);
 
 			// Add password
 			if (!password.isEmpty())
-				sb.append(":" + password);
+				sb.append(":").append(password);
 
 			sb.append("@");
 		}
@@ -1570,10 +1514,10 @@ public class MizLib {
 
 	public static void deleteShow(Context c, TvShow thisShow, boolean showToast) {
 		// Create and open database
-		DbAdapterTvShow dbHelper = MizuuApplication.getTvDbAdapter();
+		DbAdapterTvShows dbHelper = MizuuApplication.getTvDbAdapter();
 		boolean deleted = dbHelper.deleteShow(thisShow.getId());
 
-		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
+		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 		deleted = deleted && db.deleteAllEpisodes(thisShow.getId());
 
 		if (deleted) {
@@ -1771,27 +1715,6 @@ public class MizLib {
 		return 50 * 1024 * 1024;
 	}
 
-	public static boolean findAndUpdateSpinner(Object root, int position) {
-		if (root instanceof android.widget.Spinner) {
-			// Found the Spinner
-			Spinner spinner = (Spinner) root;
-			spinner.setSelection(position);
-			return true;
-		} else if (root instanceof ViewGroup) {
-			ViewGroup group = (ViewGroup) root;
-			if (group.getId() != android.R.id.content) {
-				// Found a container that isn't the container holding our screen layout
-				for (int i = 0; i < group.getChildCount(); i++) {
-					if (findAndUpdateSpinner(group.getChildAt(i), position)) {
-						return true; // Found and done searching the View tree
-					}
-				}
-			}
-		}
-
-		return false; // Nothing found
-	}
-
 	public static File getOldDataFolder() {
 		File dataFolder = new File(Environment.getExternalStorageDirectory().toString() + "/data/com.miz.mizuu");
 		return dataFolder;
@@ -1799,12 +1722,6 @@ public class MizLib {
 
 	public static boolean oldDataFolderExists() {
 		return getOldDataFolder().exists() && getOldDataFolder().list() != null;
-	}
-
-	public static File getDataFolder(Context c) {
-		File f = c.getExternalFilesDir(null);
-		f.mkdirs();
-		return f;
 	}
 
 	public static File getMovieThumb(Context c, String movieId) {
@@ -1840,13 +1757,7 @@ public class MizLib {
 	}
 
 	public static File getOfflineFile(Context c, String filepath) {
-		return new File(MizuuApplication.getAvailableOfflineFolder(c), MizLib.md5(filepath) + "." + MizLib.getFileExtension(filepath));
-	}
-
-	public static File getCacheFolder(Context c) {
-		File f = new File(c.getExternalFilesDir(null) + "/app_cache");
-		f.mkdirs();
-		return f;
+		return new File(MizuuApplication.getAvailableOfflineFolder(c), MizLib.md5(filepath) + "." + MizLib.getExtension(filepath));
 	}
 
 	public static void copyFile(File src, File dst) throws IOException {
@@ -1969,41 +1880,6 @@ public class MizLib {
 		}
 	}
 
-	public static int flatPosition(ExpandableListView list, int groupPosition, int childPosition) {
-		try {
-			return list.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
-		} catch (Exception e) {
-			return 0;
-		}
-	}
-
-	public static boolean isImdbInstalled(Context c) {
-		PackageManager pm = c.getPackageManager();
-		try {
-			pm.getPackageInfo("com.imdb.mobile", PackageManager.GET_ACTIVITIES);
-			return true;
-		} catch (PackageManager.NameNotFoundException e) {
-			return false;
-		}
-	}
-
-	public static void setTextOfCoverView(String text, View view) {
-		if (view.getParent() instanceof ViewGroup) {
-			ViewGroup group = (ViewGroup) view.getParent();
-			if (group.getId() != android.R.id.content) {
-				// Found a container that isn't the container holding our screen layout
-				for (int i = 0; i < group.getChildCount(); i++) {
-					if (group.getChildAt(i).getId() == R.id.text) {
-						TextView tv = (TextView) group.getChildAt(i);
-						tv.setText(text);
-						tv.setVisibility(View.VISIBLE);
-						continue;
-					}
-				}
-			}
-		}
-	}
-
 	public static int countOccurrences(String haystack, char needle) {
 		int count = 0;
 		char[] array = haystack.toCharArray();
@@ -2118,361 +1994,6 @@ public class MizLib {
 		}
 
 		return result;
-	}
-
-	public static DecryptedShowEpisode decryptEpisode(String filepath, String customTags) {
-		DecryptedShowEpisode mEpisode = new DecryptedShowEpisode();
-		mEpisode.setFilepath(filepath);
-		mEpisode.setFileNameYear(decryptYear(mEpisode.getFileName()));
-		mEpisode.setDecryptedFileName(decryptName(getStringBeforeSeasonAndEpisode(mEpisode.getFileName()), customTags));
-		mEpisode.setEpisode(getEpisodeOrSeasonFromFileName(mEpisode.getFileName(), EPISODE));
-		mEpisode.setSeason(getEpisodeOrSeasonFromFileName(mEpisode.getFileName(), SEASON));
-
-		if (mEpisode.hasSeasonsFolder()) { // There's a season folder in the file structure - let's overwrite the season number with the one in the folder name
-			mEpisode.setSeason(getSeasonFromFolderName(mEpisode.getSeasonFolder()));
-		}
-
-		if (mEpisode.hasParentName()) {
-			mEpisode.setParentNameYear(decryptYear(mEpisode.getParentName()));
-			mEpisode.setDecryptedParentName(decryptName(getStringBeforeSeason(mEpisode.getParentName()), customTags));
-		}
-
-		return mEpisode;
-	}
-
-	public static boolean folderNameContainsSeasonNumber(String folderName) {
-
-		// S##
-		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,2}");
-		Matcher searchMatcher = searchPattern.matcher(folderName);
-
-		if (searchMatcher.find())
-			return true;
-
-		// Season ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,2}");
-		searchMatcher = searchPattern.matcher(folderName);
-
-		if (searchMatcher.find())
-			return true;
-
-		// ##
-		searchPattern = Pattern.compile("(\\d){1,2}(?!\\S)");
-		searchMatcher = searchPattern.matcher(folderName);
-
-		if (searchMatcher.find())
-			return true;
-
-		return false;
-	}
-
-	public static int SEASON = 0, EPISODE = 1;
-
-	public static int getEpisodeOrSeasonFromFileName(String input, int type) {
-		int episode = 0, season = 0;
-
-		// ##e##
-		Pattern searchPattern = Pattern.compile("(?i)(\\d){1,4}e(\\d){1,3}");
-		Matcher searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				String result = input.substring(searchMatcher.start(), searchMatcher.end());
-				episode = Integer.valueOf(result.split("(?i)e")[1].trim());
-				season = Integer.valueOf(result.split("(?i)e")[0].trim());
-
-				if (type == SEASON)
-					return season;
-				return episode;
-			} catch (Exception e) {}
-		}
-
-		// ##x##
-		searchPattern = Pattern.compile("(?i)(\\d){1,4}x(\\d){1,3}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				String result = input.substring(searchMatcher.start(), searchMatcher.end());
-				episode = Integer.valueOf(result.split("(?i)x")[1].trim());
-				season = Integer.valueOf(result.split("(?i)x")[0].trim());
-
-				if (type == SEASON)
-					return season;
-				return episode;
-			} catch (Exception e) {}
-		}
-
-		// season ## episode ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,4}((\\s)+)episode((\\s)+)(\\d){1,3}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				String result = input.substring(searchMatcher.start(), searchMatcher.end());
-				episode = Integer.valueOf(result.split("(?i)episode")[1].trim());
-				season = Integer.valueOf(result.split("(?i)episode")[0].replaceAll("(?i)season", "").trim());
-
-				if (type == SEASON)
-					return season;
-				return episode;
-			} catch (Exception e) {}
-		}
-
-		// episode ##
-		searchPattern = Pattern.compile("(?i)episode((\\s)+)(\\d){1,3}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				String result = input.substring(searchMatcher.start(), searchMatcher.end());
-				episode = Integer.valueOf(result.split("(?i)episode")[1].trim());
-				// No information found about the season number, return 0
-
-				if (type == SEASON)
-					return season;
-				return episode;
-			} catch (Exception e) {}
-		}
-
-		// #####
-		searchPattern = Pattern.compile("(\\d){1,7}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				String result = input.substring(searchMatcher.start(), searchMatcher.end());
-
-				switch (result.length()) {
-				case 1: // # (episode)
-					episode = Integer.valueOf(result);
-					// No information found about the season number, return 0
-					break;
-				case 2: // ## (episode)
-					episode = Integer.valueOf(result);
-					// No information found about the season number, return 0
-					break;
-				case 3: // ### (season [1], episode [2])
-					episode = Integer.valueOf(result.substring(1, 3));
-					season = Integer.valueOf(result.substring(0, 1));
-					break;
-				case 4: // #### (season [2], episode [2])
-					episode = Integer.valueOf(result.substring(2, 4));
-					season = Integer.valueOf(result.substring(0, 2));
-					break;
-				case 5: // ##### (season [2], episode [3])
-					episode = Integer.valueOf(result.substring(2, 5));
-					season = Integer.valueOf(result.substring(0, 2));
-					break;
-				case 6: // ##### (season [3], episode [3])
-					episode = Integer.valueOf(result.substring(3, 6));
-					season = Integer.valueOf(result.substring(0, 3));
-					break;
-				case 7: // ##### (season [4], episode [3])
-					episode = Integer.valueOf(result.substring(4, 7));
-					season = Integer.valueOf(result.substring(0, 4));
-					break;
-				}
-
-				if (type == SEASON)
-					return season;
-				return episode;
-			} catch (Exception e) {}
-		}
-
-		return episode;
-	}
-
-	public static String getStringBeforeSeasonAndEpisode(String input) {
-		String result = input;
-
-		// s##e##
-		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,4}e(\\d){1,3}");
-		Matcher searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		// ##e##
-		searchPattern = Pattern.compile("(?i)(\\d){1,4}e(\\d){1,3}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		// s##x##
-		searchPattern = Pattern.compile("(?i)s(\\d){1,4}x(\\d){1,3}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		// ##x##
-		searchPattern = Pattern.compile("(?i)(\\d){1,4}x(\\d){1,3}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		// season ## episode ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,4}((\\s)+)episode((\\s)+)(\\d){1,3}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		// episode ##
-		searchPattern = Pattern.compile("(?i)episode((\\s)+)(\\d){1,3}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		// e#####
-		searchPattern = Pattern.compile("(?i)e(\\d){1,5}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		// #####
-		searchPattern = Pattern.compile("(\\d){1,5}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		return result;
-	}
-
-	public static String getStringBeforeSeason(String input) {
-		String result = input;
-
-		// s##
-		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,4}");
-		Matcher searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		// season ## episode ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,4}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				result = input.substring(0, searchMatcher.start());
-				return result;
-			} catch (Exception e) {}
-		}
-
-		return result;
-	}
-
-	public static int getSeasonFromFolderName(String input) {
-		int season = 0;
-
-		// S##
-		Pattern searchPattern = Pattern.compile("(?i)s(\\d){1,4}");
-		Matcher searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				String result = input.substring(searchMatcher.start(), searchMatcher.end());
-				season = Integer.valueOf(result.replaceAll("(?i)s", "").trim());
-
-				return season;
-			} catch (Exception e) {}
-		}
-
-		// season ##
-		searchPattern = Pattern.compile("(?i)season((\\s)+)(\\d){1,4}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				String result = input.substring(searchMatcher.start(), searchMatcher.end());
-				season = Integer.valueOf(result.replaceAll("(?i)season", "").trim());
-
-				return season;
-			} catch (Exception e) {}
-		}
-
-		// ##
-		searchPattern = Pattern.compile("(\\d){1,4}");
-		searchMatcher = searchPattern.matcher(input);
-
-		if (searchMatcher.find()) {
-			try {
-				String result = input.substring(searchMatcher.start(), searchMatcher.end());
-
-				switch (result.length()) {
-				case 1: // # (episode)
-					season = Integer.valueOf(result);
-					// No information found about the season number, return 0
-					break;
-				case 2: // ## (episode)
-					season = Integer.valueOf(result);
-					// No information found about the season number, return 0
-					break;
-				case 3: // ### (season [1], episode [2])
-					season = Integer.valueOf(result.substring(0, 1));
-					break;
-				case 4: // #### (season [2], episode [2])
-					season = Integer.valueOf(result.substring(0, 2));
-					break;
-				case 5: // ##### (season [2], episode [3])
-					season = Integer.valueOf(result.substring(0, 2));
-					break;
-				case 6: // ##### (season [3], episode [3])
-					season = Integer.valueOf(result.substring(0, 3));
-					break;
-				case 7: // ##### (season [4], episode [3])
-					season = Integer.valueOf(result.substring(0, 4));
-					break;
-				}
-
-				return season;
-			} catch (Exception e) {}
-		}
-
-		return season;
 	}
 
 	/**
@@ -2703,50 +2224,25 @@ public class MizLib {
 		return output;
 	}
 
-	public static String getLatestBackdropPath(Context c) {
-		File latestMovie = lastFileModified(MizuuApplication.getMovieBackdropFolder(c));
-		File latestShow = lastFileModified(MizuuApplication.getTvShowBackdropFolder(c));
-		if (latestMovie != null && latestShow != null) {
-			if (latestMovie.lastModified() > latestShow.lastModified())
-				return latestMovie.getAbsolutePath();
-			return latestShow.getAbsolutePath();
-		} else if (latestMovie != null) {
-			return latestMovie.getAbsolutePath();
-		} else if (latestShow != null) {
-			return latestShow.getAbsolutePath();
+	public static String getRandomBackdropPath(Context c) {
+		ArrayList<File> files = new ArrayList<File>();
+
+		File[] f = MizuuApplication.getMovieBackdropFolder(c).listFiles();
+		for (File file : f) {
+			files.add(file);
 		}
+
+		f = MizuuApplication.getTvShowBackdropFolder(c).listFiles();
+		for (File file : f) {
+			files.add(file);
+		}
+
+		if (files.size() > 0) {
+			Random rndm = new Random();
+			return files.get(rndm.nextInt(files.size())).getAbsolutePath();
+		}
+
 		return "";
-	}
-
-	public static File lastFileModified(File dir) {
-		File[] files = dir.listFiles(new FileFilter() {			
-			public boolean accept(File file) {
-				return file.isFile();
-			}
-		});
-
-		if (files != null) {
-			long lastMod = Long.MIN_VALUE;
-			File choice = null;
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].lastModified() > lastMod) {
-					choice = files[i];
-					lastMod = files[i].lastModified();
-				}
-			}
-			return choice;
-		}
-		return null;
-	}
-
-	public static String getFileExtension(String path) {
-		String extension = "";
-
-		int i = path.lastIndexOf('.');
-		if (i > 0)
-			extension = path.substring(i+1);
-
-		return extension;
 	}
 
 	public static boolean isValidFilename(String name) {
@@ -2849,7 +2345,7 @@ public class MizLib {
 	}
 
 	public static String getPrettyDate(Context context, String date) {
-		if (!MizLib.isEmpty(date)) {
+		if (!TextUtils.isEmpty(date)) {
 			try {
 				String[] dateArray = date.split("-");
 				Calendar cal = Calendar.getInstance();
@@ -2865,7 +2361,7 @@ public class MizLib {
 	}
 
 	public static String getPrettyDatePrecise(Context context, String date) {
-		if (!MizLib.isEmpty(date)) {
+		if (!TextUtils.isEmpty(date)) {
 			try {
 				String[] dateArray = date.split("-");
 				Calendar cal = Calendar.getInstance();
@@ -2928,7 +2424,8 @@ public class MizLib {
 		};
 	}
 
-	private static String[] mAdultKeywords = new String[]{"adult", "sex", "porn", "explicit", "penis", "vagina", "asshole", "blowjob", "cock", "fuck", "dildo", "kamasutra", "masturbat", "squirt", "slutty", "cum", "cunt"};
+	private static String[] mAdultKeywords = new String[]{"adult", "sex", "porn", "explicit", "penis", "vagina", "asshole",
+		"blowjob", "cock", "fuck", "dildo", "kamasutra", "masturbat", "squirt", "slutty", "cum", "cunt"};
 
 	public static boolean isAdultContent(Context context, String title) {
 		// Check if the user has enabled adult content - if so, nothing should
@@ -3054,9 +2551,9 @@ public class MizLib {
 	public static boolean isNumber(String runtime) {
 		return TextUtils.isDigitsOnly(runtime);
 	}
-	
+
 	public static boolean isValidTmdbId(String id) {
-		return !isEmpty(id) && !id.equals("invalid") && isNumber(id);
+		return !TextUtils.isEmpty(id) && !id.equals(DbAdapterMovies.UNIDENTIFIED_ID) && isNumber(id);
 	}
 
 	/**
@@ -3097,5 +2594,16 @@ public class MizLib {
 		} catch (JSONException e) {
 			return null;
 		}
+	}
+	
+	public static void showSelectFileDialog(Context context, ArrayList<Filepath> paths, final Dialog.OnClickListener listener) {
+		String[] items = new String[paths.size()];
+		for (int i = 0; i < paths.size(); i++)
+			items[i] = paths.get(i).getFilepath();
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle(context.getString(R.string.selectFile));
+		builder.setItems(items, listener);
+		builder.show();
 	}
 }

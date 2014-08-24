@@ -375,10 +375,11 @@
     <string name="tvShowEpisodesOrderTypeDescription">Show newest or oldest episodes first.</string>
     <string name="newestFirst">Newest first</string>
     <string name="oldestFirst">Oldest first</string>
+    <string name="ratings_option_0">Online TV Database (TheTVDb)</string>
     <string name="ratings_option_1">The Movie Database (TMDb)</string>
     <string name="ratings_option_2">Trakt.tv</string>
     <string name="ratings_option_3">The Open Movie Database API (OMDb / IMDb)</string>
-    <string name="ratings_option_4">Online TV Database (TheTVDb)</string>
+    <string name="ratings_option_4">Online TV Database (TheTVDb) / The Movie Database (TMDb)</string>
     <string name="selectSourceForMovieRatings">Select source for movie ratings</string>
     <string name="selectSourceForShowRatings">Select source for TV show ratings</string>
     <string name="sourceForMovieRatings">Source for movie ratings</string>
@@ -497,5 +498,11 @@
     <string name="set_pref_language_title">Set preferred language</string>
     <string name="set_pref_language_description">Localize movie and TV show information into selected language. Defaults to English.</string>
     <string name="view_collection_online">View collection online</string>
+    <string name="identifying_show">Identifying show…</string>
+    <string name="cant_identify_while_updating">"You can't manually identify while the library is updating!"</string>
+    <string name="data_source_shows">Source for TV show data</string>
+    <string name="data_source_shows_description">Set the data source for TV show details.</string>
+    <string name="select_data_source_shows">Select source for TV show data</string>
+    <string name="selectFile">Select a file</string>
 
 </resources>

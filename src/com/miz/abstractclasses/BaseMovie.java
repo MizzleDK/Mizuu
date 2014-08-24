@@ -17,49 +17,52 @@
 package com.miz.abstractclasses;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Locale;
 
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
+import com.miz.mizuu.MizuuApplication;
+import com.miz.utils.StringUtils;
 
 public abstract class BaseMovie implements Comparable<BaseMovie> {
 
+	protected ArrayList<Filepath> mFilepaths = new ArrayList<Filepath>();
 	protected Context mContext;
-	protected String mFilepath, mTitle, mTmdbId;
-	protected boolean mIgnorePrefixes, mIgnoreNfo;
+	protected String mTitle, mTmdbId;
+	protected boolean mIgnorePrefixes;
 
-	public BaseMovie(Context context, String filepath, String title, String tmdbId, boolean ignorePrefixes, boolean ignoreNfo) {
+	public BaseMovie(Context context, String title, String tmdbId, boolean ignorePrefixes) {
 		// Set up movie fields based on constructor
 		mContext = context;
-		mFilepath = filepath;
 		mTitle = title;
 		mTmdbId = tmdbId;
 		mIgnorePrefixes = ignorePrefixes;
-		mIgnoreNfo = ignoreNfo;
 
 		// getTitle()
-		if (mTitle == null || mTitle.isEmpty()) {
-			String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[0] : mFilepath;
-			File fileName = new File(temp);
-			int pointPosition=fileName.getName().lastIndexOf(".");
-			mTitle = pointPosition == -1 ? fileName.getName() : fileName.getName().substring(0, pointPosition);
-		} else {
-			if (ignorePrefixes) {
-				String temp = mTitle.toLowerCase(Locale.ENGLISH);
-				String[] prefixes = MizLib.getPrefixes(mContext);
-				int count = prefixes.length;
-				for (int i = 0; i < count; i++) {
-					if (temp.startsWith(prefixes[i])) {
-						mTitle = mTitle.substring(prefixes[i].length());
-						break;
-					}
+		if (!TextUtils.isEmpty(mTitle) && ignorePrefixes) {
+			String temp = mTitle.toLowerCase(Locale.ENGLISH);
+			String[] prefixes = MizLib.getPrefixes(mContext);
+			int count = prefixes.length;
+			for (int i = 0; i < count; i++) {
+				if (temp.startsWith(prefixes[i])) {
+					mTitle = mTitle.substring(prefixes[i].length());
+					break;
 				}
 			}
 		}
+		
+		setFilepaths(MizuuApplication.getMovieMappingAdapter().getMovieFilepaths(getTmdbId()));
 	}
 
 	public String getTitle() {
+		if (TextUtils.isEmpty(mTitle))
+			// If the title is empty, we'll have to use whatever filepath is available
+			return StringUtils.getFilenameWithoutExtension(getFilepaths().get(0).getFilepath());
+
 		return mTitle;
 	}
 
@@ -76,102 +79,15 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 	}
 
 	public File getThumbnail() {
-		if (!mIgnoreNfo) {
-			try {
-				// Check if there's a custom cover art image
-				String filename = mFilepath.substring(0, mFilepath.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
-				File parentFolder = new File(mFilepath).getParentFile();
-
-				if (parentFolder != null) {
-					File[] list = parentFolder.listFiles();
-
-					if (list != null) {
-						String name, absolutePath;
-						int count = list.length;
-						for (int i = 0; i < count; i++) {
-							name = list[i].getName();
-							absolutePath = list[i].getAbsolutePath();
-							if (name.equalsIgnoreCase("poster.jpg") ||
-									name.equalsIgnoreCase("poster.jpeg") ||
-									name.equalsIgnoreCase("poster.tbn") ||
-									name.equalsIgnoreCase("folder.jpg") ||
-									name.equalsIgnoreCase("folder.jpeg") ||
-									name.equalsIgnoreCase("folder.tbn") ||
-									name.equalsIgnoreCase("cover.jpg") ||
-									name.equalsIgnoreCase("cover.jpeg") ||
-									name.equalsIgnoreCase("cover.tbn") ||
-									absolutePath.equalsIgnoreCase(filename + "-poster.jpg") ||
-									absolutePath.equalsIgnoreCase(filename + "-poster.jpeg") ||
-									absolutePath.equalsIgnoreCase(filename + "-poster.tbn") ||
-									absolutePath.equalsIgnoreCase(filename + "-folder.jpg") ||
-									absolutePath.equalsIgnoreCase(filename + "-folder.jpeg") ||
-									absolutePath.equalsIgnoreCase(filename + "-folder.tbn") ||
-									absolutePath.equalsIgnoreCase(filename + "-cover.jpg") ||
-									absolutePath.equalsIgnoreCase(filename + "-cover.jpeg") ||
-									absolutePath.equalsIgnoreCase(filename + "-cover.tbn") ||
-									absolutePath.equalsIgnoreCase(filename + ".jpg") ||
-									absolutePath.equalsIgnoreCase(filename + ".jpeg") ||
-									absolutePath.equalsIgnoreCase(filename + ".tbn")) {
-								return list[i];
-							}
-						}
-					}
-				}
-			} catch (Exception e) {}
-		}
-
-		// New naming style
 		return MizLib.getMovieThumb(mContext, mTmdbId);
 	}
-	
+
 	public String getTmdbId() {
 		return mTmdbId;
 	}
 
-	public String getBackdrop() {
-		if (!mIgnoreNfo) {
-			try {
-				// Check if there's a custom cover art image
-				String filename = mFilepath.substring(0, mFilepath.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
-				File parentFolder = new File(mFilepath).getParentFile();
-
-				if (parentFolder != null) {
-					File[] list = parentFolder.listFiles();
-
-					if (list != null) {
-						String name, absolutePath;
-						int count = list.length;
-						for (int i = 0; i < count; i++) {
-							name = list[i].getName();
-							absolutePath = list[i].getAbsolutePath();
-							if (name.equalsIgnoreCase("fanart.jpg") ||
-									name.equalsIgnoreCase("fanart.jpeg") ||
-									name.equalsIgnoreCase("fanart.tbn") ||
-									name.equalsIgnoreCase("banner.jpg") ||
-									name.equalsIgnoreCase("banner.jpeg") ||
-									name.equalsIgnoreCase("banner.tbn") ||
-									name.equalsIgnoreCase("backdrop.jpg") ||
-									name.equalsIgnoreCase("backdrop.jpeg") ||
-									name.equalsIgnoreCase("backdrop.tbn") ||
-									absolutePath.equalsIgnoreCase(filename + "-fanart.jpg") ||
-									absolutePath.equalsIgnoreCase(filename + "-fanart.jpeg") ||
-									absolutePath.equalsIgnoreCase(filename + "-fanart.tbn") ||
-									absolutePath.equalsIgnoreCase(filename + "-banner.jpg") ||
-									absolutePath.equalsIgnoreCase(filename + "-banner.jpeg") ||
-									absolutePath.equalsIgnoreCase(filename + "-banner.tbn") ||
-									absolutePath.equalsIgnoreCase(filename + "-backdrop.jpg") ||
-									absolutePath.equalsIgnoreCase(filename + "-backdrop.jpeg") ||
-									absolutePath.equalsIgnoreCase(filename + "-backdrop.tbn")) {
-								return absolutePath;
-							}
-						}
-					}
-				}
-			} catch (Exception e) {}
-		}
-
-		// New naming style
-		return MizLib.getMovieBackdrop(mContext, mTmdbId).getAbsolutePath();
+	public File getBackdrop() {
+		return MizLib.getMovieBackdrop(mContext, mTmdbId);
 	}
 
 	@Override
@@ -179,4 +95,19 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		return getTitle().compareToIgnoreCase(another.getTitle());
 	}
 
+	public void setFilepaths(ArrayList<String> paths) {
+		for (String path : paths)
+			mFilepaths.add(new Filepath(path));
+	}
+
+	public ArrayList<Filepath> getFilepaths() {
+		return mFilepaths;
+	}
+
+	public String getAllFilepaths() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < getFilepaths().size(); i++)
+			sb.append(getFilepaths().get(i).getFilepath()).append("\n");
+		return sb.toString().trim();
+	}
 }

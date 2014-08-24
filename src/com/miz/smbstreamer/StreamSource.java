@@ -27,13 +27,11 @@ import jcifs.smb.SmbFileInputStreamOld;
 
 public class StreamSource {
 
-	protected String mime;
-	protected long fp;
-	protected long len;
-	protected String name;
-	protected SmbFile file;
-	InputStream input;
+	protected String mime, name;
+	protected long fp, len;
 	protected int bufferSize;
+	protected SmbFile file;
+	protected InputStream input;
 
 	public StreamSource(SmbFile file) throws SmbException{
 		fp = 0;
@@ -41,40 +39,13 @@ public class StreamSource {
 		mime = MizLib.getMimeType(file.getName(), false);
 		name = file.getName();
 		this.file = file;
-		bufferSize = 1024*16;
+		bufferSize = 16 * 1024;
 	}
-
-	/**
-	 * You may notice a strange name for the smb input stream.
-	 * I made some modifications to the original one in the jcifs library for my needs,
-	 * but streaming required returning to the original one so I renamed it to "old".
-	 * However, I needed to specify a buffer size in the constructor. It looks now like this:
-	 * 
-	 *     public SmbFileInputStreamOld( SmbFile file, int readBuffer, int openFlags) throws SmbException, MalformedURLException, UnknownHostException {
-                        this.file = file;
-                        this.openFlags = SmbFile.O_RDONLY & 0xFFFF;
-                        this.access = (openFlags >>> 16) & 0xFFFF;
-                        if (file.type != SmbFile.TYPE_NAMED_PIPE) {
-                            file.open( openFlags, access, SmbFile.ATTR_NORMAL, 0 );
-                            this.openFlags &= ~(SmbFile.O_CREAT | SmbFile.O_TRUNC);
-                        } else {
-                            file.connect0();
-                        }
-                        readSize = readBuffer;
-                        fs = file.length();
-                    }
-	 * 
-	 * Setting buffer size by properties didn't work for me so I created this constructor.
-	 * In the libs folder there is a library modified by me. If you want to use a stock one, you
-	 * have to set somehow the buffer size to be equal with http server's buffer size which is 8192.
-	 * 
-	 * @throws IOException
-	 */
 
 	public void open() throws IOException {
 		try {
 			input = new SmbFileInputStreamOld(file, bufferSize, 1);
-			if(fp>0)
+			if (fp > 0)
 				input.skip(fp);
 		} catch (Exception e) {
 			throw new IOException(e);

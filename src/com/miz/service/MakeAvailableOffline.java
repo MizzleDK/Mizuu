@@ -44,6 +44,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -83,7 +84,7 @@ public class MakeAvailableOffline extends IntentService {
 	public void onCreate() {
 		super.onCreate();
 
-		mHandler = new Handler();
+		mHandler = new Handler(Looper.getMainLooper());
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {

@@ -16,7 +16,6 @@
 
 package com.miz.widgets;
 
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 
 import java.io.IOException;
@@ -28,15 +27,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.SmallMovie;
 import com.miz.mizuu.MizuuApplication;
@@ -58,7 +54,7 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 
 		private Context mContext;
 		private ArrayList<SmallMovie> movies = new ArrayList<SmallMovie>();
-		private boolean ignorePrefixes, ignoreNfo;
+		private boolean ignorePrefixes;
 		private Picasso mPicasso;
 		private Bitmap.Config mConfig;
 		private RemoteViews mLoadingView;
@@ -66,7 +62,6 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 		public BookmarkFactory(Context context, int widgetId) {
 			mContext = context.getApplicationContext();
 			ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
-			ignoreNfo = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_NFO_FILES, true);
 			
 			mPicasso = MizuuApplication.getPicasso(mContext);
 			mConfig = MizuuApplication.getBitmapConfig();
@@ -100,7 +95,6 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 		public RemoteViews getViewAt(int position) {
 			RemoteViews view = new RemoteViews(mContext.getPackageName(), R.layout.movie_cover_widget_item);
 
-			
 			try {
 				Bitmap cover = mPicasso.load(movies.get(position).getThumbnail()).config(mConfig).get();
 				view.setImageViewBitmap(R.id.thumb, cover);
@@ -111,23 +105,6 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 				view.setTextViewText(R.id.widgetTitle, movies.get(position).getTitle());
 				view.setViewVisibility(R.id.widgetTitle, View.VISIBLE);
 			}
-			
-			// Image
-			/*BitmapFactory.Options options = new BitmapFactory.Options();
-			options.inPreferredConfig = Config.RGB_565;
-			options.inPreferQualityOverSpeed = true;
-			
-			Bitmap cover = BitmapFactory.decodeFile(movies.get(position).getThumbnail().getAbsolutePath(), options);
-
-			if (cover != null)
-				view.setImageViewBitmap(R.id.thumb, cover);
-			else {
-				view.setImageViewResource(R.id.thumb, R.drawable.loading_image);
-
-				// Text
-				view.setTextViewText(R.id.widgetTitle, movies.get(position).getTitle());
-				view.setViewVisibility(R.id.widgetTitle, View.VISIBLE);
-			}*/
 
 			// Intent
 			Intent i = new Intent(MovieCoverWidgetProvider.MOVIE_COVER_WIDGET);
@@ -141,19 +118,17 @@ public class MovieCoverWidgetService extends RemoteViewsService {
 			movies.clear();
 
 			// Create and open database
-			DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
+			DbAdapterMovies dbHelper = MizuuApplication.getMovieAdapter();
 
-			Cursor cursor = dbHelper.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			Cursor cursor = dbHelper.fetchAllMovies(DbAdapterMovies.KEY_TITLE + " ASC", false);
 			ColumnIndexCache cache = new ColumnIndexCache();
 
 			try {
 				while (cursor.moveToNext()) {
 					movies.add(new SmallMovie(mContext,
-							MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID))),
-							cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE)),
-							cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)),
-							ignorePrefixes,
-							ignoreNfo
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TITLE)),
+							cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TMDB_ID)),
+							ignorePrefixes
 							));
 				}
 			} catch (NullPointerException e) {} finally {

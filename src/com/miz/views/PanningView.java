@@ -29,8 +29,6 @@ import android.widget.ImageView;
 public class PanningView extends ImageView {
 
 	private final PanningViewAttacher mAttacher;
-
-	private int mPanningDurationInMs = PanningViewAttacher.DEFAULT_PANNING_DURATION_IN_MS;
 	private boolean mDetached = false;
 
 	public PanningView(Context context) {
@@ -44,11 +42,10 @@ public class PanningView extends ImageView {
 	public PanningView(Context context, AttributeSet attr, int defStyle) {
 		super(context, attr, defStyle);
 		super.setScaleType(ScaleType.MATRIX);
-		mAttacher = new PanningViewAttacher(this, mPanningDurationInMs);
+		mAttacher = new PanningViewAttacher(this);
 	}
 
 	@Override
-	// setImageBitmap calls through to this method
 	public void setImageDrawable(Drawable drawable) {
 		if (!mDetached) {
 			super.setImageDrawable(drawable);
@@ -86,8 +83,8 @@ public class PanningView extends ImageView {
 	@Override
 	public void setScaleType(ScaleType scaleType) {
 		if (scaleType == ScaleType.CENTER_CROP) {
-			super.setScaleType(scaleType);
 			stopPanning();
+			super.setScaleType(scaleType);
 		} else
 			throw new UnsupportedOperationException("only matrix scaleType is supported");
 	}

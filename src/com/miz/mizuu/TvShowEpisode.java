@@ -18,223 +18,196 @@ package com.miz.mizuu;
 
 import static com.miz.functions.PreferenceKeys.TVSHOWS_EPISODE_ORDER;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
-import java.io.File;
-
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
+import com.miz.utils.StringUtils;
 
 public class TvShowEpisode implements Comparable<TvShowEpisode> {
 
-	private Context CONTEXT;
-	private String ROW_ID, FILEPATH, SHOW_ID, TITLE, DESCRIPTION, SEASON, EPISODE, RELEASEDATE, DIRECTOR, WRITER, GUESTSTARS, RATING, HAS_WATCHED, FAVORITE, mSubtitleText;
-	private String mGetFilepath;
+	private Context mContext;
+	private String mShowId, mTitle, mDescription, mSeason, mEpisode, mReleaseDate, mDirector, mWriter, mGuestStars, mRating, mHasWatched, mFavorite, mSubtitleText;
+	private ArrayList<Filepath> mFilepaths = new ArrayList<Filepath>();
 
-	public TvShowEpisode(Context context, String rowId, String showId, String filepath, String title, String description,
+	public TvShowEpisode(Context context, String showId, String title, String description,
 			String season, String episode, String releasedate, String director, String writer, String gueststars,
 			String rating, String hasWatched, String favorite) {
 
 		// Set up episode fields based on constructor
-		CONTEXT = context;
-		ROW_ID = rowId;
-		FILEPATH = filepath;
-		SHOW_ID = showId;
-		TITLE = title;
-		DESCRIPTION = description;
-		SEASON = season;
-		EPISODE = episode;
-		RELEASEDATE = releasedate;
-		DIRECTOR = director;
-		WRITER = writer;
-		GUESTSTARS = gueststars;
-		RATING = rating;
-		HAS_WATCHED = hasWatched;
-		FAVORITE = favorite;
-		String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[1] : FILEPATH;
-		mGetFilepath = MizLib.transformSmbPath(temp);
-		
+		mContext = context;
+		mShowId = showId;
+		mTitle = title;
+		mDescription = description;
+		mSeason = season;
+		mEpisode = episode;
+		mReleaseDate = releasedate;
+		mDirector = director;
+		mWriter = writer;
+		mGuestStars = gueststars;
+		mRating = rating;
+		mHasWatched = hasWatched;
+		mFavorite = favorite;
+
 		// Subtitle text
 		StringBuilder sb = new StringBuilder();
-		sb.append(CONTEXT.getString(R.string.showEpisode));
+		sb.append(mContext.getString(R.string.showEpisode));
 		sb.append(" ");
 		sb.append(getEpisode());
 		if (!hasWatched())
-			sb.append(" " + CONTEXT.getString(R.string.unwatched));
-		
+			sb.append(" " + mContext.getString(R.string.unwatched));
+
 		mSubtitleText = sb.toString();
 	}
 
-	public String getRowId() {
-		return ROW_ID;
-	}
-	
 	public String getShowId() {
-		return SHOW_ID;
+		return mShowId;
 	}
 
-	public String getFilepath() {
-		return mGetFilepath;
-	}
-
-	public String getFullFilepath() {
-		return FILEPATH;
-	}
-	
 	public String getTitle() {
-		if (TITLE == null || TITLE.isEmpty()) {
-			String temp = FILEPATH.contains("<MiZ>") ? FILEPATH.split("<MiZ>")[0] : FILEPATH;
+		if (TextUtils.isEmpty(mTitle)) {
+			String path = getFilepaths().get(0).getFullFilepath();
+			String temp = path.contains("<MiZ>") ? path.split("<MiZ>")[0] : path;
 			File fileName = new File(temp);
 			int pointPosition=fileName.getName().lastIndexOf(".");
 			return pointPosition == -1 ? fileName.getName() : fileName.getName().substring(0, pointPosition);
 		} else {
-			return TITLE;
+			return mTitle;
 		}
 	}
 
 	public String getDescription() {
-		if (DESCRIPTION == null || DESCRIPTION.isEmpty()) {
-			return CONTEXT.getString(R.string.stringNoPlot);
+		if (TextUtils.isEmpty(mDescription)) {
+			return mContext.getString(R.string.stringNoPlot);
 		} else {
-			return DESCRIPTION.trim();
+			return mDescription.trim();
 		}
 	}
 
 	public String getSeason() {
-		return SEASON;
+		return mSeason;
 	}
 
 	public String getEpisode() {
-		return EPISODE;
+		return mEpisode;
 	}
 
 	public File getEpisodePhoto() {
-		return MizLib.getTvShowEpisode(CONTEXT, SHOW_ID, SEASON, EPISODE);
+		return MizLib.getTvShowEpisode(mContext, mShowId, mSeason, mEpisode);
 	}
 
 	public String getReleasedate() {
-		return RELEASEDATE;
+		return mReleaseDate;
 	}
 
 	public String getDirector() {
-		DIRECTOR = DIRECTOR.replace("|", ", ");
-		if (DIRECTOR.startsWith(", ")) {
-			DIRECTOR = DIRECTOR.substring(2, DIRECTOR.length());
-		}
-		if (DIRECTOR.endsWith(", ")) {
-			DIRECTOR = DIRECTOR.substring(0, DIRECTOR.length() - 2);
-		}
-		
-		return DIRECTOR;
+		return StringUtils.replacePipesWithCommas(mDirector);
 	}
 
 	public String getWriter() {
-		WRITER = WRITER.replace("|", ", ");
-		if (WRITER.startsWith(", ")) {
-			WRITER = WRITER.substring(2, WRITER.length());
-		}
-		if (WRITER.endsWith(", ")) {
-			WRITER = WRITER.substring(0, WRITER.length() - 2);
-		}
-		
-		return WRITER;
+		return StringUtils.replacePipesWithCommas(mWriter);
 	}
 
 	public String getGuestStars() {
-		GUESTSTARS = GUESTSTARS.replace("|", ", ");
-		if (GUESTSTARS.startsWith(", ")) {
-			GUESTSTARS = GUESTSTARS.substring(2, GUESTSTARS.length());
-		}
-		if (GUESTSTARS.endsWith(", ")) {
-			GUESTSTARS = GUESTSTARS.substring(0, GUESTSTARS.length() - 2);
-		}
-		
-		return GUESTSTARS;
+		return StringUtils.replacePipesWithCommas(mGuestStars);
 	}
-	
+
 	public String getRating() {
-		if (MizLib.isEmpty(RATING))
+		if (TextUtils.isEmpty(mRating))
 			return "0/10";
-		return RATING + "/10";
+		return mRating + "/10";
 	}
-	
+
 	public double getRawRating() {
 		try {
-			return Double.valueOf(RATING);
+			return Double.valueOf(mRating);
 		} catch (NumberFormatException e) {
 			return 0.0;
 		}
 	}
-	
-	public boolean isNetworkFile() {
-		return getFilepath().contains("smb:/");
-	}
-	
-	public boolean isUpnpFile() {
-		return getFilepath().startsWith("http://");
-	}
-	
+
 	public boolean hasWatched() {
-		return (HAS_WATCHED.isEmpty() || HAS_WATCHED.equals("0")) ? false : true;
+		return (mHasWatched.isEmpty() || mHasWatched.equals("0")) ? false : true;
 	}
-	
+
 	public String getHasWatched() {
-		return HAS_WATCHED;
+		return mHasWatched;
 	}
-	
+
 	public void setHasWatched(boolean hasWatched) {
 		if (hasWatched)
-			HAS_WATCHED = "1";
+			mHasWatched = "1";
 		else
-			HAS_WATCHED = "0";
+			mHasWatched = "0";
 	}
-	
+
 	public boolean isFavorite() {
-		return (FAVORITE.isEmpty() || FAVORITE.equals("0")) ? false : true;
+		return (mFavorite.isEmpty() || mFavorite.equals("0")) ? false : true;
 	}
-	
+
 	public String getFavorite() {
-		return FAVORITE;
+		return mFavorite;
 	}
-	
-	public boolean hasOfflineCopy() {
-		return getOfflineCopyFile().exists();
+
+	public boolean hasOfflineCopy(Filepath path) {
+		return getOfflineCopyFile(path).exists();
 	}
-	
-	public String getOfflineCopyUri() {
-		return getOfflineCopyFile().getAbsolutePath();
+
+	public String getOfflineCopyUri(Filepath path) {
+		return getOfflineCopyFile(path).getAbsolutePath();
 	}
-	
-	public File getOfflineCopyFile() {
-		return MizLib.getOfflineFile(CONTEXT, getFullFilepath());
+
+	public File getOfflineCopyFile(Filepath path) {
+		return MizLib.getOfflineFile(mContext, path.getFullFilepath());
 	}
-	
+
 	/**
 	 * Returns the path for the TV show thumbnail
 	 * @return
 	 */
 	public String getThumbnail() {
-		return MizLib.getTvShowThumb(CONTEXT, SHOW_ID).getAbsolutePath();
+		return MizLib.getTvShowThumb(mContext, mShowId).getAbsolutePath();
 	}
-	
+
 	/**
 	 * Returns the path for the TV show thumbnail
 	 * @return
 	 */
 	public File getTvShowBackdrop() {
-		return MizLib.getTvShowBackdrop(CONTEXT, SHOW_ID);
+		return MizLib.getTvShowBackdrop(mContext, mShowId);
 	}
-	
+
 	public String getSubtitleText() {
 		return mSubtitleText;
 	}
 
 	@Override
 	public int compareTo(TvShowEpisode another) {
-		String defaultOrder = CONTEXT.getString(R.string.oldestFirst);
-		boolean oldestFirst = PreferenceManager.getDefaultSharedPreferences(CONTEXT).getString(TVSHOWS_EPISODE_ORDER, defaultOrder).equals(defaultOrder);
+		String defaultOrder = mContext.getString(R.string.oldestFirst);
+		boolean oldestFirst = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_EPISODE_ORDER, defaultOrder).equals(defaultOrder);
 		int multiplier = oldestFirst ? 1 : -1;
-		
+
 		return getEpisode().compareToIgnoreCase(another.getEpisode()) * multiplier;
+	}
+
+	public void setFilepaths(ArrayList<String> paths) {
+		for (String path : paths)
+			mFilepaths.add(new Filepath(path));
+	}
+
+	public ArrayList<Filepath> getFilepaths() {
+		return mFilepaths;
+	}
+
+	public String getAllFilepaths() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < getFilepaths().size(); i++)
+			sb.append(getFilepaths().get(i).getFilepath()).append("\n");
+		return sb.toString().trim();
 	}
 }

@@ -18,8 +18,8 @@ package com.miz.functions;
 
 import java.io.File;
 
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterMovieMapping;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterMovieMappings;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.widgets.MovieBackdropWidgetProvider;
@@ -119,8 +119,8 @@ public class TheMovieDb {
 
 	private void addToDatabase() {
 
-		DbAdapterMovieMapping dbHelperMovieMapping = MizuuApplication.getMovieMappingAdapter();
-		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
+		DbAdapterMovieMappings dbHelperMovieMapping = MizuuApplication.getMovieMappingAdapter();
+		DbAdapterMovies dbHelper = MizuuApplication.getMovieAdapter();
 
 		if (isFromManualIdentify) {
 			// Update the mapping TMDb ID to the new one

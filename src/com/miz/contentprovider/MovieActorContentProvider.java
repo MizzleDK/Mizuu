@@ -30,11 +30,11 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.functions.ColumnIndexCache;
-import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 
@@ -116,21 +116,21 @@ public class MovieActorContentProvider extends SearchRecentSuggestionsProvider {
 		HashMap<String, String> actorMap = new HashMap<String, String>();
 
 		List<String> actorList = new ArrayList<String>();
-		if (!MizLib.isEmpty(query)) {
+		if (!TextUtils.isEmpty(query)) {
 
-			DbAdapter db = MizuuApplication.getMovieAdapter();
+			DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 
 			query = query.toLowerCase(Locale.ENGLISH);
 
-			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			Cursor c = db.fetchAllMovies(DbAdapterMovies.KEY_TITLE + " ASC", false);
 			ColumnIndexCache cache = new ColumnIndexCache();
 
 			try {
 				while (c.moveToNext()) {
-					String actors = c.getString(cache.getColumnIndex(c, DbAdapter.KEY_ACTORS)).toLowerCase(Locale.ENGLISH);
+					String actors = c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_ACTORS)).toLowerCase(Locale.ENGLISH);
 
 					if (actors.indexOf(query) != -1) {
-						for (String actor : c.getString(cache.getColumnIndex(c, DbAdapter.KEY_ACTORS)).split("\\|"))
+						for (String actor : c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_ACTORS)).split("\\|"))
 							if (actor.toLowerCase(Locale.ENGLISH).startsWith(query))
 								actorMap.put(actor, actor);
 					}

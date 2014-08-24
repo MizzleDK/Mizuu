@@ -33,6 +33,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.miz.functions.MizLib;
+import com.miz.functions.PaletteTransformation;
 import com.miz.functions.TMDb;
 import com.miz.functions.TMDbMovie;
 import com.miz.mizuu.MizuuApplication;
@@ -51,7 +52,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private ImageView background, cover;
 	private TMDb tmdb;
 	private TMDbMovie thisMovie;
-	private View movieDetailsLayout, progressBar;
+	private View movieDetailsLayout, progressBar, mDetailsArea;
 	private FrameLayout container;
 	private boolean isRetained = false;
 	private Picasso mPicasso;
@@ -85,14 +86,14 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-		
+
 		mBus = MizuuApplication.getBus();
 
 		mLight = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Light.ttf");
 		mLightItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-LightItalic.ttf");
 		mMedium = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Medium.ttf");
 		mBoldItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-BoldItalic.ttf");
-		
+
 		tmdb = new TMDb(getActivity());
 
 		// Get the database ID of the movie in question
@@ -100,7 +101,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -114,7 +115,8 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 		movieDetailsLayout = MizLib.isPortrait(getActivity()) ? v.findViewById(R.id.movieDetailsLayout_portrait) : v.findViewById(R.id.movieDetailsLayout);
 		progressBar = v.findViewById(R.id.progressBar1);
-
+		mDetailsArea = v.findViewById(R.id.details_area);
+		
 		this.container = (FrameLayout) v.findViewById(R.id.container);
 		background = (ImageView) v.findViewById(R.id.imageBackground);
 		textTitle = (TextView) v.findViewById(R.id.movieTitle);
@@ -130,7 +132,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 		// Get rid of these...
 		v.findViewById(R.id.textView3).setVisibility(View.GONE); // File
-		
+
 		if (MizLib.isPortrait(getActivity())) {
 			final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
 			final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
@@ -188,11 +190,11 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 			textPlot.setTypeface(mLight);
 			textReleaseDate.setTypeface(mLight);
-			
+
 			textRuntime.setTypeface(mMedium);
 			textCertification.setTypeface(mMedium);
 			textRating.setTypeface(mMedium);
-			
+
 			// Set the movie plot
 			if (!MizLib.isPortrait(getActivity())) {
 				textPlot.setBackgroundResource(R.drawable.selectable_background);
@@ -233,7 +235,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 
 			// Set the movie genre
 			textGenre.setTypeface(mLightItalic);
-			if (!MizLib.isEmpty(thisMovie.getGenres())) {
+			if (!TextUtils.isEmpty(thisMovie.getGenres())) {
 				textGenre.setText(thisMovie.getGenres());
 			} else {
 				textGenre.setVisibility(View.GONE);
@@ -260,7 +262,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			}
 
 			// Set the movie certification
-			if (!MizLib.isEmpty(thisMovie.getCertification())) {
+			if (!TextUtils.isEmpty(thisMovie.getCertification())) {
 				textCertification.setText(thisMovie.getCertification());
 			} else {
 				textCertification.setText(R.string.stringNA);
@@ -269,7 +271,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 			setLoading(false);
 
 			if (!thisMovie.getCover().isEmpty())
-				mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.gray).error(R.drawable.loading_image).into(cover);
+				mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.gray).error(R.drawable.loading_image).transform(new PaletteTransformation(thisMovie.getCover(), mDetailsArea)).into(cover);
 			else
 				cover.setImageResource(R.drawable.gray);
 
@@ -279,11 +281,11 @@ public class TmdbMovieDetailsFragment extends Fragment {
 					public void onError() {
 						if (!isAdded())
 							return;
-						
+
 						if (MizLib.isPortrait(getActivity())) {
 							((PanningView) background).setScaleType(ScaleType.CENTER_CROP);
 						}
-						
+
 						if (!thisMovie.getCover().isEmpty())
 							mPicasso.load(thisMovie.getCover()).placeholder(R.drawable.bg).error(R.drawable.bg).into(background);
 						else
@@ -294,7 +296,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 					public void onSuccess() {						
 						if (!isAdded())
 							return;
-						
+
 						if (MizLib.isPortrait(getActivity())) {
 							((PanningView) background).startPanning();
 						}

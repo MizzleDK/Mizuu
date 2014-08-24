@@ -32,7 +32,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.mizuu.MizuuApplication;
 
 public class NfoMovie {
@@ -48,8 +48,6 @@ public class NfoMovie {
 		this.is = is;
 		this.c = c;
 		this.callback = callback;
-		
-		System.out.println("HAHA AWESOME!");
 
 		readFile();
 	}
@@ -233,7 +231,7 @@ public class NfoMovie {
 						tag = element.getChildNodes();
 						movie.setId(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setId("invalid");
+						movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 					}
 
 					try {
@@ -254,7 +252,7 @@ public class NfoMovie {
 							String[] genresArray = genres.split(",");
 							StringBuilder sb = new StringBuilder();
 							for (int k = 0; k < genresArray.length; k++) {
-								sb.append(MizLib.toCapitalWords(genresArray[k].toLowerCase(Locale.getDefault())) + ", ");
+								sb.append(MizLib.toCapitalWords(genresArray[k].toLowerCase(Locale.getDefault()))).append(", ");
 							}
 							genres = sb.substring(0, sb.length() - 2).toString();
 							movie.setGenres(genres);
@@ -280,7 +278,8 @@ public class NfoMovie {
 									actorList = firstActorElement.getElementsByTagName("name");
 									actorElement = (Element) actorList.item(0);
 									actorTag = actorElement.getChildNodes();
-									sbActor.append(((Node) actorTag.item(0)).getNodeValue().trim() + "|");
+									sbActor.append(((Node) actorTag.item(0)).getNodeValue().trim());
+									sbActor.append("|");
 								} catch(Exception e) {}
 
 							}
@@ -304,7 +303,7 @@ public class NfoMovie {
 
 	private void addToDatabase() {
 		// Create and open database
-		DbAdapter dbHelper = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies dbHelper = MizuuApplication.getMovieAdapter();
 		
 		// Create the movie entry
 		dbHelper.createMovie(movie.getId().isEmpty() ? filepath : movie.getId(), movie.getTitle(), movie.getPlot(), movie.getImdbId(),
@@ -314,12 +313,12 @@ public class NfoMovie {
 		// Create the filepath mapping
 		MizuuApplication.getMovieMappingAdapter().createFilepathMapping(filepath, movie.getId().isEmpty() ? filepath : movie.getId());
 		
-		Movie temp = new Movie(c, filepath, movie.getTitle(), movie.getPlot(), movie.getTagline(), movie.getId(), movie.getImdbId(), movie.getRating(),
+		Movie temp = new Movie(c, movie.getTitle(), movie.getPlot(), movie.getTagline(), movie.getId(), movie.getImdbId(), movie.getRating(),
 				movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(),
-				movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()), false, false);
+				movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()), false);
 
 		if (callback != null)
-			callback.onMovieAdded(movie.getTitle(), temp.getThumbnail().getAbsolutePath(), temp.getBackdrop());
+			callback.onMovieAdded(movie.getTitle(), temp.getThumbnail().getAbsolutePath(), temp.getBackdrop().getAbsolutePath());
 
 		Intent intent = new Intent("mizuu-movies-object");
 		intent.putExtra("movieName", movie.getTitle());

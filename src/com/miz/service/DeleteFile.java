@@ -29,10 +29,8 @@ import jcifs.smb.SmbFile;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.os.Looper;
 import android.widget.Toast;
-
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 
 public class DeleteFile extends IntentService {
 
@@ -45,10 +43,9 @@ public class DeleteFile extends IntentService {
 		String file = intent.getExtras().getString("filepath");
 
 		if (file.startsWith("smb://")) {
-			boolean prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 			ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
 
-			if (MizLib.isWifiConnected(this, prefsDisableEthernetWiFiCheck)) {
+			if (MizLib.isWifiConnected(this)) {
 				FileSource source = null;
 
 				for (int j = 0; j < filesources.size(); j++)
@@ -133,7 +130,7 @@ public class DeleteFile extends IntentService {
 	}
 	
 	private void showErrorMessage() {
-		Handler mHandler = new Handler();
+		Handler mHandler = new Handler(Looper.getMainLooper());
 		mHandler.post(new Runnable() {            
 			@Override
 			public void run() {

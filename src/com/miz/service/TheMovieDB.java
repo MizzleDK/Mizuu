@@ -20,6 +20,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.miz.db.DbAdapterMovies;
 import com.miz.functions.TheMovieDb;
 
 public class TheMovieDB extends IntentService {
@@ -33,6 +34,6 @@ public class TheMovieDB extends IntentService {
 		Bundle bundle = intent.getExtras();
 
 		new TheMovieDb(this, bundle.getString("filepath"), bundle.getBoolean("isFromManualIdentify", false),
-				bundle.getString("language", ""), bundle.getString("oldTmdbId"), bundle.getString("tmdbId", "invalid"));
+				bundle.getString("language", ""), bundle.getString("oldTmdbId"), bundle.getString("tmdbId", DbAdapterMovies.UNIDENTIFIED_ID));
 	}
 }

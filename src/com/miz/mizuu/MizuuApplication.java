@@ -18,6 +18,7 @@ package com.miz.mizuu;
 
 import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
+import static com.miz.functions.PreferenceKeys.TV_SHOW_DATA_SOURCE;
 
 import java.io.File;
 import java.util.HashMap;
@@ -30,18 +31,23 @@ import java.util.concurrent.TimeUnit;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
+import android.support.v7.graphics.Palette;
 
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterMovieMapping;
+import com.miz.apis.thetvdb.TheTVDb;
+import com.miz.apis.tmdb.TMDbTvShow;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterCollections;
+import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterSources;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterTvShowEpisodeMappings;
+import com.miz.db.DbAdapterTvShows;
+import com.miz.db.DbAdapterTvShowEpisodes;
+import com.miz.functions.FileRequestTransformer;
 import com.miz.functions.Utils;
+import com.miz.interfaces.TvShowApiService;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.LruCache;
@@ -49,32 +55,41 @@ import com.squareup.picasso.Picasso;
 
 public class MizuuApplication extends Application {
 
-	private static DbAdapterTvShow sDbTvShow;
-	private static DbAdapterTvShowEpisode sDbTvShowEpisode;
+	private static DbAdapterTvShows sDbTvShow;
+	private static DbAdapterTvShowEpisodes sDbTvShowEpisode;
+	private static DbAdapterTvShowEpisodeMappings sDbTvShowEpisodeMappings;
 	private static DbAdapterSources sDbSources;
-	private static DbAdapter sDb;
-	private static DbAdapterMovieMapping sDbMovieMapping;
+	private static DbAdapterMovies sDbMovies;
+	private static DbAdapterMovieMappings sDbMovieMapping;
+	private static DbAdapterCollections sDbCollections;
 	private static HashMap<String, String[]> sMap = new HashMap<String, String[]>();
 	private static Picasso sPicasso, sPicassoDetailsView;
 	private static LruCache sLruCache;
 	private static Downloader sDownloader;
 	private static ThreadPoolExecutor sThreadPoolExecutor;
 	private static HashMap<String, Typeface> sTypefaces = new HashMap<String, Typeface>();
+	private static HashMap<String, Palette> sPalettes = new HashMap<String, Palette>();
 	private static Bus sBus;
-	private static File sMovieThumbFolder, sMovieBackdropFolder, sTvShowThumbFolder, sTvShowBackdropFolder, sTvShowEpisodeFolder, sTvShowSeasonFolder, sAvailableOfflineFolder;
-
+	private static File sBaseAppFolder, sMovieThumbFolder, sMovieBackdropFolder, sTvShowThumbFolder, sTvShowBackdropFolder, sTvShowEpisodeFolder, sTvShowSeasonFolder, sAvailableOfflineFolder, sCacheFolder;
+	private static Context mInstance;
+	private static FileRequestTransformer mFileRequestTransformer;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
+		mInstance = this;
+		
 		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "false");
-
+		
 		// Database setup
-		sDbTvShow = new DbAdapterTvShow(this);
-		sDbTvShowEpisode = new DbAdapterTvShowEpisode(this);
+		sDbMovies = new DbAdapterMovies(this);
+		sDbMovieMapping = new DbAdapterMovieMappings(this);
+		sDbTvShowEpisode = new DbAdapterTvShowEpisodes(this);
+		sDbTvShow = new DbAdapterTvShows(this);
+		sDbTvShowEpisodeMappings = new DbAdapterTvShowEpisodeMappings(this);
 		sDbSources = new DbAdapterSources(this);
-		sDbMovieMapping = new DbAdapterMovieMapping(this); // IMPORTANT that this is initialized before the DbAdapter below
-		sDb = new DbAdapter(this);
+		sDbCollections = new DbAdapterCollections(this);
 
 		getMovieThumbFolder(this);
 		getMovieBackdropFolder(this);
@@ -85,82 +100,6 @@ public class MizuuApplication extends Application {
 		getAvailableOfflineFolder(this);
 
 		transitionLocalizationPreference();
-
-		
-		/**
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * MERGE ALL DATABASES INTO ONE!!!!
-		 * http://stackoverflow.com/a/3851344/762442
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-
-		File dbFile = getDatabasePath("mizuu_tv_show_data");
-		System.out.println("DATABASE EXISTS: " + dbFile.exists());
-		if (dbFile.exists()) {
-			String KEY_SHOW_ID = "show_id";
-			String KEY_SHOW_TITLE = "show_title";
-			String KEY_SHOW_PLOT = "show_description";
-			String KEY_SHOW_ACTORS = "show_actors";
-			String KEY_SHOW_GENRES = "show_genres";
-			String KEY_SHOW_RATING = "show_rating";
-			String KEY_SHOW_CERTIFICATION = "show_certification";
-			String KEY_SHOW_RUNTIME = "show_runtime";
-			String KEY_SHOW_FIRST_AIRDATE = "show_first_airdate";
-			String KEY_SHOW_EXTRA1 = "extra1"; // Favorite
-			
-			String[] SELECT_ALL = new String[]{KEY_SHOW_ID, KEY_SHOW_TITLE, KEY_SHOW_PLOT, KEY_SHOW_ACTORS,
-					KEY_SHOW_GENRES, KEY_SHOW_RATING, KEY_SHOW_RATING, KEY_SHOW_CERTIFICATION, KEY_SHOW_RUNTIME,
-					KEY_SHOW_FIRST_AIRDATE, KEY_SHOW_EXTRA1};
-			
-			SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
-			Cursor c = db.query("tvshows", SELECT_ALL, null, null, null, null, KEY_SHOW_TITLE + " ASC");
-			
-			
-			
-			while (c.moveToNext()) {
-				System.out.println(c.getString(c.getColumnIndex(KEY_SHOW_TITLE)));
-			}
-			
-			c.close();
-		}
-
 	}
 
 	@Override
@@ -170,9 +109,15 @@ public class MizuuApplication extends Application {
 		sDbTvShow.close();
 		sDbTvShowEpisode.close();
 		sDbSources.close();
-		sDb.close();
+		sDbMovies.close();
+		sDbMovieMapping.close();
+		sDbCollections.close();
 	}
 
+	public static Context getContext() {
+		return mInstance;
+	}
+	
 	private void transitionLocalizationPreference() {
 		// Transition from the old localization preference if such exists
 		String languagePref;
@@ -187,24 +132,32 @@ public class MizuuApplication extends Application {
 		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(LANGUAGE_PREFERENCE, languagePref).commit();
 	}
 
-	public static DbAdapterTvShow getTvDbAdapter() {
+	public static DbAdapterTvShows getTvDbAdapter() {
 		return sDbTvShow;
 	}
 
-	public static DbAdapterTvShowEpisode getTvEpisodeDbAdapter() {
+	public static DbAdapterTvShowEpisodes getTvEpisodeDbAdapter() {
 		return sDbTvShowEpisode;
+	}
+	
+	public static DbAdapterTvShowEpisodeMappings getTvShowEpisodeMappingsDbAdapter() {
+		return sDbTvShowEpisodeMappings;
 	}
 
 	public static DbAdapterSources getSourcesAdapter() {
 		return sDbSources;
 	}
 
-	public static DbAdapter getMovieAdapter() {
-		return sDb;
+	public static DbAdapterMovies getMovieAdapter() {
+		return sDbMovies;
 	}
 
-	public static DbAdapterMovieMapping getMovieMappingAdapter() {
+	public static DbAdapterMovieMappings getMovieMappingAdapter() {
 		return sDbMovieMapping;
+	}
+	
+	public static DbAdapterCollections getCollectionsAdapter() {
+		return sDbCollections;
 	}
 
 	public static String[] getCifsFilesList(String parentPath) {
@@ -218,10 +171,10 @@ public class MizuuApplication extends Application {
 
 	public static Picasso getPicasso(Context context) {
 		if (sPicasso == null)
-			sPicasso = new Picasso.Builder(context).downloader(getDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache(context)).build();
+			sPicasso = new Picasso.Builder(context).downloader(getDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache(context)).requestTransformer(getFileRequestTransformer()).build();
 		return sPicasso;
 	}
-
+	
 	/**
 	 * A Picasso instance used in the details view for movies and TV shows
 	 * to load cover art and backdrop images instantly.
@@ -230,10 +183,16 @@ public class MizuuApplication extends Application {
 	 */
 	public static Picasso getPicassoDetailsView(Context context) {
 		if (sPicassoDetailsView == null)
-			sPicassoDetailsView = new Picasso.Builder(context).downloader(getDownloader(context)).build();
+			sPicassoDetailsView = new Picasso.Builder(context).downloader(getDownloader(context)).requestTransformer(getFileRequestTransformer()).build();
 		return sPicassoDetailsView;
 	}
 
+	private static FileRequestTransformer getFileRequestTransformer() {
+		if (mFileRequestTransformer == null)
+			mFileRequestTransformer = new FileRequestTransformer();
+		return mFileRequestTransformer;
+	}
+	
 	private static ThreadPoolExecutor getThreadPoolExecutor() {
 		if (sThreadPoolExecutor == null)
 			sThreadPoolExecutor = new ThreadPoolExecutor(2, 2, 2, TimeUnit.SECONDS,
@@ -287,6 +246,14 @@ public class MizuuApplication extends Application {
 			sTypefaces.put(key, Typeface.createFromAsset(context.getAssets(), key));
 		return sTypefaces.get(key);
 	}
+	
+	public static Palette getPalette(String key) {
+		return sPalettes.get(key);
+	}
+	
+	public static void addToPaletteCache(String key, Palette palette) {
+		sPalettes.put(key, palette);
+	}
 
 	public static int getBackgroundColorResource(Context context) {
 		return R.color.dark_background;
@@ -308,25 +275,35 @@ public class MizuuApplication extends Application {
 			sBus = new Bus();	
 		return sBus;
 	}
+	
+	public static File getAppFolder(Context c) {
+		if (sBaseAppFolder == null) {
+			sBaseAppFolder = c.getExternalFilesDir(null);
+		}
+		return sBaseAppFolder;
+	}
+	
+	private static File getSubAppFolder(Context c, String foldername) {
+		return new File(getAppFolder(c), foldername);
+	}
 
 	/*
 	 * Please refrain from using this when you need a File object for a specific image.
 	 */
 	public static File getMovieThumbFolder(Context c) {
 		if (sMovieThumbFolder == null) {
-			sMovieThumbFolder = new File(c.getExternalFilesDir(null), "movie-thumbs");
+			sMovieThumbFolder = getSubAppFolder(c, "movie-thumbs");
 			sMovieThumbFolder.mkdirs();
 		}
 		return sMovieThumbFolder;
 	}
-
 
 	/*
 	 * Please refrain from using this when you need a File object for a specific image.
 	 */
 	public static File getMovieBackdropFolder(Context c) {
 		if (sMovieBackdropFolder == null) {
-			sMovieBackdropFolder = new File(c.getExternalFilesDir(null), "movie-backdrops");
+			sMovieBackdropFolder = getSubAppFolder(c, "movie-backdrops");
 			sMovieBackdropFolder.mkdirs();
 		}
 		return sMovieBackdropFolder;
@@ -337,7 +314,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getTvShowThumbFolder(Context c) {
 		if (sTvShowThumbFolder == null) {
-			sTvShowThumbFolder = new File(c.getExternalFilesDir(null), "tvshows-thumbs");
+			sTvShowThumbFolder = getSubAppFolder(c, "tvshows-thumbs");
 			sTvShowThumbFolder.mkdirs();
 		}
 		return sTvShowThumbFolder;
@@ -348,7 +325,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getTvShowBackdropFolder(Context c) {
 		if (sTvShowBackdropFolder == null) {
-			sTvShowBackdropFolder = new File(c.getExternalFilesDir(null), "tvshows-backdrops");
+			sTvShowBackdropFolder = getSubAppFolder(c, "tvshows-backdrops");
 			sTvShowBackdropFolder.mkdirs();
 		}
 		return sTvShowBackdropFolder;
@@ -359,7 +336,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getTvShowEpisodeFolder(Context c) {		
 		if (sTvShowEpisodeFolder == null) {
-			sTvShowEpisodeFolder = new File(c.getExternalFilesDir(null), "tvshows-episodes");
+			sTvShowEpisodeFolder = getSubAppFolder(c, "tvshows-episodes");
 			sTvShowEpisodeFolder.mkdirs();
 		}
 		return sTvShowEpisodeFolder;
@@ -370,7 +347,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getTvShowSeasonFolder(Context c) {
 		if (sTvShowSeasonFolder == null) {
-			sTvShowSeasonFolder = new File(c.getExternalFilesDir(null), "tvshows-seasons");
+			sTvShowSeasonFolder = getSubAppFolder(c, "tvshows-seasons");
 			sTvShowSeasonFolder.mkdirs();
 		}
 		return sTvShowSeasonFolder;
@@ -381,9 +358,28 @@ public class MizuuApplication extends Application {
 	 */
 	public static File getAvailableOfflineFolder(Context c) {
 		if (sAvailableOfflineFolder == null) {
-			sAvailableOfflineFolder = new File(c.getExternalFilesDir(null), "offline_storage");
+			sAvailableOfflineFolder = getSubAppFolder(c, "offline_storage");
 			sAvailableOfflineFolder.mkdirs();
 		}
 		return sAvailableOfflineFolder;
+	}
+	
+	/*
+	 * Cache folder is used to store videos that are available offline as well
+	 * as user profile photo from Trakt.
+	 */
+	public static File getCacheFolder(Context c) {
+		if (sCacheFolder == null) {
+			sCacheFolder = getSubAppFolder(c, "app_cache");
+			sCacheFolder.mkdirs();
+		}
+		return sCacheFolder;
+	}
+	
+	public static TvShowApiService getTvShowSourceService(Context context) {
+		String option = PreferenceManager.getDefaultSharedPreferences(context).getString(TV_SHOW_DATA_SOURCE, context.getString(R.string.ratings_option_0));
+		if (option.equals(context.getString(R.string.ratings_option_0)))
+			return new TheTVDb(context);
+		return new TMDbTvShow(context);
 	}
 }

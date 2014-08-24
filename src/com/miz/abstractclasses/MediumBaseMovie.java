@@ -19,7 +19,9 @@ package com.miz.abstractclasses;
 import java.io.File;
 
 import android.content.Context;
+import android.text.TextUtils;
 
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.SortingKeys;
 import com.miz.mizuu.R;
@@ -28,13 +30,12 @@ import com.miz.mizuu.R;
 public abstract class MediumBaseMovie extends BaseMovie {
 
 	protected String TO_WATCH, COLLECTION, COLLECTION_ID, RATING, FAVOURITE, HAS_WATCHED, RELEASEDATE, DATE_ADDED, GENRES, CAST, CERTIFICATION, RUNTIME;
-	protected String mGetReleaseYear, mGetFilePath, mWeightedCompatibility, mDateAdded, mRuntime, mReleaseDate;
-	protected boolean mIsNetworkFile;
+	protected String mGetReleaseYear, mWeightedCompatibility, mDateAdded, mRuntime, mReleaseDate;
 	
-	public MediumBaseMovie(Context context, String filepath, String title, String tmdbId, String rating, String releasedate,
+	public MediumBaseMovie(Context context, String title, String tmdbId, String rating, String releasedate,
 			String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
-			String date_added, String certification, String runtime, boolean ignorePrefixes, boolean ignoreNfo) {
-		super(context, filepath, title, tmdbId, ignorePrefixes, ignoreNfo);
+			String date_added, String certification, String runtime, boolean ignorePrefixes) {
+		super(context, title, tmdbId, ignorePrefixes);
 		
 		RATING = rating;
 		RELEASEDATE = releasedate;
@@ -50,7 +51,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		RUNTIME = runtime.replace("min", "").trim();
 		
 		// getReleaseYear()
-		if (!MizLib.isEmpty(RELEASEDATE)) {
+		if (!TextUtils.isEmpty(RELEASEDATE)) {
 			String YEAR = RELEASEDATE.trim();
 			try {
 				if (YEAR.substring(4,5).equals("-") && YEAR.substring(7,8).equals("-")) {
@@ -67,13 +68,6 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		} else {
 			mGetReleaseYear = mContext.getString(R.string.unknownYear);
 		}
-		
-		// getFilePath()		
-		String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[1] : mFilepath;
-		mGetFilePath = MizLib.transformSmbPath(temp);
-		
-		// isNetworkFile()
-		mIsNetworkFile = getFilepath().contains("smb:/");
 		
 		// Weighted compatibility
 		mWeightedCompatibility = (int) (getWeightedRating() * 10) + "% " + mContext.getString(R.string.compatibility);
@@ -105,10 +99,6 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		if (collectionImage.exists() && collectionImage.length() > 0)
 			return collectionImage;
 		return getThumbnail();
-	}
-	
-	public String getFullFilepath() {
-		return mFilepath;
 	}
 	
 	public double getRawRating() {
@@ -143,23 +133,6 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	
 	public String getPrettyRuntime() {
 		return mRuntime;
-	}
-
-	public boolean isNetworkFile() {
-		return mIsNetworkFile;
-	}
-	
-	public boolean isUpnpFile() {
-		return getFilepath().startsWith("http://");
-	}
-	
-	public String getFilepath() {
-		return mGetFilePath;
-	}
-	
-	public String getManualIdentificationQuery() {
-		String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[0] : mFilepath;
-		return temp;
 	}
 	
 	public boolean hasWatched() {
@@ -203,21 +176,19 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	public boolean isUnidentified() {
 		return 	getRuntime().equals("0") &&
 				getReleaseYear().equals(mContext.getString(R.string.unknownYear)) &&
-				MizLib.isEmpty(getGenres());
+				TextUtils.isEmpty(getGenres());
 	}
 	
-	public boolean hasOfflineCopy() {
-		return getOfflineCopyFile().exists();
+	public boolean hasOfflineCopy(Filepath path) {
+		return getOfflineCopyFile(path).exists();
 	}
 	
-	public String getOfflineCopyUri() {
-		return getOfflineCopyFile().getAbsolutePath();
+	public String getOfflineCopyUri(Filepath path) {
+		return getOfflineCopyFile(path).getAbsolutePath();
 	}
 	
-	public File getOfflineCopyFile() {
-		if (mFilepath.contains("<MiZ>"))
-			return MizLib.getOfflineFile(mContext, getFilepath());
-		return MizLib.getOfflineFile(mContext, getFullFilepath());
+	public File getOfflineCopyFile(Filepath path) {
+		return MizLib.getOfflineFile(mContext, path.getFullFilepath());
 	}
 	
 	public String getSubText(int sort) {

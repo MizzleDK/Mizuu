@@ -19,63 +19,58 @@ package com.miz.functions;
 import java.io.File;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 public class DbMovie {
 
-	private Context context;
-	private String filepath, tmdbId, runtime, year, genres, title;
-
-	public DbMovie(Context context, String filepath, String tmdbId) {
-		this.context = context;
-		this.filepath = filepath;
-		this.tmdbId = tmdbId;
-	}
+	private final Context mContext;
+	private final String mFilepath, mTmdbId, mRuntime, mYear, mGenres, mTitle;
 
 	public DbMovie(Context context, String filepath, String tmdbId, String runtime, String year, String genres, String title) {
-		this.context = context;
-		this.filepath = filepath;
-		this.tmdbId = tmdbId;
-		this.runtime = runtime;
-		this.year = year;
-		this.genres = genres;
-		this.title = title;
+		mContext = context;
+		mFilepath = filepath;
+		mTmdbId = tmdbId;
+		mRuntime = runtime;
+		mYear = year;
+		mGenres = genres;
+		mTitle = title;
 	}
 
 	public String getFilepath() {
-		if (filepath.contains("smb") && filepath.contains("@"))
-			return "smb://" + filepath.substring(filepath.indexOf("@") + 1);
-		return filepath.replace("/smb:/", "smb://");
+		if (mFilepath.contains("smb") && mFilepath.contains("@"))
+			return "smb://" + mFilepath.substring(mFilepath.indexOf("@") + 1);
+		return mFilepath.replace("/smb:/", "smb://");
 	}
 
 	public String getThumbnail() {
-		return MizLib.getMovieThumb(context, tmdbId).getAbsolutePath();
+		return MizLib.getMovieThumb(mContext, mTmdbId).getAbsolutePath();
 	}
 
 	public String getBackdrop() {
-		return MizLib.getMovieBackdrop(context, tmdbId).getAbsolutePath();
+		return MizLib.getMovieBackdrop(mContext, mTmdbId).getAbsolutePath();
 	}
 
 	public String getRuntime() {
-		return runtime;
+		return mRuntime;
 	}
 
 	public String getReleaseYear() {
-		return year;
+		return mYear;
 	}
 
 	public String getGenres() {
-		return genres;
+		return mGenres;
 	}
 
 	public String getTitle() {
-		return title;
+		return mTitle;
 	}
 
 	public boolean isUnidentified() {
 		if (getRuntime().equals("0")
-				&& MizLib.isEmpty(getReleaseYear())
-				&& MizLib.isEmpty(getGenres())
-				&& MizLib.isEmpty(getTitle()))
+				&& TextUtils.isEmpty(getReleaseYear())
+				&& TextUtils.isEmpty(getGenres())
+				&& TextUtils.isEmpty(getTitle()))
 			return true;
 
 		return false;
@@ -90,14 +85,14 @@ public class DbMovie {
 	}
 
 	public String getTmdbId() {
-		return tmdbId;
+		return mTmdbId;
 	}
 
-	public boolean hasOfflineCopy(Context ctx) {
-		return getOfflineCopyFile(ctx).exists();
+	public boolean hasOfflineCopy() {
+		return getOfflineCopyFile().exists();
 	}
 
-	public File getOfflineCopyFile(Context CONTEXT) {
-		return MizLib.getOfflineFile(CONTEXT, filepath);
+	public File getOfflineCopyFile() {
+		return MizLib.getOfflineFile(mContext, mFilepath);
 	}
 }

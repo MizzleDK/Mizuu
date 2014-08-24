@@ -17,24 +17,14 @@
 package com.miz.mizuu;
 
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
-import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
-import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
 import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbFile;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,13 +33,13 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -65,6 +55,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -84,29 +75,31 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.miz.apis.trakt.Trakt;
 import com.miz.base.MizActivity;
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.functions.ActionBarSpinner;
+import com.miz.functions.FileSource;
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
-import com.miz.functions.MovieFilepath;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
-import com.miz.smbstreamer.Streamer;
+import com.miz.utils.VideoUtils;
 import com.miz.widgets.MovieBackdropWidgetProvider;
 import com.miz.widgets.MovieCoverWidgetProvider;
 import com.miz.widgets.MovieStackWidgetProvider;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-@SuppressLint("InflateParams") public class MovieDetails extends MizActivity implements OnNavigationListener {
+@SuppressLint("InflateParams")
+public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager mViewPager;
 	private Movie mMovie;
-	private DbAdapter mDatabase;
-	private boolean mIgnorePrefixes, mRemoveMoviesFromWatchlist, mIgnoreDeletedFiles, mIgnoreNfo, mWildcard, mDisableEthernetWiFiCheck;
+	private DbAdapterMovies mDatabase;
+	private boolean mIgnorePrefixes, mRemoveMoviesFromWatchlist, mIgnoreDeletedFiles;
 	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner mSpinnerAdater;
 	private ActionBar mActionBar;
@@ -148,11 +141,8 @@ import com.squareup.otto.Subscribe;
 		setTitle(null);
 
 		mIgnorePrefixes = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_TITLE_PREFIXES, false);
-		mIgnoreNfo = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_NFO_FILES, true);
 		mRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
 		mIgnoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORED_FILES_ENABLED, false);
-		mWildcard = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
-		mDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 
 		mYouTubeApiKey = MizLib.getYouTubeApiKey(this);
 
@@ -169,27 +159,25 @@ import com.squareup.otto.Subscribe;
 		Cursor cursor = mDatabase.fetchMovie(mMovieId);
 		try {
 			mMovie = new Movie(this,
-					MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID))),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TITLE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_PLOT)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TAGLINE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TMDB_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_IMDB_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RATING)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RELEASEDATE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_CERTIFICATION)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_RUNTIME)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TRAILER)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_GENRES)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_FAVOURITE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_ACTORS)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_COLLECTION_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_TO_WATCH)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_HAS_WATCHED)),
-					cursor.getString(cursor.getColumnIndex(DbAdapter.KEY_DATE_ADDED)),
-					mIgnorePrefixes,
-					mIgnoreNfo
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TITLE)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_PLOT)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TAGLINE)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_IMDB_ID)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RATING)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RELEASEDATE)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_CERTIFICATION)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RUNTIME)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TRAILER)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_GENRES)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_FAVOURITE)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_ACTORS)),
+					MizuuApplication.getCollectionsAdapter().getCollection(cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_COLLECTION_ID))),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_COLLECTION_ID)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TO_WATCH)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_HAS_WATCHED)),
+					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_DATE_ADDED)),
+					mIgnorePrefixes
 					);
 		} catch (Exception e) {
 			finish();
@@ -213,10 +201,6 @@ import com.squareup.otto.Subscribe;
 			if (savedInstanceState != null) {
 				mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 			}
-			
-			if (MizuuApplication.getMovieMappingAdapter().hasMultipleFilepaths(mMovie.getTmdbId())) {
-				mMovie.setFilepaths(MizuuApplication.getMovieMappingAdapter().getMovieFilepaths(mMovie.getTmdbId()));
-			}
 
 			setupSpinnerItems();
 		} else {
@@ -236,9 +220,10 @@ import com.squareup.otto.Subscribe;
 			mActionBarOverlay.setVisibility(View.VISIBLE);
 
 			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
-				if (newAlpha == 0)
+				if (newAlpha == 0) {
 					mActionBar.hide();
-				else
+					mActionBarOverlay.setVisibility(View.GONE);
+				} else
 					mActionBar.show();
 
 			if (setBackground) {
@@ -261,7 +246,7 @@ import com.squareup.otto.Subscribe;
 		super.onResume();
 
 		mBus.register(this);
-		updateActionBarDrawable(0, true, true);
+		updateActionBarDrawable(1, true, true);
 
 		mVideoPlaybackEnded = System.currentTimeMillis();
 
@@ -326,15 +311,24 @@ import com.squareup.otto.Subscribe;
 				menu.findItem(R.id.watched).setTitle(R.string.stringMarkAsWatched);
 			}
 
-			if (mMovie.isNetworkFile() || mMovie.isUpnpFile()) {
-				menu.findItem(R.id.watchOffline).setVisible(true);				
-				if (mMovie.hasOfflineCopy())
-					menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
-				else
-					menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
-			}
+			for (Filepath path : mMovie.getFilepaths()) {
+				if (path.isNetworkFile()) {
 
-			if (MizLib.isValidTmdbId(mMovie.getTmdbId()))
+					// Set the menu item visibility
+					menu.findItem(R.id.watchOffline).setVisible(true);
+
+					if (mMovie.hasOfflineCopy(path))
+						// There's already an offline copy, so let's allow the user to remove it
+						menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
+					else
+						// There's no offline copy, so let the user download one
+						menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
+
+					break;
+				}
+			}
+			
+			if (!MizLib.isValidTmdbId(mMovie.getTmdbId()))
 				menu.findItem(R.id.change_cover).setVisible(false);
 
 		} catch (Exception e) {} // This can happen if mMovie is null for whatever reason
@@ -375,6 +369,33 @@ import com.squareup.otto.Subscribe;
 		case R.id.play_video:
 			playMovie();
 			return true;
+		case R.id.watchOffline:
+			watchOffline();
+			return true;
+		case R.id.change_cover:
+			searchCover();
+			return true;
+		case R.id.editMovie:
+			editMovie();
+			return true;
+		case R.id.identify:
+			identifyMovie();
+			return true;
+		case R.id.watched:
+			watched(true);
+			return true;
+		case R.id.trailer:
+			watchTrailer();
+			return true;
+		case R.id.watch_list:
+			watchList();
+			return true;
+		case R.id.movie_fav:
+			favAction();
+			return true;
+		case R.id.delete_movie:
+			deleteMovie();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -386,12 +407,14 @@ import com.squareup.otto.Subscribe;
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
-	public void deleteMovie(MenuItem item) {
+	public void deleteMovie() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
 		View dialogLayout = getLayoutInflater().inflate(R.layout.delete_file_dialog_layout, null);
 		final CheckBox cb = (CheckBox) dialogLayout.findViewById(R.id.deleteFile);
-		if (mMovie.isUpnpFile())
+		
+		
+		if (mMovie.getFilepaths().size() == 1 && mMovie.getFilepaths().get(0).getType() == FileSource.UPNP)
 			cb.setEnabled(false);
 		else
 			cb.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(ALWAYS_DELETE_FILE, false));
@@ -411,16 +434,9 @@ import com.squareup.otto.Subscribe;
 
 				if (deleted) {
 					if (cb.isChecked()) {
-						if (mMovie.hasMultipleVersions()) {
-							MovieFilepath[] versions = mMovie.getMultipleVersions();
-							for (int i = 0; i < versions.length; i++) {
-								Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
-								deleteIntent.putExtra("filepath", versions[i].getFilepath());
-								getApplicationContext().startService(deleteIntent);
-							}
-						} else {						
+						for (Filepath path : mMovie.getFilepaths()) {
 							Intent deleteIntent = new Intent(getApplicationContext(), DeleteFile.class);
-							deleteIntent.putExtra("filepath", mMovie.getFilepath());
+							deleteIntent.putExtra("filepath", path.getFilepath());
 							getApplicationContext().startService(deleteIntent);
 						}
 					}
@@ -444,7 +460,7 @@ import com.squareup.otto.Subscribe;
 						} catch (NullPointerException e) {} // No file to delete
 
 						try { // Delete backdrop image
-							File backdrop = new File(mMovie.getBackdrop());
+							File backdrop = mMovie.getBackdrop();
 							if (backdrop.exists() && backdrop.getAbsolutePath().contains("com.miz.mizuu")) {
 								MizLib.deleteFile(backdrop);
 							}
@@ -467,37 +483,27 @@ import com.squareup.otto.Subscribe;
 		.create().show();
 	}
 
-	public void identifyMovie(MenuItem item) {
-		if (mMovie.hasMultipleVersions()) {
-			final MovieFilepath[] versions = mMovie.getMultipleVersions();
-			CharSequence[] items = new CharSequence[versions.length];
-			for (int i = 0; i < versions.length; i++)
-				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(getString(R.string.fileToIdentify));
-			builder.setItems(items, new OnClickListener() {
+	public void identifyMovie() {
+		if (mMovie.getFilepaths().size() == 1) {
+			startActivityForResult(getIdentifyIntent(mMovie.getFilepaths().get(0).getFilepath()), 0);
+		} else {
+			MizLib.showSelectFileDialog(MovieDetails.this, mMovie.getFilepaths(), new Dialog.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					Intent intent = new Intent();
+					startActivity(getIdentifyIntent(mMovie.getFilepaths().get(which).getFullFilepath()));
 
-					String temp2 = versions[which].getFilepath();
-					String temp = temp2.contains("<MiZ>") ? temp2.split("<MiZ>")[0] : temp2;
-
-					intent.putExtra("fileName", temp);
-					intent.putExtra("rowId", String.valueOf(versions[which].getRowId()));
-					intent.setClass(MovieDetails.this, IdentifyMovie.class);
-					startActivityForResult(intent, 0);
-				};
+					// Dismiss the dialog
+					dialog.dismiss();
+				}
 			});
-			builder.show();
-		} else {
-			Intent intent = new Intent();
-			intent.putExtra("fileName", mMovie.getManualIdentificationQuery());
-			intent.putExtra("tmdbId", mMovie.getTmdbId());
-			intent.setClass(this, IdentifyMovie.class);
-			startActivityForResult(intent, 0);
 		}
+	}
+	
+	private Intent getIdentifyIntent(String filepath) {
+		Intent intent = new Intent(MovieDetails.this, IdentifyMovie.class);
+		intent.putExtra("fileName", filepath);
+		intent.putExtra("tmdbId", mMovie.getTmdbId());
+		return intent;
 	}
 
 	public void shareMovie(MenuItem item) {
@@ -507,10 +513,10 @@ import com.squareup.otto.Subscribe;
 		startActivity(Intent.createChooser(intent, getString(R.string.shareWith)));
 	}
 
-	public void favAction(MenuItem item) {
+	public void favAction() {
 		mMovie.setFavourite(!mMovie.isFavourite()); // Reverse the favourite boolean
 
-		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapter.KEY_FAVOURITE, mMovie.getFavourite());
+		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapterMovies.KEY_FAVOURITE, mMovie.getFavourite());
 
 		if (success) {
 			invalidateOptionsMenu();
@@ -536,14 +542,10 @@ import com.squareup.otto.Subscribe;
 		}.start();
 	}
 
-	public void watched(MenuItem item) {
-		watched(true);
-	}
-
 	private void watched(boolean showToast) {
 		mMovie.setHasWatched(!mMovie.hasWatched()); // Reverse the hasWatched boolean
 
-		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapter.KEY_HAS_WATCHED, mMovie.getHasWatched());
+		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapterMovies.KEY_HAS_WATCHED, mMovie.getHasWatched());
 
 		if (success) {
 			invalidateOptionsMenu();
@@ -572,10 +574,10 @@ import com.squareup.otto.Subscribe;
 		}.start();
 	}
 
-	public void watchList(MenuItem item) {
+	public void watchList() {
 		mMovie.setToWatch(!mMovie.toWatch()); // Reverse the toWatch boolean
 
-		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
+		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapterMovies.KEY_TO_WATCH, mMovie.getToWatch());
 
 		if (success) {
 			invalidateOptionsMenu();
@@ -603,7 +605,7 @@ import com.squareup.otto.Subscribe;
 	public void removeFromWatchlist() {
 		mMovie.setToWatch(false); // Remove it
 
-		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapter.KEY_TO_WATCH, mMovie.getToWatch());
+		boolean success = mDatabase.updateMovieSingleItem(mMovie.getTmdbId(), DbAdapterMovies.KEY_TO_WATCH, mMovie.getToWatch());
 
 		if (success) {
 			invalidateOptionsMenu();
@@ -620,19 +622,30 @@ import com.squareup.otto.Subscribe;
 		}.start();
 	}
 
-	public void watchTrailer(MenuItem item) {
-		if (!MizLib.isEmpty(mMovie.getLocalTrailer())) {
+	public void watchTrailer() {
+		
+		String localTrailer = "";
+		for (Filepath path : mMovie.getFilepaths()) {
+			if (path.getType() == FileSource.FILE) {
+				localTrailer = path.getFullFilepath();
+				break;
+			}
+		}
+		
+		localTrailer = mMovie.getLocalTrailer(localTrailer);
+		
+		if (!TextUtils.isEmpty(localTrailer)) {
 			try { // Attempt to launch intent based on the MIME type
-				startActivity(MizLib.getVideoIntent(mMovie.getLocalTrailer(), false, mMovie.getTitle() + " " + getString(R.string.detailsTrailer)));
+				startActivity(MizLib.getVideoIntent(localTrailer, false, mMovie.getTitle() + " " + getString(R.string.detailsTrailer)));
 			} catch (Exception e) {
 				try { // Attempt to launch intent based on wildcard MIME type
-					startActivity(MizLib.getVideoIntent(mMovie.getLocalTrailer(), "video/*", mMovie.getTitle() + " " + getString(R.string.detailsTrailer)));
+					startActivity(MizLib.getVideoIntent(localTrailer, "video/*", mMovie.getTitle() + " " + getString(R.string.detailsTrailer)));
 				} catch (Exception e2) {
 					Toast.makeText(this, getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 				}
 			}
 		} else {
-			if (!MizLib.isEmpty(mMovie.getTrailer())) {
+			if (!TextUtils.isEmpty(mMovie.getTrailer())) {
 				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getApplicationContext()).equals(YouTubeInitializationResult.SUCCESS)) {
 					Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, mYouTubeApiKey, MizLib.getYouTubeId(mMovie.getTrailer()), 0, false, true);
 					startActivity(intent);
@@ -648,17 +661,34 @@ import com.squareup.otto.Subscribe;
 		}
 	}
 
-	public void watchOffline(MenuItem item) {
-		if (mMovie.hasOfflineCopy()) {
+	public void watchOffline() {
+
+		if (mMovie.getFilepaths().size() == 1) {
+			watchOffline(mMovie.getFilepaths().get(0));
+		} else {
+			MizLib.showSelectFileDialog(MovieDetails.this, mMovie.getFilepaths(), new Dialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					watchOffline(mMovie.getFilepaths().get(which));
+
+					// Dismiss the dialog
+					dialog.dismiss();
+				}
+			});
+		}
+	}
+	
+	public void watchOffline(final Filepath path) {
+		if (mMovie.hasOfflineCopy(path)) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(getString(R.string.areYouSure))
 			.setTitle(getString(R.string.removeOfflineCopy))
 			.setCancelable(false)
 			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {	
-					boolean success = mMovie.getOfflineCopyFile().delete();
+					boolean success = mMovie.getOfflineCopyFile(path).delete();
 					if (!success)
-						mMovie.getOfflineCopyFile().delete();
+						mMovie.getOfflineCopyFile(path).delete();
 					invalidateOptionsMenu();
 					return;
 				}
@@ -680,7 +710,7 @@ import com.squareup.otto.Subscribe;
 						Toast.makeText(getApplicationContext(), R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
 
 					Intent i = new Intent(MovieDetails.this, MakeAvailableOffline.class);
-					i.putExtra(MakeAvailableOffline.FILEPATH, mMovie.getFilepath());
+					i.putExtra(MakeAvailableOffline.FILEPATH, path.getFilepath());
 					i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_MOVIE);
 					i.putExtra("thumb", mMovie.getThumbnail());
 					i.putExtra("backdrop", mMovie.getBackdrop());
@@ -780,7 +810,7 @@ import com.squareup.otto.Subscribe;
 		}
 	}
 
-	public void searchCover(MenuItem mi) {
+	public void searchCover() {
 		if (MizLib.isOnline(getApplicationContext())) { // Make sure that the device is connected to the web
 			Intent intent = new Intent();
 			intent.putExtra("tmdbId", mMovie.getTmdbId());
@@ -828,7 +858,7 @@ import com.squareup.otto.Subscribe;
 		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
 	}
 
-	public void showEditMenu(MenuItem mi) {
+	public void editMovie() {
 		Intent intent = new Intent(this, EditMovie.class);
 		intent.putExtra("tmdbId", mMovie.getTmdbId());
 		startActivityForResult(intent, 1);
@@ -886,48 +916,53 @@ import com.squareup.otto.Subscribe;
 	}
 
 	private void playMovie() {
-		if (mMovie.hasOfflineCopy()) {
-			playMovie(mMovie.getOfflineCopyUri(), false);
-		} else if (mMovie.hasMultipleVersions() && !mMovie.isUnidentified()) {
-			final MovieFilepath[] versions = mMovie.getMultipleVersions();
-			CharSequence[] items = new CharSequence[versions.length];
-			for (int i = 0; i < versions.length; i++)
-				items[i] = MizLib.transformSmbPath(versions[i].getFilepath());
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(getString(R.string.fileToPlay));
-			builder.setItems(items, new AlertDialog.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					playMovie(versions[which].getFilepath(), versions[which].getFilepath().contains("smb:/"));
-				};
-			});
-			builder.show();
+		ArrayList<Filepath> paths = mMovie.getFilepaths();
+		if (paths.size() == 1) {
+			Filepath path = paths.get(0);
+			if (mMovie.hasOfflineCopy(path)) {
+				boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, mMovie.getOfflineCopyUri(path), false, mMovie);
+				if (playbackStarted) {
+					mVideoPlaybackStarted = System.currentTimeMillis();
+					checkIn();
+				}
+			} else {
+				playMovie(paths.get(0).getFilepath(), paths.get(0).isNetworkFile());
+			}
 		} else {
-			playMovie(mMovie.getFilepath(), mMovie.isNetworkFile());
+			boolean hasOfflineCopy = false;
+			for (Filepath path : paths) {
+				if (mMovie.hasOfflineCopy(path)) {
+					boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, mMovie.getOfflineCopyUri(path), false, mMovie);
+					if (playbackStarted) {
+						mVideoPlaybackStarted = System.currentTimeMillis();
+						checkIn();
+					}
+
+					hasOfflineCopy = true;
+					break;
+				}
+			}
+
+			if (!hasOfflineCopy) {
+				MizLib.showSelectFileDialog(MovieDetails.this, mMovie.getFilepaths(), new Dialog.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Filepath path = mMovie.getFilepaths().get(which);
+						playMovie(path.getFilepath(), path.isNetworkFile());
+					}
+				});
+			}
 		}
 	}
 
 	private void playMovie(String filepath, boolean isNetworkFile) {
-		mVideoPlaybackStarted = System.currentTimeMillis();
 		if (filepath.toLowerCase(Locale.getDefault()).matches(".*(cd1|part1).*")) {
 			new GetSplitFiles(filepath, isNetworkFile).execute();
 		} else {
-			if (isNetworkFile) {
-				playNetworkFile(filepath);
-			} else {
-				try { // Attempt to launch intent based on the MIME type
-					startActivity(MizLib.getVideoIntent(filepath, mWildcard, mMovie));
-					checkIn();
-				} catch (Exception e) {
-					try { // Attempt to launch intent based on wildcard MIME type
-						startActivity(MizLib.getVideoIntent(filepath, "video/*", mMovie));
-						checkIn();
-					} catch (Exception e2) {
-						Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
-					}
-				}
-			}
+			mVideoPlaybackStarted = System.currentTimeMillis();
+			boolean playbackStarted = VideoUtils.playVideo(this, filepath, isNetworkFile, mMovie);
+			if (playbackStarted)
+				checkIn();
 		}
 	}
 
@@ -973,26 +1008,24 @@ import com.squareup.otto.Subscribe;
 		@Override
 		protected void onPostExecute(final List<SplitFile> result) {
 			progress.dismiss();
+			
+			if (result.size() > 0)
+				mVideoPlaybackStarted = System.currentTimeMillis();
+			
 			if (result.size() > 1) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
 				builder.setTitle(getString(R.string.playPart));
 				builder.setAdapter(new SplitAdapter(getApplicationContext(), result), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						String filepath = result.get(which).getFilepath();
-
-						if (isNetworkFile)
-							playNetworkFile(filepath);
-						else
-							play(filepath);
+						boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, result.get(which).getFilepath(), isNetworkFile, mMovie);
+						if (playbackStarted)
+							checkIn();
 					}});
 				builder.show();
 			} else if (result.size() == 1) {
-				String filepath = result.get(0).getFilepath();
-
-				if (isNetworkFile)
-					playNetworkFile(filepath);
-				else
-					play(filepath);
+				boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, result.get(0).getFilepath(), isNetworkFile, mMovie);
+				if (playbackStarted)
+					checkIn();
 			} else {
 				Toast.makeText(getApplicationContext(), getString(R.string.errorSomethingWentWrong), Toast.LENGTH_LONG).show();
 			}
@@ -1097,82 +1130,5 @@ import com.squareup.otto.Subscribe;
 			return MizLib.getPartNumberFromFilepath(getUserFilepath());
 		}
 
-	}
-
-	private void playNetworkFile(final String networkFilepath) {
-		if (!MizLib.isWifiConnected(getApplicationContext(), mDisableEthernetWiFiCheck)) {
-			Toast.makeText(getApplicationContext(), getString(R.string.noConnection), Toast.LENGTH_LONG).show();
-			return;
-		}
-
-		int bufferSize;
-		String buff = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(BUFFER_SIZE, getString(R.string._16kb));
-		if (buff.equals(getString(R.string._16kb)))
-			bufferSize = 8192 * 2; // This appears to be the limit for most video players
-		else bufferSize = 8192;
-
-		final Streamer s = Streamer.getInstance();
-		if (s != null)
-			s.setBufferSize(bufferSize);
-		else {
-			Toast.makeText(getApplicationContext(), getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
-			return;
-		}
-
-		final NtlmPasswordAuthentication auth = MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, networkFilepath);
-
-		new Thread(){
-			public void run(){
-				try{
-					final SmbFile file = new SmbFile(
-							MizLib.createSmbLoginString(
-									URLEncoder.encode(auth.getDomain(), "utf-8"),
-									URLEncoder.encode(auth.getUsername(), "utf-8"),
-									URLEncoder.encode(auth.getPassword(), "utf-8"),
-									networkFilepath,
-									false
-									));
-
-					if (networkFilepath.endsWith("VIDEO_TS.IFO"))
-						s.setStreamSrc(file, MizLib.getDVDFiles(networkFilepath, auth));
-					else
-						s.setStreamSrc(file, MizLib.getSubtitleFiles(networkFilepath, auth));
-
-					runOnUiThread(new Runnable(){
-						public void run(){
-							try{
-								Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
-								mContext.startActivity(MizLib.getVideoIntent(uri, mWildcard, mMovie));
-								checkIn();
-							} catch (Exception e) {
-								try { // Attempt to launch intent based on wildcard MIME type
-									Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(networkFilepath).getPath())).getEncodedPath());	
-									mContext.startActivity(MizLib.getVideoIntent(uri, "video/*", mMovie));
-									checkIn();
-								} catch (Exception e2) {
-									Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
-								}
-							}
-						}
-					});
-				}
-				catch (MalformedURLException e) {}
-				catch (UnsupportedEncodingException e1) {}
-			}
-		}.start();
-	}
-
-	private void play(String filepath) {
-		try { // Attempt to launch intent based on the MIME type
-			getApplicationContext().startActivity(MizLib.getVideoIntent(filepath, mWildcard, mMovie));
-			checkIn();
-		} catch (Exception e) {
-			try { // Attempt to launch intent based on wildcard MIME type
-				getApplicationContext().startActivity(MizLib.getVideoIntent(filepath, "video/*", mMovie));
-				checkIn();
-			} catch (Exception e2) {
-				Toast.makeText(getApplicationContext(), getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
-			}
-		}
 	}
 }

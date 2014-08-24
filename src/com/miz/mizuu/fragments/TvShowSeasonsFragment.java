@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap.Config;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -58,12 +57,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miz.apis.trakt.Trakt;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterTvShows;
+import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.CoverItem;
 import com.miz.functions.EpisodeCounter;
 import com.miz.functions.GridEpisode;
 import com.miz.functions.GridSeason;
+import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.TvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
@@ -266,7 +266,7 @@ public class TvShowSeasonsFragment extends Fragment {
 
 	private void changeWatchedStatus(boolean watched) {
 		// Create and open database
-		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
+		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
 		// This ought to be done in the background, but performance is fairly decent
 		// - roughly 0.7 seconds to update 600 entries on a Sony Xperia Tablet Z2
@@ -394,7 +394,9 @@ public class TvShowSeasonsFragment extends Fragment {
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.highlight = (ImageView) convertView.findViewById(R.id.highlight);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				holder.text.setSingleLine(true);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext.setSingleLine(true);
 
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 
@@ -442,7 +444,7 @@ public class TvShowSeasonsFragment extends Fragment {
 		}
 	}
 
-	private class SeasonLoader extends AsyncTask<Void, Void, Void> {
+	private class SeasonLoader extends LibrarySectionAsyncTask<Void, Void, Void> {
 
 		private boolean mSelectFirstSeason;
 
@@ -497,7 +499,7 @@ public class TvShowSeasonsFragment extends Fragment {
 			protected void onPreExecute() {
 				mSelectedSeasons = new HashSet<Integer>(checkedSeasons);
 
-				DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
+				DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
 				for (int season : mSelectedSeasons) {
 					List<GridEpisode> temp = db.getEpisodesInSeason(mContext, mShowId, mItems.get(season).getSeason());

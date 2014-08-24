@@ -38,8 +38,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.google.common.collect.Multimap;
 import com.miz.apis.trakt.Trakt;
 import com.miz.apis.trakt.TraktTvShow;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterTvShows;
+import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
@@ -54,8 +54,8 @@ public class TraktTvShowsSyncService extends IntentService {
 	private ArrayList<TraktTvShow> mLocalCollection, mLocalWatched;
 	private LinkedHashMap<String, TraktTvShow> mTraktCollection, mTraktWatched;
 	private HashSet<String> mShowIds, mTraktFavorites, mLocalFavorites;
-	private DbAdapterTvShow mShowDatabase;
-	private DbAdapterTvShowEpisode mEpisodeDatabase;
+	private DbAdapterTvShows mShowDatabase;
+	private DbAdapterTvShowEpisodes mEpisodeDatabase;
 	private final int NOTIFICATION_ID = 8;
 
 	public TraktTvShowsSyncService() {
@@ -164,27 +164,27 @@ public class TraktTvShowsSyncService extends IntentService {
 		
 		try {
 			while (cursor.moveToNext()) {
-				mShowIds.add(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)));
+				mShowIds.add(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)));
 
 				// Full TV shows
 				mShows.add(new TvShow(
 						this,
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_TITLE)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_PLOT)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RATING)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_GENRES)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ACTORS)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_CERTIFICATION)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_FIRST_AIRDATE)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_RUNTIME)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_TITLE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_PLOT)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RATING)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_GENRES)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ACTORS)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RUNTIME)),
 						false,
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_EXTRA1)),
-						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)))
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
+						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)))
 						));
 
-				if (cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_EXTRA1)).equals("1"))
-					mLocalFavorites.add(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShow.KEY_SHOW_ID)));
+				if (cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FAVOURITE)).equals("1"))
+					mLocalFavorites.add(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)));
 			}
 		} catch (Exception e) {} finally {
 			cursor.close();
@@ -197,15 +197,15 @@ public class TraktTvShowsSyncService extends IntentService {
 			TraktTvShow collectionShow = new TraktTvShow(mShows.get(i).getId(), mShows.get(i).getTitle());
 			TraktTvShow watchedShow = new TraktTvShow(mShows.get(i).getId(), mShows.get(i).getTitle());
 
-			Cursor c = mEpisodeDatabase.getAllEpisodes(mShows.get(i).getId(), DbAdapterTvShowEpisode.OLDEST_FIRST);
+			Cursor c = mEpisodeDatabase.getAllEpisodes(mShows.get(i).getId(), DbAdapterTvShowEpisodes.OLDEST_FIRST);
 			try {
 				while (c.moveToNext()) {
-					collectionShow.addEpisode(c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_SEASON)),
-							c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_EPISODE)));
+					collectionShow.addEpisode(c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisodes.KEY_SEASON)),
+							c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisodes.KEY_EPISODE)));
 
-					if (c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_HAS_WATCHED)).equals("1")) {
-						watchedShow.addEpisode(c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_SEASON)),
-								c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisode.KEY_EPISODE)));
+					if (c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisodes.KEY_HAS_WATCHED)).equals("1")) {
+						watchedShow.addEpisode(c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisodes.KEY_SEASON)),
+								c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisodes.KEY_EPISODE)));
 					}
 				}
 			} catch (Exception ignored) {
@@ -314,7 +314,7 @@ public class TraktTvShowsSyncService extends IntentService {
 							String seasonNumber = MizLib.addIndexZero(String.valueOf(season.get("season")));
 							JSONArray seasonEpisodes = season.getJSONArray("episodes");
 							for (int k = 0; k < seasonEpisodes.length(); k++) {
-								mEpisodeDatabase.updateEpisode(showId, seasonNumber, MizLib.addIndexZero(String.valueOf(seasonEpisodes.get(k))), DbAdapterTvShowEpisode.KEY_HAS_WATCHED, "1");
+								mEpisodeDatabase.updateEpisode(showId, seasonNumber, MizLib.addIndexZero(String.valueOf(seasonEpisodes.get(k))), DbAdapterTvShowEpisodes.KEY_HAS_WATCHED, "1");
 							}
 						}
 					}
@@ -377,7 +377,7 @@ public class TraktTvShowsSyncService extends IntentService {
 					mTraktFavorites.add(showId);
 
 					if (!mLocalFavorites.contains(showId))
-						mShowDatabase.updateShowSingleItem(showId, DbAdapterTvShow.KEY_SHOW_EXTRA1, "1");
+						mShowDatabase.updateShowSingleItem(showId, DbAdapterTvShows.KEY_SHOW_FAVOURITE, "1");
 				} catch (Exception e) {}
 			}
 		}

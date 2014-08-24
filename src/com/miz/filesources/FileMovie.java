@@ -30,8 +30,8 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.miz.abstractclasses.MovieFileSource;
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterMovieMapping;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterMovieMappings;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
@@ -49,7 +49,7 @@ public class FileMovie extends MovieFileSource<File> {
 
 	@Override
 	public void removeUnidentifiedFiles() {
-		DbAdapter db = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 
 		File temp;
@@ -65,7 +65,7 @@ public class FileMovie extends MovieFileSource<File> {
 
 	@Override
 	public void removeUnavailableFiles() {
-		DbAdapter db = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies(), deletedMovies = new ArrayList<DbMovie>();
 
 		boolean deleted;
@@ -97,13 +97,13 @@ public class FileMovie extends MovieFileSource<File> {
 	@Override
 	public List<String> searchFolder() {
 
-		DbAdapterMovieMapping dbHelper = MizuuApplication.getMovieMappingAdapter();
+		DbAdapterMovieMappings dbHelper = MizuuApplication.getMovieMappingAdapter();
 		Cursor cursor = dbHelper.getAllFilepaths(ignoreRemovedFiles()); // Query database to return all filepaths in a cursor
 		ColumnIndexCache cache = new ColumnIndexCache();
 		
 		try {
 			while (cursor.moveToNext()) {// Add all movies in cursor to ArrayList of all existing movies
-				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMapping.KEY_FILEPATH)), "");
+				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMappings.KEY_FILEPATH)), "");
 			}
 		} catch (Exception e) {
 		} finally {

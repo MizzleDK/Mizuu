@@ -30,11 +30,11 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
-import com.miz.db.DbAdapterTvShow;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.ColumnIndexCache;
-import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 
@@ -116,9 +116,9 @@ public class TvShowActorContentProvider extends SearchRecentSuggestionsProvider 
 		HashMap<String, String> actorMap = new HashMap<String, String>();
 
 		List<String> actorList = new ArrayList<String>();
-		if (!MizLib.isEmpty(query)) {
+		if (!TextUtils.isEmpty(query)) {
 
-			DbAdapterTvShow db = MizuuApplication.getTvDbAdapter();
+			DbAdapterTvShows db = MizuuApplication.getTvDbAdapter();
 
 			query = query.toLowerCase(Locale.ENGLISH);
 
@@ -127,10 +127,10 @@ public class TvShowActorContentProvider extends SearchRecentSuggestionsProvider 
 
 			try {
 				while (c.moveToNext()) {
-					String actors = c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_ACTORS)).toLowerCase(Locale.ENGLISH);
+					String actors = c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_ACTORS)).toLowerCase(Locale.ENGLISH);
 
 					if (actors.indexOf(query) != -1) {
-						for (String actor : c.getString(cache.getColumnIndex(c, DbAdapterTvShow.KEY_SHOW_ACTORS)).split("\\|"))
+						for (String actor : c.getString(cache.getColumnIndex(c, DbAdapterTvShows.KEY_SHOW_ACTORS)).split("\\|"))
 							if (actor.toLowerCase(Locale.ENGLISH).startsWith(query))
 								actorMap.put(actor, actor);
 					}

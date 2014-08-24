@@ -110,7 +110,16 @@ public class IdentifyMovieFragment extends Fragment {
 		mTmdbId = getArguments().getString("tmdbId");
 		mFilepath = getArguments().getString("filepath");
 
-		mMovie = MizLib.decryptMovie(mFilepath, PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(IGNORED_FILENAME_TAGS, ""));
+		String path = mFilepath;
+
+		// Check if this is a UPnP filepath
+		if (path.contains("<MiZ>"))
+			path = path.split("<MiZ>")[0];
+
+		if (path.contains("/"))
+			path = path.substring(path.lastIndexOf("/") + 1, path.length());
+
+		mMovie = MizLib.decryptMovie(path, PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(IGNORED_FILENAME_TAGS, ""));
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
@@ -137,7 +146,7 @@ public class IdentifyMovieFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.identify_movie, container, false);
+		return inflater.inflate(R.layout.identify_movie_and_tv_show, container, false);
 	}
 
 	public void onViewCreated(View v, Bundle savedInstanceState) {
@@ -364,7 +373,7 @@ public class IdentifyMovieFragment extends Fragment {
 			ViewHolder holder;
 
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.list_item_movie, parent, false);
+				convertView = inflater.inflate(R.layout.list_item_movie_and_tv_show, parent, false);
 
 				holder = new ViewHolder();
 				holder.title = (TextView) convertView.findViewById(R.id.movieTitle);

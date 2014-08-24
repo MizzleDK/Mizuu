@@ -55,7 +55,6 @@ import static com.miz.functions.MizLib.TYPE;
 import static com.miz.functions.MizLib.TV_SHOW;
 import static com.miz.functions.MizLib.MOVIE;
 import static com.miz.functions.MizLib.FILESOURCE;
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 
 public class AddNetworkFilesourceDialog extends Activity {
@@ -63,7 +62,7 @@ public class AddNetworkFilesourceDialog extends Activity {
 	private EditText server, domain, username, password;
 	private CheckBox anonymous, guest;
 	private String mDomain, mUser, mPass, mServer;
-	private boolean isMovie = false, prefsDisableEthernetWiFiCheck;
+	private boolean isMovie = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -79,8 +78,6 @@ public class AddNetworkFilesourceDialog extends Activity {
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		setContentView(R.layout.addnetwork);
-
-		prefsDisableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 
 		server = (EditText) findViewById(R.id.server);
 		domain = (EditText) findViewById(R.id.domain);
@@ -283,7 +280,7 @@ public class AddNetworkFilesourceDialog extends Activity {
 			return;
 		}
 
-		if (MizLib.isWifiConnected(this, prefsDisableEthernetWiFiCheck)) {
+		if (MizLib.isWifiConnected(this)) {
 			mDomain = domain.getText().toString();
 			mUser = username.getText().toString();
 			mPass = password.getText().toString();

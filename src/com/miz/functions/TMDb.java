@@ -16,21 +16,23 @@
 
 package com.miz.functions;
 
+import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
+import static com.miz.functions.PreferenceKeys.MOVIE_RATINGS_SOURCE;
+
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.miz.apis.trakt.Trakt;
-import com.miz.mizuu.R;
-
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
-import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
-import static com.miz.functions.PreferenceKeys.MOVIE_RATINGS_SOURCE;
-import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
+import com.miz.apis.trakt.Trakt;
+import com.miz.db.DbAdapterMovies;
+import com.miz.mizuu.R;
 
 public class TMDb {
 
@@ -65,18 +67,18 @@ public class TMDb {
 					}
 
 					if (!match)				
-						movie.setId("invalid");
+						movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 				} else
-					movie.setId("invalid");
+					movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 
 			} catch (Exception e) {
-				movie.setId("invalid");
+				movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 			}
 		}
 
-		if (movie.getId().equals("invalid") || movie.getId().isEmpty()) {
+		if (movie.getId().equals(DbAdapterMovies.UNIDENTIFIED_ID) || movie.getId().isEmpty()) {
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + mTmdbApiKey + (!MizLib.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : ""));
+				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + mTmdbApiKey + (!TextUtils.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : ""));
 
 				if (jObject.getJSONArray("results").length() > 0) {
 					boolean match = false;
@@ -90,16 +92,16 @@ public class TMDb {
 					}
 
 					if (!match)				
-						movie.setId("invalid");
+						movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 				} else
-					movie.setId("invalid");
+					movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 
 			} catch (Exception e) {
-				movie.setId("invalid");
+				movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 			}
 		}
 
-		if (!movie.getId().equals("invalid")) {
+		if (!movie.getId().equals(DbAdapterMovies.UNIDENTIFIED_ID)) {
 			movie = getMovie(movie.getId(), language);
 		} else {
 			if (!hasTriedFileNameOnce) {
@@ -124,7 +126,7 @@ public class TMDb {
 
 		try {
 			String baseImgUrl = MizLib.getTmdbImageBaseUrl(mContext);
-			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + mTmdbApiKey + (!MizLib.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : "") + (!MizLib.isEmpty(language) ? "&language=" + language : ""));
+			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&api_key=" + mTmdbApiKey + (!TextUtils.isEmpty(year) ? "&year=" + year : "") + (includeAdult ? "&include_adult=true" : "") + (!TextUtils.isEmpty(language) ? "&language=" + language : ""));
 
 			for (int i = 0; i < jObject.getJSONArray("results").length(); i++) {
 				if (!MizLib.isAdultContent(mContext, jObject.getJSONArray("results").getJSONObject(0).getString("title")) && !MizLib.isAdultContent(mContext, jObject.getJSONArray("results").getJSONObject(0).getString("original_title"))) {
@@ -153,7 +155,7 @@ public class TMDb {
 		TMDbMovie movie = new TMDbMovie();
 		movie.setId(id);
 
-		if (id.equals("invalid"))
+		if (id.equals(DbAdapterMovies.UNIDENTIFIED_ID))
 			return movie;
 
 		try {
@@ -226,8 +228,22 @@ public class TMDb {
 			} catch (Exception e) {}
 
 			try {
-				if (jObject.getJSONObject("trailers").getJSONArray("youtube").length() > 0)
-					movie.setTrailer("http://www.youtube.com/watch?v=" + jObject.getJSONObject("releases").getJSONArray("youtube").getJSONObject(0).getString("source"));
+				if (jObject.getJSONObject("trailers").getJSONArray("youtube").length() > 0) {
+
+					// Go through all YouTube links and looks for trailers
+					JSONArray youtube = jObject.getJSONObject("trailers").getJSONArray("youtube");
+					for (int i = 0; i < youtube.length(); i++) {
+						if (youtube.getJSONObject(i).getString("type").equals("Trailer")) {
+							movie.setTrailer("http://www.youtube.com/watch?v=" + youtube.getJSONObject(i).getString("source"));
+							break;
+						}
+					}
+
+					// If no trailer was set, use whatever YouTube link is available (featurette, interviews, etc.)
+					if (TextUtils.isEmpty(movie.getTrailer())) {
+						movie.setTrailer("http://www.youtube.com/watch?v=" + jObject.getJSONObject("trailers").getJSONArray("youtube").getJSONObject(0).getString("source"));
+					}
+				}
 			} catch (Exception e) {}
 
 			try {
@@ -239,17 +255,15 @@ public class TMDb {
 			} catch (Exception e) {}
 
 			try {
-				String cast = "";
+				StringBuilder cast = new StringBuilder();
 
 				JSONArray array = jObject.getJSONObject("casts").getJSONArray("cast");
 				for (int i = 0; i < array.length(); i++) {
-					cast += array.getJSONObject(i).getString("name") + "|";
+					cast.append(array.getJSONObject(i).getString("name"));
+					cast.append("|");
 				}
 
-				if (cast.endsWith("|"))
-					cast = cast.substring(0, cast.length() - 1);
-
-				movie.setCast(cast);
+				movie.setCast(cast.toString());
 			} catch (Exception e) {}
 
 			try {

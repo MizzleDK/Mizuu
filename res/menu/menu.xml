@@ -75,16 +75,14 @@
         </item>
         <item
             android:id="@+id/view_collection_online"
-            android:visible="false"
             android:icon="@drawable/ic_action_globe"
-            android:title="@string/view_collection_online">
+            android:title="@string/view_collection_online"
+            android:visible="false">
         </item>
         <item
-            android:id="@+id/menuSettings"
-            android:enabled="true"
-            android:icon="@drawable/ic_action_settings"
-            android:title="@string/settings_name">
-        </item>
+            android:id="@+id/unidentifiedFiles"
+            android:icon="@drawable/folder"
+            android:title="@string/unidentifiedFiles"/>
     </group>
 
 </menu>

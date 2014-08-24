@@ -10,33 +10,16 @@
         android:orientation="vertical"
         android:paddingBottom="@dimen/episode_details_small_margin" >
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/actor_backdrop_height" >
+        <FrameLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <com.miz.views.PanningView
-                android:id="@+id/imageView2"
+            <ImageView
+                android:id="@+id/traktIcon"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/content_description_image_backdrop"
-                android:src="@drawable/bg" />
-
-            <FrameLayout
-                android:id="@+id/frameLayout1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:padding="@dimen/details_large_padding" >
-
-                <com.miz.views.AspectRatioImageViewCover
-                    android:id="@+id/traktIcon"
-                    android:layout_width="@dimen/actor_details_width"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/border"
-                    android:cropToPadding="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/noactor" />
-            </FrameLayout>
+                android:layout_height="@dimen/backdrop_portrait_height"
+                android:background="@drawable/border"
+                android:scaleType="centerCrop"
+                android:src="@drawable/noactor" />
         </FrameLayout>
 
         <TextView
@@ -86,7 +69,6 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textIsSelectable="true"
             android:textSize="@dimen/details_text_size" />
-
     </LinearLayout>
 
 </com.miz.views.ObservableScrollView>

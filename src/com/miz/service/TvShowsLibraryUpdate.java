@@ -17,11 +17,8 @@
 package com.miz.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.TreeSet;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -43,20 +40,19 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import com.miz.abstractclasses.TvShowFileSource;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterSources;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterTvShows;
+import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.filesources.FileTvShow;
 import com.miz.filesources.SmbTvShow;
 import com.miz.filesources.UpnpTvShow;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
-import com.miz.functions.TheTVDbObject;
 import com.miz.functions.TvShowLibraryUpdateCallback;
+import com.miz.identification.ShowStructure;
+import com.miz.identification.TvShowIdentification;
 import com.miz.mizuu.CancelLibraryUpdate;
 import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
@@ -65,7 +61,6 @@ import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
 
-import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_TVSHOWS;
 import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
@@ -76,10 +71,10 @@ import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
 public class TvShowsLibraryUpdate extends IntentService implements TvShowLibraryUpdateCallback {
 
 	public static final String STOP_TVSHOW_LIBRARY_UPDATE = "mizuu-stop-tvshow-library-update";
-	private boolean isDebugging = true;
+	private boolean mDebugging = true;
 	private ArrayList<FileSource> mFileSources;
 	private ArrayList<TvShowFileSource<?>> mTvShowFileSources;
-	private Multimap<String, String> mMap = LinkedListMultimap.create();
+	private ArrayList<ShowStructure> mFiles;
 	private HashSet<String> mUniqueShowIds = new HashSet<String>();
 	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mDisableEthernetWiFiCheck, mSyncLibraries, mStopUpdate;
 	private int mTotalFiles, mShowCount, mEpisodeCount;
@@ -88,6 +83,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 	private final int NOTIFICATION_ID = 300, POST_UPDATE_NOTIFICATION = 313;
 	private NotificationManager mNotificationManager;
 	private NotificationCompat.Builder mBuilder;
+	private TvShowIdentification mIdentification;
 
 	public TvShowsLibraryUpdate() {
 		super("TvShowsLibraryUpdate");
@@ -109,7 +105,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
 		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-shows-update"));
-		
+
 		showPostUpdateNotification();
 
 		AppWidgetManager awm = AppWidgetManager.getInstance(this);
@@ -258,11 +254,13 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 	private void removeTvShowsFromDatabase() {
 		// Delete all shows from the database
-		DbAdapterTvShow db = MizuuApplication.getTvDbAdapter();
+		DbAdapterTvShows db = MizuuApplication.getTvDbAdapter();
 		db.deleteAllShowsInDatabase();
 
-		DbAdapterTvShowEpisode dbEpisodes = MizuuApplication.getTvEpisodeDbAdapter();
+		DbAdapterTvShowEpisodes dbEpisodes = MizuuApplication.getTvEpisodeDbAdapter();
 		dbEpisodes.deleteAllEpisodesInDatabase();
+		
+		MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllFilepaths();
 
 		// Delete all downloaded images files from the device
 		MizLib.deleteRecursive(MizuuApplication.getTvShowThumbFolder(this), false);
@@ -280,13 +278,12 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 	private void searchFolders() {
 		// Temporary collection
 		List<String> tempList = null;
-		String ignoredTags = mSettings.getString(IGNORED_FILENAME_TAGS, "");
 
 		for (int j = 0; j < mTvShowFileSources.size(); j++) {
 			updateTvShowScanningNotification(mTvShowFileSources.get(j).toString());
 			tempList = mTvShowFileSources.get(j).searchFolder();
 			for (int i = 0; i < tempList.size(); i++) {
-				mMap.put(MizLib.decryptEpisode(tempList.get(i).contains("<MiZ>") ? tempList.get(i).split("<MiZ>")[0] : tempList.get(i), ignoredTags).getDecryptedFileName().toLowerCase(Locale.getDefault()), tempList.get(i));
+				mFiles.add(new ShowStructure(tempList.get(i)));
 			}
 		}
 
@@ -294,7 +291,11 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		if (tempList != null)
 			tempList.clear();
 
-		mTotalFiles = mMap.size();
+		int episodeCount = 0;
+		for (ShowStructure ss : mFiles)
+			episodeCount += ss.getEpisodes().size();
+		
+		mTotalFiles = episodeCount;
 	}
 
 	private void setup() {
@@ -314,7 +315,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
-		mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
 		mBuilder.setSmallIcon(R.drawable.refresh);
 		mBuilder.setTicker(getString(R.string.updatingTvShows));
 		mBuilder.setContentTitle(getString(R.string.updatingTvShows));
@@ -350,42 +350,26 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			mStopUpdate = true;
+			
+			if (mIdentification != null)
+				mIdentification.cancel();
 		}
 	};
 
 	private void updateTvShows() {
-		// Temporary StringBuilder object to re-use memory and reduce GC's
-		StringBuilder sb = new StringBuilder();
 
-		TreeSet<String> mSet = new TreeSet<String>(mMap.keySet());
-
-		for (String tvShow : mSet) {
-			if (mStopUpdate)
-				return;
-
-			sb.delete(0, sb.length());
-			sb.append(tvShow);
-
-			newTvShowObject(mMap.get(sb.toString()));
-		}
-	}
-
-	/**
-	 * Used in the updateTvShows() method.
-	 * @param tvShow Name of the TV show we're trying to identify
-	 * @param files Collection of file paths to the files related to that TV show
-	 */
-	private void newTvShowObject(Collection<String> files) {		
-		if (MizLib.isOnline(getApplicationContext())) {
-			new TheTVDbObject(this, files, "", this);
-		}
+		// Show the "Analyzing files..." notification
+		showTvShowAnalyzingNotification();
+		
+		mIdentification = new TvShowIdentification(getApplicationContext(), this, mFiles);
+		mIdentification.start();
 	}
 
 	private void clear() {
 		// Lists
 		mFileSources = new ArrayList<FileSource>();
 		mTvShowFileSources = new ArrayList<TvShowFileSource<?>>();
-		mMap = LinkedListMultimap.create();
+		mFiles = new ArrayList<ShowStructure>();
 		mUniqueShowIds = new HashSet<String>();
 
 		// Booleans
@@ -407,13 +391,13 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 	}
 
 	private void log(String msg) {
-		if (isDebugging)
+		if (mDebugging)
 			Log.d("TvShowsLibraryUpdate", msg);
 	}
 
 	@Override
 	public void onTvShowAdded(String showId, String title, Bitmap cover, Bitmap backdrop, int count) {
-		if (!showId.equals("invalid")) {
+		if (!showId.equals(DbAdapterTvShows.UNIDENTIFIED_ID)) {
 			mUniqueShowIds.add(showId);
 		}
 		updateTvShowAddedNotification(showId, title, cover, backdrop, count);
@@ -421,14 +405,14 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 	@Override
 	public void onEpisodeAdded(String showId, String title, Bitmap cover, Bitmap photo) {
-		if (!showId.equals("invalid"))
+		if (!showId.equals(DbAdapterTvShows.UNIDENTIFIED_ID))
 			mEpisodeCount++;
 		updateEpisodeAddedNotification(showId, title, cover, photo);
 	}
 
 	private void updateEpisodeAddedNotification(String showId, String title, Bitmap cover, Bitmap backdrop) {
 		String contentText;
-		if (showId.isEmpty() || showId.equalsIgnoreCase("invalid"))
+		if (showId.isEmpty() || showId.equalsIgnoreCase(DbAdapterTvShows.UNIDENTIFIED_ID))
 			contentText = getString(R.string.unidentified) + ": " + title;
 		else
 			contentText = getString(R.string.stringJustAdded) + ": " + title;
@@ -448,7 +432,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 	private void updateTvShowAddedNotification(String showId, String title, Bitmap cover, Bitmap backdrop, int count) {
 		String contentText;
-		if (showId.isEmpty() || showId.equalsIgnoreCase("invalid"))
+		if (showId.isEmpty() || showId.equalsIgnoreCase(DbAdapterTvShows.UNIDENTIFIED_ID))
 			contentText = getString(R.string.unidentified) + ": " + title + " (" + count + " " + getResources().getQuantityString(R.plurals.episodes, count, count) + ")";
 		else
 			contentText = getString(R.string.stringJustAdded) + ": " + title + " (" + count + " " + getResources().getQuantityString(R.plurals.episodes, count, count) + ")";
@@ -471,6 +455,16 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.refresh));
 		mBuilder.setContentTitle(getString(R.string.updatingTvShows));
 		mBuilder.setContentText(getString(R.string.scanning) + ": " + filesource);
+
+		// Show the updated notification
+		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+	}
+
+	private void showTvShowAnalyzingNotification() {
+		mBuilder.setSmallIcon(R.drawable.refresh);
+		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.refresh));
+		mBuilder.setContentTitle(getString(R.string.updatingTvShows));
+		mBuilder.setContentText(getString(R.string.analyzing_files));
 
 		// Show the updated notification
 		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());

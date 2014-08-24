@@ -37,6 +37,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 
 public class ContactDeveloperFragment extends Fragment {
@@ -60,6 +61,9 @@ public class ContactDeveloperFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
+		if (!MizLib.isTablet(getActivity()))
+			getActivity().setTitle(R.string.menuAboutContact);
+
 		subject = (Spinner) v.findViewById(R.id.subjectSpinner);
 		message = (EditText) v.findViewById(R.id.traktUsername);
 		deviceDetails = (TextView) v.findViewById(R.id.textView2);
@@ -72,11 +76,6 @@ public class ContactDeveloperFragment extends Fragment {
 		});
 
 		try {
-			String versionType = "";
-			if (getActivity().getPackageName().equals("com.miz.mizuulite")) {
-				versionType = " (lite)";
-			}
-
 			PackageManager manager = getActivity().getPackageManager();
 			PackageInfo packageInfo = manager.getPackageInfo(getActivity().getPackageName(), 0);
 
@@ -85,13 +84,13 @@ public class ContactDeveloperFragment extends Fragment {
 							getString(R.string.contactDeviceManufacturer) + ": " + Build.MANUFACTURER + "\n" + // Manufacturer
 							getString(R.string.contactDeviceCustomization) + ": " + Build.BRAND + "\n" + // Brand / customization
 							getString(R.string.contactDeviceOS) + ": v" + Build.VERSION.RELEASE + " (" + Build.VERSION.INCREMENTAL + ")\n" + // OS
-							"Mizuu version: " + packageInfo.versionName + versionType
+							"Mizuu version: " + packageInfo.versionName
 					);
 		} catch (Exception e) {
 			Toast.makeText(getActivity(), getString(R.string.errorSomethingWentWrong), Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 	private void send() {
 		if (!message.getText().toString().isEmpty() && message.getText().toString().length() > 5) {
 			try {
@@ -126,7 +125,7 @@ public class ContactDeveloperFragment extends Fragment {
 			ObjectAnimator animation = ObjectAnimator.ofFloat(message, "translationX", -10f, -5f, 0f, 5f, 10f, 5f, 0f, -5f, -10f, -5f, 0f);
 			animation.setDuration(250);
 			animation.start();
-		    
+
 			Toast.makeText(getActivity(), getString(R.string.enterAMessage), Toast.LENGTH_SHORT).show();
 		}
 	}

@@ -20,22 +20,25 @@ import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
-import com.miz.db.DbAdapterTvShow;
-import com.miz.db.DbAdapterTvShowEpisode;
-import com.miz.functions.Episode;
+import com.miz.apis.thetvdb.TvShow;
+import com.miz.apis.thetvdb.Episode;
+import com.miz.db.DbAdapterTvShows;
+import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.MizLib;
-import com.miz.functions.TheTVDb;
 import com.miz.functions.TvShowLibraryUpdateCallback;
-import com.miz.functions.Tvshow;
+import com.miz.interfaces.TvShowApiService;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.widgets.ShowBackdropWidgetProvider;
 import com.miz.widgets.ShowCoverWidgetProvider;
 import com.miz.widgets.ShowStackWidgetProvider;
+import com.squareup.picasso.Picasso;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -45,6 +48,8 @@ import android.preference.PreferenceManager;
 import android.util.SparseBooleanArray;
 
 public class TvShowIdentification {
+
+	private Picasso mPicasso;
 
 	private final TvShowLibraryUpdateCallback mCallback;
 	private final Context mContext;
@@ -64,6 +69,8 @@ public class TvShowIdentification {
 		mShowStructures = new ArrayList<ShowStructure>(files);
 
 		mIgnoredTags = PreferenceManager.getDefaultSharedPreferences(mContext).getString(IGNORED_FILENAME_TAGS, "");
+
+		mPicasso = MizuuApplication.getPicasso(mContext);
 
 		// Get the language preference
 		getLanguagePreference();
@@ -140,15 +147,15 @@ public class TvShowIdentification {
 		}
 
 		// Make modular
-		TheTVDb service = new TheTVDb(mContext);
+		TvShowApiService service = MizuuApplication.getTvShowSourceService(mContext);
 
 		for (String showFolderName : mShowFolderNameMap.keySet()) {
 
 			if (mCancel)
 				return;
 
-			Tvshow show = null;
-			ArrayList<Tvshow> results = new ArrayList<Tvshow>();
+			TvShow show = null;
+			List<TvShow> results = new ArrayList<TvShow>();
 			if (!overrideShowId()) {
 
 				// Get the first ShowStructure element
@@ -156,20 +163,20 @@ public class TvShowIdentification {
 
 				// Check if there's an IMDb ID and attempt to search based on it
 				if (ss.hasImdbId())
-					results = service.searchForShowsByImdbId(ss.getImdbId(), "all");
+					results = service.searchByImdbId(ss.getImdbId(), null);
 
 				// If there's no results, attempt to search based on the show folder name and year
 				if (results.size() == 0) {
 					int year = mShowStructures.get(mShowFolderNameMap.get(showFolderName).iterator().next()).getReleaseYear();
 					if (year >= 0)
-						results = service.searchForShows(showFolderName + " " + year, "all");
+						results = service.search(showFolderName + " " + year, null);
 				}
 
 				// If there's still no results, search based on the show folder name only
 				if (results.size() == 0)
-					results = service.searchForShows(showFolderName, "all");
+					results = service.search(showFolderName, null);
 			} else
-				show = service.getShow(getShowId(), mLocale);
+				show = service.get(getShowId(), mLocale);
 
 			// Check if the show folder name results in any matches
 			// - if it does, use that to identify all files
@@ -177,7 +184,7 @@ public class TvShowIdentification {
 
 				// Get the TV show and create it in the database
 				if (!overrideShowId())
-					show = service.getShow(results.get(0).getId(), mLocale);
+					show = service.get(results.get(0).getId(), mLocale);
 				createShow(show);
 
 				int episodeCount = 0;
@@ -207,28 +214,28 @@ public class TvShowIdentification {
 					ShowStructure ss = mShowStructures.get(value);
 
 					show = null;
-					results = new ArrayList<Tvshow>();
+					results = new ArrayList<TvShow>();
 
 					// Check if there's an IMDb ID and attempt to search based on it
 					if (ss.hasImdbId())
-						results = service.searchForShowsByImdbId(ss.getImdbId(), "all");
+						results = service.searchByImdbId(ss.getImdbId(), null);
 
 					// If there's no results, attempt to search based on the show folder name and year
 					if (results.size() == 0) {
 						int year = ss.getReleaseYear();
 						if (year >= 0)
-							results = service.searchForShows(ss.getDecryptedFilename() + " " + year, "all");
+							results = service.search(ss.getDecryptedFilename() + " " + year, null);
 					}
 
 					// If there's still no results, search based on the show folder name only
 					if (results.size() == 0)
-						results = service.searchForShows(ss.getDecryptedFilename(), "all");
+						results = service.search(ss.getDecryptedFilename(), null);
 
 					if (results.size() == 0) {
-						show = new Tvshow();
-						show.setId("invalid");
+						show = new TvShow();
+						show.setId(DbAdapterTvShows.UNIDENTIFIED_ID);
 					} else {					
-						show = service.getShow(results.get(0).getId(), mLocale);
+						show = service.get(results.get(0).getId(), mLocale);
 					}
 
 					createShow(show);
@@ -246,7 +253,7 @@ public class TvShowIdentification {
 		}
 	}
 
-	private void showAddedShowNotification(Tvshow show, int episodeCount) {
+	private void showAddedShowNotification(TvShow show, int episodeCount) {
 		if (show == null)
 			return;
 
@@ -256,18 +263,23 @@ public class TvShowIdentification {
 		File backdropFile = MizLib.getTvShowBackdrop(mContext, show.getId());
 		if (!backdropFile.exists())
 			backdropFile = coverFile;
-
-		mCallback.onTvShowAdded(show.getId(), show.getTitle(), MizLib.getNotificationImageThumbnail(mContext, coverFile.getAbsolutePath()),
-				MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight()), episodeCount);
+		
+		try {
+			mCallback.onTvShowAdded(show.getId(), show.getTitle(), mPicasso.load(coverFile).resize(getNotificationImageSizeSmall(), getNotificationImageSizeSmall()).get(),
+					mPicasso.load(backdropFile).skipMemoryCache().resize(getNotificationImageWidth(), (getNotificationImageWidth() / 16) * 9).get(), episodeCount);
+		} catch (IOException e) {
+			mCallback.onTvShowAdded(show.getId(), show.getTitle(), MizLib.getNotificationImageThumbnail(mContext, coverFile.getAbsolutePath()),
+					MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight()), episodeCount);
+		}
 	}
 
-	private void createShow(Tvshow thisShow) {
+	private void createShow(TvShow thisShow) {
 
 		boolean downloadCovers = true;
 
 		// Check if the show already exists before downloading the show info
-		if (!thisShow.getId().equals("invalid") && !thisShow.getId().isEmpty()) {
-			DbAdapterTvShow db = MizuuApplication.getTvDbAdapter();
+		if (!thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID) && !thisShow.getId().isEmpty()) {
+			DbAdapterTvShows db = MizuuApplication.getTvDbAdapter();
 			Cursor cursor = db.getShow(thisShow.getId());
 			if (cursor.getCount() > 0) {
 				downloadCovers = false;
@@ -275,30 +287,30 @@ public class TvShowIdentification {
 		}
 
 		if (downloadCovers) {
-			if (!thisShow.getId().equals("invalid") && !thisShow.getId().isEmpty()) {
+			if (!thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID) && !thisShow.getId().isEmpty()) {
 				String thumb_filepath = MizLib.getTvShowThumb(mContext, thisShow.getId()).getAbsolutePath();
 				String backdrop_filepath = MizLib.getTvShowBackdrop(mContext, thisShow.getId()).getAbsolutePath();
 
 				// Download the cover file and try again if it fails
-				if (!thisShow.getCover_url().isEmpty())
-					if (!MizLib.downloadFile(thisShow.getCover_url(), thumb_filepath))
-						MizLib.downloadFile(thisShow.getCover_url(), thumb_filepath);
+				if (!thisShow.getCoverUrl().isEmpty())
+					if (!MizLib.downloadFile(thisShow.getCoverUrl(), thumb_filepath))
+						MizLib.downloadFile(thisShow.getCoverUrl(), thumb_filepath);
 
 				MizLib.resizeBitmapFileToCoverSize(mContext, thumb_filepath);
 
 				// Download the backdrop image file and try again if it fails
-				if (!thisShow.getBackdrop_url().isEmpty())
-					if (!MizLib.downloadFile(thisShow.getBackdrop_url(), backdrop_filepath))
-						MizLib.downloadFile(thisShow.getBackdrop_url(), backdrop_filepath);
+				if (!thisShow.getBackdropUrl().isEmpty())
+					if (!MizLib.downloadFile(thisShow.getBackdropUrl(), backdrop_filepath))
+						MizLib.downloadFile(thisShow.getBackdropUrl(), backdrop_filepath);
 
-				DbAdapterTvShow dbHelper = MizuuApplication.getTvDbAdapter();
-				dbHelper.createShow(thisShow.getId(), thisShow.getTitle(), thisShow.getDescription(), thisShow.getActors(), thisShow.getGenre(),
-						thisShow.getRating(), thisShow.getCertification(), thisShow.getRuntime(), thisShow.getFirst_aired(), "0");
+				DbAdapterTvShows dbHelper = MizuuApplication.getTvDbAdapter();
+				dbHelper.createShow(thisShow.getId(), thisShow.getTitle(), thisShow.getDescription(), thisShow.getActors(), thisShow.getGenres(),
+						thisShow.getRating(), thisShow.getCertification(), thisShow.getRuntime(), thisShow.getFirstAired(), "0");
 			}
 		}
 	}
 
-	private void downloadEpisode(Tvshow thisShow, int season, int episode, String filepath) {		
+	private void downloadEpisode(TvShow thisShow, int season, int episode, String filepath) {		
 		Episode thisEpisode = new Episode();
 
 		if (overrideSeasonAndEpisode()) {
@@ -321,10 +333,10 @@ public class TvShowIdentification {
 		}
 
 		// Download the episode screenshot file and try again if it fails
-		if (!thisEpisode.getScreenshot_url().isEmpty()) {
+		if (!thisEpisode.getScreenshotUrl().isEmpty()) {
 			String screenshotFile = MizLib.getTvShowEpisode(mContext, thisShow.getId(), season, episode).getAbsolutePath();
-			if (!MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile))
-				MizLib.downloadFile(thisEpisode.getScreenshot_url(), screenshotFile);
+			if (!MizLib.downloadFile(thisEpisode.getScreenshotUrl(), screenshotFile))
+				MizLib.downloadFile(thisEpisode.getScreenshotUrl(), screenshotFile);
 		}
 
 		// Download season cover if it hasn't already been downloaded
@@ -339,22 +351,28 @@ public class TvShowIdentification {
 		addToDatabase(thisShow, thisEpisode, filepath);
 	}
 
-	private void addToDatabase(Tvshow thisShow, Episode ep, String filepath) {
-		DbAdapterTvShowEpisode dbHelper = MizuuApplication.getTvEpisodeDbAdapter();
+	private void addToDatabase(TvShow thisShow, Episode ep, String filepath) {
+		DbAdapterTvShowEpisodes dbHelper = MizuuApplication.getTvEpisodeDbAdapter();
 		dbHelper.createEpisode(filepath, MizLib.addIndexZero(ep.getSeason()), MizLib.addIndexZero(ep.getEpisode()), thisShow.getId(), ep.getTitle(), ep.getDescription(),
 				ep.getAirdate(), ep.getRating(), ep.getDirector(), ep.getWriter(), ep.getGueststars(), "0", "0");
 
 		updateNotification(thisShow, ep, filepath);
 	}
 
-	private void updateNotification(Tvshow thisShow, Episode ep, String filepath) {
+	private void updateNotification(TvShow thisShow, Episode ep, String filepath) {
 		File coverFile = MizLib.getTvShowThumb(mContext, thisShow.getId());
 		File backdropFile = MizLib.getTvShowEpisode(mContext, thisShow.getId(), MizLib.addIndexZero(ep.getSeason()), MizLib.addIndexZero(ep.getEpisode()));
 		if (!backdropFile.exists())
 			backdropFile = coverFile;
 
-		mCallback.onEpisodeAdded(thisShow.getId(), thisShow.getId().equals("invalid") ? filepath : thisShow.getTitle() + " S" + MizLib.addIndexZero(ep.getSeason()) + "E" + MizLib.addIndexZero(ep.getEpisode()),
-				MizLib.getNotificationImageThumbnail(mContext, coverFile.getAbsolutePath()), MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight()));
+		try {
+			mCallback.onEpisodeAdded(thisShow.getId(), thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID) ? filepath : thisShow.getTitle() + " S" + MizLib.addIndexZero(ep.getSeason()) + "E" + MizLib.addIndexZero(ep.getEpisode()),
+					mPicasso.load(coverFile).resize(getNotificationImageSizeSmall(), getNotificationImageSizeSmall()).get(),
+					mPicasso.load(backdropFile).skipMemoryCache().get());
+		} catch (IOException e) {
+			mCallback.onEpisodeAdded(thisShow.getId(), thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID) ? filepath : thisShow.getTitle() + " S" + MizLib.addIndexZero(ep.getSeason()) + "E" + MizLib.addIndexZero(ep.getEpisode()),
+					MizLib.getNotificationImageThumbnail(mContext, coverFile.getAbsolutePath()), MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight()));
+		}
 	}
 
 	private void updateWidgets() {
@@ -365,7 +383,7 @@ public class TvShowIdentification {
 	}
 
 	// These variables don't need to be re-initialized
-	private int widgetWidth = 0, widgetHeight = 0;
+	private int widgetWidth = 0, widgetHeight = 0, smallSize = 0;
 
 	private int getNotificationImageWidth() {
 		if (widgetWidth == 0)
@@ -377,5 +395,11 @@ public class TvShowIdentification {
 		if (widgetHeight == 0)
 			widgetHeight = MizLib.getLargeNotificationWidth(mContext) / 2;
 		return widgetHeight;
+	}
+
+	private int getNotificationImageSizeSmall() {
+		if (smallSize == 0)
+			smallSize = MizLib.getThumbnailNotificationSize(mContext);
+		return smallSize;
 	}
 }

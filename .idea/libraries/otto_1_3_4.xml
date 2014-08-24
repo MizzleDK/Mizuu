@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="otto-1.3.4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/otto-1.3.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

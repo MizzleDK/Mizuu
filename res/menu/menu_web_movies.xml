@@ -7,14 +7,4 @@
         android:title="@string/stringSearch">
     </item>
 
-    <group android:id="@+id/group1" >
-        <item
-            android:id="@+id/menuSettings"
-            android:enabled="true"
-            android:icon="@drawable/ic_action_settings"
-            android:showAsAction="never"
-            android:title="@string/settings_name">
-        </item>
-    </group>
-
 </menu>

@@ -42,7 +42,6 @@ import android.os.StatFs;
 
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Request;
-import com.squareup.picasso.UrlConnectionDownloader;
 
 public class Utils {
 	static final String THREAD_PREFIX = "Picasso-";
@@ -77,12 +76,7 @@ public class Utils {
 	}
 
 	static int getBitmapBytes(Bitmap bitmap) {
-		int result;
-		if (SDK_INT >= HONEYCOMB_MR1) {
-			result = BitmapHoneycombMR1.getByteCount(bitmap);
-		} else {
-			result = bitmap.getRowBytes() * bitmap.getHeight();
-		}
+		int result = BitmapHoneycombMR1.getByteCount(bitmap);
 		if (result < 0) {
 			throw new IllegalStateException("Negative size: " + bitmap);
 		}
@@ -168,12 +162,7 @@ public class Utils {
 	}
 
 	public static Downloader createDefaultDownloader(Context context) {
-		try {
-			Class.forName("com.squareup.okhttp.OkHttpClient");
-			return OkHttpLoaderCreator.create(context);
-		} catch (ClassNotFoundException e) {
-			return new UrlConnectionDownloader(context);
-		}
+		return OkHttpLoaderCreator.create(context);
 	}
 
 	static File createDefaultCacheDir(Context context) {

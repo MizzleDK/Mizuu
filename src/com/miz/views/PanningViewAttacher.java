@@ -27,7 +27,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.ViewTreeObserver;
-import android.view.animation.LinearInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 
 /**
@@ -35,8 +35,6 @@ import android.widget.ImageView;
  * Modified by Michell Bak on 18/07/14 to only support LTR and RTL animations.
  */
 public class PanningViewAttacher implements ViewTreeObserver.OnGlobalLayoutListener {
-
-	public static final int DEFAULT_PANNING_DURATION_IN_MS = 15000;
 
 	private static final String TAG = "PanningViewAttacher";
 	private enum Way {R2L, L2R};
@@ -46,14 +44,13 @@ public class PanningViewAttacher implements ViewTreeObserver.OnGlobalLayoutListe
 	private Matrix mMatrix;
 	private RectF mDisplayRect = new RectF();
 	private ValueAnimator mCurrentAnimator;
-	private LinearInterpolator mLinearInterpolator;
-	private long mDuration;
+	private AccelerateDecelerateInterpolator mInterpolator;
 	private long mCurrentPlayTime;
 	private long mTotalTime;
 	private Way mWay;
 	private boolean mIsPanning;
 
-	public PanningViewAttacher(ImageView imageView, long duration) {
+	public PanningViewAttacher(ImageView imageView) {
 		if(imageView == null) {
 			throw new IllegalArgumentException("imageView must not be null");
 		}
@@ -62,8 +59,7 @@ public class PanningViewAttacher implements ViewTreeObserver.OnGlobalLayoutListe
 			throw new IllegalArgumentException("drawable must not be null");
 		}
 
-		mLinearInterpolator = new LinearInterpolator();
-		mDuration = duration;
+		mInterpolator = new AccelerateDecelerateInterpolator();
 		mImageView = new WeakReference<ImageView>(imageView);
 
 		mViewTreeObserver = imageView.getViewTreeObserver();
@@ -79,9 +75,6 @@ public class PanningViewAttacher implements ViewTreeObserver.OnGlobalLayoutListe
 		update();
 	}
 
-	/**
-	 *
-	 */
 	public void update() {
 		mWay = null;
 		mTotalTime = 0;
@@ -245,28 +238,25 @@ public class PanningViewAttacher implements ViewTreeObserver.OnGlobalLayoutListe
 
 		Log.d(TAG, "mWay : " + mWay);
 		Log.d(TAG, "mDisplayRect : " + mDisplayRect);
-
-		long remainingDuration = mDuration - mTotalTime;
-		if(mWay == Way.R2L) {
-			animate(mDisplayRect.left, mDisplayRect.left - (mDisplayRect.right - getImageViewWidth()), remainingDuration);
+		
+		if (mWay == Way.R2L) {
+			animate(mDisplayRect.left, mDisplayRect.left - (mDisplayRect.right - getImageViewWidth()));
 		} else {
-			animate(mDisplayRect.left, 0.0f, remainingDuration);
+			animate(mDisplayRect.left, 0.0f);
 		}
 	}
 
 	private void changeWay() {
-		if(mWay == Way.R2L) {
+		if (mWay == Way.R2L) {
 			mWay = Way.L2R;
-		} else if(mWay == Way.L2R) {
+		} else if (mWay == Way.L2R) {
 			mWay = Way.R2L;
 		}
 		mCurrentPlayTime = 0;
 		mTotalTime = 0;
 	}
 
-	private void animate(float start, float end, long duration) {
-		Log.d(TAG, "startPanning : " + start + " to " + end + ", in " + duration + "ms");
-
+	private void animate(float start, float end) {
 		mCurrentAnimator = ValueAnimator.ofFloat(start, end);
 		mCurrentAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 			@Override
@@ -293,8 +283,8 @@ public class PanningViewAttacher implements ViewTreeObserver.OnGlobalLayoutListe
 				Log.d(TAG, "panning animation canceled");
 			}
 		});
-		mCurrentAnimator.setDuration(duration);
-		mCurrentAnimator.setInterpolator(mLinearInterpolator);
+		mCurrentAnimator.setDuration(15000);
+		mCurrentAnimator.setInterpolator(mInterpolator);
 		mCurrentAnimator.start();
 	}
 
@@ -318,7 +308,7 @@ public class PanningViewAttacher implements ViewTreeObserver.OnGlobalLayoutListe
 	private void applyScaleOnMatrix() {
 		int drawableSize = getDrawableIntrinsicHeight();
 		int imageViewSize = getImageViewHeight();
-		float scaleFactor = (float)imageViewSize / (float)drawableSize;
+		float scaleFactor = (float) imageViewSize / (float) drawableSize;
 
 		mMatrix.postScale(scaleFactor, scaleFactor);
 	}

@@ -43,6 +43,7 @@ import android.widget.Toast;
 import com.miz.apis.trakt.Trakt;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.service.TraktMoviesSyncService;
 import com.miz.service.TraktTvShowsSyncService;
@@ -197,7 +198,7 @@ public class AccountsFragment extends Fragment {
 						editor.commit();
 
 						if (isAdded() && (avatar.contains("gravatar") || (avatar.contains("trakt") && !avatar.contains("avatar-large.jpg"))))
-							MizLib.downloadFile(avatar, new File(MizLib.getCacheFolder(getActivity()), "avatar.jpg").getAbsolutePath());
+							MizLib.downloadFile(avatar, new File(MizuuApplication.getCacheFolder(getActivity()), "avatar.jpg").getAbsolutePath());
 					}
 				} catch (Exception e) {
 					success = false;
@@ -242,7 +243,7 @@ public class AccountsFragment extends Fragment {
 		editor.putString(TRAKT_FULL_NAME, "");
 		editor.commit();
 		
-		new File(MizLib.getCacheFolder(getActivity()), "avatar.jpg").delete();
+		new File(MizuuApplication.getCacheFolder(getActivity()), "avatar.jpg").delete();
 
 		traktUser.setText("");
 		traktUser.setEnabled(true);

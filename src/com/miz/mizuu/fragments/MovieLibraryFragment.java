@@ -16,32 +16,28 @@
 
 package com.miz.mizuu.fragments;
 
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
 import static com.miz.functions.PreferenceKeys.SORTING_COLLECTIONS_OVERVIEW;
 import static com.miz.functions.PreferenceKeys.SORTING_MOVIES;
-
+import static com.miz.functions.SortingKeys.ALL_MOVIES;
+import static com.miz.functions.SortingKeys.AVAILABLE_FILES;
+import static com.miz.functions.SortingKeys.CERTIFICATION;
+import static com.miz.functions.SortingKeys.COLLECTIONS;
 import static com.miz.functions.SortingKeys.DATE;
 import static com.miz.functions.SortingKeys.DURATION;
+import static com.miz.functions.SortingKeys.FAVORITES;
+import static com.miz.functions.SortingKeys.FILE_SOURCES;
+import static com.miz.functions.SortingKeys.FOLDERS;
+import static com.miz.functions.SortingKeys.GENRES;
+import static com.miz.functions.SortingKeys.OFFLINE_COPIES;
 import static com.miz.functions.SortingKeys.RATING;
 import static com.miz.functions.SortingKeys.RELEASE;
 import static com.miz.functions.SortingKeys.TITLE;
-import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
-import static com.miz.functions.SortingKeys.ALL_MOVIES;
-import static com.miz.functions.SortingKeys.AVAILABLE_FILES;
-import static com.miz.functions.SortingKeys.COLLECTIONS;
-import static com.miz.functions.SortingKeys.FAVORITES;
-import static com.miz.functions.SortingKeys.OFFLINE_COPIES;
-import static com.miz.functions.SortingKeys.UNIDENTIFIED_MOVIES;
 import static com.miz.functions.SortingKeys.UNWATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WATCHED_MOVIES;
-import static com.miz.functions.SortingKeys.GENRES;
-import static com.miz.functions.SortingKeys.CERTIFICATION;
-import static com.miz.functions.SortingKeys.FILE_SOURCES;
-import static com.miz.functions.SortingKeys.FOLDERS;
+import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
 
 import java.io.File;
 import java.net.URLEncoder;
@@ -77,6 +73,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -95,18 +92,19 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterMovieMapping;
+import com.miz.db.DatabaseHelper;
+import com.miz.db.DbAdapterMovieMappings;
+import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterSources;
-import com.miz.db.DbHelper;
 import com.miz.functions.ActionBarSpinnerViewHolder;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.CoverItem;
 import com.miz.functions.FileSource;
+import com.miz.functions.Filepath;
+import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
-import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MovieSortHelper;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.functions.SpinnerItem;
@@ -114,8 +112,8 @@ import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieCollection;
 import com.miz.mizuu.MovieDetails;
-import com.miz.mizuu.Preferences;
 import com.miz.mizuu.R;
+import com.miz.mizuu.UnidentifiedMovies;
 import com.miz.mizuu.Update;
 import com.squareup.picasso.Picasso;
 
@@ -130,7 +128,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	private ArrayList<Integer> mMovieKeys = new ArrayList<Integer>();
 	private GridView mGridView = null;
 	private ProgressBar mProgressBar;
-	private boolean mIgnorePrefixes, mDisableEthernetWiFiCheck, mIgnoreNfo, mLoading, mShowTitles;
+	private boolean mIgnorePrefixes, mLoading, mShowTitles;
 	private ActionBar mActionBar;
 	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
 	private ActionBarSpinner mSpinnerAdapter;
@@ -172,8 +170,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 		mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
-		mIgnoreNfo = mSharedPreferences.getBoolean(IGNORED_NFO_FILES, true);
-		mDisableEthernetWiFiCheck = mSharedPreferences.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 		mShowTitles = mSharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
 
 		String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
@@ -224,7 +220,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceCollections), getString(R.string.choiceCollections)));
 		mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceWatchedMovies), getString(R.string.choiceWatchedMovies)));
 		mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceUnwatchedMovies), getString(R.string.choiceUnwatchedMovies)));
-		mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceUnidentifiedMovies), getString(R.string.choiceUnidentifiedMovies)));
 		mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceOffline), getString(R.string.choiceOffline)));
 	}
 
@@ -247,7 +242,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		@Override
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 			mLoading = true;
-			return new SQLiteCursorLoader(getActivity(), DbHelper.getHelper(getActivity()), DbAdapter.DATABASE_TABLE, DbAdapter.SELECT_ALL, "NOT(" + DbAdapter.KEY_TITLE + " = '" + DbAdapter.REMOVED_MOVIE_TITLE + "')", null, null, null, null);
+			return new SQLiteCursorLoader(getActivity(), DatabaseHelper.getHelper(getActivity()).getWritableDatabase(), DbAdapterMovies.DATABASE_TABLE,
+					DbAdapterMovies.SELECT_ALL, "NOT(" + DbAdapterMovies.KEY_TITLE + " = '" + DbAdapterMovies.REMOVED_MOVIE_TITLE + "')", null, null, null, null);
 		}
 
 		@Override
@@ -261,37 +257,34 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 				@Override
 				protected Void doInBackground(Void... params) {
-					
-					HashMap<String, String> filepathMap = MizuuApplication.getMovieMappingAdapter().getFilepathMap();					
+
+					HashMap<String, String> collectionsMap = MizuuApplication.getCollectionsAdapter().getCollectionsMap();
 					ColumnIndexCache cache = new ColumnIndexCache();
-					
+
 					try {
 						while (cursor.moveToNext()) {							
-							if (mType == OTHER && cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TO_WATCH)).equals("0"))
+							if (mType == OTHER && cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TO_WATCH)).equals("0"))
 								continue;
 
 							mMovies.add(new MediumMovie(getActivity(),
-									filepathMap.get(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMapping.KEY_TMDB_ID))),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RATING)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RELEASEDATE)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_GENRES)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_FAVOURITE)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_ACTORS)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_COLLECTION)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_COLLECTION_ID)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TO_WATCH)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_HAS_WATCHED)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_DATE_ADDED)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_CERTIFICATION)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RUNTIME)),
-									mIgnorePrefixes,
-									mIgnoreNfo
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TITLE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TMDB_ID)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RATING)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RELEASEDATE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_GENRES)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_FAVOURITE)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_ACTORS)),
+									collectionsMap.get(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_COLLECTION_ID))),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_COLLECTION_ID)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TO_WATCH)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_HAS_WATCHED)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_DATE_ADDED)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_CERTIFICATION)),
+									cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RUNTIME)),
+									mIgnorePrefixes
 									));
 						}
-					} catch (Exception e) {
-					} finally {
+					} catch (Exception e) {} finally {
 						cursor.close();
 						cache.clear();
 					}
@@ -462,6 +455,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext.setSingleLine(true);
 
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 
@@ -478,32 +472,27 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 				holder.text.setText(mCollectionsView ? mMovie.getCollection() : mMovie.getTitle());
 				if (mCollectionsView) {
+					holder.text.setSingleLine(false);
 					holder.text.setLines(2);
 					holder.text.setMaxLines(2);
 					holder.subtext.setVisibility(View.GONE);
 				} else {
+					holder.text.setSingleLine(true);
 					holder.text.setLines(1);
 					holder.text.setMaxLines(1);
 					holder.subtext.setVisibility(View.VISIBLE);
 					holder.subtext.setText(mMovie.getSubText(mCurrentSort));
 				}
 			}
-			
+
 			holder.cover.setImageResource(R.color.card_background_dark);
 
 			if (!mCollectionsView) {
 				// Movie poster
-				if (!mIgnoreNfo && mMovie.isNetworkFile()) {
-					if (mResizedWidth > 0)
-						mPicasso.load(mMovie.getFilepath() + "<MiZ>" + mMovie.getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
-					else
-						mPicasso.load(mMovie.getFilepath() + "<MiZ>" + mMovie.getThumbnail()).config(mConfig).into(holder);
-				} else {
-					if (mResizedWidth > 0)
-						mPicasso.load(mMovie.getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
-					else
-						mPicasso.load(mMovie.getThumbnail()).config(mConfig).into(holder);
-				}
+				if (mResizedWidth > 0)
+					mPicasso.load(mMovie.getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
+				else
+					mPicasso.load(mMovie.getThumbnail()).config(mConfig).into(holder);
 			} else {
 				// Collection poster
 				if (mResizedWidth > 0)
@@ -587,49 +576,62 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (isCancelled())
 						return false;
 
-					if (mMovies.get(i).isNetworkFile())
-						if (mMovies.get(i).hasOfflineCopy())
-							mTempKeys.add(i);
-						else {						
-							if (MizLib.isWifiConnected(getActivity(), mDisableEthernetWiFiCheck)) {
-								FileSource source = null;
-
-								for (int j = 0; j < filesources.size(); j++)
-									if (mMovies.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
-										source = filesources.get(j);
-										continue;
-									}
-
-								if (source == null)
-									continue;
-
-								try {
-									final SmbFile file = new SmbFile(
-											MizLib.createSmbLoginString(
-													URLEncoder.encode(source.getDomain(), "utf-8"),
-													URLEncoder.encode(source.getUser(), "utf-8"),
-													URLEncoder.encode(source.getPassword(), "utf-8"),
-													mMovies.get(i).getFilepath(),
-													false
-													));
-									if (file.exists())
-										mTempKeys.add(i);
-								} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
-							}
-						}
-					else if (mMovies.get(i).isUpnpFile())
-						if (MizLib.exists(mMovies.get(i).getFilepath()))
-							mTempKeys.add(i);
-						else
-							if (new File(mMovies.get(i).getFilepath()).exists())
+					for (Filepath path : mMovies.get(i).getFilepaths()) {
+						if (path.isNetworkFile())
+							if (mMovies.get(i).hasOfflineCopy(path)) {
 								mTempKeys.add(i);
+								break; // break inner loop to continue to the next movie
+							} else {
+								if (path.getType() == FileSource.SMB) {
+
+
+									if (MizLib.isWifiConnected(getActivity())) {
+										FileSource source = null;
+
+										for (int j = 0; j < filesources.size(); j++)
+											if (path.getFilepath().contains(filesources.get(j).getFilepath())) {
+												source = filesources.get(j);
+												continue;
+											}
+
+										if (source == null)
+											continue;
+
+										try {
+											final SmbFile file = new SmbFile(
+													MizLib.createSmbLoginString(
+															URLEncoder.encode(source.getDomain(), "utf-8"),
+															URLEncoder.encode(source.getUser(), "utf-8"),
+															URLEncoder.encode(source.getPassword(), "utf-8"),
+															path.getFilepath(),
+															false
+															));
+											if (file.exists()) {
+												mTempKeys.add(i);
+												break; // break inner loop to continue to the next movie
+											}
+										} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
+									}
+								} else if (path.getType() == FileSource.UPNP) {
+									if (MizLib.exists(path.getFilepath())) {
+										mTempKeys.add(i);
+										break; // break inner loop to continue to the next movie
+									}
+								}
+							} else {
+								if (new File(path.getFilepath()).exists()) {
+									mTempKeys.add(i);
+									break; // break inner loop to continue to the next movie
+								}
+							}
+					}
 				}
 				break;
 
 			case COLLECTIONS:
 				HashMap<String, MediumMovie> map = new HashMap<String, MediumMovie>();
 				for (int i = 0; i < mMovies.size(); i++)
-					if (!MizLib.isEmpty(mMovies.get(i).getCollection()) && !mMovies.get(i).getCollection().equals("null"))
+					if (!TextUtils.isEmpty(mMovies.get(i).getCollection()) && !mMovies.get(i).getCollection().equals("null"))
 						if (!map.containsKey(mMovies.get(i).getCollection())) {
 							map.put(mMovies.get(i).getCollection(), mMovies.get(i));
 							mTempKeys.add(i);
@@ -649,12 +651,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 						mTempKeys.add(i);
 				break;
 
-			case UNIDENTIFIED_MOVIES:
-				for (int i = 0; i < mMovies.size(); i++)
-					if (mMovies.get(i).isUnidentified())
-						mTempKeys.add(i);
-				break;
-
 			case OFFLINE_COPIES:
 				// No point in running through all movies if the folder
 				// doesn't contain any files at all - so let's check that first
@@ -666,8 +662,11 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (isCancelled())
 						return false;
 
-					if (mMovies.get(i).hasOfflineCopy())
-						mTempKeys.add(i);
+					for (Filepath path : mMovies.get(i).getFilepaths())
+						if (mMovies.get(i).hasOfflineCopy(path)) {
+							mTempKeys.add(i);
+							break; // break inner loop to continue to the next movie
+						}
 				}
 				break;
 			}
@@ -685,8 +684,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				sortMovies();
 				notifyDataSetChanged();
 				setProgressBarVisible(false);
-
-				mGridView.smoothScrollToPosition(0);
 			}
 		}
 	}
@@ -713,7 +710,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			inflater.inflate(R.menu.menu, menu);
 			if (mType == OTHER) // Don't show the Update icon if this is the Watchlist
 				menu.removeItem(R.id.update);
-			
+
 			if (mMovies.size() == 0)
 				menu.findItem(R.id.random).setVisible(false);
 			else
@@ -751,7 +748,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
-	
+
 	private void onSearchViewCollapsed() {
 		if (isAdded() && mActionBar != null) {
 			if (mActionBar.getSelectedNavigationIndex() == ALL_MOVIES)
@@ -787,9 +784,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		case R.id.menuSortDuration:
 			sortBy(DURATION);
 			break;
-		case R.id.menuSettings:
-			startActivity(new Intent(getActivity(), Preferences.class));
-			break;
 		case R.id.genres:
 			showGenres();
 			break;
@@ -810,6 +804,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				int random = new Random().nextInt(mMovieKeys.size());
 				showDetails(random);
 			}
+			break;
+		case R.id.unidentifiedFiles:
+			startActivity(new Intent(getActivity(), UnidentifiedMovies.class));
 			break;
 		}
 
@@ -917,7 +914,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
 		for (int i = 0; i < mMovieKeys.size(); i++) {
 			String certification = mMovies.get(mMovieKeys.get(i)).getCertification();
-			if (!MizLib.isEmpty(certification)) {
+			if (!TextUtils.isEmpty(certification)) {
 				if (map.containsKey(certification.trim())) {
 					map.put(certification.trim(), map.get(certification.trim()) + 1);
 				} else {
@@ -950,15 +947,16 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
 
 		for (int i = 0; i < mMovieKeys.size(); i++) {
-			String filepath = mMovies.get(mMovieKeys.get(i)).getFilepath();
-			for (int j = 0; j < sources.size(); j++) {
-				String source = sources.get(j).getFilepath();
+			for (Filepath path : mMovies.get(mMovieKeys.get(i)).getFilepaths()) {
+				for (int j = 0; j < sources.size(); j++) {
+					String source = sources.get(j).getFilepath();
 
-				if (!MizLib.isEmpty(source) && !MizLib.isEmpty(filepath) && filepath.contains(source)) {
-					if (map.containsKey(source.trim())) {
-						map.put(source.trim(), map.get(source.trim()) + 1);
-					} else {
-						map.put(source.trim(), 1);
+					if (!TextUtils.isEmpty(source) && !TextUtils.isEmpty(path.getFilepath()) && path.getFilepath().contains(source)) {
+						if (map.containsKey(source.trim())) {
+							map.put(source.trim(), map.get(source.trim()) + 1);
+						} else {
+							map.put(source.trim(), 1);
+						}
 					}
 				}
 			}
@@ -970,12 +968,14 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	private void showFolders() {
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
 		for (int i = 0; i < mMovieKeys.size(); i++) {
-			String folder = MizLib.getParentFolder(mMovies.get(mMovieKeys.get(i)).getFilepath());
-			if (!MizLib.isEmpty(folder)) {
-				if (map.containsKey(folder.trim())) {
-					map.put(folder.trim(), map.get(folder.trim()) + 1);
-				} else {
-					map.put(folder.trim(), 1);
+			for (Filepath path : mMovies.get(mMovieKeys.get(i)).getFilepaths()) {
+				String folder = path.getFilepath();
+				if (!TextUtils.isEmpty(folder)) {
+					if (map.containsKey(folder.trim())) {
+						map.put(folder.trim(), map.get(folder.trim()) + 1);
+					} else {
+						map.put(folder.trim(), 1);
+					}
 				}
 			}
 		}
@@ -1036,10 +1036,18 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					condition = mMovies.get(currentlyShown.get(i)).getCertification().trim().contains(selected);
 					break;
 				case FILE_SOURCES:
-					condition = mMovies.get(currentlyShown.get(i)).getFilepath().trim().contains(selected);
+					for (Filepath path : mMovies.get(currentlyShown.get(i)).getFilepaths()) {
+						condition = path.getFilepath().trim().contains(selected);
+						if (condition)
+							break;
+					}
 					break;
 				case FOLDERS:
-					condition = mMovies.get(currentlyShown.get(i)).getFilepath().trim().startsWith(selected);
+					for (Filepath path : mMovies.get(currentlyShown.get(i)).getFilepaths()) {
+						condition = path.getFilepath().trim().startsWith(selected);
+						if (condition)
+							break;
+					}
 					break;
 				}
 
@@ -1093,11 +1101,11 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (isCancelled())
 						return null;
 
-					if (MizLib.isEmpty(mMovies.get(i).getGenres()))
+					if (TextUtils.isEmpty(mMovies.get(i).getGenres()))
 						mTempKeys.add(i);
 				}
 			} else if (mSearchQuery.equalsIgnoreCase("multiple_versions")) {
-				DbAdapterMovieMapping db = MizuuApplication.getMovieMappingAdapter();
+				DbAdapterMovieMappings db = MizuuApplication.getMovieMappingAdapter();
 
 				for (int i = 0; i < mMovies.size(); i++) {
 					if (isCancelled())
@@ -1113,11 +1121,24 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					if (isCancelled())
 						return null;
 
-					String lowerCase = mMovies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
-					String filepath = mMovies.get(i).getFilepath().toLowerCase(Locale.ENGLISH);
+					String lowerCaseTitle = mMovies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
 
-					if (lowerCase.indexOf(mSearchQuery) != -1 || filepath.indexOf(mSearchQuery) != -1 || p.matcher(lowerCase).replaceAll("").indexOf(mSearchQuery) != -1)
+					boolean foundInTitle = false;
+					
+					if (lowerCaseTitle.indexOf(mSearchQuery) != -1 || p.matcher(lowerCaseTitle).replaceAll("").indexOf(mSearchQuery) != -1) {
 						mTempKeys.add(i);
+						foundInTitle = true;
+					}
+					
+					if (!foundInTitle) {
+						for (Filepath path : mMovies.get(i).getFilepaths()) {
+							String filepath = path.getFilepath().toLowerCase(Locale.ENGLISH);
+							if (filepath.indexOf(mSearchQuery) != -1) {
+								mTempKeys.add(i);
+								break; // Break the loop
+							}
+						}
+					}
 				}
 			}
 
@@ -1155,7 +1176,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(IGNORED_TITLE_PREFIXES)) {
-			mDisableEthernetWiFiCheck = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
+			mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
 			forceLoaderLoad();
 		} else if (key.equals(GRID_ITEM_SIZE)) {
 			String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
@@ -1188,7 +1209,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				getLoaderManager().restartLoader(0, null, loaderCallbacks);
 			}
 	}
-	
+
 	private class ActionBarSpinner extends BaseAdapter {
 
 		private LayoutInflater mInflater;
@@ -1214,21 +1235,21 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			
+
 			ActionBarSpinnerViewHolder holder;
-			
+
 			if (convertView == null) {
 				convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
-				
+
 				holder = new ActionBarSpinnerViewHolder();
 				holder.title = (TextView) convertView.findViewById(R.id.title);
 				holder.subtitle = (TextView) convertView.findViewById(R.id.subtitle);
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (ActionBarSpinnerViewHolder) convertView.getTag();
 			}
-			
+
 			holder.title.setText(mSpinnerItems.get(position).getTitle());
 
 			int size = mMovieKeys.size();
@@ -1240,13 +1261,13 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		public View getDropDownView(int position, View convertView, ViewGroup parent) {
-			
+
 			if (convertView == null) {
 				convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
 			}
-			
+
 			((TextView) convertView.findViewById(android.R.id.text1)).setText(mSpinnerItems.get(position).getSubtitle());
-			
+
 			return convertView;
 		}
 	}

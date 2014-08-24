@@ -32,8 +32,8 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.miz.abstractclasses.MovieFileSource;
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterMovieMapping;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterMovieMappings;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
@@ -51,7 +51,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 	@Override
 	public void removeUnidentifiedFiles() {
-		DbAdapter db = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 
 		ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
@@ -59,7 +59,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 		FileSource source;
 		SmbFile temp;
 		int count = dbMovies.size();
-		if (MizLib.isWifiConnected(getContext(), disableEthernetWiFiCheck())) {
+		if (MizLib.isWifiConnected(getContext())) {
 			for (int i = 0; i < count; i++) {
 				if (dbMovies.get(i).isNetworkFile()) {
 					try {
@@ -96,7 +96,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 	@Override
 	public void removeUnavailableFiles() {
-		DbAdapter db = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies(), deletedMovies = new ArrayList<DbMovie>();
 		ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
 
@@ -104,9 +104,9 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 		boolean deleted;
 		SmbFile temp;
 		int count = dbMovies.size();
-		if (MizLib.isWifiConnected(getContext(), disableEthernetWiFiCheck())) {
+		if (MizLib.isWifiConnected(getContext())) {
 			for (int i = 0; i < count; i++) {
-				if (dbMovies.get(i).isNetworkFile() && !dbMovies.get(i).hasOfflineCopy(getContext())) {
+				if (dbMovies.get(i).isNetworkFile() && !dbMovies.get(i).hasOfflineCopy()) {
 					try {
 						source = null;
 
@@ -160,13 +160,13 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 		if (getFolder() == null)
 			return new ArrayList<String>(); // Return empty List
 
-		DbAdapterMovieMapping dbHelper = MizuuApplication.getMovieMappingAdapter();
+		DbAdapterMovieMappings dbHelper = MizuuApplication.getMovieMappingAdapter();
 		Cursor cursor = dbHelper.getAllFilepaths(ignoreRemovedFiles()); // Query database to return all filepaths in a cursor
 		ColumnIndexCache cache = new ColumnIndexCache();
 		
 		try {
 			while (cursor.moveToNext()) {// Add all movies in cursor to ArrayList of all existing movies
-				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMapping.KEY_FILEPATH)), "");
+				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMappings.KEY_FILEPATH)), "");
 			}
 		} catch (Exception e) {
 		} finally {

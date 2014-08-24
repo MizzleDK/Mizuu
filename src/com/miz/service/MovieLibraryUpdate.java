@@ -44,7 +44,7 @@ import android.util.Log;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.apis.trakt.Trakt;
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterSources;
 import com.miz.filesources.FileMovie;
 import com.miz.filesources.SmbMovie;
@@ -263,7 +263,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 	private void removeMoviesFromDatabase() {
 		// Delete all movies from the database
-		DbAdapter db = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		db.deleteAllMovies();
 
 		// Delete all downloaded images files from the device
@@ -375,10 +375,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 			if (mIgnoreNfoFiles) {
 				newMovieDbObject(sb.toString());
-			} else {
-				
-				System.out.println("WE HAVE A NFO FILE! " + sb.toString());
-				
+			} else {				
 				sb1.delete(0, sb1.length());
 				sb1.append(MizLib.removeExtension(sb.toString().replaceAll("part[1-9]|cd[1-9]", "").trim()));
 

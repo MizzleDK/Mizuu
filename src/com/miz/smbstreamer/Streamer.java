@@ -24,31 +24,38 @@ import java.util.Properties;
 import jcifs.smb.SmbFile;
 import android.util.Log;
 
+import static com.miz.smbstreamer.Response.HTTP_FORBIDDEN;
+import static com.miz.smbstreamer.Response.HTTP_NOTFOUND;
+import static com.miz.smbstreamer.Response.HTTP_OK;
+import static com.miz.smbstreamer.Response.HTTP_PARTIALCONTENT;
+import static com.miz.smbstreamer.Response.HTTP_RANGE_NOT_SATISFIABLE;
+
 public class Streamer extends StreamServer {
 
 	public static final int PORT = 7871;
 	public static final String URL = "http://127.0.0.1:" + PORT;
-	private SmbFile file;
-	protected List<SmbFile> extras; // those can be subtitles
-	private static Streamer instance;
+	
+	private SmbFile mFile;
+	private List<SmbFile> mExtras; // subtitles, etc.
+	private static Streamer sInstance;
 
 	protected Streamer(int port) throws IOException {
 		super(port, new File("."));
 	}
 
 	public static Streamer getInstance() {
-		if (instance == null)
+		if (sInstance == null)
 			try {
-				instance = new Streamer(PORT);
+				sInstance = new Streamer(PORT);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		return instance;
+		return sInstance;
 	}
 
 	public void setStreamSrc(SmbFile file,List<SmbFile> extraFiles) {
-		this.file = file;
-		this.extras = extraFiles;
+		mFile = file;
+		mExtras = extraFiles;
 	}
 
 	@Override
@@ -57,18 +64,18 @@ public class Streamer extends StreamServer {
 		try {
 			SmbFile sourceFile = null;
 			String name = getNameFromPath(uri);
-			if(file!=null && file.getName().equals(name))
-				sourceFile = file;
-			else if(extras!=null){
-				for(SmbFile i : extras){
-					if(i!=null && i.getName().equals(name)){
+			if (mFile != null && mFile.getName().equals(name))
+				sourceFile = mFile;
+			else if (mExtras != null){
+				for (SmbFile i : mExtras){
+					if (i != null && i.getName().equals(name)){
 						sourceFile = i;
 						break;
 					}
 				}
 			}
-			if (sourceFile==null)
-				res= new Response(HTTP_NOTFOUND, MIME_PLAINTEXT, null);
+			if (sourceFile == null)
+				res = new Response(HTTP_NOTFOUND, MIME_PLAINTEXT, null);
 			else {
 				long startFrom = 0;
 				long endAt = -1;
@@ -116,7 +123,6 @@ public class Streamer extends StreamServer {
 				}
 			}
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
 			res = new Response(HTTP_FORBIDDEN, MIME_PLAINTEXT, null);
 		}
 
@@ -125,13 +131,12 @@ public class Streamer extends StreamServer {
 		return res;
 	}
 
-	public static String getNameFromPath(String path){
-		if(path == null || path.length() < 2)
+	public static String getNameFromPath(String path) {
+		if (path == null || path.length() < 2)
 			return null;
 		int slash = path.lastIndexOf('/');
-		if(slash == -1)
+		if (slash == -1)
 			return path;
 		return path.substring(slash+1);
 	}
-
 }

@@ -5,7 +5,7 @@
     android:versionName="2.9-beta3" >
 
     <uses-sdk
-        android:minSdkVersion="13"
+        android:minSdkVersion="15"
         android:targetSdkVersion="19" />
 
     <!-- Permissions -->
@@ -193,9 +193,20 @@
             </intent-filter>
         </activity>
 
-        <!-- Unidentified files activity -->
+        <!-- Unidentified TV shows activity -->
         <activity
-            android:name="com.miz.mizuu.UnidentifiedFiles"
+            android:name="com.miz.mizuu.UnidentifiedTvShows"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/unidentifiedFiles" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Unidentified movies activity -->
+        <activity
+            android:name="com.miz.mizuu.UnidentifiedMovies"
             android:exported="false"
             android:icon="@drawable/white_app_icon"
             android:label="@string/unidentifiedFiles" >
@@ -277,7 +288,6 @@
         </activity>
 
         <service android:name="com.miz.service.TheMovieDB" />
-        <service android:name="com.miz.service.TheTVDB" />
         <service android:name="com.miz.service.DeleteFile" />
         <service android:name="com.miz.service.MoveFilesService" />
         <service android:name="com.miz.service.TraktMoviesSyncService" />
@@ -285,8 +295,10 @@
         <service android:name="com.miz.service.MakeAvailableOffline" />
         <service android:name="com.miz.service.MovieLibraryUpdate" />
         <service android:name="com.miz.service.TvShowsLibraryUpdate" />
-        <service android:name="com.miz.service.NewTvShowsLibraryUpdate" />
+        <service android:name="com.miz.service.TvShowsLibraryUpdate" />
         <service android:name="com.miz.service.WireUpnpService" />
+        <service android:name="com.miz.service.IdentifyTvShowService" />
+        <service android:name="com.miz.service.DownloadImageService" />
 
         <!-- Update activity -->
         <activity
@@ -354,7 +366,7 @@
             android:name="com.miz.mizuu.IdentifyTvShow"
             android:exported="false"
             android:icon="@drawable/white_app_icon"
-            android:label="@string/identifyEpisodeTitle" >
+            android:label="@string/identifyShow" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -519,7 +531,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 

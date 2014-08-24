@@ -46,7 +46,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
@@ -66,7 +66,7 @@ public class RelatedMoviesFragment extends Fragment {
 	private GridView mGridView = null;
 	private ProgressBar pbar;
 	private Picasso mPicasso;
-	private DbAdapter db;
+	private DbAdapterMovies db;
 	private String json, mTmdbApiKey;
 	private Config mConfig;
 
@@ -224,7 +224,9 @@ public class RelatedMoviesFragment extends Fragment {
 				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				holder.text.setSingleLine(true);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext.setSingleLine(true);
 				
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 

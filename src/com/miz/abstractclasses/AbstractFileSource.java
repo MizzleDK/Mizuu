@@ -30,7 +30,7 @@ public abstract class AbstractFileSource<T> {
 	protected T mFolder;
 	protected FileSource mFileSource = null;
 	protected Context mContext;
-	protected boolean mIgnoreRemovedFiles, mSubFolderSearch, mClearLibrary, mDisableEthernetWiFiCheck;
+	protected boolean mIgnoreRemovedFiles, mSubFolderSearch, mClearLibrary;
 	protected int mFileSizeLimit;
 
 	public void setFolder(T folder) {
@@ -63,10 +63,6 @@ public abstract class AbstractFileSource<T> {
 
 	public boolean clearLibrary() {
 		return mClearLibrary;
-	}
-
-	public boolean disableEthernetWiFiCheck() {
-		return mDisableEthernetWiFiCheck;
 	}
 
 	public int getFileSizeLimit() {

@@ -46,7 +46,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.TMDb;
@@ -96,7 +96,7 @@ public class SearchWebMoviesFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.identify_movie, container, false);
+		return inflater.inflate(R.layout.identify_movie_and_tv_show, container, false);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class SearchWebMoviesFragment extends Fragment {
 	}
 
 	protected void showMovie(int arg2) {
-		DbAdapter db = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		if (db.movieExists(results.get(arg2).getId())) {
 			Intent intent = new Intent();
 			intent.setClass(getActivity(), MovieDetails.class);
@@ -269,7 +269,7 @@ public class SearchWebMoviesFragment extends Fragment {
 			ViewHolder holder;
 
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.list_item_movie, parent, false);
+				convertView = inflater.inflate(R.layout.list_item_movie_and_tv_show, parent, false);
 
 				holder = new ViewHolder();
 				holder.title = (TextView) convertView.findViewById(R.id.movieTitle);

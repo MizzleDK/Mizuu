@@ -61,7 +61,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 	private ArrayList<Actor> actors = new ArrayList<Actor>();
 	private GridView mGridView = null;
 	private ProgressBar pbar;
-	private String json, mTmdbApiKey;
+	private String mTmdbApiKey;
 	private Picasso mPicasso;
 	private Config mConfig;
 
@@ -86,19 +86,13 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);	
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-		
+
 		mTmdbApiKey = MizLib.getTmdbApiKey(getActivity());
-		
+
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
-
-		if (!getArguments().containsKey("json")) {		
-			if (getArguments().getString("showId") == null) {
-				new GetActorDetails(getActivity()).execute(getActivity().getIntent().getExtras().getString("showId"));
-			} else {
-				new GetActorDetails(getActivity()).execute(getArguments().getString("showId"));
-			}
-		}
+		
+		new GetActorDetails(getActivity(), getArguments().getString("showId")).execute();
 	}
 
 	@Override
@@ -156,11 +150,6 @@ public class ActorBrowserFragmentTv extends Fragment {
 				startActivity(intent);
 			}
 		});
-
-		if (getArguments().containsKey("json")) {
-			json = getArguments().getString("json");
-			loadJson(getArguments().getString("baseUrl"));
-		}
 	}
 
 	@Override
@@ -215,7 +204,9 @@ public class ActorBrowserFragmentTv extends Fragment {
 				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
+				holder.text.setSingleLine(true);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext.setSingleLine(true);
 
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 
@@ -241,32 +232,44 @@ public class ActorBrowserFragmentTv extends Fragment {
 	}
 
 	protected class GetActorDetails extends AsyncTask<String, String, String> {
-		
+
+		private String mId;
 		private Context mContext;
-		
-		public GetActorDetails(Context context) {
+
+		public GetActorDetails(Context context, String id) {
 			mContext = context;
+			mId = id;
 		}
-		
+
 		@Override
 		protected String doInBackground(String... params) {
 			try {
 				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 				
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/find/" + params[0] + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String credits = httpclient.execute(httppost, responseHandler);
+				HttpClient httpclient = null;
+				HttpGet httppost = null;
+				ResponseHandler<String> responseHandler = null;
+				JSONObject jObject = null;
+				
+				if (!mId.startsWith("tmdb_")) {
+					httpclient = new DefaultHttpClient();
+					httppost = new HttpGet("https://api.themoviedb.org/3/find/" + mId + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
+					httppost.setHeader("Accept", "application/json");
+					responseHandler = new BasicResponseHandler();
+					String results = httpclient.execute(httppost, responseHandler);
+					
+					jObject = new JSONObject(results);
+					mId = MizLib.getStringFromJSONObject(jObject.getJSONArray("tv_results").getJSONObject(0), "id", "");
+				} else {
+					httpclient = new DefaultHttpClient();
+					mId = mId.replace("tmdb_", "");
+				}
 
-				JSONObject jObject = new JSONObject(credits);
-				String newId = jObject.getJSONArray("tv_results").getJSONObject(0).getString("id");
-
-				httppost = new HttpGet("https://api.themoviedb.org/3/tv/" + newId + "/credits?api_key=" + mTmdbApiKey);
+				httppost = new HttpGet("https://api.themoviedb.org/3/tv/" + mId + "/credits?api_key=" + mTmdbApiKey);
 				httppost.setHeader("Accept", "application/json");
 				responseHandler = new BasicResponseHandler();
 				String html = httpclient.execute(httppost, responseHandler);
-
+				
 				jObject = new JSONObject(html);
 
 				JSONArray jArray = jObject.getJSONArray("cast");
@@ -286,7 +289,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 								baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
 					}
 				}
-				
+
 				actorIds.clear();
 				actorIds = null;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
@@ -300,38 +303,6 @@ public class ActorBrowserFragmentTv extends Fragment {
 				pbar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
 			}
-		}
-	}
-
-	private void loadJson(String baseUrl) {		
-		try {
-			JSONObject jObject = new JSONObject(json);
-
-			JSONArray jArray = jObject.getJSONObject("casts").getJSONArray("cast");
-
-			actors.clear();
-
-			Set<String> actorIds = new HashSet<String>();
-
-			for (int i = 0; i < jArray.length(); i++) {
-				if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
-					actorIds.add(jArray.getJSONObject(i).getString("id"));
-					
-					actors.add(new Actor(
-							jArray.getJSONObject(i).getString("name"),
-							jArray.getJSONObject(i).getString("character"),
-							jArray.getJSONObject(i).getString("id"),
-							baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
-				}
-			}
-
-			actorIds.clear();
-			actorIds = null;
-		} catch (Exception e) {}
-
-		if (isAdded()) {
-			pbar.setVisibility(View.GONE);
-			mAdapter.notifyDataSetChanged();
 		}
 	}
 }

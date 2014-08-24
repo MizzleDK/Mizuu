@@ -29,9 +29,10 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
-import com.miz.db.DbAdapter;
+import com.miz.db.DbAdapterMovies;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
@@ -108,39 +109,37 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 
 	private List<MediumMovie> getSearchResults(String query) {
 		List<MediumMovie> movies = new ArrayList<MediumMovie>();
-		if (!MizLib.isEmpty(query)) {
+		if (!TextUtils.isEmpty(query)) {
 
-			DbAdapter db = MizuuApplication.getMovieAdapter();
+			DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 
 			query = query.toLowerCase(Locale.ENGLISH);
 
-			Cursor c = db.fetchAllMovies(DbAdapter.KEY_TITLE + " ASC", false);
+			Cursor c = db.fetchAllMovies(DbAdapterMovies.KEY_TITLE + " ASC", false);
 			Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
 			ColumnIndexCache cache = new ColumnIndexCache();
 
 			try {
 				while (c.moveToNext()) {
-					String title = c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TITLE)).toLowerCase(Locale.ENGLISH);
+					String title = c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_TITLE)).toLowerCase(Locale.ENGLISH);
 
 					if (title.indexOf(query) != -1 ||  p.matcher(title).replaceAll("").indexOf(query) != -1) {
 						movies.add(new MediumMovie(getContext(),
-								MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TMDB_ID))),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TITLE)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TMDB_ID)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_RATING)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_RELEASEDATE)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_GENRES)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_FAVOURITE)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_ACTORS)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_COLLECTION)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_COLLECTION_ID)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_TO_WATCH)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_HAS_WATCHED)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_DATE_ADDED)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_CERTIFICATION)),
-								c.getString(cache.getColumnIndex(c, DbAdapter.KEY_RUNTIME)),
-								false,
-								true
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_TITLE)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_TMDB_ID)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_RATING)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_RELEASEDATE)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_GENRES)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_FAVOURITE)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_ACTORS)),
+								MizuuApplication.getCollectionsAdapter().getCollection(c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_COLLECTION_ID))),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_COLLECTION_ID)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_TO_WATCH)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_HAS_WATCHED)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_DATE_ADDED)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_CERTIFICATION)),
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_RUNTIME)),
+								false
 								));
 					}
 				}

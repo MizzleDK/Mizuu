@@ -41,7 +41,7 @@
     <dimen name="actor_backdrop_height">300dp</dimen>
     
     <!-- Movie / show details -->
-    <dimen name="backdrop_portrait_height">256dp</dimen>
+    <dimen name="backdrop_portrait_height">300dp</dimen>
     <dimen name="movie_details_landscape_width">500dp</dimen>
     <dimen name="movie_details_landscape_height">237dp</dimen>
     <dimen name="cover_width">150dp</dimen>

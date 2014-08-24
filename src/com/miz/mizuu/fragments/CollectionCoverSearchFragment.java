@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,25 +41,25 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.miz.functions.Cover;
 import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.service.DownloadImageService;
 import com.squareup.picasso.Picasso;
 
 public class CollectionCoverSearchFragment extends Fragment {
 
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
-	private ArrayList<Cover> covers = new ArrayList<Cover>();
-	private ArrayList<String> pics_sources = new ArrayList<String>();
+	private ArrayList<Cover> mCovers = new ArrayList<Cover>();
+	private ArrayList<String> mImageUrls = new ArrayList<String>();
 	private GridView mGridView = null;
-	private String COLLECTION_ID, json;
-	private String[] items = new String[]{};
-	private ProgressBar pbar;
+	private String mCollectionId, mJson;
+	private String[] mItems = new String[]{};
+	private ProgressBar mProgressBar;
 	private Picasso mPicasso;
 	private Config mConfig;
 
@@ -92,13 +91,13 @@ public class CollectionCoverSearchFragment extends Fragment {
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
 
-		COLLECTION_ID = getArguments().getString("collectionId");
+		mCollectionId = getArguments().getString("collectionId");
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		for (int i = 0; i < items.length; i++)
-			menu.add(0, i, i, items[i]);
+		for (int i = 0; i < mItems.length; i++)
+			menu.add(0, i, i, mItems[i]);
 		menu.setGroupCheckable(0, true, true);
 
 		super.onCreateOptionsMenu(menu, inflater);
@@ -113,8 +112,8 @@ public class CollectionCoverSearchFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		pbar = (ProgressBar) v.findViewById(R.id.progress);
-		if (pics_sources.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
+		if (mImageUrls.size() > 0) mProgressBar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
 
 		mGridView = (GridView) v.findViewById(R.id.gridView);
 
@@ -136,11 +135,19 @@ public class CollectionCoverSearchFragment extends Fragment {
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				new DownloadThread(pics_sources.get(arg2)).start();
+				// Create the download Service
+				Intent downloadService = new Intent(getActivity(), DownloadImageService.class);
+				downloadService.putExtra(DownloadImageService.CONTENT_ID, mCollectionId);
+				downloadService.putExtra(DownloadImageService.IMAGE_URL, mImageUrls.get(arg2));
+				downloadService.putExtra(DownloadImageService.IMAGE_TYPE, DownloadImageService.IMAGE_TYPE_MOVIE_COVER);				
+				getActivity().startService(downloadService);
+				
+				// End the browser Activity
+				getActivity().finish();
 			}
 		});
 
-		json = getArguments().getString("json");
+		mJson = getArguments().getString("json");
 		loadJson(getArguments().getString("baseUrl"));
 	}
 
@@ -168,7 +175,7 @@ public class CollectionCoverSearchFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return pics_sources.size();
+			return mImageUrls.size();
 		}
 
 		@Override
@@ -200,8 +207,8 @@ public class CollectionCoverSearchFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			if (!pics_sources.get(position).contains("null"))
-				mPicasso.load(pics_sources.get(position)).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
+			if (!mImageUrls.get(position).contains("null"))
+				mPicasso.load(mImageUrls.get(position)).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(mConfig).into(holder.cover);
 			else
 				holder.cover.setImageResource(R.drawable.loading_image);
 
@@ -211,15 +218,15 @@ public class CollectionCoverSearchFragment extends Fragment {
 
 	private void loadJson(String baseUrl) {
 		try {
-			pics_sources.clear();
+			mImageUrls.clear();
 
-			JSONObject jObject = new JSONObject(json);
+			JSONObject jObject = new JSONObject(mJson);
 			JSONArray array = jObject.getJSONArray("posters");
 
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject o = array.getJSONObject(i);
-				covers.add(new Cover(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"), o.getString("iso_639_1")));
-				pics_sources.add(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"));
+				mCovers.add(new Cover(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"), o.getString("iso_639_1")));
+				mImageUrls.add(baseUrl + MizLib.getImageUrlSize(getActivity()) + o.getString("file_path"));
 			}
 		} catch (Exception e) {}
 
@@ -229,50 +236,25 @@ public class CollectionCoverSearchFragment extends Fragment {
 	}
 
 	private void showContent() {
-		pbar.setVisibility(View.GONE);
+		mProgressBar.setVisibility(View.GONE);
 		mAdapter.notifyDataSetChanged();
 
 		TreeSet<String> languages = new TreeSet<String>();
-		for (int i = 0; i < covers.size(); i++) {
-			if (!covers.get(i).getLanguage().equals("Null"))
-				languages.add(covers.get(i).getLanguage());
+		for (int i = 0; i < mCovers.size(); i++) {
+			if (!mCovers.get(i).getLanguage().equals("Null"))
+				languages.add(mCovers.get(i).getLanguage());
 		}
 
-		items = new String[languages.size() + 1];
-		items[0] = getString(R.string.stringShowAllLanguages);
+		mItems = new String[languages.size() + 1];
+		mItems[0] = getString(R.string.stringShowAllLanguages);
 		Iterator<String> itr = languages.iterator();
 		int i = 1;
 		while (itr.hasNext()) {
-			items[i] = itr.next();
+			mItems[i] = itr.next();
 			i++;
 		}
 
 		getActivity().invalidateOptionsMenu();
-	}
-
-	public class DownloadThread extends Thread {
-
-		private String url;
-
-		public DownloadThread(String url) {
-			this.url = url;
-		}
-
-		@Override
-		public void run() {
-			getActivity().runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getActivity(), getString(R.string.addingCover), Toast.LENGTH_SHORT).show();
-				}}
-					);
-
-			MizLib.downloadFile(url, MizLib.getMovieThumb(getActivity(), COLLECTION_ID).getAbsolutePath());
-			LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-movie-cover-change"));
-
-			getActivity().finish();
-			return;
-		}
 	}
 
 	@Override
@@ -285,16 +267,16 @@ public class CollectionCoverSearchFragment extends Fragment {
 		item.setChecked(true);
 
 		if (item.getItemId() == 0) {
-			pics_sources.clear();
-			for (int i = 0; i < covers.size(); i++)
-				pics_sources.add(covers.get(i).getUrl());
+			mImageUrls.clear();
+			for (int i = 0; i < mCovers.size(); i++)
+				mImageUrls.add(mCovers.get(i).getUrl());
 			if (mAdapter != null)
 				((BaseAdapter) mGridView.getAdapter()).notifyDataSetChanged();
 		} else {
-			pics_sources.clear();
-			for (int i = 0; i < covers.size(); i++) {
-				if (covers.get(i).getLanguage().equals(items[item.getItemId()])) {
-					pics_sources.add(covers.get(i).getUrl());
+			mImageUrls.clear();
+			for (int i = 0; i < mCovers.size(); i++) {
+				if (mCovers.get(i).getLanguage().equals(mItems[item.getItemId()])) {
+					mImageUrls.add(mCovers.get(i).getUrl());
 				}
 			}
 			if (mAdapter != null)

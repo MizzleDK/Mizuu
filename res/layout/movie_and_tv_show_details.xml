@@ -24,8 +24,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/backdrop_portrait_height"
                     android:src="@drawable/bg" />
-                
-                 <ImageView
+
+                <ImageView
                     android:id="@+id/shadow"
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
@@ -90,7 +90,6 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="#f0f0f0"
                     android:textSize="@dimen/details_medium_font_size" />
-
             </RelativeLayout>
 
             <LinearLayout

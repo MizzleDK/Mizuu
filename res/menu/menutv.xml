@@ -69,11 +69,6 @@
             android:id="@+id/unidentifiedFiles"
             android:icon="@drawable/folder"
             android:title="@string/unidentifiedFiles"/>
-        <item
-            android:id="@+id/menuSettings"
-            android:icon="@drawable/ic_action_settings"
-            android:title="@string/settings_name">
-        </item>
     </group>
 
 </menu>

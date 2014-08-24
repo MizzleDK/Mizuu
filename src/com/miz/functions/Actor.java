@@ -16,23 +16,32 @@
 
 package com.miz.functions;
 
+import com.miz.utils.StringUtils;
+
 public class Actor {
-	String name, character, id, url;
+
+	private String mName, mCharacter, mId, mUrl;
 
 	public Actor(String name, String character, String id, String url) {
-		this.name = name;
-		this.character = character;
-		this.id = id;
-		this.url = url;
+		mName = name;
+		mCharacter = character;
+		mId = id;
+		mUrl = url;
 	}
 
-	public String getName() { return name; }
-	public String getId() { return id; }
-	public String getUrl() { return url; }
+	public String getName() {
+		return mName;
+	}
+
+	public String getId() {
+		return mId;
+	}
+
+	public String getUrl() {
+		return mUrl;
+	}
+
 	public String getCharacter() {
-		String characters = character.replace("|", ", ");
-		if (characters.endsWith(", "))
-			return characters.substring(0, characters.length() - 2);
-		return characters;
+		return StringUtils.replacePipesWithCommas(mCharacter);
 	}
 }

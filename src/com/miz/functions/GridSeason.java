@@ -45,8 +45,7 @@ public class GridSeason implements Comparable<GridSeason> {
 		
 		// Subtitle text
 		StringBuilder sb = new StringBuilder();
-		sb.append(getEpisodeCount() + " ");
-		sb.append(mContext.getResources().getQuantityString(R.plurals.episodes, getEpisodeCount(), getEpisodeCount()));
+		sb.append(getEpisodeCount()).append(" ").append(mContext.getResources().getQuantityString(R.plurals.episodes, getEpisodeCount(), getEpisodeCount()));
 		
 		// Change the text depending on the available space
 		if (getUnwatchedCount() > 0) {

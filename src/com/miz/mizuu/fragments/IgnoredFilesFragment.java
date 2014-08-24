@@ -33,18 +33,18 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.miz.db.DbAdapter;
-import com.miz.db.DbAdapterTvShowEpisode;
+import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterTvShowEpisodeMappings;
 import com.miz.functions.ColumnIndexCache;
+import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.mizuu.MizuuApplication;
-import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.R;
 
 public class IgnoredFilesFragment extends Fragment {
 
 	private ArrayList<Movie> movies = new ArrayList<Movie>();
-	private ArrayList<TvShowEpisode> episodes = new ArrayList<TvShowEpisode>();
+	private ArrayList<String> mEpisodes = new ArrayList<String>();
 	private ViewPager awesomePager;
 	private IgnoredFilesAdapter mAdapter;
 
@@ -65,31 +65,29 @@ public class IgnoredFilesFragment extends Fragment {
 
 		ColumnIndexCache cache = new ColumnIndexCache();
 
-		DbAdapter db = MizuuApplication.getMovieAdapter();
+		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		Cursor cursor = db.getAllIgnoredMovies();
 		try {
 			while (cursor.moveToNext()) {
 				movies.add(new Movie(getActivity(),
-						MizuuApplication.getMovieMappingAdapter().getFirstFilepathForMovie(cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID))),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TITLE)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_PLOT)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TAGLINE)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TMDB_ID)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_IMDB_ID)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RATING)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RELEASEDATE)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_CERTIFICATION)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_RUNTIME)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TRAILER)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_GENRES)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_FAVOURITE)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_ACTORS)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_COLLECTION)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_COLLECTION_ID)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_TO_WATCH)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_HAS_WATCHED)),
-						cursor.getString(cache.getColumnIndex(cursor, DbAdapter.KEY_DATE_ADDED)),
-						false,
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TITLE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_PLOT)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TAGLINE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TMDB_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_IMDB_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RATING)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RELEASEDATE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_CERTIFICATION)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RUNTIME)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TRAILER)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_GENRES)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_FAVOURITE)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_ACTORS)),
+						MizuuApplication.getCollectionsAdapter().getCollection(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_COLLECTION_ID))),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_COLLECTION_ID)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TO_WATCH)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_HAS_WATCHED)),
+						cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_DATE_ADDED)),
 						false
 						));
 			}
@@ -100,29 +98,13 @@ public class IgnoredFilesFragment extends Fragment {
 		}
 
 		// Clear the episodes array
-		episodes.clear();
+		mEpisodes.clear();
 
-		DbAdapterTvShowEpisode db2 = MizuuApplication.getTvEpisodeDbAdapter();
-		Cursor cursor2 = db2.getAllIgnoredEpisodesInDatabase();
+		Cursor cursor2 = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getAllIgnoredFilepaths();
 
 		try {
 			while (cursor2.moveToNext()) {
-				episodes.add(new TvShowEpisode(getActivity(),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_ROWID)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_SHOW_ID)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_FILEPATH)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EPISODE_TITLE)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EPISODE_PLOT)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_SEASON)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EPISODE)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EPISODE_AIRDATE)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EPISODE_DIRECTOR)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EPISODE_WRITER)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EPISODE_GUESTSTARS)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EPISODE_RATING)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_HAS_WATCHED)),
-						cursor2.getString(cache.getColumnIndex(cursor2, DbAdapterTvShowEpisode.KEY_EXTRA_1))
-						));
+				mEpisodes.add(cursor2.getString(cursor2.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_FILEPATH)));
 			}
 		} catch (Exception e) {
 		} finally {
@@ -242,7 +224,7 @@ public class IgnoredFilesFragment extends Fragment {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.folderName.setText(movies.get(position).getFilepath());
+			holder.folderName.setText(movies.get(position).getAllFilepaths());
 			holder.remove.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -265,7 +247,7 @@ public class IgnoredFilesFragment extends Fragment {
 		}
 
 		public int getCount() {
-			return episodes.size();
+			return mEpisodes.size();
 		}
 
 		public Object getItem(int position) {
@@ -296,11 +278,14 @@ public class IgnoredFilesFragment extends Fragment {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.folderName.setText(episodes.get(position).getFilepath());
+			String filepath = mEpisodes.get(position);
+			String temp = filepath.contains("<MiZ>") ? filepath.split("<MiZ>")[1] : filepath;
+			
+			holder.folderName.setText(MizLib.transformSmbPath(temp));
 			holder.remove.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					removeSelectedEpisode(episodes.get(position).getRowId());
+					removeSelectedEpisode(mEpisodes.get(position));
 				}
 			});
 
@@ -314,9 +299,10 @@ public class IgnoredFilesFragment extends Fragment {
 		refreshData();
 	}
 
-	private void removeSelectedEpisode(String rowId) {
-		DbAdapterTvShowEpisode db = MizuuApplication.getTvEpisodeDbAdapter();
-		db.deleteEpisode(rowId);
+	private void removeSelectedEpisode(String filepath) {
+		// This one also deals with checking if the mapped episode has any other mappings
+		// - if not, it will delete the mapped episode as well
+		MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteFilepath(filepath);
 		refreshData();
 	}
 }

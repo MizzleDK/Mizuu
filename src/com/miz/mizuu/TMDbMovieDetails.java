@@ -143,9 +143,10 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 			mActionBarOverlay.setVisibility(View.VISIBLE);
 
 			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
-				if (newAlpha == 0)
+				if (newAlpha == 0) {
 					mActionBar.hide();
-				else
+					mActionBarOverlay.setVisibility(View.GONE);
+				} else
 					mActionBar.show();
 
 			if (setBackground) {
@@ -168,7 +169,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		super.onResume();
 
 		mBus.register(this);
-		updateActionBarDrawable(0, true, true);
+		updateActionBarDrawable(1, true, true);
 	}
 
 	@Override
