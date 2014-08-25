@@ -25,7 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -52,8 +51,11 @@ import android.widget.Toast;
 
 import com.miz.functions.MizLib;
 import com.miz.mizuu.CancelOfflineDownload;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 public class MakeAvailableOffline extends IntentService {
 
@@ -67,7 +69,7 @@ public class MakeAvailableOffline extends IntentService {
 	private SmbFile smb;
 	private Context mContext;
 	private long mSize;
-	private NotificationCompat.Builder builder;
+	private NotificationCompat.Builder mBuilder;
 	private NotificationManager mNotificationManager;
 	private Notification mNotification;
 	private PendingIntent contentIntent;
@@ -120,22 +122,31 @@ public class MakeAvailableOffline extends IntentService {
 		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-		builder = new NotificationCompat.Builder(mContext);
-		builder.setOngoing(true);
-		builder.setOnlyAlertOnce(true);
-		builder.setSmallIcon(android.R.drawable.stat_sys_download);
-		builder.setContentIntent(contentIntent);
+		mBuilder = new NotificationCompat.Builder(mContext);
+		mBuilder.setOngoing(true);
+		mBuilder.setOnlyAlertOnce(true);
+		mBuilder.setSmallIcon(android.R.drawable.stat_sys_download);
+		mBuilder.setContentIntent(contentIntent);
 
 		String message = getString(R.string.downloadingMovie);
 		if (type == MizLib.TYPE_SHOWS)
 			message = getString(R.string.downloadingEpisode);
-		builder.setTicker(message);
-		builder.setContentTitle(message);
+		mBuilder.setTicker(message);
+		mBuilder.setContentTitle(message);
 
-		builder.setContentText(getContentText());
-		builder.setLargeIcon(MizLib.getNotificationImageThumbnail(mContext, intent.getExtras().getString("thumb")));
+		mBuilder.setContentText(getContentText());
+		mBuilder.setLargeIcon(MizLib.getNotificationImageThumbnail(mContext, intent.getExtras().getString("thumb")));
+		try {
+			int width = MizLib.getLargeNotificationWidth(mContext);
+			int height = (int) (width / 1.78);
+			mBuilder.setStyle(
+					new NotificationCompat.BigPictureStyle()
+					.setSummaryText(message)
+					.bigPicture(MizuuApplication.getPicasso(getApplicationContext()).load(intent.getExtras().getString("backdrop")).resize(width, height).get())
+					);
+		} catch (IOException e) {}
 
-		builder.addAction(R.drawable.ic_action_discard, getString(android.R.string.cancel), contentIntent);
+		mBuilder.addAction(R.drawable.ic_action_discard, getString(android.R.string.cancel), contentIntent);
 
 		boolean exists = checkIfNetworkFileExists();
 
@@ -238,64 +249,54 @@ public class MakeAvailableOffline extends IntentService {
 	}
 
 	private boolean beginTransfer() {
-		return false;
-		
-		// TODO FIX THIS
-		
-		/*
-		 * if (file.startsWith("http")) {
-			// the size of my buffer in bits
-			int bufferSize = 16384;
-			byte[] retVal = null;
+		if (file.startsWith("http")) {
+			
 			InputStream in = null;
 			OutputStream fileos = null;
-			OkHttpClient client = new OkHttpClient();
-			HttpURLConnection urlConnection = null;
-
+			
 			try {
-				totalLength = MizLib.getFileSize(new URL(file));
+				int bufferSize = 8192;
+				byte[] retVal = null;
 
-				urlConnection = client.open(new URL(file));
+				OkHttpClient client = new OkHttpClient();
+
+				Request request = new Request.Builder()
+				.url(file)
+				.build();
+
+				Response response = client.newCall(request).execute();
+				if (!response.isSuccessful())
+					return false;
+
 				File offline = MizLib.getOfflineFile(mContext, file);
 				offline.createNewFile();
-
+				
 				fileos = new BufferedOutputStream(new FileOutputStream(offline));
-
-				in = new BufferedInputStream(urlConnection.getInputStream(), bufferSize);
+				in = new BufferedInputStream(response.body().byteStream(), bufferSize);
 
 				retVal = new byte[bufferSize];
 				int length = 0;
 				while((length = in.read(retVal)) > -1) {
-
-					if (mStopDownload) {
-						fileos.close();
-						in.close();
-						return false;
-					}
-
 					fileos.write(retVal, 0, length);
-
 					currentLength += length;
 					update();
 				}
-
 				return true;
-			} catch(IOException e) {
+			} catch(Exception e) {
 				return false;
 			} finally {
-				if(fileos != null) {
+				if (fileos != null) {
 					try {
 						fileos.flush();
 						fileos.close();
 					} catch (IOException e) {}
 				}
-				if(in != null) {
+
+				if (in != null) {
 					try {
 						in.close();
 					} catch (IOException e) {}
 				}
-				if (urlConnection != null)
-					urlConnection.disconnect();
 			}
 		} else {
 			try {
@@ -306,7 +307,7 @@ public class MakeAvailableOffline extends IntentService {
 
 				OutputStream os = new BufferedOutputStream(new FileOutputStream(offline), 16384);
 				BufferedInputStream in = new BufferedInputStream(new SmbFileInputStream(smb), 16384);
-				byte[] b = new byte[16384];
+				byte[] b = new byte[8192];
 				int n;
 				while((n = in.read(b)) != -1) {
 					if (mStopDownload) {
@@ -326,8 +327,57 @@ public class MakeAvailableOffline extends IntentService {
 				return false;
 			}
 		}
-		 */
 	}
+
+	/*
+	 * 	public static boolean downloadFile(String url, String savePath) {
+		if (TextUtils.isEmpty(url))
+			return false;
+
+		InputStream in = null;
+		OutputStream fileos = null;
+
+		try {
+			int bufferSize = 8192;
+			byte[] retVal = null;
+
+			OkHttpClient client = new OkHttpClient();
+
+			Request request = new Request.Builder()
+			.url(url)
+			.build();
+
+			Response response = client.newCall(request).execute();
+			if (!response.isSuccessful())
+				return false;
+
+			fileos = new BufferedOutputStream(new FileOutputStream(savePath));
+			in = new BufferedInputStream(response.body().byteStream(), bufferSize);
+
+			retVal = new byte[bufferSize];
+			int length = 0;
+			while((length = in.read(retVal)) > -1) {
+				fileos.write(retVal, 0, length);
+			}
+		} catch(Exception e) {
+			return false;
+		} finally {
+			if (fileos != null) {
+				try {
+					fileos.flush();
+					fileos.close();
+				} catch (IOException e) {}
+			}
+
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {}
+			}
+		}
+
+		return true;
+	 */
 
 	private void update() {
 		currentTime = System.currentTimeMillis();
@@ -355,8 +405,8 @@ public class MakeAvailableOffline extends IntentService {
 	}
 
 	private void updateNotification() {
-		builder.setContentText(getContentText());
-		mNotification = builder.build();
+		mBuilder.setContentText(getContentText());
+		mNotification = mBuilder.build();
 		mNotificationManager.notify(NOTIFICATION_ID, mNotification);
 	}
 
@@ -367,7 +417,7 @@ public class MakeAvailableOffline extends IntentService {
 		smb = null;
 		mContext = null;
 		mSize = -1;
-		builder = null;
+		mBuilder = null;
 		mNotificationManager = null;
 		mNotification = null;
 		contentIntent = null;

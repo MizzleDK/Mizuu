@@ -712,8 +712,8 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					Intent i = new Intent(MovieDetails.this, MakeAvailableOffline.class);
 					i.putExtra(MakeAvailableOffline.FILEPATH, path.getFilepath());
 					i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_MOVIE);
-					i.putExtra("thumb", mMovie.getThumbnail());
-					i.putExtra("backdrop", mMovie.getBackdrop());
+					i.putExtra("thumb", mMovie.getThumbnail().getAbsolutePath());
+					i.putExtra("backdrop", mMovie.getBackdrop().getAbsolutePath());
 					startService(i);
 					return;
 				}

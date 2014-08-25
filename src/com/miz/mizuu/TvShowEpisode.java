@@ -170,8 +170,8 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	 * Returns the path for the TV show thumbnail
 	 * @return
 	 */
-	public String getThumbnail() {
-		return MizLib.getTvShowThumb(mContext, mShowId).getAbsolutePath();
+	public File getThumbnail() {
+		return MizLib.getTvShowThumb(mContext, mShowId);
 	}
 
 	/**

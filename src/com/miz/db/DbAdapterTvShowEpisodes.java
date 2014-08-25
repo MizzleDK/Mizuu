@@ -245,6 +245,12 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		values.put(KEY_HAS_WATCHED, watched ? "1" : "0");
 		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + season + "'", null) > 0;
 	}
+	
+	public boolean setEpisodeWatchStatus(String showId, String season, String episode, boolean watched) {
+		ContentValues values = new ContentValues();
+		values.put(KEY_HAS_WATCHED, watched ? "1" : "0");
+		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + season + "' AND " + KEY_EPISODE + "='" + episode + "'", null) > 0;
+	}
 
 	private ContentValues createContentValues(String season, String episode, String showId, String episodeTitle,
 			String episodePlot, String episodeAirdate, String episodeRating, String episodeDirector,

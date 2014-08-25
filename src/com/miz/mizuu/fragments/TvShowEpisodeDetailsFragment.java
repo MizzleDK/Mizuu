@@ -525,8 +525,8 @@ import com.squareup.picasso.Picasso;
 					Intent i = new Intent(getActivity(), MakeAvailableOffline.class);
 					i.putExtra(MakeAvailableOffline.FILEPATH, path.getFilepath());
 					i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_SHOWS);
-					i.putExtra("thumb", mEpisode.getThumbnail());
-					i.putExtra("backdrop", mEpisode.getEpisodePhoto());
+					i.putExtra("thumb", mEpisode.getThumbnail().getAbsolutePath());
+					i.putExtra("backdrop", mEpisode.getEpisodePhoto().getAbsolutePath());
 					getActivity().startService(i);
 					return;
 				}
@@ -633,7 +633,7 @@ import com.squareup.picasso.Picasso;
 
 		mEpisode.setHasWatched(!mEpisode.hasWatched()); // Reverse the hasWatched boolean
 
-		if (mDatabaseHelper.updateSingleItem(mEpisode.getShowId(), DbAdapterMovies.KEY_HAS_WATCHED, mEpisode.getHasWatched())) {
+		if (mDatabaseHelper.setEpisodeWatchStatus(mEpisode.getShowId(), mEpisode.getSeason(), mEpisode.getEpisode(), mEpisode.hasWatched())) {
 			getActivity().invalidateOptionsMenu();
 
 			if (showToast)

@@ -100,6 +100,9 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
 
 		ColumnIndexCache cache = new ColumnIndexCache();
 		Cursor tempCursor = db.getAllEpisodesInDatabase(ignoreRemovedFiles());
+		if (tempCursor == null)
+			return;
+		
 		while (tempCursor.moveToNext()) {
 			try {
 				dbEpisodes.add(new DbEpisode(getContext(),
