@@ -22,6 +22,7 @@ import static com.miz.functions.PreferenceKeys.TV_SHOW_DATA_SOURCE;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -36,15 +37,16 @@ import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 import android.support.v7.graphics.Palette;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.miz.apis.thetvdb.TheTVDb;
 import com.miz.apis.tmdb.TMDbTvShow;
-import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterCollections;
 import com.miz.db.DbAdapterMovieMappings;
+import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShowEpisodeMappings;
-import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.FileRequestTransformer;
 import com.miz.functions.Utils;
 import com.miz.interfaces.TvShowApiService;
@@ -73,6 +75,7 @@ public class MizuuApplication extends Application {
 	private static File sBaseAppFolder, sMovieThumbFolder, sMovieBackdropFolder, sTvShowThumbFolder, sTvShowBackdropFolder, sTvShowEpisodeFolder, sTvShowSeasonFolder, sAvailableOfflineFolder, sCacheFolder;
 	private static Context mInstance;
 	private static FileRequestTransformer mFileRequestTransformer;
+	private static ArrayListMultimap<String, String> mMovieFilepaths;
 	
 	@Override
 	public void onCreate() {
@@ -381,5 +384,21 @@ public class MizuuApplication extends Application {
 		if (option.equals(context.getString(R.string.ratings_option_0)))
 			return new TheTVDb(context);
 		return new TMDbTvShow(context);
+	}
+	
+	/**
+	 * This is used as an optimization to loading the movie library view.
+	 * @param filepaths
+	 */
+	public static void setMovieFilepaths(ArrayListMultimap<String, String> filepaths) {
+		mMovieFilepaths = filepaths;
+	}
+	
+	public static void clearMovieFilepaths() {
+		mMovieFilepaths.clear();
+	}
+	
+	public static List<String> getMovieFilepaths(String id) {
+		return mMovieFilepaths.get(id);
 	}
 }

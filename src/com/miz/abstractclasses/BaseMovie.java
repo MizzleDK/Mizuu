@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import com.miz.functions.Filepath;
@@ -54,8 +55,12 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 				}
 			}
 		}
-		
-		setFilepaths(MizuuApplication.getMovieMappingAdapter().getMovieFilepaths(getTmdbId()));
+
+		List<String> paths = MizuuApplication.getMovieFilepaths(mTmdbId);
+		if (paths != null)
+			setFilepaths(paths);
+		else
+			setFilepaths(MizuuApplication.getMovieMappingAdapter().getMovieFilepaths(getTmdbId()));
 	}
 
 	public String getTitle() {
@@ -95,7 +100,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 		return getTitle().compareToIgnoreCase(another.getTitle());
 	}
 
-	public void setFilepaths(ArrayList<String> paths) {
+	public void setFilepaths(List<String> paths) {
 		for (String path : paths)
 			mFilepaths.add(new Filepath(path));
 	}

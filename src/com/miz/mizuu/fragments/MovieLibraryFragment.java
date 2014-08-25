@@ -92,6 +92,7 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.miz.db.DatabaseHelper;
 import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterMovies;
@@ -237,7 +238,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			}
 		}
 	};
-
+	
 	LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
@@ -257,7 +258,24 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 				@Override
 				protected Void doInBackground(Void... params) {
-
+					// Normally we'd have to go through each movie and add filepaths mapped to that movie
+					// one by one. This is a hacky approach that gets all filepaths at once and creates a
+					// map of them. That way it's easy to get filepaths for a specific movie - and it's
+					// 2-3x faster with ~750 movies.
+					ArrayListMultimap<String, String> filepaths = ArrayListMultimap.create();
+					Cursor paths = MizuuApplication.getMovieMappingAdapter().getAllFilepaths(false);
+					if (paths != null) {
+						try {
+							while (paths.moveToNext()) {
+								filepaths.put(paths.getString(paths.getColumnIndex(DbAdapterMovieMappings.KEY_TMDB_ID)),
+										paths.getString(paths.getColumnIndex(DbAdapterMovieMappings.KEY_FILEPATH)));
+							}
+						} catch (Exception e) {} finally {
+							MizuuApplication.setMovieFilepaths(filepaths);
+							filepaths.clear();
+						}
+					}
+					
 					HashMap<String, String> collectionsMap = MizuuApplication.getCollectionsAdapter().getCollectionsMap();
 					ColumnIndexCache cache = new ColumnIndexCache();
 
@@ -287,6 +305,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					} catch (Exception e) {} finally {
 						cursor.close();
 						cache.clear();
+						
+						// Clear the hacky movie filepath map
+						MizuuApplication.clearMovieFilepaths();
 					}
 
 					for (int i = 0; i < mMovies.size(); i++) {
