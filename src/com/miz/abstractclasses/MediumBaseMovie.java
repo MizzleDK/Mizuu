@@ -188,7 +188,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public File getOfflineCopyFile(Filepath path) {
-		return MizLib.getOfflineFile(mContext, path.getFullFilepath());
+		return MizLib.getOfflineFile(mContext, path.getFilepath());
 	}
 	
 	public String getSubText(int sort) {

@@ -16,6 +16,7 @@
 
 package com.miz.service;
 
+import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
 import static com.miz.functions.PreferenceKeys.IGNORE_FILESIZE_CHECK;
 
 import java.io.BufferedInputStream;
@@ -63,20 +64,20 @@ public class MakeAvailableOffline extends IntentService {
 
 	public static final String FILEPATH = "filepath";
 	public static final String TYPE = "type";
-	private String file;
-	private int type;
-	private NtlmPasswordAuthentication auth;
-	private SmbFile smb;
+	private String mFileUrl;
+	private int mType, mBufferSize;
+	private NtlmPasswordAuthentication mAuth;
+	private SmbFile mSmb;
 	private Context mContext;
 	private long mSize;
 	private NotificationCompat.Builder mBuilder;
 	private NotificationManager mNotificationManager;
 	private Notification mNotification;
-	private PendingIntent contentIntent;
+	private PendingIntent mContentIntent;
 	private Handler mHandler;
 	private boolean mStopDownload = false;
-	private long lastTime, currentTime, lastLength, totalLength, currentLength;
-	private DecimalFormat oneDecimal = new DecimalFormat("#.#");
+	private long mLastTime, mCurrentTime, mLastLength, mTotalLength, mCurrentLength;
+	private DecimalFormat mOneDecimal = new DecimalFormat("#.#");
 
 	public MakeAvailableOffline() {
 		super("MakeAvailableOffline");
@@ -110,9 +111,15 @@ public class MakeAvailableOffline extends IntentService {
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-stop-offline-download"));
 
 		mContext = getApplicationContext();
+		
+		String defaultSize = mContext.getString(R.string._16kb);
+		String bufferSize = PreferenceManager.getDefaultSharedPreferences(mContext).getString(BUFFER_SIZE, defaultSize);
+		if (bufferSize.equals(defaultSize))
+			mBufferSize = 8192 * 2; // This appears to be the limit for most video players
+		else mBufferSize = 8192;
 
-		file = intent.getExtras().getString(FILEPATH);
-		type = intent.getExtras().getInt(TYPE);
+		mFileUrl = intent.getExtras().getString(FILEPATH);
+		mType = intent.getExtras().getInt(TYPE);
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -120,16 +127,16 @@ public class MakeAvailableOffline extends IntentService {
 		Intent notificationIntent = new Intent(this, CancelOfflineDownload.class);
 		notificationIntent.setAction(Intent.ACTION_MAIN);
 		notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		mContentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		mBuilder = new NotificationCompat.Builder(mContext);
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
 		mBuilder.setSmallIcon(android.R.drawable.stat_sys_download);
-		mBuilder.setContentIntent(contentIntent);
+		mBuilder.setContentIntent(mContentIntent);
 
 		String message = getString(R.string.downloadingMovie);
-		if (type == MizLib.TYPE_SHOWS)
+		if (mType == MizLib.TYPE_SHOWS)
 			message = getString(R.string.downloadingEpisode);
 		mBuilder.setTicker(message);
 		mBuilder.setContentTitle(message);
@@ -146,7 +153,7 @@ public class MakeAvailableOffline extends IntentService {
 					);
 		} catch (IOException e) {}
 
-		mBuilder.addAction(R.drawable.ic_action_discard, getString(android.R.string.cancel), contentIntent);
+		mBuilder.addAction(R.drawable.ic_action_discard, getString(android.R.string.cancel), mContentIntent);
 
 		boolean exists = checkIfNetworkFileExists();
 
@@ -196,28 +203,28 @@ public class MakeAvailableOffline extends IntentService {
 		boolean success = beginTransfer();
 
 		if (!success) { // Delete the offline file if the transfer wasn't successful
-			if (file.startsWith("http"))
-				MizLib.getOfflineFile(mContext, file).delete();
+			if (mFileUrl.startsWith("http"))
+				MizLib.getOfflineFile(mContext, mFileUrl).delete();
 			else
-				MizLib.getOfflineFile(mContext, smb.getCanonicalPath()).delete();
+				MizLib.getOfflineFile(mContext, mSmb.getCanonicalPath()).delete();
 		}
 	}
 
 	private boolean checkIfNetworkFileExists() {
-		if (file.startsWith("http")) {
-			return MizLib.exists(file);
+		if (mFileUrl.startsWith("http")) {
+			return MizLib.exists(mFileUrl);
 		} else {
-			auth = MizLib.getAuthFromFilepath(type, file);
+			mAuth = MizLib.getAuthFromFilepath(mType, mFileUrl);
 			try {
-				smb = new SmbFile(
+				mSmb = new SmbFile(
 						MizLib.createSmbLoginString(
-								URLEncoder.encode(auth.getDomain(), "utf-8"),
-								URLEncoder.encode(auth.getUsername(), "utf-8"),
-								URLEncoder.encode(auth.getPassword(), "utf-8"),
-								file,
+								URLEncoder.encode(mAuth.getDomain(), "utf-8"),
+								URLEncoder.encode(mAuth.getUsername(), "utf-8"),
+								URLEncoder.encode(mAuth.getPassword(), "utf-8"),
+								mFileUrl,
 								false
 								));
-				return smb.exists() && smb.length() > 1000;
+				return mSmb.exists() && mSmb.length() > 1000;
 			} catch (Exception e) {
 				return false;
 			}
@@ -226,20 +233,20 @@ public class MakeAvailableOffline extends IntentService {
 
 	private boolean checkIfLocalCopyExists() {
 		File f = null;
-		if (file.startsWith("http"))
-			f = MizLib.getOfflineFile(mContext, file);
+		if (mFileUrl.startsWith("http"))
+			f = MizLib.getOfflineFile(mContext, mFileUrl);
 		else
-			f = MizLib.getOfflineFile(mContext, smb.getCanonicalPath());
+			f = MizLib.getOfflineFile(mContext, mSmb.getCanonicalPath());
 		return f.exists() && mSize == f.length();
 	}
 
 	private boolean checkFilesize() {
 		try {			
 			long freeMemory = (long) (MizLib.getFreeMemory() * 0.975);
-			if (file.startsWith("http"))
-				mSize = MizLib.getFileSize(new URL(file));
+			if (mFileUrl.startsWith("http"))
+				mSize = MizLib.getFileSize(new URL(mFileUrl));
 			else
-				mSize = smb.length();
+				mSize = mSmb.length();
 			return freeMemory > mSize;
 		} catch (SmbException e) {
 			return false;
@@ -249,26 +256,26 @@ public class MakeAvailableOffline extends IntentService {
 	}
 
 	private boolean beginTransfer() {
-		if (file.startsWith("http")) {
+		if (mFileUrl.startsWith("http")) {
 			
 			InputStream in = null;
 			OutputStream fileos = null;
 			
 			try {
-				int bufferSize = 8192;
+				int bufferSize = mBufferSize;
 				byte[] retVal = null;
 
 				OkHttpClient client = new OkHttpClient();
 
 				Request request = new Request.Builder()
-				.url(file)
+				.url(mFileUrl)
 				.build();
 
 				Response response = client.newCall(request).execute();
 				if (!response.isSuccessful())
 					return false;
 
-				File offline = MizLib.getOfflineFile(mContext, file);
+				File offline = MizLib.getOfflineFile(mContext, mFileUrl);
 				offline.createNewFile();
 				
 				fileos = new BufferedOutputStream(new FileOutputStream(offline));
@@ -277,8 +284,13 @@ public class MakeAvailableOffline extends IntentService {
 				retVal = new byte[bufferSize];
 				int length = 0;
 				while((length = in.read(retVal)) > -1) {
+					if (mStopDownload) {
+						fileos.close();
+						in.close();
+						return false;
+					}
 					fileos.write(retVal, 0, length);
-					currentLength += length;
+					mCurrentLength += length;
 					update();
 				}
 				return true;
@@ -300,14 +312,14 @@ public class MakeAvailableOffline extends IntentService {
 			}
 		} else {
 			try {
-				File offline = MizLib.getOfflineFile(mContext, smb.getCanonicalPath());
+				File offline = MizLib.getOfflineFile(mContext, mSmb.getCanonicalPath());
 				offline.createNewFile();
 
-				totalLength = smb.length();
+				mTotalLength = mSmb.length();
 
-				OutputStream os = new BufferedOutputStream(new FileOutputStream(offline), 16384);
-				BufferedInputStream in = new BufferedInputStream(new SmbFileInputStream(smb), 16384);
-				byte[] b = new byte[8192];
+				OutputStream os = new BufferedOutputStream(new FileOutputStream(offline), mBufferSize);
+				BufferedInputStream in = new BufferedInputStream(new SmbFileInputStream(mSmb), mBufferSize);
+				byte[] b = new byte[mBufferSize];
 				int n;
 				while((n = in.read(b)) != -1) {
 					if (mStopDownload) {
@@ -316,7 +328,7 @@ public class MakeAvailableOffline extends IntentService {
 						return false;
 					}
 					os.write(b, 0, n);
-					currentLength += n;
+					mCurrentLength += n;
 					update();
 				}
 				os.close();
@@ -329,76 +341,26 @@ public class MakeAvailableOffline extends IntentService {
 		}
 	}
 
-	/*
-	 * 	public static boolean downloadFile(String url, String savePath) {
-		if (TextUtils.isEmpty(url))
-			return false;
-
-		InputStream in = null;
-		OutputStream fileos = null;
-
-		try {
-			int bufferSize = 8192;
-			byte[] retVal = null;
-
-			OkHttpClient client = new OkHttpClient();
-
-			Request request = new Request.Builder()
-			.url(url)
-			.build();
-
-			Response response = client.newCall(request).execute();
-			if (!response.isSuccessful())
-				return false;
-
-			fileos = new BufferedOutputStream(new FileOutputStream(savePath));
-			in = new BufferedInputStream(response.body().byteStream(), bufferSize);
-
-			retVal = new byte[bufferSize];
-			int length = 0;
-			while((length = in.read(retVal)) > -1) {
-				fileos.write(retVal, 0, length);
-			}
-		} catch(Exception e) {
-			return false;
-		} finally {
-			if (fileos != null) {
-				try {
-					fileos.flush();
-					fileos.close();
-				} catch (IOException e) {}
-			}
-
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {}
-			}
-		}
-
-		return true;
-	 */
-
 	private void update() {
-		currentTime = System.currentTimeMillis();
-		if (currentTime - 1000 > lastTime) {
+		mCurrentTime = System.currentTimeMillis();
+		if (mCurrentTime - 1000 > mLastTime) {
 			updateNotification();
 
-			lastTime = currentTime;
-			lastLength = currentLength;
+			mLastTime = mCurrentTime;
+			mLastLength = mCurrentLength;
 		}
 	}
 
 	private String getContentText() {
 		try {
-			long elapsed = (currentTime - lastTime);
-			long data_sent = (currentLength - lastLength);
-			double percentage = (100.0 / (double) totalLength) * (double) currentLength;
+			long elapsed = (mCurrentTime - mLastTime);
+			long data_sent = (mCurrentLength - mLastLength);
+			double percentage = (100.0 / (double) mTotalLength) * (double) mCurrentLength;
 			long data_per_sec = (data_sent / elapsed) * 1000;
 
 			if (mSize == -1)
 				return getString(R.string.unknown_size) + " (" + (data_per_sec / 1000) + " KB/s)";
-			return Double.valueOf(oneDecimal.format(percentage)) + "% - " + (currentLength / 1024 / 1024) + " of " + (totalLength / 1024 / 1024) + " MB (" + (data_per_sec / 1000) + " KB/s)";
+			return Double.valueOf(mOneDecimal.format(percentage)) + "% - " + (mCurrentLength / 1024 / 1024) + " of " + (mTotalLength / 1024 / 1024) + " MB (" + (data_per_sec / 1000) + " KB/s)";
 		} catch (Exception e) {
 			return getString(R.string.starting_download);
 		}
@@ -411,21 +373,21 @@ public class MakeAvailableOffline extends IntentService {
 	}
 
 	private void reset() {
-		file = "";
-		type = -1;
-		auth = null;
-		smb = null;
+		mFileUrl = "";
+		mType = -1;
+		mAuth = null;
+		mSmb = null;
 		mContext = null;
 		mSize = -1;
 		mBuilder = null;
 		mNotificationManager = null;
 		mNotification = null;
-		contentIntent = null;
+		mContentIntent = null;
 		mStopDownload = false;
-		lastTime = 0;
-		currentTime = 0;
-		lastLength = 0;
-		totalLength = 0;
-		currentLength = 0;
+		mLastTime = 0;
+		mCurrentTime = 0;
+		mLastLength = 0;
+		mTotalLength = 0;
+		mCurrentLength = 0;
 	}
 }

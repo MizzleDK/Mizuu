@@ -18,13 +18,6 @@ package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.content.Context;
@@ -118,7 +111,6 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		awesomePager = (ViewPager) v.findViewById(R.id.awesomepager);
 		awesomePager.setOffscreenPageLimit(3);
 		awesomePager.setPageMargin(MizLib.convertDpToPixels(getActivity(), 16));
-		//awesomePager.setAdapter(new WebVideosAdapter(getChildFragmentManager())); TODO FIX
 		awesomePager.setOnPageChangeListener(new OnPageChangeListener() {
 			@Override
 			public void onPageScrollStateChanged(int arg0) {}
@@ -216,13 +208,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		protected String doInBackground(Object... params) {
 			try {
 				baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
-				
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/movie?api_key=" + mTmdbApiKey + "&append_to_response=upcoming,now_playing,popular,top_rated");
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-				json = EntityUtils.toString(httpclient.execute(httppost).getEntity());
+				json = MizLib.getJSONObject("https://api.themoviedb.org/3/movie?api_key=" + mTmdbApiKey + "&append_to_response=upcoming,now_playing,popular,top_rated").toString();
 				
 				return json;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
