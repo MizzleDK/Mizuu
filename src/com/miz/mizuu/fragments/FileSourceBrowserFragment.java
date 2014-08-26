@@ -228,15 +228,20 @@ public class FileSourceBrowserFragment extends Fragment {
 		mCurrent.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (mType != FileSource.UPNP) {
-					if (mBrowser.getBrowserFiles().get(arg2).isDirectory())
-						browse(arg2, false);
+				if (arg2 == 0) {
+					// Go back
+					goBack();
 				} else {
-					if (!mLoading) {
-						mLoading = true;
-						ContentItem content = contentListAdapter.getItem(arg2);
-						if (content.isContainer()) {
-							upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), content.getService(), content.getContainer(), contentListAdapter, true));
+					if (mType != FileSource.UPNP) {
+						if (mBrowser.getBrowserFiles().get(arg2 - 1).isDirectory())
+							browse(arg2 - 1, false);
+					} else {
+						if (!mLoading) {
+							mLoading = true;
+							ContentItem content = contentListAdapter.getItem(arg2 - 1);
+							if (content.isContainer()) {
+								upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), content.getService(), content.getContainer(), contentListAdapter, true));
+							}
 						}
 					}
 				}
@@ -372,7 +377,7 @@ public class FileSourceBrowserFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return mItems.size();
+			return mItems.size() + 1;
 		}
 
 		@Override
@@ -386,11 +391,16 @@ public class FileSourceBrowserFragment extends Fragment {
 		}
 
 		@Override
+		public boolean isEmpty() {
+			return getCount() <= 1;
+		}
+
+		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder holder;
 
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.file_list_item, null);
+				convertView = inflater.inflate(R.layout.file_list_item, parent, false);
 				holder = new ViewHolder();
 				holder.name = (TextView) convertView.findViewById(R.id.text1);
 				holder.size = (TextView) convertView.findViewById(R.id.size);
@@ -400,21 +410,30 @@ public class FileSourceBrowserFragment extends Fragment {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.name.setText(mItems.get(position).getName());
-
-			if (mItems.get(position).isDirectory()) {
-				holder.icon.setImageResource(R.drawable.folder);
-				holder.size.setText("");
+			if (position == 0) {
+				holder.icon.setImageResource(R.drawable.ic_arrow_back);
+				holder.name.setText("...");
 				holder.size.setVisibility(View.GONE);
 			} else {
-				if (MizLib.isVideoFile(mItems.get(position).getName()))
-					holder.icon.setImageResource(R.drawable.ic_action_movie);
-				else if (MizLib.isSubtitleFile(mItems.get(position).getName()))
-					holder.icon.setImageResource(R.drawable.ic_action_subtitles);
-				else
-					holder.icon.setImageResource(R.drawable.file);
-				holder.size.setText(MizLib.filesizeToString(mItems.get(position).getSize()));
-				holder.size.setVisibility(View.VISIBLE);
+
+				final BrowserFileObject browser = mItems.get(position - 1);
+
+				holder.name.setText(browser.getName());
+
+				if (browser.isDirectory()) {
+					holder.icon.setImageResource(R.drawable.folder);
+					holder.size.setText("");
+					holder.size.setVisibility(View.GONE);
+				} else {
+					if (MizLib.isVideoFile(browser.getName()))
+						holder.icon.setImageResource(R.drawable.ic_action_movie);
+					else if (MizLib.isSubtitleFile(browser.getName()))
+						holder.icon.setImageResource(R.drawable.ic_action_subtitles);
+					else
+						holder.icon.setImageResource(R.drawable.file);
+					holder.size.setText(MizLib.filesizeToString(browser.getSize()));
+					holder.size.setVisibility(View.VISIBLE);
+				}
 			}
 
 			return convertView;
@@ -453,7 +472,7 @@ public class FileSourceBrowserFragment extends Fragment {
 			ViewHolder holder;
 
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.file_list_item, null);
+				convertView = inflater.inflate(R.layout.file_list_item, parent, false);
 				holder = new ViewHolder();
 				holder.name = (TextView) convertView.findViewById(R.id.text1);
 				holder.size = (TextView) convertView.findViewById(R.id.size);
@@ -479,12 +498,16 @@ public class FileSourceBrowserFragment extends Fragment {
 	}
 
 	private void onBackPressed() {
+		goBack();
+	}
+
+	private void goBack() {
 		if (mType != FileSource.UPNP)
 			browse(GO_BACK, false);
 		else {
 			if (mBrowser == null)
 				return;
-			
+
 			Container parentContainer = new Container();
 
 			String id = "0";
@@ -542,7 +565,7 @@ public class FileSourceBrowserFragment extends Fragment {
 			upnpService = (AndroidUpnpService) service;
 
 			boolean found = false;
-			
+
 			for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
 				try {
 					if (device.getDetails().getSerialNumber() != null && !device.getDetails().getSerialNumber().isEmpty()) {
