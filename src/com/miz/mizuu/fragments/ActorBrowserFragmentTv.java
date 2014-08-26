@@ -64,6 +64,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 	private String mTmdbApiKey;
 	private Picasso mPicasso;
 	private Config mConfig;
+	private boolean mLoaded = false;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -150,6 +151,14 @@ public class ActorBrowserFragmentTv extends Fragment {
 				startActivity(intent);
 			}
 		});
+		
+		TextView title = (TextView) v.findViewById(R.id.empty_library_title);
+		title.setText(R.string.no_actors);
+		
+		TextView description = (TextView) v.findViewById(R.id.empty_library_description);
+		description.setText(R.string.no_actors_description);
+		
+		mGridView.setEmptyView(v.findViewById(R.id.empty_library_layout));
 	}
 
 	@Override
@@ -171,6 +180,11 @@ public class ActorBrowserFragmentTv extends Fragment {
 		@Override
 		public int getCount() {
 			return actors.size();
+		}
+		
+		@Override
+		public boolean isEmpty() {
+			return getCount() == 0 && mLoaded;
 		}
 
 		@Override
@@ -292,6 +306,8 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 				actorIds.clear();
 				actorIds = null;
+				
+				mLoaded = true;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
 
 			return null;

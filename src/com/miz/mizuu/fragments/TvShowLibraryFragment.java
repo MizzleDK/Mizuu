@@ -376,7 +376,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		@Override
 		public boolean isEmpty() {
-			return (!mLoading && mTvShowKeys.size() == 0);
+			return !mLoading && mTvShowKeys.size() == 0;
 		}
 
 		@Override

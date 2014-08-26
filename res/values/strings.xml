@@ -504,5 +504,7 @@
     <string name="data_source_shows_description">Set the data source for TV show details.</string>
     <string name="select_data_source_shows">Select source for TV show data</string>
     <string name="selectFile">Select a file</string>
+    <string name="no_actors">"There's no actors here!"</string>
+    <string name="no_actors_description">It looks some actors are missing here…</string>
 
 </resources>

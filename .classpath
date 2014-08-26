@@ -11,7 +11,6 @@
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="libs/guava-16.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/otto-1.3.4.jar"/>
-	<classpathentry kind="lib" path="libs/picasso-2.3.3.jar"/>
 	<classpathentry kind="lib" path="libs/repackaged-okhttp-2.0.0.jar"/>
 	<classpathentry kind="lib" path="libs/repackaged-okhttp-urlconnection-2.0.0.jar"/>
 	<classpathentry kind="lib" path="libs/repackaged-okio-1.0.0.jar"/>
@@ -19,5 +18,6 @@
 	<classpathentry kind="lib" path="libs/cling-core-1.0.5.jar"/>
 	<classpathentry kind="lib" path="libs/cling-support-1.0.5.jar"/>
 	<classpathentry kind="lib" path="libs/teleal-common-1.0.13.jar"/>
+	<classpathentry kind="lib" path="libs/picasso-2.3.4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

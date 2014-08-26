@@ -271,8 +271,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 										paths.getString(paths.getColumnIndex(DbAdapterMovieMappings.KEY_FILEPATH)));
 							}
 						} catch (Exception e) {} finally {
+							paths.close();
 							MizuuApplication.setMovieFilepaths(filepaths);
-							filepaths.clear();
 						}
 					}
 					
@@ -305,9 +305,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 					} catch (Exception e) {} finally {
 						cursor.close();
 						cache.clear();
-						
-						// Clear the hacky movie filepath map
-						MizuuApplication.clearMovieFilepaths();
 					}
 
 					for (int i = 0; i < mMovies.size(); i++) {
@@ -444,7 +441,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		@Override
 		public boolean isEmpty() {
-			return (!mLoading && mMovieKeys.size() == 0);
+			return !mLoading && mMovieKeys.size() == 0;
 		}
 
 		@Override

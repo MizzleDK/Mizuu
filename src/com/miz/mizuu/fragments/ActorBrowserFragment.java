@@ -64,6 +64,7 @@ public class ActorBrowserFragment extends Fragment {
 	private String mJson, mTmdbApiKey;
 	private Picasso mPicasso;
 	private Config mConfig;
+	private boolean mLoaded = false;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -158,6 +159,14 @@ public class ActorBrowserFragment extends Fragment {
 				startActivity(intent);
 			}
 		});
+		
+		TextView title = (TextView) v.findViewById(R.id.empty_library_title);
+		title.setText(R.string.no_actors);
+		
+		TextView description = (TextView) v.findViewById(R.id.empty_library_description);
+		description.setText(R.string.no_actors_description);
+		
+		mGridView.setEmptyView(v.findViewById(R.id.empty_library_layout));
 
 		if (getArguments().containsKey("json")) {
 			mJson = getArguments().getString("json");
@@ -184,6 +193,11 @@ public class ActorBrowserFragment extends Fragment {
 		@Override
 		public int getCount() {
 			return mActors.size();
+		}
+		
+		@Override
+		public boolean isEmpty() {
+			return getCount() == 0 && mLoaded;
 		}
 
 		@Override
@@ -323,6 +337,8 @@ public class ActorBrowserFragment extends Fragment {
 
 			actorIds.clear();
 			actorIds = null;
+			
+			mLoaded = true;
 		} catch (Exception e) {}
 
 		if (isAdded()) {
