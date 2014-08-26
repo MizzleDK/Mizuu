@@ -485,7 +485,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	public void identifyMovie() {
 		if (mMovie.getFilepaths().size() == 1) {
-			startActivityForResult(getIdentifyIntent(mMovie.getFilepaths().get(0).getFilepath()), 0);
+			startActivityForResult(getIdentifyIntent(mMovie.getFilepaths().get(0).getFullFilepath()), 0);
 		} else {
 			MizLib.showSelectFileDialog(MovieDetails.this, mMovie.getFilepaths(), new Dialog.OnClickListener() {
 				@Override
