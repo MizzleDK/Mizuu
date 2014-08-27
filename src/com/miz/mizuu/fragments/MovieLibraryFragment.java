@@ -38,6 +38,7 @@ import static com.miz.functions.SortingKeys.TITLE;
 import static com.miz.functions.SortingKeys.UNWATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
+import static com.miz.functions.SortingKeys.RELEASE_YEAR;
 
 import java.io.File;
 import java.net.URLEncoder;
@@ -814,6 +815,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		case R.id.fileSources:
 			showFileSources();
 			break;
+		case R.id.release_year:
+			showReleaseYear();
+			break;
 		case R.id.clear_filters:
 			showMovieSection(mActionBar.getSelectedNavigationIndex());
 			break;
@@ -982,6 +986,22 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 		createAndShowAlertDialog(setupItemArray(map, R.string.allFileSources), R.string.selectFileSource, FILE_SOURCES);
 	}
+	
+	private void showReleaseYear() {
+		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
+		for (int i = 0; i < mMovieKeys.size(); i++) {
+			String year = mMovies.get(mMovieKeys.get(i)).getReleaseYear().trim();
+			if (!TextUtils.isEmpty(year)) {
+				if (map.containsKey(year)) {
+					map.put(year, map.get(year) + 1);
+				} else {
+					map.put(year, 1);
+				}
+			}
+		}
+
+		createAndShowAlertDialog(setupItemArray(map, R.string.allReleaseYears), R.string.selectReleaseYear, RELEASE_YEAR);
+	}
 
 	private void showFolders() {
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
@@ -1066,6 +1086,9 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 						if (condition)
 							break;
 					}
+					break;
+				case RELEASE_YEAR:
+					condition = mMovies.get(currentlyShown.get(i)).getReleaseYear().trim().contains(selected);
 					break;
 				}
 

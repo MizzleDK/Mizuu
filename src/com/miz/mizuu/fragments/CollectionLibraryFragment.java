@@ -32,6 +32,7 @@ import static com.miz.functions.SortingKeys.GENRES;
 import static com.miz.functions.SortingKeys.OFFLINE_COPIES;
 import static com.miz.functions.SortingKeys.RATING;
 import static com.miz.functions.SortingKeys.RELEASE;
+import static com.miz.functions.SortingKeys.RELEASE_YEAR;
 import static com.miz.functions.SortingKeys.TITLE;
 import static com.miz.functions.SortingKeys.UNWATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WATCHED_MOVIES;
@@ -704,6 +705,9 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		case R.id.fileSources:
 			showFileSources();
 			break;
+		case R.id.release_year:
+			showReleaseYear();
+			break;
 		case R.id.clear_filters:
 			showMovieSection(mActionBar.getSelectedNavigationIndex());
 			break;
@@ -864,6 +868,22 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 		createAndShowAlertDialog(setupItemArray(map, R.string.allFileSources), R.string.selectFileSource, FILE_SOURCES);
 	}
+	
+	private void showReleaseYear() {
+		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
+		for (int i = 0; i < mMovieKeys.size(); i++) {
+			String year = mMovies.get(mMovieKeys.get(i)).getReleaseYear().trim();
+			if (!TextUtils.isEmpty(year)) {
+				if (map.containsKey(year)) {
+					map.put(year, map.get(year) + 1);
+				} else {
+					map.put(year, 1);
+				}
+			}
+		}
+
+		createAndShowAlertDialog(setupItemArray(map, R.string.allReleaseYears), R.string.selectReleaseYear, RELEASE_YEAR);
+	}
 
 	private void showFolders() {
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
@@ -948,6 +968,9 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 						if (condition)
 							break;
 					}
+					break;
+				case RELEASE_YEAR:
+					condition = mMovies.get(currentlyShown.get(i)).getReleaseYear().trim().contains(selected);
 					break;
 				}
 

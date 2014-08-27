@@ -28,6 +28,7 @@ import static com.miz.functions.SortingKeys.GENRES;
 import static com.miz.functions.SortingKeys.NEWEST_EPISODE;
 import static com.miz.functions.SortingKeys.RATING;
 import static com.miz.functions.SortingKeys.RELEASE;
+import static com.miz.functions.SortingKeys.RELEASE_YEAR;
 import static com.miz.functions.SortingKeys.TITLE;
 import static com.miz.functions.SortingKeys.UNWATCHED_SHOWS;
 import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
@@ -622,6 +623,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		case R.id.certifications:
 			showCertifications();
 			break;
+		case R.id.release_year:
+			showReleaseYear();
+			break;
 		case R.id.unidentifiedFiles:
 			startActivity(new Intent(getActivity(), UnidentifiedTvShows.class));
 			break;
@@ -748,6 +752,22 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 		createAndShowAlertDialog(setupItemArray(map, R.string.allCertifications), R.string.selectCertification, CERTIFICATION);
 	}
+	
+	private void showReleaseYear() {
+		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
+		for (int i = 0; i < mTvShowKeys.size(); i++) {
+			String year = mTvShows.get(mTvShowKeys.get(i)).getReleaseYear().trim();
+			if (!TextUtils.isEmpty(year)) {
+				if (map.containsKey(year)) {
+					map.put(year, map.get(year) + 1);
+				} else {
+					map.put(year, 1);
+				}
+			}
+		}
+
+		createAndShowAlertDialog(setupItemArray(map, R.string.allReleaseYears), R.string.selectReleaseYear, RELEASE_YEAR);
+	}
 
 	private void createAndShowAlertDialog(final CharSequence[] temp, int title, final int type) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -800,6 +820,9 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 					break;
 				case CERTIFICATION:
 					condition = mTvShows.get(currentlyShown.get(i)).getCertification().trim().contains(selected);
+					break;
+				case RELEASE_YEAR:
+					condition = mTvShows.get(currentlyShown.get(i)).getReleaseYear().trim().contains(selected);
 					break;
 				}
 

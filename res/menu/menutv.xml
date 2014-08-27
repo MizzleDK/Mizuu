@@ -38,14 +38,17 @@
         android:title="@string/filters">
         <menu>
             <item
-                android:id="@+id/genres"
-                android:icon="@drawable/ic_action_tags"
-                android:showAsAction="always"
-                android:title="@string/choiceGenres"/>
-            <item
                 android:id="@+id/certifications"
                 android:icon="@drawable/ic_action_flag"
                 android:title="@string/detailsCertification"/>
+            <item
+                android:id="@+id/genres"
+                android:icon="@drawable/ic_action_tags"
+                android:title="@string/choiceGenres"/>
+            <item
+                android:id="@+id/release_year"
+                android:icon="@drawable/ic_action_calendar_month"
+                android:title="@string/release_year"/>
             <item
                 android:id="@+id/clear_filters"
                 android:icon="@drawable/ic_action_discard"

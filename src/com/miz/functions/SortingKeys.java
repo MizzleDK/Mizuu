@@ -49,4 +49,5 @@ public class SortingKeys {
 	public static final int CERTIFICATION = 21;
 	public static final int FILE_SOURCES = 22;
 	public static final int FOLDERS = 23;
+	public static final int RELEASE_YEAR = 24;
 }

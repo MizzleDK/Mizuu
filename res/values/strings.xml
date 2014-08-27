@@ -334,6 +334,8 @@
     <string name="filters">Filters</string>
     <string name="allCertifications">All certifications</string>
     <string name="selectCertification">Select certification</string>
+    <string name="allReleaseYears">All release years</string>
+    <string name="selectReleaseYear">Select release year</string>
     <string name="movingDataFiles">Moving data files</string>
     <string name="movingDataFilesDescription">Mizuu will start shortly. This may take a few minutes…</string>
     <string name="social">Social</string>
@@ -506,5 +508,6 @@
     <string name="selectFile">Select a file</string>
     <string name="no_actors">"There's no actors here!"</string>
     <string name="no_actors_description">It looks some actors are missing here…</string>
+    <string name="release_year">Release year</string>
 
 </resources>
