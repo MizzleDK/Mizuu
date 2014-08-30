@@ -60,6 +60,7 @@ public class WebVideoFragment extends Fragment {
 	private String mType;
 	private Picasso mPicasso;
 	private Config mConfig;
+	private Context mContext;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -83,6 +84,8 @@ public class WebVideoFragment extends Fragment {
 		
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
+		
+		mContext = getActivity().getApplicationContext();
 		
 		mType = getArguments().getString("type");
 		if (mType.equals(getString(R.string.choiceYouTube))) {
@@ -222,7 +225,7 @@ public class WebVideoFragment extends Fragment {
 			mVideos.clear();
 
 			try {
-				JSONObject jObject = MizLib.getJSONObject("http://gdata.youtube.com/feeds/api/standardfeeds/most_popular?time=today&alt=json&start-index=1&max-results=50");
+				JSONObject jObject = MizLib.getJSONObject(mContext, "http://gdata.youtube.com/feeds/api/standardfeeds/most_popular?time=today&alt=json&start-index=1&max-results=50");
 				JSONObject jdata = jObject.getJSONObject("feed");
 				JSONArray aitems = jdata.getJSONArray("entry");
 
@@ -256,7 +259,7 @@ public class WebVideoFragment extends Fragment {
 			mVideos.clear();
 
 			try {
-				JSONObject jsonObject = MizLib.getJSONObject("http://www.reddit.com/r/videos/hot.json?sort=hot&limit=100");
+				JSONObject jsonObject = MizLib.getJSONObject(mContext, "http://www.reddit.com/r/videos/hot.json?sort=hot&limit=100");
 				JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("children");
 
 				for (int i = 0; i < jsonArray.length(); i++) {
@@ -291,7 +294,7 @@ public class WebVideoFragment extends Fragment {
 			mVideos.clear();
 
 			try {
-				JSONObject jObject = MizLib.getJSONObject("http://gdata.youtube.com/feeds/api/users/TEDtalksDirector/uploads?alt=json&start-index=1&max-results=50");
+				JSONObject jObject = MizLib.getJSONObject(mContext, "http://gdata.youtube.com/feeds/api/users/TEDtalksDirector/uploads?alt=json&start-index=1&max-results=50");
 				JSONObject jdata = jObject.getJSONObject("feed");
 				JSONArray aitems = jdata.getJSONArray("entry");
 

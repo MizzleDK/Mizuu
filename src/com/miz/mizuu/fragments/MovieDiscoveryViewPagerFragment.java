@@ -208,7 +208,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment implements OnNavig
 		protected String doInBackground(Object... params) {
 			try {
 				baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
-				json = MizLib.getJSONObject("https://api.themoviedb.org/3/movie?api_key=" + mTmdbApiKey + "&append_to_response=upcoming,now_playing,popular,top_rated").toString();
+				json = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie?api_key=" + mTmdbApiKey + "&append_to_response=upcoming,now_playing,popular,top_rated").toString();
 				
 				return json;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity

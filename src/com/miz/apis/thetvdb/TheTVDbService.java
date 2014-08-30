@@ -36,21 +36,20 @@ import org.w3c.dom.NodeList;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 
+import com.miz.abstractclasses.TvShowApiService;
 import com.miz.apis.trakt.Show;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.MizLib;
-import com.miz.interfaces.TvShowApiService;
 import com.miz.mizuu.R;
 
-public class TheTVDb implements TvShowApiService {
+public class TheTVDbService extends TvShowApiService {
 
 	private final String mRatingsProvider, mTvdbApiKey;
 	private final Context mContext;
 
-	public TheTVDb(Context context) {
+	public TheTVDbService(Context context) {
 		mContext = context;
 		mRatingsProvider = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_4));
 		mTvdbApiKey = MizLib.getTvdbApiKey(mContext);
@@ -214,7 +213,7 @@ public class TheTVDb implements TvShowApiService {
 			// OMDb API / IMDb
 			if (mRatingsProvider.equals(mContext.getString(R.string.ratings_option_3))) {
 				try {
-					JSONObject jObject = MizLib.getJSONObject("http://www.omdbapi.com/?i=" + show.getImdbId());
+					JSONObject jObject = MizLib.getJSONObject(mContext, "http://www.omdbapi.com/?i=" + show.getImdbId());
 					double rating = Double.valueOf(MizLib.getStringFromJSONObject(jObject, "imdbRating", "0"));
 
 					if (rating > 0 || show.getRating().equals("0.0"))
@@ -391,18 +390,6 @@ public class TheTVDb implements TvShowApiService {
 		} catch (Exception e) {}
 
 		return show;
-	}
-
-	/**
-	 * Get the language code or a default one if
-	 * the supplied one is empty or {@link null}.
-	 * @param language
-	 * @return
-	 */
-	private String getLanguage(String language) {
-		if (TextUtils.isEmpty(language))
-			language = "all";
-		return language;
 	}
 
 	private ArrayList<TvShow> getListFromUrl(String serviceUrl) {

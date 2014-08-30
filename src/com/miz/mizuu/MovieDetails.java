@@ -32,12 +32,11 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -53,7 +52,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -86,10 +84,9 @@ import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
+import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.VideoUtils;
-import com.miz.widgets.MovieBackdropWidgetProvider;
-import com.miz.widgets.MovieCoverWidgetProvider;
-import com.miz.widgets.MovieStackWidgetProvider;
+import com.miz.utils.WidgetUtils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -502,7 +499,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	private Intent getIdentifyIntent(String filepath) {
 		Intent intent = new Intent(MovieDetails.this, IdentifyMovie.class);
 		intent.putExtra("fileName", filepath);
-		intent.putExtra("tmdbId", mMovie.getTmdbId());
 		return intent;
 	}
 
@@ -731,7 +727,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + params[0] + "/trailers?api_key=" + MizLib.getTmdbApiKey(getApplicationContext()));
+				JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + params[0] + "/trailers?api_key=" + MizLib.getTmdbApiKey(getApplicationContext()));
 				JSONArray trailers = jObject.getJSONArray("youtube");
 
 				if (trailers.length() > 0)
@@ -763,7 +759,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://gdata.youtube.com/feeds/api/videos?q=" + params[0] + "&max-results=20&alt=json&v=2");
+				JSONObject jObject = MizLib.getJSONObject(mContext, "https://gdata.youtube.com/feeds/api/videos?q=" + params[0] + "&max-results=20&alt=json&v=2");
 				JSONObject jdata = jObject.getJSONObject("feed");
 				JSONArray aitems = jdata.getJSONArray("entry");
 
@@ -827,8 +823,14 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
+		if (requestCode == 0) {
+			if (resultCode == Activity.RESULT_OK) {
+				finish();
+			}
+		}
+		
 		if (resultCode == 1)
-			updateWidgets();
+			WidgetUtils.updateMovieWidgets(mContext);
 
 		if (resultCode == 2 || resultCode == 4) {
 			if (resultCode == 4) // The movie data has been edited
@@ -848,14 +850,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 	}
 
 	private void notifyDatasetChanges() {
-		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-library-change"));
-	}
-
-	private void updateWidgets() {
-		AppWidgetManager awm = AppWidgetManager.getInstance(this);
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
+		LocalBroadcastUtils.updateMovieLibrary(mContext);
 	}
 
 	public void editMovie() {

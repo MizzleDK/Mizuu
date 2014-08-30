@@ -16,26 +16,31 @@
 
 package com.miz.service;
 
+import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
+import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
+import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
+import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
+import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_MOVIES;
+import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
+
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -52,23 +57,14 @@ import com.miz.filesources.UpnpMovie;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 import com.miz.functions.MovieLibraryUpdateCallback;
-import com.miz.functions.NfoMovie;
-import com.miz.functions.TheMovieDb;
+import com.miz.identification.MovieIdentification;
+import com.miz.identification.MovieStructure;
 import com.miz.mizuu.CancelLibraryUpdate;
 import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.miz.widgets.MovieBackdropWidgetProvider;
-import com.miz.widgets.MovieCoverWidgetProvider;
-import com.miz.widgets.MovieStackWidgetProvider;
-
-import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
-import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
-import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
-import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_MOVIES;
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
-import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
+import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.WidgetUtils;
 
 public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpdateCallback {
 
@@ -77,7 +73,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private ArrayList<FileSource> mFileSources;
 	private ArrayList<MovieFileSource<?>> mMovieFileSources;
 	private HashMap<String, InputStream> mNfoFiles = new HashMap<String, InputStream>();
-	private LinkedList<String> mMovieQueue = new LinkedList<String>();
+	private ArrayList<MovieStructure> mMovieQueue = new ArrayList<MovieStructure>();
 	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mIgnoreNfoFiles, mDisableEthernetWiFiCheck, mSyncLibraries, mStopUpdate;
 	private int mTotalFiles, mCount;
 	private SharedPreferences mSettings;
@@ -85,6 +81,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private final int NOTIFICATION_ID = 200, POST_UPDATE_NOTIFICATION = 213;
 	private NotificationManager mNotificationManager;
 	private NotificationCompat.Builder mBuilder;
+	private MovieIdentification mMovieIdentification;
 
 	public MovieLibraryUpdate() {
 		super("MovieLibraryUpdate");
@@ -109,16 +106,13 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		
 		showPostUpdateNotification();
 
-		AppWidgetManager awm = AppWidgetManager.getInstance(this);
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
+		WidgetUtils.updateMovieWidgets(this);
 
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
 		MizLib.scheduleMovieUpdate(this);
 
-		if (Trakt.hasTraktAccount(this) && mSyncLibraries && ((mTotalFiles - mMovieQueue.size()) > 0)) {
+		if (Trakt.hasTraktAccount(this) && mSyncLibraries && mCount > 0) {
 			getApplicationContext().startService(new Intent(getApplicationContext(), TraktMoviesSyncService.class));
 		}
 	}
@@ -212,7 +206,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private void reloadLibrary() {
 		log("reloadLibrary()");
 		
-		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-movies-update"));
+		LocalBroadcastUtils.updateMovieLibrary(getApplicationContext());
 	}
 
 	private void loadFileSources() {
@@ -286,8 +280,9 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		for (int j = 0; j < mMovieFileSources.size(); j++) {
 			updateMovieScaningNotification(mMovieFileSources.get(j).toString());
 			tempList = mMovieFileSources.get(j).searchFolder();
-			for (int i = 0; i < tempList.size(); i++)
-				mMovieQueue.add(tempList.get(i));
+			for (int i = 0; i < tempList.size(); i++) {
+				mMovieQueue.add(new MovieStructure(tempList.get(i)));
+			}
 
 			if (!mIgnoreNfoFiles) {
 				tempNfoMap = mMovieFileSources.get(j).getNfoFiles();
@@ -354,60 +349,25 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			mStopUpdate = true;
+			
+			if (mMovieIdentification != null)
+				mMovieIdentification.cancel();
 		}
 	};
 
 	private void updateMovies() {
-		// Temporary StringBuilder objects to re-use memory and reduce GC's
-		StringBuilder sb = new StringBuilder(), sb1 = new StringBuilder(), sb2 = new StringBuilder();
-
-		// Let's sort the files by their file name before updating
-		Collections.sort(mMovieQueue);
-
-		while (mMovieQueue.peek() != null) {
-			if (mStopUpdate)
-				break;
-
-			sb.delete(0, sb.length());
-			sb.append(mMovieQueue.pop());
-			
-			mCount++;
-
-			if (mIgnoreNfoFiles) {
-				newMovieDbObject(sb.toString());
-			} else {				
-				sb1.delete(0, sb1.length());
-				sb1.append(MizLib.removeExtension(sb.toString().replaceAll("part[1-9]|cd[1-9]", "").trim()));
-
-				sb2.delete(0, sb2.length());
-				sb2.append(MizLib.convertToGenericNfo(sb.toString()));
-
-				if (mNfoFiles.containsKey(sb1.toString())) {
-					new NfoMovie(sb.toString(), mNfoFiles.get(sb1.toString()), getApplicationContext(), this);
-				} else if (mNfoFiles.containsKey(sb2.toString())) {
-					new NfoMovie(sb.toString(), mNfoFiles.get(sb2.toString()), getApplicationContext(), this);
-				} else {
-					newMovieDbObject(sb.toString());
-				}
-			}
-		}
-	}
-
-	/**
-	 * Used in the updateMovies() method.
-	 * @param file Path of the file we want to identify
-	 */
-	private void newMovieDbObject(String file) {
-		if (MizLib.isOnline(getApplicationContext())) {
-			new TheMovieDb(this, file, this);
-		}
+		
+		System.out.println("WAT DA FUCK");
+		
+		mMovieIdentification = new MovieIdentification(getApplicationContext(), this, mMovieQueue, mNfoFiles);
+		mMovieIdentification.start();
 	}
 
 	private void clear() {
 		// Lists
 		mFileSources = new ArrayList<FileSource>();
 		mMovieFileSources = new ArrayList<MovieFileSource<?>>();
-		mMovieQueue = new LinkedList<String>();
+		mMovieQueue = new ArrayList<MovieStructure>();
 		mNfoFiles = new HashMap<String, InputStream>();
 
 		// Booleans
@@ -424,7 +384,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mEditor = null;
 		mSettings = null;
 		mTotalFiles = 0;
-		mCount = 0;
 		mNotificationManager = null;
 		mBuilder = null;
 	}
@@ -435,20 +394,19 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	}
 
 	@Override
-	public void onMovieAdded(String title, String cover, String backdrop) {
+	public void onMovieAdded(String title, Bitmap cover, Bitmap backdrop, int count) {
+		mCount = count;
 		updateMovieAddedNotification(title, cover, backdrop);
 	}
 
-	private void updateMovieAddedNotification(String title, String cover, String backdrop) {
-		mBuilder.setLargeIcon(MizLib.getNotificationImageThumbnail(this, cover));
+	private void updateMovieAddedNotification(String title, Bitmap cover, Bitmap backdrop) {
+		mBuilder.setLargeIcon(cover);
 		mBuilder.setContentTitle(getString(R.string.updatingMovies) + " (" + (int) ((100.0 / (double) mTotalFiles) * (double) mCount) + "%)");
 		mBuilder.setContentText(getString(R.string.stringJustAdded) + ": " + title);
 		mBuilder.setStyle(
 				new NotificationCompat.BigPictureStyle()
 				.setSummaryText(getString(R.string.stringJustAdded) + ": " + title)
-				.bigPicture(
-						MizLib.decodeSampledBitmapFromFile(backdrop, getNotificationImageWidth(), getNotificationImageHeight())
-						)
+				.bigPicture(backdrop)
 				);
 
 		// Show the updated notification
@@ -479,13 +437,13 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			mBuilder.setSmallIcon(R.drawable.done);
 			mBuilder.setTicker(getString(R.string.finishedMovieLibraryUpdate));
 			mBuilder.setContentTitle(getString(R.string.finishedMovieLibraryUpdate));
-			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + (mTotalFiles - mMovieQueue.size()) + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, (mTotalFiles - mMovieQueue.size()), (mTotalFiles - mMovieQueue.size())));
+			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + mCount + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, mCount, mCount));
 			mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.done));
 		} else {
 			mBuilder.setSmallIcon(R.drawable.ignoresmallfiles);
 			mBuilder.setTicker(getString(R.string.stringUpdateCancelled));
 			mBuilder.setContentTitle(getString(R.string.stringUpdateCancelled));
-			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + (mTotalFiles - mMovieQueue.size()) + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, (mTotalFiles - mMovieQueue.size()), (mTotalFiles - mMovieQueue.size())));
+			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + mCount + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, mCount, mCount));
 			mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ignoresmallfiles));
 		}
 		mBuilder.setContentIntent(contentIntent);
@@ -497,22 +455,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		// Show the notification
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
-		if ((mTotalFiles - mMovieQueue.size()) > 0)
+		if (mCount > 0)
 			mNotificationManager.notify(POST_UPDATE_NOTIFICATION, updateNotification);
-	}
-
-	// These variables don't need to be re-initialized
-	private int widgetWidth = 0, widgetHeight = 0;
-
-	private int getNotificationImageWidth() {
-		if (widgetWidth == 0)
-			widgetWidth = MizLib.getLargeNotificationWidth(this);
-		return widgetWidth;
-	}
-
-	private int getNotificationImageHeight() {
-		if (widgetHeight == 0)
-			widgetHeight = MizLib.getLargeNotificationWidth(this) / 2;
-		return widgetHeight;
 	}
 }

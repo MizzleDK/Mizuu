@@ -24,7 +24,6 @@ import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,10 +35,10 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.miz.apis.thetvdb.TheTVDb;
-import com.miz.apis.tmdb.TMDbTvShow;
+import com.miz.abstractclasses.TvShowApiService;
+import com.miz.apis.thetvdb.TheTVDbService;
+import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.functions.CoverItem;
-import com.miz.interfaces.TvShowApiService;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.service.DownloadImageService;
@@ -184,9 +183,9 @@ public class FanartSearchFragmentTv extends Fragment {
 			TvShowApiService service = null;
 			if (id.startsWith("tmdb_")) {
 				id = id.replace("tmdb_", "");
-				service = new TMDbTvShow(getActivity());
+				service = new TMDbTvShowService(getActivity());
 			} else {
-				service = new TheTVDb(getActivity());
+				service = new TheTVDbService(getActivity());
 			}
 
 			mImages.addAll(service.getBackdrops(id));
@@ -199,10 +198,6 @@ public class FanartSearchFragmentTv extends Fragment {
 			if (isAdded()) {
 				mProgressBar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
-
-				Intent intent = new Intent("mizuu-cover-search-fragment-tv");
-				intent.putExtra("backdropCount", mImages.size());
-				LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
 			}
 		}
 	}

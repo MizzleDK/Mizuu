@@ -69,6 +69,7 @@ import com.miz.mizuu.fragments.MovieDiscoveryViewPagerFragment;
 import com.miz.mizuu.fragments.MovieLibraryFragment;
 import com.miz.mizuu.fragments.TvShowLibraryFragment;
 import com.miz.mizuu.fragments.WebVideosViewPagerFragment;
+import com.miz.utils.LocalBroadcastUtils;
 import com.squareup.picasso.Picasso;
 
 @SuppressLint("NewApi")
@@ -181,7 +182,8 @@ public class Main extends MizActivity {
 			loadFragment(mStartup);
 		}
 
-		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_LIBRARY));
 	}
 
 	private void loadFragment(int type) {

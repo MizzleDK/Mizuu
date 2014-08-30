@@ -30,6 +30,7 @@ import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.MizLib;
+import com.miz.utils.LocalBroadcastUtils;
 
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseBooleanArray;
@@ -116,7 +117,14 @@ public class UnidentifiedTvShows extends MizActivity {
 
 		loadData();
 
-		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("tvshow-episode-changed"));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_LIBRARY));
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 	}
 	
 	private void identifySelectedFiles() {

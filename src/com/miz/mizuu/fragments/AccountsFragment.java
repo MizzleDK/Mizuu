@@ -47,7 +47,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.service.TraktMoviesSyncService;
 import com.miz.service.TraktTvShowsSyncService;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
@@ -159,13 +158,11 @@ public class AccountsFragment extends Fragment {
 			password = traktPass.getText().toString().trim();
 
 			boolean success = false;
-
-			OkHttpClient client = new OkHttpClient();
 			
 			try {
 				
 				Request request = MizLib.getTraktAuthenticationRequest("http://api.trakt.tv/account/test/" + mTraktApiKey, username, MizLib.SHA1(password));
-				Response response = client.newCall(request).execute();
+				Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 				JSONObject jObject = new JSONObject(response.body().string());
 				
 				if (response.isSuccessful()) {
@@ -185,7 +182,7 @@ public class AccountsFragment extends Fragment {
 
 				try {
 					Request request = MizLib.getTraktAuthenticationRequest("http://api.trakt.tv/user/profile.json/" + mTraktApiKey + "/" + username, username, MizLib.SHA1(password));
-					Response response = client.newCall(request).execute();
+					Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 					JSONObject jObject = new JSONObject(response.body().string());
 					
 					if (response.isSuccessful()) {

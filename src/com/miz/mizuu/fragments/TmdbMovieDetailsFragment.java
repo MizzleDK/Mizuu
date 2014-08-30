@@ -32,10 +32,10 @@ import android.widget.ImageView.ScaleType;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.miz.abstractclasses.MovieApiService;
+import com.miz.apis.tmdb.Movie;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteTransformation;
-import com.miz.functions.TMDb;
-import com.miz.functions.TMDbMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.views.ObservableScrollView;
@@ -50,14 +50,14 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private String movieId;
 	private TextView textTitle, textPlot, textGenre, textRuntime, textReleaseDate, textRating, textTagline, textCertification;
 	private ImageView background, cover;
-	private TMDb tmdb;
-	private TMDbMovie thisMovie;
+	private Movie thisMovie;
 	private View movieDetailsLayout, progressBar, mDetailsArea;
 	private FrameLayout container;
 	private boolean isRetained = false;
 	private Picasso mPicasso;
 	private Typeface mLight, mLightItalic, mMedium, mBoldItalic;
 	private Bus mBus;
+	private MovieApiService mMovieApiService;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -94,7 +94,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		mMedium = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Medium.ttf");
 		mBoldItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-BoldItalic.ttf");
 
-		tmdb = new TMDb(getActivity());
+		mMovieApiService = MizuuApplication.getMovieService(getActivity());
 
 		// Get the database ID of the movie in question
 		movieId = getArguments().getString("movieId");
@@ -170,7 +170,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private class MovieLoader extends AsyncTask<String, Object, Object> {
 		@Override
 		protected Object doInBackground(String... params) {
-			thisMovie = tmdb.getMovie(movieId, params[0], "en");
+			thisMovie = mMovieApiService.get(movieId, params[0], "en");
 			return null;
 		}
 

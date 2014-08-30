@@ -104,6 +104,7 @@ import com.miz.mizuu.TvShowActorSearchActivity;
 import com.miz.mizuu.TvShowDetails;
 import com.miz.mizuu.UnidentifiedTvShows;
 import com.miz.mizuu.Update;
+import com.miz.utils.LocalBroadcastUtils;
 import com.squareup.picasso.Picasso;
 
 public class TvShowLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
@@ -177,8 +178,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		if (mActionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
 			mActionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
 
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-update"));
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-cover-change"));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_LIBRARY));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-actor-search"));
 	}
 
@@ -202,10 +202,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			if (intent.filterEquals(new Intent("mizuu-shows-actor-search"))) {
 				search("actor: " + intent.getStringExtra("intent_extra_data_key"));
 			} else {
-				if (intent.filterEquals(new Intent("mizuu-show-cover-change"))) {
-					clearCaches();
-				}	
 
+				clearCaches();
 				forceLoaderLoad();
 			}
 		}
@@ -283,7 +281,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	private void clearCaches() {
 		if (isAdded())
-			MizuuApplication.getLruCache(getActivity()).clear();
+			MizuuApplication.clearLruCache(getActivity());
 	}
 
 	@Override

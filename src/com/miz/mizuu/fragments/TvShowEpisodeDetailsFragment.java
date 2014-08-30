@@ -33,7 +33,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -51,7 +50,6 @@ import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 
 import com.miz.apis.trakt.Trakt;
-import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.BlurTransformation;
@@ -64,6 +62,7 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
+import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.VideoUtils;
 import com.miz.views.ObservableScrollView;
 import com.miz.views.PanningView;
@@ -660,7 +659,7 @@ import com.squareup.picasso.Picasso;
 	}
 
 	private void notifyDatasetChanges() {
-		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent("mizuu-shows-update"));
+		LocalBroadcastUtils.updateTvShowLibrary(getActivity());
 	}
 
 	private void checkIn() {

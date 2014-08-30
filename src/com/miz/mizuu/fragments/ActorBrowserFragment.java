@@ -20,11 +20,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -271,13 +266,7 @@ public class ActorBrowserFragment extends Fragment {
 			try {
 				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 				
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet  httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/casts?api_key=" + mTmdbApiKey);
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String html = httpclient.execute(httppost, responseHandler);
-
-				JSONObject jObject = new JSONObject(html);
+				JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + params[0] + "/casts?api_key=" + mTmdbApiKey);
 
 				JSONArray jArray = jObject.getJSONArray("cast");
 

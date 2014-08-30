@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -33,7 +31,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -45,14 +42,13 @@ import com.miz.identification.ShowStructure;
 import com.miz.identification.TvShowIdentification;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.miz.widgets.ShowBackdropWidgetProvider;
-import com.miz.widgets.ShowCoverWidgetProvider;
-import com.miz.widgets.ShowStackWidgetProvider;
+import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.WidgetUtils;
 
 public class IdentifyTvShowService extends IntentService implements TvShowLibraryUpdateCallback {
 
 	private boolean mDebugging = true;
-	private String mNewShowTitle, mNewShowId, mOldShowId, mLanguage;
+	private String mNewShowId, mOldShowId, mLanguage;
 	private ArrayList<ShowStructure> mFiles = new ArrayList<ShowStructure>();
 	private final int NOTIFICATION_ID = 4100;
 	private int mEpisodeCount, mTotalFiles;
@@ -74,19 +70,15 @@ public class IdentifyTvShowService extends IntentService implements TvShowLibrar
 
 		mNotificationManager.cancel(NOTIFICATION_ID);
 		
-		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-shows-update"));
+		LocalBroadcastUtils.updateTvShowLibrary(this);
 
-		AppWidgetManager awm = AppWidgetManager.getInstance(this);
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
+		WidgetUtils.updateTvShowWidgets(this);
 	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
 		if (MizLib.isTvShowLibraryBeingUpdated(this)) {
-			
 			Handler mHandler = new Handler(Looper.getMainLooper());
 			mHandler.post(new Runnable() {            
 		        @Override
@@ -106,12 +98,9 @@ public class IdentifyTvShowService extends IntentService implements TvShowLibrar
 
 		log("Intent extras");
 		Bundle b = intent.getExtras();
-		mNewShowTitle = b.getString("showTitle");
 		mNewShowId = b.getString("newShowId");
 		mOldShowId = b.getString("oldShowId");
 		mLanguage = b.getString("language", "all");
-
-		log("Title: " + mNewShowTitle + ". New ID: " + mNewShowId + ". Old ID: " + mOldShowId + ". Language: " + mLanguage);
 
 		log("setupList()");
 		setupList();
@@ -165,7 +154,7 @@ public class IdentifyTvShowService extends IntentService implements TvShowLibrar
 					episodePhotos[i].delete();
 			}
 			
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-shows-update"));
+			LocalBroadcastUtils.updateTvShowLibrary(this);
 		}
 	}
 
@@ -181,7 +170,6 @@ public class IdentifyTvShowService extends IntentService implements TvShowLibrar
 	 * since this is an {@link IntentService}.
 	 */
 	private void clear() {
-		mNewShowTitle = "";
 		mNewShowId = "";
 		mOldShowId = "";
 		mLanguage = "";

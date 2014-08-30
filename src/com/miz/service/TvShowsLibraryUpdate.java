@@ -24,9 +24,7 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -57,9 +55,8 @@ import com.miz.mizuu.CancelLibraryUpdate;
 import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.miz.widgets.ShowBackdropWidgetProvider;
-import com.miz.widgets.ShowCoverWidgetProvider;
-import com.miz.widgets.ShowStackWidgetProvider;
+import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.WidgetUtils;
 
 import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_TVSHOWS;
@@ -104,14 +101,11 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
-		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-shows-update"));
+		LocalBroadcastUtils.updateTvShowLibrary(this);
 
 		showPostUpdateNotification();
 
-		AppWidgetManager awm = AppWidgetManager.getInstance(this);
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
+		WidgetUtils.updateTvShowWidgets(this);
 
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 

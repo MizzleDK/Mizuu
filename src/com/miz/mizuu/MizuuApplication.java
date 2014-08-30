@@ -21,6 +21,7 @@ import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 import static com.miz.functions.PreferenceKeys.TV_SHOW_DATA_SOURCE;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -38,8 +39,11 @@ import android.preference.PreferenceManager;
 import android.support.v7.graphics.Palette;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.miz.apis.thetvdb.TheTVDb;
-import com.miz.apis.tmdb.TMDbTvShow;
+import com.miz.abstractclasses.MovieApiService;
+import com.miz.abstractclasses.TvShowApiService;
+import com.miz.apis.thetvdb.TheTVDbService;
+import com.miz.apis.tmdb.TMDbMovieService;
+import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.db.DbAdapterCollections;
 import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterMovies;
@@ -49,7 +53,8 @@ import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.FileRequestTransformer;
 import com.miz.functions.Utils;
-import com.miz.interfaces.TvShowApiService;
+import com.squareup.okhttp.Cache;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.LruCache;
@@ -76,6 +81,7 @@ public class MizuuApplication extends Application {
 	private static Context mInstance;
 	private static FileRequestTransformer mFileRequestTransformer;
 	private static ArrayListMultimap<String, String> mMovieFilepaths;
+	private static OkHttpClient mOkHttpClient;
 	
 	@Override
 	public void onCreate() {
@@ -186,7 +192,7 @@ public class MizuuApplication extends Application {
 	 */
 	public static Picasso getPicassoDetailsView(Context context) {
 		if (sPicassoDetailsView == null)
-			sPicassoDetailsView = new Picasso.Builder(context).downloader(getDownloader(context)).requestTransformer(getFileRequestTransformer()).build();
+			sPicassoDetailsView = new Picasso.Builder(context).downloader(getDownloader(context)).memoryCache(getLruCache(context)).requestTransformer(getFileRequestTransformer()).build();
 		return sPicassoDetailsView;
 	}
 
@@ -224,6 +230,10 @@ public class MizuuApplication extends Application {
 		if (sLruCache == null)
 			sLruCache = new LruCache(calculateMemoryCacheSize(context));
 		return sLruCache;
+	}
+	
+	public static void clearLruCache(Context context) {
+		getLruCache(context).clear();
 	}
 
 	public static Downloader getDownloader(Context context) {
@@ -379,11 +389,15 @@ public class MizuuApplication extends Application {
 		return sCacheFolder;
 	}
 	
-	public static TvShowApiService getTvShowSourceService(Context context) {
+	public static TvShowApiService getTvShowService(Context context) {
 		String option = PreferenceManager.getDefaultSharedPreferences(context).getString(TV_SHOW_DATA_SOURCE, context.getString(R.string.ratings_option_0));
 		if (option.equals(context.getString(R.string.ratings_option_0)))
-			return new TheTVDb(context);
-		return new TMDbTvShow(context);
+			return new TheTVDbService(context);
+		return new TMDbTvShowService(context);
+	}
+	
+	public static MovieApiService getMovieService(Context context) {
+		return new TMDbMovieService(context);
 	}
 	
 	/**
@@ -400,5 +414,23 @@ public class MizuuApplication extends Application {
 	
 	public static List<String> getMovieFilepaths(String id) {
 		return mMovieFilepaths.get(id);
+	}
+	
+	/**
+	 * OkHttpClient singleton with 25 MB cache.
+	 * @return
+	 */
+	public static OkHttpClient getOkHttpClient() {
+		if (mOkHttpClient == null) {
+			mOkHttpClient = new OkHttpClient();
+			
+			try {
+				File cacheDir = getContext().getCacheDir();
+			    Cache cache = new Cache(cacheDir, 25 * 1024 * 1024); // 25 MB cache
+			    mOkHttpClient.setCache(cache);
+			} catch (IOException e) {}
+		}
+		
+		return mOkHttpClient;
 	}
 }

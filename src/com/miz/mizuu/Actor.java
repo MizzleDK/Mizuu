@@ -18,11 +18,6 @@ package com.miz.mizuu;
 
 import java.util.ArrayList;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -249,13 +244,7 @@ public class Actor extends MizActivity implements OnNavigationListener {
 		protected String doInBackground(Object... params) {
 			try {
 				mBaseUrl = MizLib.getTmdbImageBaseUrl(mContext);
-
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=movie_credits,tv_credits,images,tagged_images");
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-				mJson = httpclient.execute(httppost, responseHandler);
+				mJson = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/person/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=movie_credits,tv_credits,images,tagged_images").toString();
 
 				return mJson;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity

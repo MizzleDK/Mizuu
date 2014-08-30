@@ -32,13 +32,12 @@ public class IdentifyMovie extends MizActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		String tmdbId = getIntent().getExtras().getString("tmdbId");
 		String filepath = getIntent().getExtras().getString("fileName");
 
 		Fragment frag = getSupportFragmentManager().findFragmentByTag(TAG);
 		if (frag == null) {
 			final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			ft.add(android.R.id.content, IdentifyMovieFragment.newInstance(filepath, tmdbId), TAG);
+			ft.add(android.R.id.content, IdentifyMovieFragment.newInstance(filepath), TAG);
 			ft.commit();
 		}
 	}

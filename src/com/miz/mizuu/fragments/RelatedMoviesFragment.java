@@ -19,11 +19,6 @@ package com.miz.mizuu.fragments;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -266,16 +261,8 @@ public class RelatedMoviesFragment extends Fragment {
 		protected String doInBackground(String... params) {
 			try {
 				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
-				
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/similar_movies?api_key=" + mTmdbApiKey);
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-				String html = httpclient.execute(httppost, responseHandler);
 
-				JSONObject jObject = new JSONObject(html);
-
-				JSONArray jArray = jObject.getJSONArray("results");
+				JSONArray jArray = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + params[0] + "/similar_movies?api_key=" + mTmdbApiKey).getJSONArray("results");
 
 				pics_sources.clear();
 				for (int i = 0; i < jArray.length(); i++) {

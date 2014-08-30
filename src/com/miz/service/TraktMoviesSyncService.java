@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterMovies;
@@ -38,6 +37,7 @@ import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.LocalBroadcastUtils;
 
 public class TraktMoviesSyncService extends IntentService {
 
@@ -330,7 +330,7 @@ public class TraktMoviesSyncService extends IntentService {
 	}
 
 	private void broadcastLibraryUpdate() {
-		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-library-change"));
+		LocalBroadcastUtils.updateMovieLibrary(this);
 	}
 
 	private void showPostUpdateNotification() {

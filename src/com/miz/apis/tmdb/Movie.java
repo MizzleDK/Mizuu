@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.miz.functions;
+package com.miz.apis.tmdb;
 
-public class TMDbMovie {
+public class Movie {
 	
 	private String id = "", title = "", originalTitle = "", plot = "", cover = "", backdrop = "", rating = "0.0", tagline = "", releasedate = "", imdbId = "",
 			certification = "", runtime = "0", trailer = "", genres = "", cast = "", collectionTitle = "", collectionId = "", collectionImage = "", year = "";

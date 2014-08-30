@@ -117,6 +117,7 @@ import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
 import com.miz.mizuu.UnidentifiedMovies;
 import com.miz.mizuu.Update;
+import com.miz.utils.LocalBroadcastUtils;
 import com.squareup.picasso.Picasso;
 
 public class MovieLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
@@ -198,9 +199,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		if (mActionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST)
 			mActionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
 
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-update"));
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-actor-search"));
 	}
 
@@ -231,10 +230,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 			if (intent.filterEquals(new Intent("mizuu-movie-actor-search"))) {
 				search("actor: " + intent.getStringExtra("intent_extra_data_key"));
 			} else {
-				if (intent.filterEquals(new Intent("mizuu-library-change")) || intent.filterEquals(new Intent("mizuu-movie-cover-change"))) {
-					clearCaches();
-				}
-
+				clearCaches();
 				forceLoaderLoad();
 			}
 		}
@@ -337,7 +333,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private void clearCaches() {
 		if (isAdded())
-			MizuuApplication.getLruCache(getActivity()).clear();
+			MizuuApplication.clearLruCache(getActivity());
 	}
 
 	@Override

@@ -298,6 +298,7 @@
         <service android:name="com.miz.service.TvShowsLibraryUpdate" />
         <service android:name="com.miz.service.WireUpnpService" />
         <service android:name="com.miz.service.IdentifyTvShowService" />
+        <service android:name="com.miz.service.IdentifyMovieService" />
         <service android:name="com.miz.service.DownloadImageService" />
 
         <!-- Update activity -->

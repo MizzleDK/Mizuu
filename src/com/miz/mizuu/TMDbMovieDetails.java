@@ -265,7 +265,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + params[0] + "/trailers?api_key=" + mTmdbApiKey);
+				JSONObject jObject = MizLib.getJSONObject(getApplicationContext(), "https://api.themoviedb.org/3/movie/" + params[0] + "/trailers?api_key=" + mTmdbApiKey);
 				JSONArray trailers = jObject.getJSONArray("youtube");
 
 				if (trailers.length() > 0)
@@ -297,7 +297,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				JSONObject jObject = MizLib.getJSONObject("https://gdata.youtube.com/feeds/api/videos?q=" + params[0] + "&max-results=20&alt=json&v=2");
+				JSONObject jObject = MizLib.getJSONObject(getApplicationContext(), "https://gdata.youtube.com/feeds/api/videos?q=" + params[0] + "&max-results=20&alt=json&v=2");
 				JSONObject jdata = jObject.getJSONObject("feed");
 				JSONArray aitems = jdata.getJSONArray("entry");
 
@@ -405,7 +405,7 @@ public class TMDbMovieDetails extends MizActivity implements OnNavigationListene
 		protected String doInBackground(Object... params) {
 			try {
 				mBaseUrl = MizLib.getTmdbImageBaseUrl(mContext);
-				mJson = MizLib.getJSONObject("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=releases,trailers,images,casts,similar_movies").toString();
+				mJson = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + mTmdbApiKey + "&append_to_response=releases,trailers,images,casts,similar_movies").toString();
 				return "";
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
 

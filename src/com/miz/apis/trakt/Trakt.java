@@ -32,15 +32,15 @@ import android.preference.PreferenceManager;
 
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.TvShowEpisode;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 public class Trakt {
-
+	
 	private Trakt() {} // No instantiation
 	
 	public static String getApiKey(Context context) {
@@ -58,12 +58,10 @@ public class Trakt {
 		if (username.isEmpty() || password.isEmpty())
 			return false;
 
-		OkHttpClient client = new OkHttpClient();
-
 		try {
 			// Cancel any current check-in
 			Request request = MizLib.getTraktAuthenticationRequest("http://api.trakt.tv/movie/cancelcheckin/" + getApiKey(c), username, password);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			if (!response.isSuccessful())
 				return false;
 		} catch (Exception e) {
@@ -80,7 +78,7 @@ public class Trakt {
 			holder.put("app_date", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/movie/checkin/" + getApiKey(c), holder);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -95,12 +93,10 @@ public class Trakt {
 		if (username.isEmpty() || password.isEmpty())
 			return false;
 
-		OkHttpClient client = new OkHttpClient();
-
 		try {
 			// Cancel any current check-in
 			Request request = MizLib.getTraktAuthenticationRequest("http://api.trakt.tv/movie/cancelcheckin/" + getApiKey(c), username, password);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			if (!response.isSuccessful())
 				return false;
 		} catch (Exception e) {
@@ -120,7 +116,7 @@ public class Trakt {
 			holder.put("app_date", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/movie/checkin/" + getApiKey(c), holder);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -135,12 +131,10 @@ public class Trakt {
 		if (username.isEmpty() || password.isEmpty())
 			return false;
 
-		OkHttpClient client = new OkHttpClient();
-
 		try {
 			// Cancel any current check-in
 			Request request = MizLib.getTraktAuthenticationRequest("http://api.trakt.tv/show/cancelcheckin/" + getApiKey(c), username, password);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			if (!response.isSuccessful())
 				return false;
 		} catch (Exception e) {
@@ -161,7 +155,7 @@ public class Trakt {
 			holder.put("app_date", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/show/checkin/" + getApiKey(c), holder);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -175,8 +169,6 @@ public class Trakt {
 
 		if (username.isEmpty() || password.isEmpty() || movies.size() == 0)
 			return false;
-
-		OkHttpClient client = new OkHttpClient();
 
 		try {
 			JSONObject holder = new JSONObject();
@@ -196,7 +188,7 @@ public class Trakt {
 			holder.put("movies", array);
 
 			Request request = MizLib.getJsonPostRequest((movies.get(0).hasWatched() ? "http://api.trakt.tv/movie/seen/" : "http://api.trakt.tv/movie/unseen/") + getApiKey(c), holder);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -210,8 +202,6 @@ public class Trakt {
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
-		
-		OkHttpClient client = new OkHttpClient();
 
 		try {
 			JSONObject holder = new JSONObject();
@@ -224,7 +214,7 @@ public class Trakt {
 			holder.put("season", season);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/show/season/" + (!watched ? "un" : "") + "seen/" + getApiKey(c), holder);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -238,8 +228,6 @@ public class Trakt {
 
 		if (username.isEmpty() || password.isEmpty() || !settings.getBoolean(SYNC_WITH_TRAKT, false) || episodes.size() == 0)
 			return false;
-		
-		OkHttpClient client = new OkHttpClient();
 
 		try {
 			JSONObject holder = new JSONObject();
@@ -261,7 +249,7 @@ public class Trakt {
 			holder.put("episodes", array);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/show/episode/" + (!watched ? "un" : "") + "seen/" + getApiKey(c), holder);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -275,8 +263,6 @@ public class Trakt {
 
 		if (username.isEmpty() || password.isEmpty())
 			return false;
-		
-		OkHttpClient client = new OkHttpClient();
 
 		try {
 			JSONObject json = new JSONObject();
@@ -298,7 +284,7 @@ public class Trakt {
 			json.put("episodes", array);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/show/episode/seen/" + getApiKey(c), json);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -312,8 +298,6 @@ public class Trakt {
 
 		if (username.isEmpty() || password.isEmpty() || movies.size() == 0)
 			return false;
-		
-		OkHttpClient client = new OkHttpClient();
 
 		try {
 			JSONObject json = new JSONObject();
@@ -333,7 +317,7 @@ public class Trakt {
 			json.put("movies", array);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/movie/library/" + getApiKey(c), json);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -347,8 +331,6 @@ public class Trakt {
 
 		if (username.isEmpty() || password.isEmpty() || movies.size() == 0)
 			return false;
-		
-		OkHttpClient client = new OkHttpClient();
 
 		try {
 			JSONObject json = new JSONObject();
@@ -368,7 +350,7 @@ public class Trakt {
 			json.put("movies", array);
 
 			Request request = MizLib.getJsonPostRequest((movies.get(0).toWatch() ? "http://api.trakt.tv/movie/watchlist/" : "http://api.trakt.tv/movie/unwatchlist/") + getApiKey(c), json);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -382,8 +364,6 @@ public class Trakt {
 
 		if (username.isEmpty() || password.isEmpty() || movies.size() == 0)
 			return false;
-		
-		OkHttpClient client = new OkHttpClient();
 
 		try {
 			JSONObject json = new JSONObject();
@@ -404,7 +384,7 @@ public class Trakt {
 			json.put("movies", array);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/rate/movies/" + getApiKey(c), json);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -430,9 +410,6 @@ public class Trakt {
 		if (username.isEmpty() || password.isEmpty())
 			return false;
 
-		
-		OkHttpClient client = new OkHttpClient();
-
 		try {
 			JSONObject json = new JSONObject();
 			json.put("username", username);
@@ -453,7 +430,7 @@ public class Trakt {
 			json.put("episodes", array);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/show/episode/library/" + getApiKey(c), json);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -467,8 +444,6 @@ public class Trakt {
 
 		if (username.isEmpty() || password.isEmpty() || shows.size() == 0)
 			return false;
-		
-		OkHttpClient client = new OkHttpClient();
 
 		try {
 			JSONObject json = new JSONObject();
@@ -487,7 +462,7 @@ public class Trakt {
 			json.put("shows", array);
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/rate/shows/" + getApiKey(c), json);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;
@@ -503,8 +478,6 @@ public class Trakt {
 		if (username.isEmpty() || password.isEmpty())
 			return new JSONArray();
 
-		OkHttpClient client = new OkHttpClient();
-
 		try {
 			String url = "";
 			if (type == WATCHED) {
@@ -518,7 +491,7 @@ public class Trakt {
 			}
 
 			Request request = MizLib.getTraktAuthenticationRequest(url, username, password);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			
 			if (response.isSuccessful())
 				return new JSONArray(response.body().string());
@@ -536,8 +509,6 @@ public class Trakt {
 		if (username.isEmpty() || password.isEmpty())
 			return new JSONArray();
 
-		OkHttpClient client = new OkHttpClient();
-
 		try {
 			String url = "";
 			if (type == WATCHED) {
@@ -549,7 +520,7 @@ public class Trakt {
 			}
 
 			Request request = MizLib.getTraktAuthenticationRequest(url, username, password);
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			
 			if (response.isSuccessful())
 				return new JSONArray(response.body().string());
@@ -560,10 +531,10 @@ public class Trakt {
 	}
 	
 	public static Show getShowSummary(Context context, String showId) {
-		return new Show(MizLib.getJSONObject("http://api.trakt.tv/show/summary.json/" + getApiKey(context) + "/" + showId));
+		return new Show(MizLib.getJSONObject(context, "http://api.trakt.tv/show/summary.json/" + getApiKey(context) + "/" + showId));
 	}
 	
 	public static com.miz.apis.trakt.Movie getMovieSummary(Context context, String movieId) {
-		return new com.miz.apis.trakt.Movie(MizLib.getJSONObject("http://api.trakt.tv/movie/summary.json/" + getApiKey(context) + "/" + movieId));
+		return new com.miz.apis.trakt.Movie(MizLib.getJSONObject(context, "http://api.trakt.tv/movie/summary.json/" + getApiKey(context) + "/" + movieId));
 	}
 }

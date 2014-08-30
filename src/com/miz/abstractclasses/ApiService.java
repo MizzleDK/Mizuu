@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.miz.interfaces;
+package com.miz.abstractclasses;
 
 import java.util.List;
 
-public interface ApiService<T> {
+public abstract class ApiService<T> {
 
 	/**
 	 * Search based on the query.
@@ -27,7 +27,7 @@ public interface ApiService<T> {
 	 * @return {@link List} of search results. If no results were found,
 	 * the list will be empty.
 	 */
-	public List<T> search(String query, String language);
+	public abstract List<T> search(String query, String language);
 	
 	/**
 	 * Search based on the query.
@@ -37,7 +37,7 @@ public interface ApiService<T> {
 	 * @return {@link List} of search results. If no results were found,
 	 * the list will be empty.
 	 */
-	public List<T> search(String query, String year, String language);
+	public abstract List<T> search(String query, String year, String language);
 	
 	/**
 	 * Search based on a IMDb ID.
@@ -46,7 +46,7 @@ public interface ApiService<T> {
 	 * @return {@link List} of search results. If no results were found,
 	 * the list will be empty.
 	 */
-	public List<T> searchByImdbId(String imdbId, String language);
+	public abstract List<T> searchByImdbId(String imdbId, String language);
 	
 	/**
 	 * Get content based on its ID.
@@ -54,5 +54,5 @@ public interface ApiService<T> {
 	 * @param language Two-letter ISO 639-1 language code. Can be {@link null}.
 	 * @return Content object based on the supplied ID.
 	 */
-	public T get(String id, String language);
+	public abstract T get(String id, String language);
 }

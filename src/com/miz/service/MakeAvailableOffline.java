@@ -54,7 +54,6 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.CancelOfflineDownload;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
@@ -265,13 +264,11 @@ public class MakeAvailableOffline extends IntentService {
 				int bufferSize = mBufferSize;
 				byte[] retVal = null;
 
-				OkHttpClient client = new OkHttpClient();
-
 				Request request = new Request.Builder()
 				.url(mFileUrl)
 				.build();
 
-				Response response = client.newCall(request).execute();
+				Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 				if (!response.isSuccessful())
 					return false;
 

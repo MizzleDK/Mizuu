@@ -33,7 +33,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.common.collect.Multimap;
 import com.miz.apis.trakt.Trakt;
@@ -45,6 +44,7 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShow;
+import com.miz.utils.LocalBroadcastUtils;
 
 public class TraktTvShowsSyncService extends IntentService {
 
@@ -397,7 +397,7 @@ public class TraktTvShowsSyncService extends IntentService {
 	}
 
 	private void broadcastLibraryUpdate() {
-		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-shows-update"));
+		LocalBroadcastUtils.updateTvShowLibrary(this);
 	}
 
 	private void showPostUpdateNotification() {

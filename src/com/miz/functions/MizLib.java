@@ -199,7 +199,7 @@ public class MizLib {
 	public static String toCapitalFirstChar(String s) {
 		if (TextUtils.isEmpty(s))
 			return "";
-		
+
 		return s.substring(0, 1).toUpperCase(Locale.ENGLISH) + s.substring(1, s.length());
 	}
 
@@ -251,14 +251,14 @@ public class MizLib {
 	public static String getNumbersInString(String s) {
 		if (TextUtils.isEmpty(s))
 			return "";
-		
+
 		StringBuilder result = new StringBuilder();
 		char[] charArray = s.toCharArray();
 		int count = charArray.length;
 		for (int i = 0; i < count; i++)
 			if (Character.isDigit(charArray[i]))
 				result.append(charArray[i]);
-		
+
 		return result.toString();
 	}
 
@@ -321,7 +321,7 @@ public class MizLib {
 	public static boolean isWifiConnected(Context c) {
 		if (c!= null) {
 			boolean disableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(c).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
-			
+
 			if (disableEthernetWiFiCheck)
 				return isOnline(c);
 
@@ -1140,13 +1140,11 @@ public class MizLib {
 			int bufferSize = 8192;
 			byte[] retVal = null;
 
-			OkHttpClient client = new OkHttpClient();
-
 			Request request = new Request.Builder()
 			.url(url)
 			.build();
 
-			Response response = client.newCall(request).execute();
+			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
 			if (!response.isSuccessful())
 				return false;
 
@@ -1178,8 +1176,8 @@ public class MizLib {
 		return true;
 	}
 
-	public static JSONObject getJSONObject(String url) {
-		final OkHttpClient client = new OkHttpClient();
+	public static JSONObject getJSONObject(Context context, String url) {
+		final OkHttpClient client = MizuuApplication.getOkHttpClient();
 
 		Request request = new Request.Builder()
 		.url(url)
@@ -1891,20 +1889,6 @@ public class MizLib {
 		return count;
 	}
 
-	public static DecryptedMovie decryptMovie(String filepath, String customTags) {
-		DecryptedMovie mMovie = new DecryptedMovie();
-		mMovie.setFilepath(filepath);
-		mMovie.setFileNameYear(decryptYear(mMovie.getFileName()));
-		mMovie.setImdbId(decryptImdbId(mMovie.getFileName()));
-		mMovie.setDecryptedFileName(decryptName(mMovie.getFileName(), customTags));
-		if (mMovie.hasParentName()) {
-			mMovie.setParentNameYear(decryptYear(mMovie.getParentName()));
-			mMovie.setDecryptedParentName(decryptName(mMovie.getParentName(), customTags));
-		}
-
-		return mMovie;
-	}
-
 	public static String decryptImdbId(String filename) {
 		Pattern p = Pattern.compile("(tt\\d{7})");
 		Matcher m = p.matcher(filename);
@@ -1914,6 +1898,9 @@ public class MizLib {
 	}
 
 	public static String decryptName(String input, String customTags) {
+		if (TextUtils.isEmpty(input))
+			return "";
+
 		String output = getNameFromFilename(input);
 		output = fixAbbreviations(output);
 
@@ -2582,7 +2569,7 @@ public class MizLib {
 		}
 
 		try {
-			JSONObject configuration = MizLib.getJSONObject("https://api.themoviedb.org/3/configuration?api_key=" + getTmdbApiKey(context));
+			JSONObject configuration = getJSONObject(context, "https://api.themoviedb.org/3/configuration?api_key=" + getTmdbApiKey(context));
 			String baseUrl = configuration.getJSONObject("images").getString("secure_base_url");
 
 			Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
@@ -2595,7 +2582,7 @@ public class MizLib {
 			return null;
 		}
 	}
-	
+
 	public static void showSelectFileDialog(Context context, ArrayList<Filepath> paths, final Dialog.OnClickListener listener) {
 		String[] items = new String[paths.size()];
 		for (int i = 0; i < paths.size(); i++)
@@ -2605,5 +2592,13 @@ public class MizLib {
 		builder.setTitle(context.getString(R.string.selectFile));
 		builder.setItems(items, listener);
 		builder.show();
+	}
+
+	public static String getFilenameWithoutExtension(String filename) {
+		try {
+			return filename.substring(0, filename.lastIndexOf("."));
+		} catch (IndexOutOfBoundsException e) {
+			return filename;
+		}
 	}
 }

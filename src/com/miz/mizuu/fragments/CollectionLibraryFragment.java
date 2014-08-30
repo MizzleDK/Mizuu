@@ -109,6 +109,7 @@ import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
+import com.miz.utils.LocalBroadcastUtils;
 import com.squareup.picasso.Picasso;
 
 public class CollectionLibraryFragment extends Fragment implements OnNavigationListener, OnSharedPreferenceChangeListener {
@@ -191,8 +192,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		setupActionBar();
 		mActionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
 
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-cover-change"));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
 	}
 
 	private void setupActionBar() {
@@ -215,10 +215,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.filterEquals(new Intent("mizuu-library-change")) || intent.filterEquals(new Intent("mizuu-movie-cover-change"))) {
-				clearCaches();
-			}
-
+			clearCaches();
 			forceLoaderLoad();
 		}
 	};
@@ -296,7 +293,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 	private void clearCaches() {
 		if (isAdded())
-			MizuuApplication.getLruCache(getActivity()).clear();
+			MizuuApplication.clearLruCache(getActivity());
 	}
 
 	@Override

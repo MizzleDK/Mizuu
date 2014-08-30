@@ -43,6 +43,7 @@ import com.miz.functions.Movie;
 import com.miz.functions.PaletteTransformation;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.LocalBroadcastUtils;
 import com.miz.views.ObservableScrollView;
 import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
@@ -134,8 +135,8 @@ public class MovieDetailsFragment extends Fragment {
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-mCover-change"));
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-backdrop-change"));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.CLEAR_IMAGE_CACHE));
 	}
 
 	@Override

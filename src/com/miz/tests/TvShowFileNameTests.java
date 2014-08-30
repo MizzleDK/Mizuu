@@ -20,7 +20,7 @@ import com.miz.identification.ShowStructure;
 
 import android.test.AndroidTestCase;
 
-public class TvShowFileNameTests extends AndroidTestCase {
+public class TvShowFilenameTests extends AndroidTestCase {
 
 	public void testCase1() {
 		ShowStructure ss = new ShowStructure("/2 Broke Girls/Season 1/2 Broke Girls - S01E01 - Reboot in Brooklyn.avi");

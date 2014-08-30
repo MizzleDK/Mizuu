@@ -26,22 +26,17 @@ import java.util.List;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.miz.abstractclasses.TvShowApiService;
 import com.miz.apis.thetvdb.TvShow;
 import com.miz.apis.thetvdb.Episode;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.MizLib;
 import com.miz.functions.TvShowLibraryUpdateCallback;
-import com.miz.interfaces.TvShowApiService;
 import com.miz.mizuu.MizuuApplication;
-import com.miz.mizuu.R;
-import com.miz.widgets.ShowBackdropWidgetProvider;
-import com.miz.widgets.ShowCoverWidgetProvider;
-import com.miz.widgets.ShowStackWidgetProvider;
+import com.miz.utils.WidgetUtils;
 import com.squareup.picasso.Picasso;
 
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
@@ -49,8 +44,7 @@ import android.util.SparseBooleanArray;
 
 public class TvShowIdentification {
 
-	private Picasso mPicasso;
-
+	private final Picasso mPicasso;
 	private final TvShowLibraryUpdateCallback mCallback;
 	private final Context mContext;
 	private final String mIgnoredTags;
@@ -58,7 +52,6 @@ public class TvShowIdentification {
 	private ArrayList<ShowStructure> mShowStructures = new ArrayList<ShowStructure>();
 	private Multimap<String, Integer> mShowFolderNameMap = LinkedListMultimap.create();
 	private SparseBooleanArray mImdbMap = new SparseBooleanArray();
-
 	private String mShowId = null, mLocale = null;
 	private int mSeason = -1, mEpisode = -1;
 	private boolean mCancel = false;
@@ -146,8 +139,7 @@ public class TvShowIdentification {
 			mImdbMap.put(i, ss.hasImdbId());
 		}
 
-		// Make modular
-		TvShowApiService service = MizuuApplication.getTvShowSourceService(mContext);
+		TvShowApiService service = MizuuApplication.getTvShowService(mContext);
 
 		for (String showFolderName : mShowFolderNameMap.keySet()) {
 
@@ -257,8 +249,6 @@ public class TvShowIdentification {
 		if (show == null)
 			return;
 
-		updateWidgets();
-
 		File coverFile = MizLib.getTvShowThumb(mContext, show.getId());
 		File backdropFile = MizLib.getTvShowBackdrop(mContext, show.getId());
 		if (!backdropFile.exists())
@@ -271,6 +261,8 @@ public class TvShowIdentification {
 			mCallback.onTvShowAdded(show.getId(), show.getTitle(), MizLib.getNotificationImageThumbnail(mContext, coverFile.getAbsolutePath()),
 					MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight()), episodeCount);
 		}
+		
+		WidgetUtils.updateTvShowWidgets(mContext);
 	}
 
 	private void createShow(TvShow thisShow) {
@@ -373,13 +365,6 @@ public class TvShowIdentification {
 			mCallback.onEpisodeAdded(thisShow.getId(), thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID) ? filepath : thisShow.getTitle() + " S" + MizLib.addIndexZero(ep.getSeason()) + "E" + MizLib.addIndexZero(ep.getEpisode()),
 					MizLib.getNotificationImageThumbnail(mContext, coverFile.getAbsolutePath()), MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight()));
 		}
-	}
-
-	private void updateWidgets() {
-		AppWidgetManager awm = AppWidgetManager.getInstance(mContext);
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(mContext, ShowStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(mContext, ShowCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-		awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(mContext, ShowBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
 	}
 
 	// These variables don't need to be re-initialized

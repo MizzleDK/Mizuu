@@ -16,24 +16,22 @@
 
 package com.miz.mizuu.fragments;
 
-import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
-import android.content.BroadcastReceiver;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -60,14 +58,14 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.miz.abstractclasses.MovieApiService;
+import com.miz.apis.tmdb.Movie;
 import com.miz.functions.AsyncTask;
-import com.miz.functions.DecryptedMovie;
 import com.miz.functions.MizLib;
-import com.miz.functions.TMDb;
-import com.miz.functions.TMDbMovie;
+import com.miz.identification.MovieStructure;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.miz.service.TheMovieDB;
+import com.miz.service.IdentifyMovieService;
 import com.squareup.picasso.Picasso;
 
 public class IdentifyMovieFragment extends Fragment {
@@ -78,22 +76,21 @@ public class IdentifyMovieFragment extends Fragment {
 	private ProgressBar mProgress;
 	private Picasso mPicasso;
 	private Bitmap.Config mConfig;
-	private String mTmdbId, mFilepath, mLocale;
-	private DecryptedMovie mMovie;
+	private String mFilepath, mLocale;
 	private ListAdapter mAdapter;
 	private LanguageAdapter mSpinnerAdapter;
 	private MovieSearch mMovieSearch;
+	private MovieStructure mMovieStructure;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public IdentifyMovieFragment() {}
 
-	public static IdentifyMovieFragment newInstance(String filepath, String tmdbId) {
+	public static IdentifyMovieFragment newInstance(String filepath) {
 		IdentifyMovieFragment frag = new IdentifyMovieFragment();
 		Bundle args = new Bundle();
 		args.putString("filepath", filepath);
-		args.putString("tmdbId", tmdbId);
 		frag.setArguments(args);
 		return frag;
 	}
@@ -107,26 +104,14 @@ public class IdentifyMovieFragment extends Fragment {
 		// Hide the keyboard
 		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-		mTmdbId = getArguments().getString("tmdbId");
 		mFilepath = getArguments().getString("filepath");
 
-		String path = mFilepath;
-
-		// Check if this is a UPnP filepath
-		if (path.contains("<MiZ>"))
-			path = path.split("<MiZ>")[0];
-
-		if (path.contains("/"))
-			path = path.substring(path.lastIndexOf("/") + 1, path.length());
-
-		mMovie = MizLib.decryptMovie(path, PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(IGNORED_FILENAME_TAGS, ""));
+		mMovieStructure = new MovieStructure(mFilepath);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
 
 		mAdapter = new ListAdapter(getActivity());
-
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movies-identification"));
 	}
 
 	@Override
@@ -135,13 +120,6 @@ public class IdentifyMovieFragment extends Fragment {
 
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
 	}
 
 	@Override
@@ -181,7 +159,7 @@ public class IdentifyMovieFragment extends Fragment {
 		String language = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(LANGUAGE_PREFERENCE, "en");
 		mSpinner.setSelection(mSpinnerAdapter.getIndexForLocale(language));
 
-		mQuery.setText(mMovie.getDecryptedFileName());
+		mQuery.setText(mMovieStructure.getDecryptedFilename());
 		mQuery.setSelection(mQuery.length());
 		mQuery.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -219,15 +197,6 @@ public class IdentifyMovieFragment extends Fragment {
 		}
 	}
 
-	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			getActivity().setResult(2);
-			getActivity().finish();
-			return;
-		}
-	};
-
 	private void searchForMovies() {
 		if (MizLib.isOnline(getActivity())) {
 			if (!mQuery.getText().toString().isEmpty()) {
@@ -245,16 +214,17 @@ public class IdentifyMovieFragment extends Fragment {
 		if (MizLib.isOnline(getActivity())) {
 			Toast.makeText(getActivity(), getString(R.string.updatingMovieInfo), Toast.LENGTH_LONG).show();
 
-			Intent tmdbIntent = new Intent(getActivity(), TheMovieDB.class);
+			Intent identifyService = new Intent(getActivity(), IdentifyMovieService.class);
 			Bundle b = new Bundle();
 			b.putString("filepath", mFilepath);
-			b.putBoolean("isFromManualIdentify", true);
-			b.putString("oldTmdbId", mTmdbId);
-			b.putString("tmdbId", mAdapter.getItem(id).getId());
+			b.putString("movieId", mAdapter.getItem(id).getId());
 			b.putString("language", getSelectedLanguage());
-			tmdbIntent.putExtras(b);
+			identifyService.putExtras(b);
 
-			getActivity().startService(tmdbIntent);
+			getActivity().startService(identifyService);
+
+			getActivity().setResult(Activity.RESULT_OK);
+			getActivity().finish();
 		} else
 			Toast.makeText(getActivity(), getString(R.string.noInternet), Toast.LENGTH_SHORT).show();
 	}
@@ -288,8 +258,8 @@ public class IdentifyMovieFragment extends Fragment {
 				if (isCancelled())
 					return false;
 
-				TMDb tmdb = new TMDb(mContext);
-				ArrayList<TMDbMovie> movieResults = tmdb.searchForMovies(mQueryText, "", getSelectedLanguage());
+				MovieApiService service = MizuuApplication.getMovieService(mContext);
+				List<Movie> movieResults = service.search(mQueryText, getSelectedLanguage());
 
 				if (isCancelled())
 					return false;

@@ -43,6 +43,7 @@ import com.miz.functions.PaletteTransformation;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
+import com.miz.utils.LocalBroadcastUtils;
 import com.miz.views.ObservableScrollView;
 import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
@@ -119,8 +120,8 @@ public class TvShowDetailsFragment extends Fragment {
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-cover-change"));
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-show-backdrop-change"));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_LIBRARY));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.CLEAR_IMAGE_CACHE));
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {

@@ -60,10 +60,10 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.miz.abstractclasses.ApiService;
 import com.miz.apis.thetvdb.TvShow;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
-import com.miz.interfaces.ApiService;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.service.IdentifyTvShowService;
@@ -216,7 +216,6 @@ public class IdentifyTvShowFragment extends Fragment {
 
 			Intent identifyService = new Intent(getActivity(), IdentifyTvShowService.class);
 			Bundle b = new Bundle();
-			b.putString("showTitle", mAdapter.getItem(id).getTitle());
 			b.putString("oldShowId", mShowId);
 			b.putString("newShowId", mAdapter.getItem(id).getId());
 			b.putString("language", getSelectedLanguage());
@@ -259,7 +258,7 @@ public class IdentifyTvShowFragment extends Fragment {
 				if (isCancelled())
 					return false;
 
-				ApiService<TvShow> service = MizuuApplication.getTvShowSourceService(mContext);
+				ApiService<TvShow> service = MizuuApplication.getTvShowService(mContext);
 				List<TvShow> results = service.search(mQueryText, getSelectedLanguage());
 
 				if (isCancelled())

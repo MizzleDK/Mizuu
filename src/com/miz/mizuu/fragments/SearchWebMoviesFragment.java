@@ -17,6 +17,7 @@
 package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -46,11 +47,11 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import com.miz.abstractclasses.MovieApiService;
+import com.miz.apis.tmdb.Movie;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
-import com.miz.functions.TMDb;
-import com.miz.functions.TMDbMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
@@ -197,9 +198,8 @@ public class SearchWebMoviesFragment extends Fragment {
 				if (isCancelled())
 					return null;
 
-				TMDb tmdb = new TMDb(getActivity().getApplicationContext());
-				ArrayList<TMDbMovie> movieResults;
-				movieResults = tmdb.searchForMovies(params[0], "", "en");
+				MovieApiService service = MizuuApplication.getMovieService(getActivity().getApplicationContext());
+				List<Movie> movieResults = service.search(params[0], "en");
 
 				if (isCancelled())
 					return null;

@@ -41,7 +41,6 @@ import com.miz.db.DbAdapterTvShows;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,6 +57,7 @@ import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragmentTv;
 import com.miz.mizuu.fragments.TvShowDetailsFragment;
 import com.miz.mizuu.fragments.TvShowSeasonsEpisodesFragment;
+import com.miz.utils.LocalBroadcastUtils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -333,7 +333,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 				setResult(2); // Favorite removed
 			}
 
-			LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("mizuu-shows-update"));
+			LocalBroadcastUtils.updateTvShowLibrary(this);
 
 		} else Toast.makeText(this, getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
 
@@ -362,7 +362,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {	
 				MizLib.deleteShow(getApplicationContext(), thisShow, true);
-				LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("mizuu-shows-update"));
+				LocalBroadcastUtils.updateTvShowLibrary(getApplicationContext());
 				finish();
 				return;
 			}

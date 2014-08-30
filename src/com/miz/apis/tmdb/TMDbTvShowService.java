@@ -15,20 +15,20 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import com.miz.abstractclasses.TvShowApiService;
 import com.miz.apis.thetvdb.Episode;
 import com.miz.apis.thetvdb.Season;
 import com.miz.apis.thetvdb.TvShow;
 import com.miz.apis.trakt.Trakt;
 import com.miz.functions.MizLib;
-import com.miz.interfaces.TvShowApiService;
 import com.miz.mizuu.R;
 
-public class TMDbTvShow implements TvShowApiService {
+public class TMDbTvShowService extends TvShowApiService {
 
 	private final String mRatingsProvider, mTmdbApiKey;
 	private final Context mContext;
 
-	public TMDbTvShow(Context context) {
+	public TMDbTvShowService(Context context) {
 		mContext = context;
 		mRatingsProvider = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_4));
 		mTmdbApiKey = MizLib.getTmdbApiKey(mContext);
@@ -64,7 +64,29 @@ public class TMDbTvShow implements TvShowApiService {
 	public List<TvShow> searchByImdbId(String imdbId, String language) {
 		language = getLanguage(language);
 
-		return getListFromUrl("https://api.themoviedb.org/3/find/" + imdbId + "&language=" + language + "&external_source=imdb_id&api_key=" + mTmdbApiKey);
+		ArrayList<TvShow> results = new ArrayList<TvShow>();
+
+		try {
+			JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/find/" + imdbId + "?language=" + language + "&external_source=imdb_id&api_key=" + mTmdbApiKey);
+			JSONArray array = jObject.getJSONArray("tv_results");
+
+			String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+			String imageSizeUrl = MizLib.getImageUrlSize(mContext);
+
+			for (int i = 0; i < array.length(); i++) {
+				TvShow show = new TvShow();
+				show.setTitle(array.getJSONObject(i).getString("name"));
+				show.setOriginalTitle(array.getJSONObject(i).getString("original_name"));
+				show.setFirstAired(array.getJSONObject(i).getString("first_air_date"));
+				show.setDescription(""); // TMDb doesn't support descriptions in search results
+				show.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")) + "/10");
+				show.setId(String.valueOf(array.getJSONObject(i).getInt("id")));
+				show.setCoverUrl(baseUrl + imageSizeUrl + array.getJSONObject(i).getString("poster_path"));
+				results.add(show);
+			}
+		} catch (JSONException e) {}
+
+		return results;
 	}
 
 	@Override
@@ -76,7 +98,7 @@ public class TMDbTvShow implements TvShowApiService {
 
 		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 
-		JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/tv/" + id + "?api_key=" + mTmdbApiKey + "&language=" + language + "&append_to_response=credits,images,external_ids");
+		JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "?api_key=" + mTmdbApiKey + "&language=" + language + "&append_to_response=credits,images,external_ids");
 
 		// Set title
 		show.setTitle(MizLib.getStringFromJSONObject(jObject, "name", ""));
@@ -85,7 +107,7 @@ public class TMDbTvShow implements TvShowApiService {
 		show.setDescription(MizLib.getStringFromJSONObject(jObject, "overview", ""));
 
 		if (!language.equals("en")) { // This is a localized search - let's fill in the blanks
-			JSONObject englishResults = MizLib.getJSONObject("https://api.themoviedb.org/3/tv/" + id + "?api_key=" + mTmdbApiKey + "&language=en");
+			JSONObject englishResults = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "?api_key=" + mTmdbApiKey + "&language=en");
 
 			if (show.getTitle().isEmpty())
 				show.setTitle(MizLib.getStringFromJSONObject(englishResults, "name", ""));
@@ -154,7 +176,7 @@ public class TMDbTvShow implements TvShowApiService {
 		// OMDb API / IMDb
 		if (mRatingsProvider.equals(mContext.getString(R.string.ratings_option_3))) {
 			try {
-				jObject = MizLib.getJSONObject("http://www.omdbapi.com/?i=" + show.getImdbId());
+				jObject = MizLib.getJSONObject(mContext, "http://www.omdbapi.com/?i=" + show.getImdbId());
 				double rating = Double.valueOf(MizLib.getStringFromJSONObject(jObject, "imdbRating", "0"));
 
 				if (rating > 0 || show.getRating().equals("0.0"))
@@ -178,7 +200,7 @@ public class TMDbTvShow implements TvShowApiService {
 
 		// Episode details
 		for (Season s : show.getSeasons()) {
-			jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/tv/" + id + "/season/" + s.getSeason() + "?api_key=" + mTmdbApiKey);
+			jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "/season/" + s.getSeason() + "?api_key=" + mTmdbApiKey);
 			try {
 				JSONArray episodes = jObject.getJSONArray("episodes");
 				for (int i = 0; i < episodes.length(); i++) {
@@ -194,7 +216,7 @@ public class TMDbTvShow implements TvShowApiService {
 						// This is quite nasty... An HTTP call for each episode, yuck!
 						// Sadly, this is needed in order to get proper screenshot URLS
 						// and info about director, writer and guest stars
-						JSONObject episodeCall = MizLib.getJSONObject("https://api.themoviedb.org/3/tv/" + id + "/season/" + s.getSeason() + "/episode/" + ep.getEpisode() + "?api_key=" + mTmdbApiKey + "&append_to_response=credits,images");
+						JSONObject episodeCall = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "/season/" + s.getSeason() + "/episode/" + ep.getEpisode() + "?api_key=" + mTmdbApiKey + "&append_to_response=credits,images");
 
 						// Screenshot URL in the correct size
 						JSONArray images = episodeCall.getJSONObject("images").getJSONArray("stills");
@@ -251,23 +273,11 @@ public class TMDbTvShow implements TvShowApiService {
 		return show;
 	}
 
-	/**
-	 * Get the language code or a default one if
-	 * the supplied one is empty or {@link null}.
-	 * @param language
-	 * @return
-	 */
-	private String getLanguage(String language) {
-		if (TextUtils.isEmpty(language))
-			language = "all";
-		return language;
-	}
-
 	private ArrayList<TvShow> getListFromUrl(String serviceUrl) {
 		ArrayList<TvShow> results = new ArrayList<TvShow>();
 
 		try {
-			JSONObject jObject = MizLib.getJSONObject(serviceUrl);
+			JSONObject jObject = MizLib.getJSONObject(mContext, serviceUrl);
 			JSONArray array = jObject.getJSONArray("results");
 
 			String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
@@ -278,7 +288,7 @@ public class TMDbTvShow implements TvShowApiService {
 				show.setTitle(array.getJSONObject(i).getString("name"));
 				show.setOriginalTitle(array.getJSONObject(i).getString("original_name"));
 				show.setFirstAired(array.getJSONObject(i).getString("first_air_date"));
-				show.setDescription(""); // TMDb doesn't support descriptions
+				show.setDescription(""); // TMDb doesn't support descriptions in search results
 				show.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")) + "/10");
 				show.setId(String.valueOf(array.getJSONObject(i).getInt("id")));
 				show.setCoverUrl(baseUrl + imageSizeUrl + array.getJSONObject(i).getString("poster_path"));
@@ -295,7 +305,7 @@ public class TMDbTvShow implements TvShowApiService {
 		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 		
 		try {
-			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/tv/" + id + "/images" + "?api_key=" + mTmdbApiKey);
+			JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "/images" + "?api_key=" + mTmdbApiKey);
 			JSONArray jArray = jObject.getJSONArray("posters");
 			for (int i = 0; i < jArray.length(); i++) {
 				covers.add(baseUrl + MizLib.getImageUrlSize(mContext) + MizLib.getStringFromJSONObject(jArray.getJSONObject(i), "file_path", ""));
@@ -311,7 +321,7 @@ public class TMDbTvShow implements TvShowApiService {
 		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 		
 		try {
-			JSONObject jObject = MizLib.getJSONObject("https://api.themoviedb.org/3/tv/" + id + "/images" + "?api_key=" + mTmdbApiKey);
+			JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "/images" + "?api_key=" + mTmdbApiKey);
 			JSONArray jArray = jObject.getJSONArray("backdrops");
 			for (int i = 0; i < jArray.length(); i++) {
 				covers.add(baseUrl + MizLib.getBackdropThumbUrlSize(mContext) + MizLib.getStringFromJSONObject(jArray.getJSONObject(i), "file_path", ""));
@@ -319,5 +329,18 @@ public class TMDbTvShow implements TvShowApiService {
 		} catch (JSONException e) {}
 
 		return covers;
+	}
+	
+	/**
+	 * Get the language code or a default one if
+	 * the supplied one is empty or {@link null}.
+	 * @param language
+	 * @return Language code
+	 */
+	@Override
+	public String getLanguage(String language) {
+		if (TextUtils.isEmpty(language))
+			language = "en";
+		return language;
 	}
 }

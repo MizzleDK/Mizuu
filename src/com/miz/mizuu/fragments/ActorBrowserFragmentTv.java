@@ -20,11 +20,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -259,32 +254,17 @@ public class ActorBrowserFragmentTv extends Fragment {
 		protected String doInBackground(String... params) {
 			try {
 				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
-				
-				HttpClient httpclient = null;
-				HttpGet httppost = null;
-				ResponseHandler<String> responseHandler = null;
+
 				JSONObject jObject = null;
 				
 				if (!mId.startsWith("tmdb_")) {
-					httpclient = new DefaultHttpClient();
-					httppost = new HttpGet("https://api.themoviedb.org/3/find/" + mId + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
-					httppost.setHeader("Accept", "application/json");
-					responseHandler = new BasicResponseHandler();
-					String results = httpclient.execute(httppost, responseHandler);
-					
-					jObject = new JSONObject(results);
+					jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/find/" + mId + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
 					mId = MizLib.getStringFromJSONObject(jObject.getJSONArray("tv_results").getJSONObject(0), "id", "");
 				} else {
-					httpclient = new DefaultHttpClient();
 					mId = mId.replace("tmdb_", "");
 				}
 
-				httppost = new HttpGet("https://api.themoviedb.org/3/tv/" + mId + "/credits?api_key=" + mTmdbApiKey);
-				httppost.setHeader("Accept", "application/json");
-				responseHandler = new BasicResponseHandler();
-				String html = httpclient.execute(httppost, responseHandler);
-				
-				jObject = new JSONObject(html);
+				jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + mId + "/credits?api_key=" + mTmdbApiKey);
 
 				JSONArray jArray = jObject.getJSONArray("cast");
 

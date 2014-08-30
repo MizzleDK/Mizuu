@@ -31,6 +31,7 @@ import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
+import com.miz.utils.LocalBroadcastUtils;
 
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
@@ -68,7 +69,14 @@ public class UnidentifiedMovies extends MizActivity {
 
 		loadData();
 		
-		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-library-change"));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {

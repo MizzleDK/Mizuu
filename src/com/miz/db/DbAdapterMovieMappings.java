@@ -146,4 +146,22 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
 
 		return paths;
 	}
+	
+	public String getIdForFilepath(String filepath) {
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, new String[]{KEY_TMDB_ID, KEY_FILEPATH}, KEY_FILEPATH + "='" + filepath + "'", null, null, null, null);
+		String id = "";
+
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					id = cursor.getString(cursor.getColumnIndex(KEY_TMDB_ID));
+				}
+			} catch (Exception e) {
+			} finally {
+				cursor.close();
+			}
+		}
+
+		return id;
+	}
 }

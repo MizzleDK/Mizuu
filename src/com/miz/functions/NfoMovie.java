@@ -29,31 +29,36 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 
+import com.miz.apis.tmdb.Movie;
 import com.miz.db.DbAdapterMovies;
 import com.miz.mizuu.MizuuApplication;
+import com.squareup.picasso.Picasso;
 
 public class NfoMovie {
 
-	private MovieLibraryUpdateCallback callback;
-	private TMDbMovie movie;
-	private String filepath;
-	private Context c;
-	private InputStream is;
+	private final Picasso mPicasso;
+	private final MovieLibraryUpdateCallback mCallback;
+	private final String mFilepath;
+	private final Context mContext;
+	private final InputStream mInputStream;
+	private final int mCount;
 
-	public NfoMovie(String file, InputStream is, Context c, MovieLibraryUpdateCallback callback) {
-		this.filepath = file;
-		this.is = is;
-		this.c = c;
-		this.callback = callback;
+	private Movie mMovie;
+
+	public NfoMovie(String file, InputStream is, Context c, MovieLibraryUpdateCallback callback, int count) {
+		mFilepath = file;
+		mInputStream = is;
+		mContext = c;
+		mCallback = callback;
+		mPicasso = Picasso.with(mContext);
+		mCount = count;
 
 		readFile();
 	}
 
 	private void readFile() {
-		movie = new TMDbMovie();
+		mMovie = new Movie();
 
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -61,7 +66,7 @@ public class NfoMovie {
 
 			Document doc;
 
-			doc = db.parse(is);
+			doc = db.parse(mInputStream);
 			doc.getDocumentElement().normalize();
 
 			NodeList nodeList = doc.getElementsByTagName("movie");
@@ -77,37 +82,37 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("title");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setTitle(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setTitle(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setTitle("");
+						mMovie.setTitle("");
 					}
 
 					try {
 						list = firstElement.getElementsByTagName("originaltitle");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setOriginalTitle(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setOriginalTitle(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setOriginalTitle("");
+						mMovie.setOriginalTitle("");
 					}
 
 					try {
 						list = firstElement.getElementsByTagName("set");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setCollectionTitle(((Node) tag.item(0)).getNodeValue().trim());
-						movie.setCollectionId(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setCollectionTitle(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setCollectionId(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setCollectionTitle("");
+						mMovie.setCollectionTitle("");
 					}
 
 					try {
 						list = firstElement.getElementsByTagName("rating");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setRating(((Node) tag.item(0)).getNodeValue().trim().replace(",", "."));
+						mMovie.setRating(((Node) tag.item(0)).getNodeValue().trim().replace(",", "."));
 					} catch(Exception e) {
-						movie.setRating("0.0");
+						mMovie.setRating("0.0");
 					}
 
 					if (firstElement.getElementsByTagName("premiered").getLength() > 0) {
@@ -115,38 +120,38 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("premiered");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							movie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
 						} catch(Exception e) {
-							movie.setReleasedate("");
+							mMovie.setReleasedate("");
 						}
 					} else if (firstElement.getElementsByTagName("releasedate").getLength() > 0) {
 						try {
 							list = firstElement.getElementsByTagName("releasedate");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							movie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
 						} catch(Exception e) {
-							movie.setReleasedate("");
+							mMovie.setReleasedate("");
 						}
 					} else {
 						try {
 							list = firstElement.getElementsByTagName("year");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							movie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
 						} catch(Exception e) {
-							movie.setReleasedate("");
+							mMovie.setReleasedate("");
 						}
 					}
 
-					if (movie.getReleasedate().isEmpty())
+					if (mMovie.getReleasedate().isEmpty())
 						try {
 							list = firstElement.getElementsByTagName("year");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							movie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
 						} catch(Exception e) {
-							movie.setReleasedate("");
+							mMovie.setReleasedate("");
 						}
 
 					if (firstElement.getElementsByTagName("outline").getLength() > 0) {
@@ -154,18 +159,18 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("outline");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							movie.setTagline(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setTagline(((Node) tag.item(0)).getNodeValue().trim());
 						} catch(Exception e) {
-							movie.setTagline("");
+							mMovie.setTagline("");
 						}
 					} else {
 						try {
 							list = firstElement.getElementsByTagName("tagline");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							movie.setTagline(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setTagline(((Node) tag.item(0)).getNodeValue().trim());
 						} catch(Exception e) {
-							movie.setTagline("");
+							mMovie.setTagline("");
 						}
 					}
 
@@ -173,27 +178,27 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("plot");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setPlot(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setPlot(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setPlot("");
+						mMovie.setPlot("");
 					}
 
 					try {
 						list = firstElement.getElementsByTagName("runtime");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setRuntime(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setRuntime(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setRuntime("0");
+						mMovie.setRuntime("0");
 					}
 
 					try {
 						list = firstElement.getElementsByTagName("thumb");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setCover(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setCover(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setCover("");
+						mMovie.setCover("");
 					}
 
 					if (firstElement.getElementsByTagName("mpaa").getLength() > 0) {
@@ -201,18 +206,18 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("mpaa");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							movie.setCertification(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setCertification(((Node) tag.item(0)).getNodeValue().trim());
 						} catch(Exception e) {
-							movie.setCertification("");
+							mMovie.setCertification("");
 						}
 					} else {					
 						try {
 							list = firstElement.getElementsByTagName("certification");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							movie.setCertification(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setCertification(((Node) tag.item(0)).getNodeValue().trim());
 						} catch(Exception e) {
-							movie.setCertification("");
+							mMovie.setCertification("");
 						}
 					}
 
@@ -220,27 +225,27 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("id");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setImdbId(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setImdbId(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setImdbId("");
+						mMovie.setImdbId("");
 					}
 
 					try {
 						list = firstElement.getElementsByTagName("tmdbid");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setId(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setId(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
+						mMovie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 					}
 
 					try {
 						list = firstElement.getElementsByTagName("trailer");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						movie.setTrailer(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setTrailer(((Node) tag.item(0)).getNodeValue().trim());
 					} catch(Exception e) {
-						movie.setTrailer("");
+						mMovie.setTrailer("");
 					}
 
 					try {
@@ -255,12 +260,12 @@ public class NfoMovie {
 								sb.append(MizLib.toCapitalWords(genresArray[k].toLowerCase(Locale.getDefault()))).append(", ");
 							}
 							genres = sb.substring(0, sb.length() - 2).toString();
-							movie.setGenres(genres);
+							mMovie.setGenres(genres);
 						} catch (Exception e) {
-							movie.setGenres(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setGenres(((Node) tag.item(0)).getNodeValue().trim());
 						}
 					} catch(Exception e) {
-						movie.setGenres("");
+						mMovie.setGenres("");
 					}
 
 					NodeList actorsList = firstElement.getElementsByTagName("actor");
@@ -286,15 +291,15 @@ public class NfoMovie {
 						}
 
 						String tempCast = sbActor.toString();
-						movie.setCast(tempCast.substring(0, tempCast.length() - 1));
+						mMovie.setCast(tempCast.substring(0, tempCast.length() - 1));
 					}
 				}
 			}
 		} catch (Exception ignored) {
 		} finally {
 			try {
-				if (is != null)
-					is.close();
+				if (mInputStream != null)
+					mInputStream.close();
 			} catch (IOException ignored) {}
 		}
 
@@ -304,28 +309,24 @@ public class NfoMovie {
 	private void addToDatabase() {
 		// Create and open database
 		DbAdapterMovies dbHelper = MizuuApplication.getMovieAdapter();
-		
+
 		// Create the movie entry
-		dbHelper.createMovie(movie.getId().isEmpty() ? filepath : movie.getId(), movie.getTitle(), movie.getPlot(), movie.getImdbId(),
-				movie.getRating(), movie.getTagline(), movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(),
-				movie.getGenres(), "0", movie.getCast(), movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
-		
+		dbHelper.createMovie(mMovie.getId().isEmpty() ? mFilepath : mMovie.getId(), mMovie.getTitle(), mMovie.getPlot(), mMovie.getImdbId(),
+				mMovie.getRating(), mMovie.getTagline(), mMovie.getReleasedate(), mMovie.getCertification(), mMovie.getRuntime(), mMovie.getTrailer(),
+				mMovie.getGenres(), "0", mMovie.getCast(), mMovie.getCollectionTitle(), mMovie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
+
 		// Create the filepath mapping
-		MizuuApplication.getMovieMappingAdapter().createFilepathMapping(filepath, movie.getId().isEmpty() ? filepath : movie.getId());
-		
-		Movie temp = new Movie(c, movie.getTitle(), movie.getPlot(), movie.getTagline(), movie.getId(), movie.getImdbId(), movie.getRating(),
-				movie.getReleasedate(), movie.getCertification(), movie.getRuntime(), movie.getTrailer(), movie.getGenres(), "0", movie.getCast(),
-				movie.getCollectionTitle(), movie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()), false);
+		MizuuApplication.getMovieMappingAdapter().createFilepathMapping(mFilepath, mMovie.getId().isEmpty() ? mFilepath : mMovie.getId());
 
-		if (callback != null)
-			callback.onMovieAdded(movie.getTitle(), temp.getThumbnail().getAbsolutePath(), temp.getBackdrop().getAbsolutePath());
+		com.miz.functions.Movie temp = new com.miz.functions.Movie(mContext, mMovie.getTitle(), mMovie.getPlot(), mMovie.getTagline(), mMovie.getId(), mMovie.getImdbId(), mMovie.getRating(),
+				mMovie.getReleasedate(), mMovie.getCertification(), mMovie.getRuntime(), mMovie.getTrailer(), mMovie.getGenres(), "0", mMovie.getCast(),
+				mMovie.getCollectionTitle(), mMovie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()), false);
 
-		Intent intent = new Intent("mizuu-movies-object");
-		intent.putExtra("movieName", movie.getTitle());
-		intent.putExtra("cover", temp.getPoster());
-		intent.putExtra("thumbFile", temp.getThumbnail());
-		intent.putExtra("backdrop", temp.getBackdrop());
-
-		LocalBroadcastManager.getInstance(c).sendBroadcast(intent);
+		if (mCallback != null)
+			try {
+				mCallback.onMovieAdded(mMovie.getTitle(), mPicasso.load(temp.getThumbnail()).get(), mPicasso.load(temp.getBackdrop()).get(), mCount);
+			} catch (Exception e) {
+				mCallback.onMovieAdded(mMovie.getTitle(), null, null, mCount);
+			}
 	}
 }

@@ -19,17 +19,12 @@ package com.miz.service;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
-import com.miz.widgets.MovieCoverWidgetProvider;
-import com.miz.widgets.MovieStackWidgetProvider;
-import com.miz.widgets.ShowBackdropWidgetProvider;
-import com.miz.widgets.ShowCoverWidgetProvider;
-import com.miz.widgets.ShowStackWidgetProvider;
+import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.WidgetUtils;
 
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -37,7 +32,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 public class DownloadImageService extends IntentService {
@@ -189,49 +183,23 @@ public class DownloadImageService extends IntentService {
 	}
 
 	private void update() {
-
-		AppWidgetManager awm = AppWidgetManager.getInstance(this);
-
+		
+		LocalBroadcastUtils.clearImageCache(this);
+		
 		switch (mImageType) {
 		case IMAGE_TYPE_TVSHOW_COVER:
-
-			// Broadcast
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-show-cover-change"));
-
-			// Update widgets
-			awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
-			awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-
-			break;
-
 		case IMAGE_TYPE_TVSHOW_BACKDROP:
 
-			// Broadcast
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-show-backdrop-change"));
-
 			// Update widget
-			awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
+			WidgetUtils.updateTvShowWidgets(this);
 
 			break;
 
 		case IMAGE_TYPE_MOVIE_COVER:
-
-			// Broadcast
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-movie-cover-change"));
-
-			// Update widgets
-			awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieStackWidgetProvider.class)), R.id.stack_view); // Update stack view widget
-			awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, MovieCoverWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
-
-			break;
-
 		case IMAGE_TYPE_MOVIE_BACKDROP:
 
-			// Broadcast
-			LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("mizuu-movie-backdrop-change"));
-
 			// Update widget
-			awm.notifyAppWidgetViewDataChanged(awm.getAppWidgetIds(new ComponentName(this, ShowBackdropWidgetProvider.class)), R.id.widget_grid); // Update grid view widget
+			WidgetUtils.updateMovieWidgets(this);
 
 			break;
 		}

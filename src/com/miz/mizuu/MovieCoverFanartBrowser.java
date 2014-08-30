@@ -18,12 +18,6 @@ package com.miz.mizuu;
 
 import java.util.ArrayList;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.content.Context;
@@ -148,19 +142,10 @@ public class MovieCoverFanartBrowser extends MizActivity implements OnNavigation
 			try {				
 				baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 				
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httppost = new HttpGet("https://api.themoviedb.org/3/movie/" + params[0] + "/images?api_key=" + mTmdbApiKey);
-				httppost.setHeader("Accept", "application/json");
-				ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-				json = httpclient.execute(httppost, responseHandler);
+				json = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + params[0] + "/images?api_key=" + mTmdbApiKey).toString();
 
 				if (MizLib.isValidTmdbId(collectionId)) {
-					httppost = new HttpGet("https://api.themoviedb.org/3/collection/" + params[1] + "/images?api_key=" + mTmdbApiKey);
-					httppost.setHeader("Accept", "application/json");
-					responseHandler = new BasicResponseHandler();
-
-					collection = httpclient.execute(httppost, responseHandler);
+					collection = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/collection/" + params[1] + "/images?api_key=" + mTmdbApiKey).toString();
 				}
 
 				return json;
