@@ -49,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 */
 	private static final String DATABASE_CREATE_TV_SHOWS = "create table tvshows (_id INTEGER PRIMARY KEY AUTOINCREMENT, show_id TEXT," +
 			"show_title TEXT, show_description TEXT, show_actors TEXT, show_genres TEXT, show_rating TEXT, show_certification TEXT," +
-			"show_runtime TEXT, show_first_airdate TEXT, favourite TEXT);";
+			"show_runtime TEXT, show_first_airdate TEXT, favourite TEXT, to_watch TEXT);";
 	private static final String DATABASE_CREATE_SHOW_ID_INDEX = "create index show_id_index on tvshows (show_id);";
 
 	/**
@@ -327,6 +327,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					cv.put(KEY_SHOW_RUNTIME, c.getString(c.getColumnIndex(KEY_SHOW_RUNTIME)));
 					cv.put(KEY_SHOW_FIRST_AIRDATE, c.getString(c.getColumnIndex(KEY_SHOW_FIRST_AIRDATE)));
 					cv.put(DbAdapterTvShows.KEY_SHOW_FAVOURITE, c.getString(c.getColumnIndex(KEY_SHOW_EXTRA1)));
+					cv.put(DbAdapterTvShows.KEY_SHOW_WATCHLIST, "0");
 					
 					database.insert("tvshows", null, cv);
 				}
