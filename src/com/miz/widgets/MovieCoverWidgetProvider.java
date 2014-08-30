@@ -16,7 +16,6 @@
 
 package com.miz.widgets;
 
-import com.miz.functions.MizLib;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
 
@@ -28,7 +27,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
-@SuppressWarnings("deprecation")
 public class MovieCoverWidgetProvider extends AppWidgetProvider {
 
 	public static final String MOVIE_COVER_WIDGET = "movieCoverWidget";
@@ -56,11 +54,7 @@ public class MovieCoverWidgetProvider extends AppWidgetProvider {
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
 			intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 			RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.movie_cover_widget);
-
-			if (MizLib.hasICS())
-				rv.setRemoteAdapter(R.id.widget_grid, intent);
-			else
-				rv.setRemoteAdapter(appWidgetIds[i], R.id.widget_grid, intent);
+			rv.setRemoteAdapter(R.id.widget_grid, intent);
 
 			Intent toastIntent = new Intent(context, MovieCoverWidgetProvider.class);
 			toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);

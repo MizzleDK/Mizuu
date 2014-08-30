@@ -16,6 +16,8 @@
 
 package com.miz.service;
 
+import java.io.File;
+
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -172,6 +174,10 @@ public class DownloadImageService extends IntentService {
 	}
 
 	private void download() {
+		// Delete the old file
+		new File(mDownloadPath).delete();
+		
+		// Download the new file
 		MizLib.downloadFile(mImageUrl, mDownloadPath);
 	}
 

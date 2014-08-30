@@ -22,7 +22,6 @@ import java.util.Locale;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
@@ -103,7 +102,7 @@ public class SplashScreen extends MizActivity {
 		if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_SMALL)
 			return false;
 
-		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR1)
+		if (!MizLib.hasICSMR1())
 			return false;
 
 		return true;

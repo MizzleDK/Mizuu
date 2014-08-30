@@ -16,6 +16,7 @@
 
 package com.miz.mizuu;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -116,26 +117,23 @@ public class ImageViewer extends MizActivity {
 		});
 	}
 
+	@SuppressLint("InlinedApi")
 	@Subscribe
 	public void tappedImage(Boolean visible) {
 		View decorView = getWindow().getDecorView();
 		int uiOptions = 0;
 
 		if (visible) {
-			if (MizLib.hasICS())
-				uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+			uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
 			mActionBarOverlay.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, isFullscreen() ? MizLib.getActionBarHeight(this) : MizLib.getActionBarAndStatusBarHeight(this)));
 		} else {
-			if (MizLib.hasICS())
-				uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-				| View.SYSTEM_UI_FLAG_FULLSCREEN;
+			uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION	| View.SYSTEM_UI_FLAG_FULLSCREEN;
 
 			if (MizLib.hasKitKat())
 				mActionBarOverlay.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, MizLib.convertDpToPixels(this, 25)));
 		}
 
-		if (MizLib.hasICS())
-			decorView.setSystemUiVisibility(uiOptions);		
+		decorView.setSystemUiVisibility(uiOptions);		
 	}
 
 	@Override

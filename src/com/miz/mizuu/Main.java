@@ -151,8 +151,7 @@ public class Main extends MizActivity {
 		});
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		if (MizLib.hasICS())
-			getActionBar().setHomeButtonEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
 
 		mDrawerToggle = new ActionBarDrawerToggle(
 				this,                  /* host Activity */
