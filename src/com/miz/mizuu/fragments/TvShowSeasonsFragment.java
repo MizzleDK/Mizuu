@@ -16,8 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,9 +30,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,7 +44,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -57,7 +52,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miz.apis.trakt.Trakt;
-import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.CoverItem;
 import com.miz.functions.EpisodeCounter;
@@ -69,7 +63,8 @@ import com.miz.functions.TvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisodes;
-import com.miz.service.DeleteFile;
+import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.TvShowDatabaseUtils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -226,7 +221,7 @@ public class TvShowSeasonsFragment extends Fragment {
 					changeWatchedStatus(false);
 					break;
 				case R.id.remove:
-					removeSelectedSeasons();
+					removeSelectedSeasons(new HashSet<Integer>(mCheckedSeasons));
 					break;
 				}
 
@@ -244,9 +239,9 @@ public class TvShowSeasonsFragment extends Fragment {
 			@Override
 			public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {				
 				if (checked)
-					mCheckedSeasons.add(position);
+					mCheckedSeasons.add(mItems.get(position).getSeason());
 				else
-					mCheckedSeasons.remove(position);
+					mCheckedSeasons.remove(mItems.get(position).getSeason());
 
 				int count = mCheckedSeasons.size();
 				mode.setTitle(count + " " + getResources().getQuantityString(R.plurals.seasons_selected, count, count));
@@ -280,68 +275,48 @@ public class TvShowSeasonsFragment extends Fragment {
 		loadSeasons(true);
 	}
 
-	private void removeSelectedSeasons() {
-		// TODO IMPLEMENT THIS SHIT!
-		/*
-		 * AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-		View dialogLayout = getActivity().getLayoutInflater().inflate(R.layout.delete_file_dialog_layout, null);
-		final CheckBox cb = (CheckBox) dialogLayout.findViewById(R.id.deleteFile);
-		cb.setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(ALWAYS_DELETE_FILE, true));
-
-		builder.setTitle(getString(R.string.removeEpisode) + " S" + thisEpisode.getSeason() + "E" + thisEpisode.getEpisode())
-		.setView(dialogLayout)
-		.setCancelable(false)
-		.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {	
-				// Create and open database
-				dbHelper = MizuuApplication.getTvEpisodeDbAdapter();
-				boolean deleted = false;
-				if (ignoreDeletedFiles)
-					deleted = dbHelper.ignoreEpisode(thisEpisode.getRowId());
-				else
-					deleted = dbHelper.deleteEpisode(thisEpisode.getRowId());
-
-				if (deleted) {
-					try {
-						// Delete episode images
-						File episodePhoto = new File(MizLib.getTvShowEpisodeFolder(getActivity()), thisEpisode.getShowId() + "_S" + thisEpisode.getSeason() + "E" + thisEpisode.getEpisode() + ".jpg");
-						if (episodePhoto.exists()) {
-							MizLib.deleteFile(episodePhoto);
-						}
-					} catch (NullPointerException e) {} // No file to delete
-
-					if (dbHelper.getEpisodeCount(thisEpisode.getShowId()) == 0) { // No more episodes for this show
-						DbAdapterTvShow dbShow = MizuuApplication.getTvDbAdapter();
-						boolean deletedShow = dbShow.deleteShow(thisEpisode.getShowId());
-
-						if (deletedShow) {
-							MizLib.deleteFile(new File(MizLib.getTvShowThumbFolder(getActivity()), thisEpisode.getShowId() + ".jpg"));
-							MizLib.deleteFile(new File(MizLib.getTvShowBackdropFolder(getActivity()), thisEpisode.getShowId() + "_tvbg.jpg"));
-						}
-					}
-
-					if (cb.isChecked()) {
-						Intent deleteIntent = new Intent(getActivity(), DeleteFile.class);
-						deleteIntent.putExtra("filepath", thisEpisode.getFilepath());
-						getActivity().startService(deleteIntent);
-					}
-
-					notifyDatasetChanges();
+	private void removeSelectedSeasons(final Set<Integer> selectedSeasons) {
+		// Get the Activity Context
+		final Context activityContext = getActivity();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+		builder.setTitle(R.string.remove_selected_seasons);
+		builder.setMessage(R.string.areYouSure);
+		builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				System.out.println("SEASONS SIZE: " + selectedSeasons.size());
+				
+				// Go through all seasons and remove the selected ones
+				for (int season : selectedSeasons) {
+					System.out.println("SEASON " + season);
+					TvShowDatabaseUtils.removeSeason(activityContext, mShowId, season);
+				}
+					
+				// Check if we've removed all TV show episodes
+				if (MizuuApplication.getTvEpisodeDbAdapter().getEpisodeCount(mShowId) == 0) {
+					
+					System.out.println("NO EPISODES");
+					
+					// Update the TV show library
+					LocalBroadcastUtils.updateTvShowLibrary(activityContext);
+					
+					// Finish the Activity
 					getActivity().finish();
-					return;
 				} else {
-					Toast.makeText(getActivity(), getString(R.string.failedToRemoveEpisode), Toast.LENGTH_SHORT).show();
+					// There's still episodes left, so re-load the TV show seasons
+					loadSeasons(true);
 				}
 			}
-		})
-		.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
+		});
+		builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
 			}
-		})
-		.show();
-		 */
+		});
+		builder.show();
 	}
 
 	private class ImageAdapter extends BaseAdapter {
@@ -416,7 +391,7 @@ public class TvShowSeasonsFragment extends Fragment {
 					holder.highlight.setVisibility(View.GONE);
 				}
 			} else {
-				if (mCheckedSeasons.contains(position)) {
+				if (mCheckedSeasons.contains(mSeason.getSeason())) {
 					holder.highlight.setVisibility(View.VISIBLE);
 				} else {
 					holder.highlight.setVisibility(View.GONE);

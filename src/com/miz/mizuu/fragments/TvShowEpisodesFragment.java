@@ -24,7 +24,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -45,6 +44,7 @@ import android.widget.TextView;
 import com.miz.functions.CoverItem;
 import com.miz.functions.GridEpisode;
 import com.miz.functions.LibrarySectionAsyncTask;
+import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisodeDetails;
@@ -208,6 +208,7 @@ public class TvShowEpisodesFragment extends Fragment {
 		@Override
 		public View getView(final int position, View convertView, ViewGroup container) {
 			final CoverItem holder;
+			final GridEpisode episode = mItems.get(position);
 
 			if (convertView == null) {
 				if (mUseGridView)
@@ -219,10 +220,11 @@ public class TvShowEpisodesFragment extends Fragment {
 				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-				holder.text.setSingleLine(true);
+				if (mUseGridView)
+					holder.text.setSingleLine(true);
 				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				holder.subtext.setSingleLine(true);
-				holder.watchedColor = (ImageView) convertView.findViewById(R.id.watched_color);
+				if (mUseGridView)
+					holder.subtext.setSingleLine(true);
 
 				holder.text.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "Roboto-Medium.ttf"));
 
@@ -231,19 +233,17 @@ public class TvShowEpisodesFragment extends Fragment {
 				holder = (CoverItem) convertView.getTag();
 			}
 
-			if (!mUseGridView)
-				convertView.findViewById(R.id.list_season_text_area).setBackgroundResource(R.color.card_background_dark);
-
-			holder.text.setText(mItems.get(position).getTitle());
-
-			holder.subtext.setText(mItems.get(position).getSubtitleText());
+			holder.text.setText(episode.getTitle());
 			
-			holder.watchedColor.setBackgroundColor(Color.parseColor(mItems.get(position).hasWatched() ? "#669900" : "#CC0000"));
+			if (mUseGridView)
+			holder.subtext.setText(episode.getSubtitleText());
+			else
+				holder.subtext.setText(episode.getSubtitleText() + "\n" + MizLib.getPrettyDatePrecise(mContext, episode.getAirDate()));
 			
 			if (mResizedWidth > 0)
-				mPicasso.load(mItems.get(position).getCover()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder.cover);
+				mPicasso.load(episode.getCover()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder.cover);
 			else
-				mPicasso.load(mItems.get(position).getCover()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
+				mPicasso.load(episode.getCover()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}

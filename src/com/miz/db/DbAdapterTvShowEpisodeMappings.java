@@ -18,6 +18,7 @@ package com.miz.db;
 
 import java.util.ArrayList;
 
+import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 
 import android.content.ContentValues;
@@ -149,5 +150,16 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 		}
 
 		return result;
+	}
+	
+	public boolean removeSeason(String showId, int season) {
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + MizLib.addIndexZero(season) + "'", null) > 0;
+	}
+	
+	public boolean ignoreSeason(String showId, int season) {
+		ContentValues values = new ContentValues();
+		values.put(KEY_IGNORED, 1); // Set the ignored value to 1 (true)
+		
+		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + MizLib.addIndexZero(season) + "'", null) > 0;
 	}
 }

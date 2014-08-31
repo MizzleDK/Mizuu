@@ -30,11 +30,11 @@ public class GridEpisode implements Comparable<GridEpisode> {
 
 	private Context mContext;
 	private File mCover;
-	private String mSubtitleText, mTitle, mFilepath;
+	private String mSubtitleText, mTitle, mFilepath, mAirDate;
 	private int mSeason, mEpisode;
 	private boolean mWatched;
 
-	public GridEpisode(Context context, String title, String filepath, int season, int episode, boolean watched, File cover) {
+	public GridEpisode(Context context, String title, String filepath, int season, int episode, boolean watched, File cover, String airdate) {
 		mContext = context;
 		mTitle = title;
 		mFilepath = filepath;
@@ -42,6 +42,7 @@ public class GridEpisode implements Comparable<GridEpisode> {
 		mEpisode = episode;
 		mWatched = watched;
 		mCover = cover;
+		mAirDate = airdate;
 
 		// Subtitle text
 		StringBuilder sb = new StringBuilder();
@@ -86,6 +87,10 @@ public class GridEpisode implements Comparable<GridEpisode> {
 	
 	public File getCover() {
 		return mCover;
+	}
+	
+	public String getAirDate() {
+		return mAirDate;
 	}
 
 	@Override

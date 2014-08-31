@@ -32,7 +32,6 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 	public static final String KEY_SHOW_RUNTIME = "show_runtime";
 	public static final String KEY_SHOW_FIRST_AIRDATE = "show_first_airdate";
 	public static final String KEY_SHOW_FAVOURITE = "favourite";
-	public static final String KEY_SHOW_WATCHLIST = "to_watch";
 
 	public static final String DATABASE_TABLE = "tvshows";
 

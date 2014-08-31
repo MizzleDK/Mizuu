@@ -120,7 +120,6 @@ public class TvShowDetailsFragment extends Fragment {
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_LIBRARY));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.CLEAR_IMAGE_CACHE));
 	}
 

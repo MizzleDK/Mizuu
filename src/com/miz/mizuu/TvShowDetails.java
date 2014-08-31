@@ -281,6 +281,9 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 			finish();
 
 			return true;
+		case R.id.show_fav:
+			favAction();
+			break;
 		case R.id.menuDeleteShow:
 			deleteShow();
 			break;
@@ -319,19 +322,14 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		startActivityForResult(i, 0);
 	}
 
-	public void favAction(MenuItem item) {
+	public void favAction() {
 		// Create and open database
 		thisShow.setFavorite(!thisShow.isFavorite()); // Reverse the favourite boolean
 
 		if (dbHelper.updateShowSingleItem(thisShow.getId(), DbAdapterTvShows.KEY_SHOW_FAVOURITE, thisShow.getFavorite())) {
 			invalidateOptionsMenu();
 
-			if (thisShow.isFavorite()) {
-				Toast.makeText(this, getString(R.string.addedToFavs), Toast.LENGTH_SHORT).show();
-			} else {
-				Toast.makeText(this, getString(R.string.removedFromFavs), Toast.LENGTH_SHORT).show();
-				setResult(2); // Favorite removed
-			}
+			Toast.makeText(this, getString(thisShow.isFavorite() ? R.string.addedToFavs : R.string.removedFromFavs), Toast.LENGTH_SHORT).show();
 
 			LocalBroadcastUtils.updateTvShowLibrary(this);
 

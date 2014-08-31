@@ -28,9 +28,7 @@
             android:key="prefsGridItemSize"
             android:summary="@string/overviewGridItemSizeDescription"
             android:title="@string/overviewGridItemSizeTitle" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/chooserMovies" >
-        <CheckBoxPreference
+        <CheckBoxPreference
             android:defaultValue="true"
             android:icon="@drawable/file"
             android:key="prefsShowFileLocation"

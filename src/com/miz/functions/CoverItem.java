@@ -31,7 +31,7 @@ import com.squareup.picasso.Target;
 public class CoverItem implements Target {
 
 	public TextView text, subtext;
-	public ImageView cover, highlight, watchedColor;
+	public ImageView cover, highlight;
 	public RelativeLayout layout;
 	public LinearLayout mLinearLayout;
 	private int animationDuration = 200;

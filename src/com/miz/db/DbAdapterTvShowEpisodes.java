@@ -134,13 +134,9 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		boolean result = MizuuApplication.getTvDbAdapter().deleteShow(showId);
 		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "= '" + showId + "'", null) > 0;
 	}
-
-	public boolean deleteSeaon(String showId, String season) {	
-		boolean result = mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = '" + showId + "' and " + KEY_SEASON + " = '" + season + "'", null) > 0;
-		if (getEpisodeCount(showId) == 0)
-			result = result && MizuuApplication.getTvDbAdapter().deleteShow(showId);
-
-		return result;
+	
+	public boolean removeSeason(String showId, int season) {
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = '" + showId + "' and " + KEY_SEASON + " = '" + MizLib.addIndexZero(season) + "'", null) > 0;
 	}
 
 	public boolean deleteAllEpisodesInDatabase() {
@@ -155,6 +151,13 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 
 	public int getEpisodeCount(String showId) {
 		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
+		int count = c.getCount();
+		c.close();
+		return count;
+	}
+	
+	public int getSeasonCount(String showId) {
+		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON, null, KEY_SEASON);
 		int count = c.getCount();
 		c.close();
 		return count;
@@ -215,7 +218,8 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 						season,
 						Integer.valueOf(cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE))),
 						cursor.getString(cache.getColumnIndex(cursor, KEY_HAS_WATCHED)).equals("1"),
-						temp));
+						temp,
+						cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE_AIRDATE))));
 			}
 		} catch (Exception e) {} finally {
 			cache.clear();

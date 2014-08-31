@@ -495,7 +495,7 @@
     <string name="random_show">Random TV show</string>
     <string name="more">More</string>
     <string name="show_file_location">Show file location(s)</string>
-    <string name="show_file_location_description">Make file location(s) visible in the movie details view</string>
+    <string name="show_file_location_description">Make file location(s) visible in the movie and TV show details view.</string>
     <string name="language">Language:</string>
     <string name="set_pref_language_title">Set preferred language</string>
     <string name="set_pref_language_description">Localize movie and TV show information into selected language. Defaults to English.</string>
@@ -510,5 +510,6 @@
     <string name="no_actors_description">It looks some actors are missing here…</string>
     <string name="release_year">Release year</string>
     <string name="identifying_movie">Identifying movie…</string>
+    <string name="remove_selected_seasons">Remove selected seasons</string>
 
 </resources>

@@ -43,9 +43,4 @@
         android:textSize="12sp"
         android:textStyle="italic" />
 
-    <ImageView
-        android:id="@+id/watched_color"
-        android:layout_width="match_parent"
-        android:layout_height="1dp" />
-
 </LinearLayout>

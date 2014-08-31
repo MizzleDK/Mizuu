@@ -135,7 +135,6 @@ public class MovieDetailsFragment extends Fragment {
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.CLEAR_IMAGE_CACHE));
 	}
 
