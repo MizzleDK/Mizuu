@@ -279,15 +279,11 @@ public class MovieDetailsFragment extends Fragment {
 		mReleaseDate.setText(MizLib.getPrettyDate(getActivity(), mMovie.getReleasedate()));
 
 		// Set the movie rating
-		if (!mMovie.getRating().equals("0.0/10")) {
-			if (mMovie.getRating().contains("/")) {
-				try {
-					int rating = (int) (Double.parseDouble(mMovie.getRating().substring(0, mMovie.getRating().indexOf("/"))) * 10);
-					mRating.setText(Html.fromHtml(+ rating + "<small> %</small>"));
-				} catch (NumberFormatException e) {
-					mRating.setText(Html.fromHtml(mMovie.getRating().replace("/", "<small> / ") + "</small>"));
-				}
-			} else {
+		if (!mMovie.getRating().equals("0.0")) {
+			try {
+				int rating = (int) (Double.parseDouble(mMovie.getRating()) * 10);
+				mRating.setText(Html.fromHtml(+ rating + "<small> %</small>"));
+			} catch (NumberFormatException e) {
 				mRating.setText(mMovie.getRating());
 			}
 		} else {

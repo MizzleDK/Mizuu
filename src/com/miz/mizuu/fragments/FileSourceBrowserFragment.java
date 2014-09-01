@@ -228,7 +228,7 @@ public class FileSourceBrowserFragment extends Fragment {
 		mCurrent.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (arg2 == 0) {
+				if (arg2 == 0 && mType != FileSource.UPNP) {
 					// Go back
 					goBack();
 				} else {
@@ -238,7 +238,7 @@ public class FileSourceBrowserFragment extends Fragment {
 					} else {
 						if (!mLoading) {
 							mLoading = true;
-							ContentItem content = contentListAdapter.getItem(arg2 - 1);
+							ContentItem content = contentListAdapter.getItem(arg2);
 							if (content.isContainer()) {
 								upnpService.getControlPoint().execute(new ContentBrowseCallback(getActivity(), content.getService(), content.getContainer(), contentListAdapter, true));
 							}
@@ -617,7 +617,6 @@ public class FileSourceBrowserFragment extends Fragment {
 			this.listAdapter = listadapter;
 
 			mContainer = container;
-
 		}
 
 		@SuppressWarnings("rawtypes")
@@ -627,6 +626,7 @@ public class FileSourceBrowserFragment extends Fragment {
 					public void run() {
 						try {
 							listAdapter.clear();
+							
 							// Containers first
 							for (Container childContainer : didl.getContainers()) {
 								listAdapter.add(new ContentItem(childContainer, service));

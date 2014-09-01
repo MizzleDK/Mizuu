@@ -78,8 +78,8 @@ public class Movie extends MediumBaseMovie {
 
 	public String getRating() {
 		if (!TextUtils.isEmpty(RATING))
-			return RATING + "/10";
-		return "0.0/10";
+			return RATING;
+		return "0.0";
 	}
 
 	public String getTrailer() {

@@ -254,8 +254,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 					int rating = (int) (Double.parseDouble(thisMovie.getRating()) * 10);
 					textRating.setText(Html.fromHtml(rating + "<small> %</small>"));
 				} catch (NumberFormatException e) {
-					thisMovie.setRating(thisMovie.getRating() + "/10");
-					textRating.setText(Html.fromHtml(thisMovie.getRating().replace("/", "<small> / ") + "</small>"));
+					textRating.setText(thisMovie.getRating());
 				}
 			} else {
 				textRating.setText(R.string.stringNA);

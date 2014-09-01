@@ -78,7 +78,7 @@ public class TMDbMovieService extends MovieApiService {
 				movie.setOriginalTitle(array.getJSONObject(i).getString("original_title"));
 				movie.setReleasedate(array.getJSONObject(i).getString("release_date"));
 				movie.setPlot(""); // TMDb doesn't support descriptions in search results
-				movie.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")) + "/10");
+				movie.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")));
 				movie.setId(String.valueOf(array.getJSONObject(i).getInt("id")));
 				movie.setCover(baseUrl + imageSizeUrl + array.getJSONObject(i).getString("poster_path"));
 				results.add(movie);
@@ -301,7 +301,7 @@ public class TMDbMovieService extends MovieApiService {
 				movie.setOriginalTitle(array.getJSONObject(i).getString("original_title"));
 				movie.setReleasedate(array.getJSONObject(i).getString("release_date"));
 				movie.setPlot(""); // TMDb doesn't support descriptions in search results
-				movie.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")) + "/10");
+				movie.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")));
 				movie.setId(String.valueOf(array.getJSONObject(i).getInt("id")));
 				movie.setCover(baseUrl + imageSizeUrl + array.getJSONObject(i).getString("poster_path"));
 				results.add(movie);

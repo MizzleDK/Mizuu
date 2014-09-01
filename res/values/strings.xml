@@ -158,7 +158,7 @@
     <string name="updateLookingForFiles">Looking for files…</string>
     <string name="editMovieTitle">Title</string>
     <string name="editMovieTagline">Tagline</string>
-    <string name="editMoviePlot">Plot</string>
+    <string name="editMoviePlot">Description</string>
     <string name="filesourcesDescription">These folders will be indexed for content</string>
     <string name="addCurrentFolderAsFileSource">Add folder as file source</string>
     <string name="enableRootAccess">Request root access</string>
@@ -511,5 +511,14 @@
     <string name="release_year">Release year</string>
     <string name="identifying_movie">Identifying movie…</string>
     <string name="remove_selected_seasons">Remove selected seasons</string>
-
+    <string name="remote_playback">Remote playback</string>
+    <string name="where_to_play">Where to play?</string>
+    <string name="play_remotely">Play remotely</string>
+    <string name="play_locally">Play locally</string>
+	<string name="set_runtime">Set runtime</string>
+	<string name="set_rating">Set rating</string>
+	<string name="set_certification">Set certification</string>
+	<string name="set">Set</string>
+	<string name="create_new_certification">Create new certification</string>
+    
 </resources>

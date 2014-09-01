@@ -16,12 +16,15 @@
 
 package com.miz.db;
 
-import com.miz.mizuu.MizuuApplication;
+import java.util.ArrayList;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.text.TextUtils;
+
+import com.miz.mizuu.MizuuApplication;
 
 public class DbAdapterMovies extends AbstractDbAdapter {
 
@@ -117,6 +120,20 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 			String certification, String runtime, String genres, String toWatch, String hasWatched, String date) {
 		ContentValues updateValues = createEditContentValues(title, plot, rating, tagline, release, certification, runtime, genres, toWatch, hasWatched, date);
 		return mDatabase.update(DATABASE_TABLE, updateValues, KEY_TMDB_ID + "='" + tmdbId + "'", null) > 0;
+	}
+	
+	public boolean editMovie(String movieId, String title, String tagline, String description,
+			String genres, String runtime, String rating, String releaseDate, String certification) {
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_TITLE, title);
+		cv.put(KEY_PLOT, description);
+		cv.put(KEY_RATING, rating);
+		cv.put(KEY_TAGLINE, tagline);
+		cv.put(KEY_RELEASEDATE, releaseDate);
+		cv.put(KEY_CERTIFICATION, certification);
+		cv.put(KEY_RUNTIME, runtime);
+		cv.put(KEY_GENRES, genres);
+		return mDatabase.update(DATABASE_TABLE, cv, KEY_TMDB_ID + "='" + movieId + "'", null) > 0;
 	}
 
 	/**
@@ -317,5 +334,25 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 		int count = c.getCount();
 		c.close();
 		return count;
+	}
+	
+	public ArrayList<String> getCertifications() {
+		ArrayList<String> certifications = new ArrayList<String>();
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, new String[]{KEY_CERTIFICATION}, null, null, KEY_CERTIFICATION, null, null);
+
+		if (cursor != null) {
+			try {
+				while (cursor.moveToNext()) {
+					String certification = cursor.getString(cursor.getColumnIndex(KEY_CERTIFICATION));
+					if (!TextUtils.isEmpty(certification))
+					certifications.add(certification);
+				}
+			} catch (Exception e) {
+			} finally {
+				cursor.close();
+			}
+		}
+		
+		return certifications;
 	}
 }

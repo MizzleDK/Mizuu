@@ -169,7 +169,7 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getRating() {
-		return RATING + "/10";
+		return RATING;
 	}
 
 	public double getRawRating() {

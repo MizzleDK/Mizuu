@@ -210,7 +210,7 @@ public class SearchWebMoviesFragment extends Fragment {
 							movieResults.get(i).getTitle(),
 							movieResults.get(i).getId(),
 							movieResults.get(i).getCover(),
-							movieResults.get(i).getRating() + "/10",
+							movieResults.get(i).getRating(),
 							movieResults.get(i).getReleasedate())
 							);
 				}
@@ -298,15 +298,11 @@ public class SearchWebMoviesFragment extends Fragment {
 			holder.release.setText(results.get(position).getRelease());
 
 			holder.rating.setVisibility(View.VISIBLE);
-			if (!results.get(position).getRating().equals("0.0/10")) {
-				if (results.get(position).getRating().contains("/")) {
-					try {
-						int rating = (int) (Double.parseDouble(results.get(position).getRating().substring(0, results.get(position).getRating().indexOf("/"))) * 10);
-						holder.rating.setText(Html.fromHtml(getString(R.string.detailsRating) + ": " + rating + "<small> %</small>"));
-					} catch (NumberFormatException e) {
-						holder.rating.setVisibility(View.GONE);
-					}
-				} else {
+			if (!results.get(position).getRating().equals("0.0")) {
+				try {
+					int rating = (int) (Double.parseDouble(results.get(position).getRating()) * 10);
+					holder.rating.setText(Html.fromHtml(getString(R.string.detailsRating) + ": " + rating + "<small> %</small>"));
+				} catch (NumberFormatException e) {
 					holder.rating.setVisibility(View.GONE);
 				}
 			} else {

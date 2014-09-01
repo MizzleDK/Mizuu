@@ -101,6 +101,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		return getThumbnail();
 	}
 	
+	public void setRating(int rating) {
+		RATING = String.valueOf(Double.valueOf((double) rating / 10));
+	}
+	
 	public double getRawRating() {
 		try {
 			return Double.valueOf(RATING);
@@ -127,6 +131,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 		return false;
 	}
 	
+	public void setRuntime(int runtime) {
+		RUNTIME = String.valueOf(runtime);
+	}
+	
 	public String getRuntime() {
 		return RUNTIME;
 	}
@@ -137,6 +145,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	
 	public boolean hasWatched() {
 		return (HAS_WATCHED.equals("0")) ? false : true;
+	}
+	
+	public void setReleaseDate(int year, int month, int day) {
+		RELEASEDATE = year + "-" + MizLib.addIndexZero(month) + "-" + MizLib.addIndexZero(day);
 	}
 	
 	public String getReleasedate() {
@@ -167,6 +179,10 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	
 	public String getCast() {
 		return CAST;
+	}
+	
+	public void setCertification(String certification) {
+		CERTIFICATION = certification;
 	}
 	
 	public String getCertification() {

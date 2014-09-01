@@ -5,12 +5,12 @@
     <item
         android:id="@+id/cancel_editing"
         android:icon="@drawable/ic_action_discard"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="ifRoom"
         android:title="@string/cancel" />
     <item
         android:id="@+id/done_editing"
         android:icon="@drawable/done"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="ifRoom"
         android:title="@string/done" />
 
 </menu>

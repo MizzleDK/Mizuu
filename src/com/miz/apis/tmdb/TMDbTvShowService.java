@@ -79,7 +79,7 @@ public class TMDbTvShowService extends TvShowApiService {
 				show.setOriginalTitle(array.getJSONObject(i).getString("original_name"));
 				show.setFirstAired(array.getJSONObject(i).getString("first_air_date"));
 				show.setDescription(""); // TMDb doesn't support descriptions in search results
-				show.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")) + "/10");
+				show.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")));
 				show.setId(String.valueOf(array.getJSONObject(i).getInt("id")));
 				show.setCoverUrl(baseUrl + imageSizeUrl + array.getJSONObject(i).getString("poster_path"));
 				results.add(show);
@@ -289,7 +289,7 @@ public class TMDbTvShowService extends TvShowApiService {
 				show.setOriginalTitle(array.getJSONObject(i).getString("original_name"));
 				show.setFirstAired(array.getJSONObject(i).getString("first_air_date"));
 				show.setDescription(""); // TMDb doesn't support descriptions in search results
-				show.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")) + "/10");
+				show.setRating(String.valueOf(array.getJSONObject(i).getDouble("vote_average")));
 				show.setId(String.valueOf(array.getJSONObject(i).getInt("id")));
 				show.setCoverUrl(baseUrl + imageSizeUrl + array.getJSONObject(i).getString("poster_path"));
 				results.add(show);

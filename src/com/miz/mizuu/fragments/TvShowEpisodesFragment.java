@@ -25,6 +25,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap.Config;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -120,6 +121,10 @@ public class TvShowEpisodesFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
+		if (MizLib.isTablet(mContext) && !MizLib.isPortrait(mContext)) {
+			v.findViewById(R.id.container).setBackgroundColor(Color.parseColor("#05FFFFFF"));
+		}
+		
 		mAdapter = new ImageAdapter(mContext);
 
 		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);

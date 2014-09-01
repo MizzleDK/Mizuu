@@ -106,5 +106,9 @@
         <item>@string/normal</item>
         <item>@string/small</item>
     </string-array>
+    <string-array name="upnp_play_dialog">
+        <item>@string/play_remotely</item>
+        <item>@string/play_locally</item>
+    </string-array>
 
 </resources>

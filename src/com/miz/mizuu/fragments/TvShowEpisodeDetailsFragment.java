@@ -120,7 +120,7 @@ import com.squareup.picasso.Picasso;
 
 		if (!getArguments().getString("showId").isEmpty() && getArguments().getInt("season") >= 0 && getArguments().getInt("episode") >= 0) {
 			Cursor cursor = mDatabaseHelper.getEpisode(getArguments().getString("showId"), getArguments().getInt("season"), getArguments().getInt("episode"));
-			
+
 			if (cursor.moveToFirst()) {
 				mEpisode = new TvShowEpisode(getActivity(),
 						cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
@@ -255,15 +255,11 @@ import com.squareup.picasso.Picasso;
 		mAirDate.setText(MizLib.getPrettyDatePrecise(getActivity(), mEpisode.getReleasedate()));
 
 		// Set the movie rating
-		if (!mEpisode.getRating().equals("0.0/10")) {
-			if (mEpisode.getRating().contains("/")) {
-				try {
-					int rating = (int) (Double.parseDouble(mEpisode.getRating().substring(0, mEpisode.getRating().indexOf("/"))) * 10);
-					mRating.setText(Html.fromHtml(rating + "<small> %</small>"));
-				} catch (NumberFormatException e) {
-					mRating.setText(Html.fromHtml(mEpisode.getRating().replace("/", "<small> / ") + "</small>"));
-				}
-			} else {
+		if (!mEpisode.getRating().equals("0.0")) {
+			try {
+				int rating = (int) (Double.parseDouble(mEpisode.getRating()) * 10);
+				mRating.setText(Html.fromHtml(rating + "<small> %</small>"));
+			} catch (NumberFormatException e) {
 				mRating.setText(mEpisode.getRating());
 			}
 		} else {

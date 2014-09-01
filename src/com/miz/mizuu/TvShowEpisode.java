@@ -119,8 +119,8 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 
 	public String getRating() {
 		if (TextUtils.isEmpty(mRating))
-			return "0/10";
-		return mRating + "/10";
+			return "0.0";
+		return mRating;
 	}
 
 	public double getRawRating() {

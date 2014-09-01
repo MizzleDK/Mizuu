@@ -389,15 +389,11 @@ public class IdentifyTvShowFragment extends Fragment {
 			if (!result.getDescription().isEmpty())
 				holder.description.setText(result.getDescription());
 			else {
-				if (!mItems.get(position).getRating().equals("0.0/10")) {
-					if (mItems.get(position).getRating().contains("/")) {
-						try {
-							int rating = (int) (Double.parseDouble(mItems.get(position).getRating().substring(0, mItems.get(position).getRating().indexOf("/"))) * 10);
-							holder.description.setText(Html.fromHtml(getString(R.string.detailsRating) + ": " + rating + "<small> %</small>"));
-						} catch (NumberFormatException e) {
-							holder.description.setVisibility(View.GONE);
-						}
-					} else {
+				if (!mItems.get(position).getRating().equals("0.0")) {
+					try {
+						int rating = (int) (Double.parseDouble(mItems.get(position).getRating()) * 10);
+						holder.description.setText(Html.fromHtml(getString(R.string.detailsRating) + ": " + rating + "<small> %</small>"));
+					} catch (NumberFormatException e) {
 						holder.description.setVisibility(View.GONE);
 					}
 				} else {
@@ -480,7 +476,7 @@ public class IdentifyTvShowFragment extends Fragment {
 				return getString(R.string.unknownYear);
 			return mRelease;
 		}
-		
+
 		public String getRating() {
 			return mRating;
 		}

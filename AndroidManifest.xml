@@ -339,6 +339,18 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
+        
+                <!-- Edit Movie activity -->
+        <activity
+            android:name="com.miz.mizuu.EditMovie"
+            android:exported="false"
+            android:hardwareAccelerated="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/stringEditMovie" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- Identify Movie activity -->
         <activity
@@ -372,11 +384,25 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
+        
+        <!-- Add file source Activity -->
         <activity
             android:name="com.miz.mizuu.AddFileSource"
             android:exported="false"
             android:icon="@drawable/white_app_icon"
             android:title="@string/addFileSourceTitle" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Edit Movie activity -->
+        <activity
+            android:name="com.miz.remoteplayback.RemotePlayback"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/remote_playback"
+            android:theme="@style/Theme.AppCompat" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>

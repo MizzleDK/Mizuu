@@ -39,6 +39,7 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -82,6 +83,7 @@ import com.miz.functions.Movie;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
+import com.miz.remoteplayback.RemotePlayback;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.utils.LocalBroadcastUtils;
@@ -177,6 +179,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					mIgnorePrefixes
 					);
 		} catch (Exception e) {
+			System.out.println("EXCEPTION: " + e);
 			finish();
 			return;
 		} finally {
@@ -855,7 +858,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 	public void editMovie() {
 		Intent intent = new Intent(this, EditMovie.class);
-		intent.putExtra("tmdbId", mMovie.getTmdbId());
+		intent.putExtra("movieId", mMovie.getTmdbId());
 		startActivityForResult(intent, 1);
 	}
 
@@ -921,7 +924,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					checkIn();
 				}
 			} else {
-				playMovie(paths.get(0).getFilepath(), paths.get(0).isNetworkFile());
+				playMovie(paths.get(0).getFilepath(), paths.get(0).isNetworkFile(), paths.get(0).getType() == FileSource.UPNP);
 			}
 		} else {
 			boolean hasOfflineCopy = false;
@@ -943,13 +946,39 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						Filepath path = mMovie.getFilepaths().get(which);
-						playMovie(path.getFilepath(), path.isNetworkFile());
+						playMovie(path.getFilepath(), path.isNetworkFile(), path.getType() == FileSource.UPNP);
 					}
 				});
 			}
 		}
 	}
 
+	private void playMovie(final String filepath, final boolean isNetworkFile, boolean isUpnpFile) {
+		if (isUpnpFile) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(MovieDetails.this);
+			builder.setTitle(R.string.where_to_play);
+			builder.setItems(R.array.upnp_play_dialog, new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if (which == 0) { // Play remotely
+						Intent remotePlayback = new Intent(MovieDetails.this, RemotePlayback.class);
+						remotePlayback.putExtra("videoUrl", filepath);
+						remotePlayback.putExtra("coverUrl", "");
+						remotePlayback.putExtra("title", mMovie.getTitle());
+						startActivity(remotePlayback);
+					} else {
+						playMovie(filepath, isNetworkFile);
+					}
+					
+					dialog.dismiss();
+				}
+			});
+			builder.show();
+		} else {
+			playMovie(filepath, isNetworkFile);
+		}
+	}
+	
 	private void playMovie(String filepath, boolean isNetworkFile) {
 		if (filepath.toLowerCase(Locale.getDefault()).matches(".*(cd1|part1).*")) {
 			new GetSplitFiles(filepath, isNetworkFile).execute();

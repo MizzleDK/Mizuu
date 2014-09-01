@@ -372,15 +372,11 @@ public class IdentifyMovieFragment extends Fragment {
 			holder.release.setText(mItems.get(position).getRelease());
 
 			holder.rating.setVisibility(View.VISIBLE);
-			if (!mItems.get(position).getRating().equals("0.0/10")) {
-				if (mItems.get(position).getRating().contains("/")) {
-					try {
-						int rating = (int) (Double.parseDouble(mItems.get(position).getRating().substring(0, mItems.get(position).getRating().indexOf("/"))) * 10);
-						holder.rating.setText(Html.fromHtml(getString(R.string.detailsRating) + ": " + rating + "<small> %</small>"));
-					} catch (NumberFormatException e) {
-						holder.rating.setVisibility(View.GONE);
-					}
-				} else {
+			if (!mItems.get(position).getRating().equals("0.0")) {
+				try {
+					int rating = (int) (Double.parseDouble(mItems.get(position).getRating()) * 10);
+					holder.rating.setText(Html.fromHtml(getString(R.string.detailsRating) + ": " + rating + "<small> %</small>"));
+				} catch (NumberFormatException e) {
 					holder.rating.setVisibility(View.GONE);
 				}
 			} else {
@@ -419,7 +415,7 @@ public class IdentifyMovieFragment extends Fragment {
 			mOriginalTitle = originalTitle;
 			mId = id;
 			mImage = image;
-			mRating = rating + "/10";
+			mRating = rating;
 			mRelease = MizLib.getPrettyDate(getActivity(), release);
 		}
 

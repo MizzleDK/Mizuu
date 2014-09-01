@@ -189,7 +189,7 @@ public class TvShowDetailsFragment extends Fragment {
 		textRating = (TextView) v.findViewById(R.id.textView12);
 		textCertification = (TextView) v.findViewById(R.id.textView11);
 		cover = (ImageView) v.findViewById(R.id.traktIcon);
-		
+
 		// Set the show title
 		textTitle.setVisibility(View.VISIBLE);
 		textTitle.setText(thisShow.getTitle());
@@ -246,15 +246,11 @@ public class TvShowDetailsFragment extends Fragment {
 		textReleaseDate.setText(MizLib.getPrettyDate(getActivity(), thisShow.getFirstAirdate()));
 
 		// Set the show rating
-		if (!thisShow.getRating().equals("0.0/10")) {
-			if (thisShow.getRating().contains("/")) {
-				try {
-					int rating = (int) (Double.parseDouble(thisShow.getRating().substring(0, thisShow.getRating().indexOf("/"))) * 10);
-					textRating.setText(Html.fromHtml(rating + "<small> %</small>"));
-				} catch (NumberFormatException e) {
-					textRating.setText(Html.fromHtml(thisShow.getRating().replace("/", "<small> / ") + "</small>"));
-				}
-			} else {
+		if (!thisShow.getRating().equals("0.0")) {
+			try {
+				int rating = (int) (Double.parseDouble(thisShow.getRating()) * 10);
+				textRating.setText(Html.fromHtml(rating + "<small> %</small>"));
+			} catch (NumberFormatException e) {
 				textRating.setText(thisShow.getRating());
 			}
 		} else {
