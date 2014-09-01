@@ -342,11 +342,11 @@
         
                 <!-- Edit Movie activity -->
         <activity
-            android:name="com.miz.mizuu.EditMovie"
+            android:name="com.miz.mizuu.EditTvShow"
             android:exported="false"
             android:hardwareAccelerated="false"
             android:icon="@drawable/white_app_icon"
-            android:label="@string/stringEditMovie" >
+            android:label="@string/stringEditTvShow" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>

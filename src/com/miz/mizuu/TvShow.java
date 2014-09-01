@@ -167,6 +167,10 @@ public class TvShow implements Comparable<TvShow> {
 	public String getBackdrop() {
 		return MizLib.getTvShowBackdrop(mContext, mId).getAbsolutePath();
 	}
+	
+	public void setRating(int rating) {
+		RATING = String.valueOf(Double.valueOf((double) rating / 10));
+	}
 
 	public String getRating() {
 		return RATING;
@@ -193,11 +197,19 @@ public class TvShow implements Comparable<TvShow> {
 	public String getActors() {
 		return StringUtils.replacePipesWithCommas(ACTORS);
 	}
+	
+	public void setCertification(String certification) {
+		CERTIFICATION = certification;
+	}
 
 	public String getCertification() {
 		return CERTIFICATION;
 	}
 
+	public void setFirstAiredDate(int year, int month, int day) {
+		FIRST_AIR_DATE = year + "-" + MizLib.addIndexZero(month) + "-" + MizLib.addIndexZero(day);
+	}
+	
 	public String getFirstAirdate() {
 		return FIRST_AIR_DATE;
 	}
@@ -214,6 +226,10 @@ public class TvShow implements Comparable<TvShow> {
 		}
 	}
 
+	public void setRuntime(int runtime) {
+		RUNTIME = String.valueOf(runtime);
+	}
+	
 	public String getRuntime() {
 		if (!MizLib.isNumber(RUNTIME) || TextUtils.isEmpty(RUNTIME))
 			return "0";

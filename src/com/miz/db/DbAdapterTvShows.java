@@ -16,9 +16,12 @@
 
 package com.miz.db;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
 
 public class DbAdapterTvShows extends AbstractDbAdapter {
 
@@ -152,5 +155,38 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 		values.put(KEY_SHOW_FIRST_AIRDATE, showFirstAirdate);
 		values.put(KEY_SHOW_FAVOURITE, isFavorite);
 		return values;
+	}
+	
+	public ArrayList<String> getCertifications() {
+		ArrayList<String> certifications = new ArrayList<String>();
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, new String[]{KEY_SHOW_CERTIFICATION}, null, null, KEY_SHOW_CERTIFICATION, null, null);
+
+		if (cursor != null) {
+			try {
+				while (cursor.moveToNext()) {
+					String certification = cursor.getString(cursor.getColumnIndex(KEY_SHOW_CERTIFICATION));
+					if (!TextUtils.isEmpty(certification))
+					certifications.add(certification);
+				}
+			} catch (Exception e) {
+			} finally {
+				cursor.close();
+			}
+		}
+		
+		return certifications;
+	}
+	
+	public boolean editShow(String showId, String title, String description,
+			String genres, String runtime, String rating, String firstAirDate, String certification) {
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_SHOW_TITLE, title);
+		cv.put(KEY_SHOW_PLOT, description);
+		cv.put(KEY_SHOW_RATING, rating);
+		cv.put(KEY_SHOW_FIRST_AIRDATE, firstAirDate);
+		cv.put(KEY_SHOW_CERTIFICATION, certification);
+		cv.put(KEY_SHOW_RUNTIME, runtime);
+		cv.put(KEY_SHOW_GENRES, genres);
+		return mDatabase.update(DATABASE_TABLE, cv, KEY_SHOW_ID + "='" + showId + "'", null) > 0;
 	}
 }

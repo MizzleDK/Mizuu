@@ -293,6 +293,9 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		case R.id.identify_show:
 			identifyShow();
 			break;
+		case R.id.editTvShow:
+			editTvShow();
+			break;
 		case R.id.openInBrowser:
 			Intent browserIntent = new Intent(Intent.ACTION_VIEW);
 			if (thisShow.getIdType() == TvShow.TMDB) {
@@ -320,6 +323,12 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		i.putExtra("showTitle", thisShow.getTitle());
 		i.putExtra("showId", thisShow.getId());
 		startActivityForResult(i, 0);
+	}
+	
+	private void editTvShow() {
+		Intent intent = new Intent(this, EditTvShow.class);
+		intent.putExtra("showId", thisShow.getId());
+		startActivityForResult(intent, 1);
 	}
 
 	public void favAction() {
@@ -417,6 +426,21 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		if (requestCode == 0) {
 			if (resultCode == Activity.RESULT_OK) {
 				finish();
+			}
+		} else if (requestCode == 1) {
+			if (resultCode == Activity.RESULT_OK) {
+				Toast.makeText(this, getString(R.string.updatedTvShow), Toast.LENGTH_SHORT).show();
+
+				// Create a new Intent with the Bundle
+				Intent intent = new Intent();
+				intent.setClass(getApplicationContext(), TvShowDetails.class);
+				intent.putExtra("showId", thisShow.getId());
+
+				// Start the Intent for result
+				startActivity(intent);
+
+				finish();
+				return;
 			}
 		}
 	}

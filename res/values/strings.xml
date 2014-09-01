@@ -152,6 +152,7 @@
     <string name="contactDeviceOS">Android OS</string>
     <string name="errorSomethingWentWrong">Something went wrong - please try again!</string>
     <string name="updatedMovie">Successfully updated movie!</string>
+    <string name="updatedTvShow">Successfully updated TV show!</string>
     <string name="updatingMovies">Updating Movies</string>
     <string name="updatingTvShows">Updating TV Shows</string>
     <string name="analyzing_files">Analyzing files…</string>
@@ -210,6 +211,7 @@
     <string name="markedAsUnwatched">Marked as unwatched!</string>
     <string name="chooserWatchList">Watchlist</string>
     <string name="stringEditMovie">Edit movie</string>
+    <string name="stringEditTvShow">Edit TV show</string>
     <string name="stringLaunchScreen">Launch screen</string>
     <string name="stringLaunchScreenDescription">Select which section to show at launch.</string>
     <string name="stringRemoveUnavailableEntries">Remove unavailable files</string>

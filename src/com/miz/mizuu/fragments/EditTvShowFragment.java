@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
@@ -26,26 +27,26 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.miz.db.DbAdapterMovies;
+import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.MizLib;
-import com.miz.functions.Movie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.mizuu.TvShow;
 
 @SuppressLint("InflateParams")
-public class EditMovieFragment extends Fragment {
+public class EditTvShowFragment extends Fragment {
 
-	private Movie mMovie;
+	private TvShow mShow;
 
-	private EditText mTitle, mTagline, mDescription, mGenres;
+	private EditText mTitle, mDescription, mGenres;
 	private Button mRuntime, mRating, mReleaseDate, mCertification;
 
-	public EditMovieFragment() {} // Empty constructor
+	public EditTvShowFragment() {} // Empty constructor
 
-	public static EditMovieFragment newInstance(String movieId) {
-		EditMovieFragment fragment = new EditMovieFragment();	
+	public static EditTvShowFragment newInstance(String showId) {
+		EditTvShowFragment fragment = new EditTvShowFragment();	
 		Bundle args = new Bundle();
-		args.putString("movieId", movieId);
+		args.putString("showId", showId);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -57,8 +58,8 @@ public class EditMovieFragment extends Fragment {
 		setHasOptionsMenu(true);
 		setRetainInstance(true);
 
-		// Load the movie details
-		loadMovie(getArguments().getString("movieId"));
+		// Load the show details
+		loadTvShow(getArguments().getString("showId"));
 
 		// Hide the keyboard when the Activity starts
 		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -75,7 +76,6 @@ public class EditMovieFragment extends Fragment {
 
 		// Text fields
 		mTitle = (EditText) v.findViewById(R.id.edit_title);
-		mTagline = (EditText) v.findViewById(R.id.edit_tagline);
 		mDescription = (EditText) v.findViewById(R.id.edit_description);
 		mGenres = (EditText) v.findViewById(R.id.edit_genres);
 
@@ -85,43 +85,47 @@ public class EditMovieFragment extends Fragment {
 		mReleaseDate = (Button) v.findViewById(R.id.edit_release_date);
 		mCertification = (Button) v.findViewById(R.id.edit_certification);
 
+		// Hide tagline stuff
+		v.findViewById(R.id.edit_tagline).setVisibility(View.GONE);
+		v.findViewById(R.id.textView2).setVisibility(View.GONE);
+
+		// Change "Release date" to "First aired"
+		((TextView) v.findViewById(R.id.TextView02)).setText(R.string.detailsFirstAired);
+
 		setupValues(true);
 	}
 
 	private void setupValues(boolean resetTextFields) {
 		if (resetTextFields) {
 			// Set title
-			mTitle.setText(mMovie.getTitle());
+			mTitle.setText(mShow.getTitle());
 			mTitle.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Bold.ttf"));
-			mTitle.setSelection(mMovie.getTitle().length());
-
-			// Set tagline
-			mTagline.setText(mMovie.getTagline());
+			mTitle.setSelection(mShow.getTitle().length());
 
 			// Set description
-			if (!mMovie.getPlot().equals(getString(R.string.stringNoPlot)))
-				mDescription.setText(mMovie.getPlot());
+			if (!mShow.getDescription().equals(getString(R.string.stringNoPlot)))
+				mDescription.setText(mShow.getDescription());
 
 			// Set genres
-			mGenres.setText(mMovie.getGenres());
+			mGenres.setText(mShow.getGenres());
 		}
 
 		// Set runtime
-		mRuntime.setText(MizLib.getPrettyRuntime(getActivity(), MizLib.getInteger(mMovie.getRuntime())));
+		mRuntime.setText(MizLib.getPrettyRuntime(getActivity(), MizLib.getInteger(mShow.getRuntime())));
 		mRuntime.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showRuntimeDialog(MizLib.getInteger(mMovie.getRuntime()));
+				showRuntimeDialog(MizLib.getInteger(mShow.getRuntime()));
 			}
 		});
 
 		// Set rating
-		if (!mMovie.getRating().equals("0.0")) {
+		if (!mShow.getRating().equals("0.0")) {
 			try {
-				int rating = (int) (Double.parseDouble(mMovie.getRating()) * 10);
+				int rating = (int) (Double.parseDouble(mShow.getRating()) * 10);
 				mRating.setText(rating + " %");
 			} catch (NumberFormatException e) {
-				mRating.setText(mMovie.getRating());
+				mRating.setText(mShow.getRating());
 			}
 		} else {
 			mRating.setText(R.string.stringNA);
@@ -129,22 +133,22 @@ public class EditMovieFragment extends Fragment {
 		mRating.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showRatingDialog(mMovie.getRawRating());
+				showRatingDialog(mShow.getRawRating());
 			}
 		});
 
 		// Set release date
-		mReleaseDate.setText(MizLib.getPrettyDatePrecise(getActivity(), mMovie.getReleasedate()));
+		mReleaseDate.setText(MizLib.getPrettyDatePrecise(getActivity(), mShow.getFirstAirdate()));
 		mReleaseDate.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showDatePickerDialog(mMovie.getReleasedate());
+				showDatePickerDialog(mShow.getFirstAirdate());
 			}
 		});
 
 		// Set certification
-		if (!TextUtils.isEmpty(mMovie.getCertification())) {
-			mCertification.setText(mMovie.getCertification());
+		if (!TextUtils.isEmpty(mShow.getCertification())) {
+			mCertification.setText(mShow.getCertification());
 		} else {
 			mCertification.setText(R.string.stringNA);
 		}
@@ -156,35 +160,30 @@ public class EditMovieFragment extends Fragment {
 		});
 	}
 
-	private void loadMovie(String movieId) {
-		Cursor cursor = MizuuApplication.getMovieAdapter().fetchMovie(movieId);
-		try {
-			mMovie = new Movie(getActivity(),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TITLE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_PLOT)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TAGLINE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_IMDB_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RATING)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RELEASEDATE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_CERTIFICATION)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_RUNTIME)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TRAILER)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_GENRES)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_FAVOURITE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_ACTORS)),
-					MizuuApplication.getCollectionsAdapter().getCollection(cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_COLLECTION_ID))),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_COLLECTION_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TO_WATCH)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_HAS_WATCHED)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_DATE_ADDED)),
-					false
-					);
-		} catch (Exception e) {} finally {
-			cursor.close();
+	private void loadTvShow(String showId) {
+		Cursor cursor = MizuuApplication.getTvDbAdapter().getShow(showId);
+		if (cursor.moveToFirst()) {
+			try {
+				mShow = new TvShow(getActivity(),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_TITLE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_PLOT)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_RATING)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_GENRES)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ACTORS)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_RUNTIME)),
+						false,
+						cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
+						MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID)))
+						);
+			} catch (Exception e) {} finally {
+				cursor.close();
+			}
 		}
 
-		if (mMovie == null) {
+		if (mShow == null) {
 			Toast.makeText(getActivity(), R.string.errorSomethingWentWrong, Toast.LENGTH_LONG).show();
 			getActivity().finish();
 		}
@@ -204,7 +203,7 @@ public class EditMovieFragment extends Fragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// Update the runtime
-				mMovie.setRuntime(numberPicker.getValue());
+				mShow.setRuntime(numberPicker.getValue());
 
 				// Update the UI with the new value
 				setupValues(false);
@@ -232,7 +231,7 @@ public class EditMovieFragment extends Fragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// Update the rating
-				mMovie.setRating(numberPicker.getValue());
+				mShow.setRating(numberPicker.getValue());
 
 				// Update the UI with the new value
 				setupValues(false);
@@ -252,7 +251,7 @@ public class EditMovieFragment extends Fragment {
 			@Override
 			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 				// Update the date
-				mMovie.setReleaseDate(year, monthOfYear + 1, dayOfMonth);
+				mShow.setFirstAiredDate(year, monthOfYear + 1, dayOfMonth);
 
 				// Update the UI with the new value
 				setupValues(false);
@@ -265,7 +264,7 @@ public class EditMovieFragment extends Fragment {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle(R.string.set_certification);
 
-		ArrayList<String> temp = MizuuApplication.getMovieAdapter().getCertifications();
+		ArrayList<String> temp = MizuuApplication.getTvDbAdapter().getCertifications();
 		final CharSequence[] items = new CharSequence[temp.size() + 1];
 		items[0] = getString(R.string.create_new_certification);
 		for (int i = 0; i < temp.size(); i++) {
@@ -280,7 +279,7 @@ public class EditMovieFragment extends Fragment {
 					showNewCertificationDialog();
 				} else {
 					// Set certification
-					mMovie.setCertification(items[which].toString());
+					mShow.setCertification(items[which].toString());
 
 					// Update the UI with the new value
 					setupValues(false);
@@ -302,7 +301,7 @@ public class EditMovieFragment extends Fragment {
 		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				// Set certification
-				mMovie.setCertification(input.getText().toString());
+				mShow.setCertification(input.getText().toString());
 
 				// Update the UI with the new value
 				setupValues(false);
@@ -321,10 +320,10 @@ public class EditMovieFragment extends Fragment {
 	}
 
 	private void saveChanges() {
-		MizuuApplication.getMovieAdapter().editMovie(mMovie.getTmdbId(), mTitle.getText().toString(), mTagline.getText().toString(), mDescription.getText().toString(),
-				mGenres.getText().toString(), mMovie.getRuntime(), mMovie.getRating(), mMovie.getReleasedate(), mMovie.getCertification());
+		MizuuApplication.getTvDbAdapter().editShow(mShow.getId(), mTitle.getText().toString(), mDescription.getText().toString(),
+				mGenres.getText().toString(), mShow.getRuntime(), mShow.getRating(), mShow.getFirstAirdate(), mShow.getCertification());
 
-		getActivity().setResult(4);
+		getActivity().setResult(Activity.RESULT_OK);
 		getActivity().finish();
 	}
 
