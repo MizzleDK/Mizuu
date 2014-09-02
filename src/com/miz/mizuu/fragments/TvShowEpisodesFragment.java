@@ -179,15 +179,27 @@ public class TvShowEpisodesFragment extends Fragment {
 		private LayoutInflater inflater;
 		private final Context mContext;
 		private int mNumColumns = 0;
+		private List<GridEpisode> mItems = new ArrayList<GridEpisode>();
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
+		
+		// This is necessary in order to avoid random ArrayOutOfBoundsException when changing the items
+		public void setItems(List<GridEpisode> items) {
+			mItems = new ArrayList<GridEpisode>(items);
+			notifyDataSetChanged();
+		}
 
 		@Override
 		public int getCount() {
 			return mItems.size();
+		}
+		
+		@Override
+		public boolean isEmpty() {
+			return mItems.size() == 0;
 		}
 
 		@Override
@@ -281,7 +293,7 @@ public class TvShowEpisodesFragment extends Fragment {
 		@Override
 		public void onPostExecute(Void result) {
 			mProgressBar.setVisibility(View.GONE);
-			mAdapter.notifyDataSetChanged();
+			mAdapter.setItems(mItems);
 		}
 	}
 }

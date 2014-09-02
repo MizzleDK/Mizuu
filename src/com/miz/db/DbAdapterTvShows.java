@@ -118,7 +118,7 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 	}
 
 	public Cursor getAllShows() {
-		return mDatabase.query(DATABASE_TABLE, SELECT_ALL, "NOT(" + KEY_SHOW_ID + " = 'invalid')", null, null, null, KEY_SHOW_TITLE + " ASC");
+		return mDatabase.query(DATABASE_TABLE, SELECT_ALL, "NOT(" + KEY_SHOW_ID + " = '" + UNIDENTIFIED_ID + "')", null, null, null, KEY_SHOW_TITLE + " ASC");
 	}
 
 	public boolean deleteShow(String showId) {
@@ -130,12 +130,12 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 	}
 
 	public boolean deleteAllUnidentifiedShows() {
-		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "= 'invalid'", null) > 0;
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "= '" + UNIDENTIFIED_ID + "'", null) > 0;
 	}
 
 	public int count() {
 		Cursor c = mDatabase.query(DATABASE_TABLE, new String[] {KEY_SHOW_ID, KEY_SHOW_TITLE},
-				"not (" + KEY_SHOW_ID + " = 'invalid') and not (" + KEY_SHOW_TITLE + " like '%MizUnidentified%'" + ") and not (" + KEY_SHOW_ID + " = ''" + ")", null, KEY_SHOW_ID, null, null);
+				"not (" + KEY_SHOW_ID + " = '" + UNIDENTIFIED_ID + "') and not (" + KEY_SHOW_TITLE + " like '%MizUnidentified%'" + ") and not (" + KEY_SHOW_ID + " = ''" + ")", null, KEY_SHOW_ID, null, null);
 		int count = c.getCount();
 		c.close();
 		return count;

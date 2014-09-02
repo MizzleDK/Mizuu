@@ -34,6 +34,7 @@ import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.MizLib;
 import com.miz.functions.TvShowLibraryUpdateCallback;
 import com.miz.mizuu.MizuuApplication;
+import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.WidgetUtils;
 import com.squareup.picasso.Picasso;
 
@@ -262,6 +263,7 @@ public class TvShowIdentification {
 					MizLib.decodeSampledBitmapFromFile(backdropFile.getAbsolutePath(), getNotificationImageWidth(), getNotificationImageHeight()), episodeCount);
 		}
 		
+		LocalBroadcastUtils.updateTvShowLibrary(mContext);
 		WidgetUtils.updateTvShowWidgets(mContext);
 	}
 

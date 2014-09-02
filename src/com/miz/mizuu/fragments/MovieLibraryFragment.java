@@ -34,11 +34,11 @@ import static com.miz.functions.SortingKeys.GENRES;
 import static com.miz.functions.SortingKeys.OFFLINE_COPIES;
 import static com.miz.functions.SortingKeys.RATING;
 import static com.miz.functions.SortingKeys.RELEASE;
+import static com.miz.functions.SortingKeys.RELEASE_YEAR;
 import static com.miz.functions.SortingKeys.TITLE;
 import static com.miz.functions.SortingKeys.UNWATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
-import static com.miz.functions.SortingKeys.RELEASE_YEAR;
 
 import java.io.File;
 import java.net.URLEncoder;
@@ -411,8 +411,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		if (mMovies.size() == 0)
 			forceLoaderLoad();
 
-		if (mAdapter != null)
-			mAdapter.notifyDataSetChanged();
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -430,12 +429,21 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		private final Context mContext;
 		private int mNumColumns = 0;
 		private boolean mCollectionsView = false;
+		private ArrayList<Integer> mMovieKeys = new ArrayList<Integer>();
+		private ArrayList<MediumMovie> mMovies = new ArrayList<MediumMovie>();
 
 		public LoaderAdapter(Context context) {
 			mContext = context;
 			mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
+		// This is necessary in order to avoid random ArrayOutOfBoundsException when changing the items (i.e. during a library update)
+		public void setItems(ArrayList<Integer> movieKeys, ArrayList<MediumMovie> movies) {
+			mMovieKeys = new ArrayList<Integer>(movieKeys);
+			mMovies = new ArrayList<MediumMovie>(movies);
+			notifyDataSetChanged();
+		}
+		
 		@Override
 		public boolean isEmpty() {
 			return !mLoading && mMovieKeys.size() == 0;
@@ -457,8 +465,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup container) {
-
+		public View getView(int position, View convertView, ViewGroup container) {			
 			final MediumMovie mMovie = mMovies.get(mMovieKeys.get(position));
 
 			CoverItem holder;
@@ -538,7 +545,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 
 	private void notifyDataSetChanged() {		
 		if (mAdapter != null)
-			mAdapter.notifyDataSetChanged();
+			mAdapter.setItems(mMovieKeys, mMovies);
 
 		if (mSpinnerAdapter != null)
 			mSpinnerAdapter.notifyDataSetChanged();

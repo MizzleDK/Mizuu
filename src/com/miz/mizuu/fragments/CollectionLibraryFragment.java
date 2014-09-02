@@ -355,8 +355,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		if (mMovies.size() == 0)
 			forceLoaderLoad();
 
-		if (mAdapter != null)
-			mAdapter.notifyDataSetChanged();
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -373,10 +372,19 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		private LayoutInflater mInflater;
 		private final Context mContext;
 		private int mNumColumns = 0;
+		private ArrayList<Integer> mMovieKeys = new ArrayList<Integer>();
+		private ArrayList<MediumMovie> mMovies = new ArrayList<MediumMovie>();
 
 		public LoaderAdapter(Context context) {
 			mContext = context;
 			mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		}
+
+		// This is necessary in order to avoid random ArrayOutOfBoundsException when changing the items (i.e. during a library update)
+		public void setItems(ArrayList<Integer> movieKeys, ArrayList<MediumMovie> movies) {
+			mMovieKeys = new ArrayList<Integer>(movieKeys);
+			mMovies = new ArrayList<MediumMovie>(movies);
+			notifyDataSetChanged();
 		}
 
 		@Override
@@ -452,9 +460,9 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 		}
 	}
 
-	private void notifyDataSetChanged() {		
+	private void notifyDataSetChanged() {
 		if (mAdapter != null)
-			mAdapter.notifyDataSetChanged();
+			mAdapter.setItems(mMovieKeys, mMovies);
 
 		if (mSpinnerAdapter != null)
 			mSpinnerAdapter.notifyDataSetChanged();
@@ -865,7 +873,7 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 
 		createAndShowAlertDialog(setupItemArray(map, R.string.allFileSources), R.string.selectFileSource, FILE_SOURCES);
 	}
-	
+
 	private void showReleaseYear() {
 		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
 		for (int i = 0; i < mMovieKeys.size(); i++) {
@@ -1044,12 +1052,12 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 					String lowerCaseTitle = mMovies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
 
 					boolean foundInTitle = false;
-					
+
 					if (lowerCaseTitle.indexOf(mSearchQuery) != -1 || p.matcher(lowerCaseTitle).replaceAll("").indexOf(mSearchQuery) != -1) {
 						mTempKeys.add(i);
 						foundInTitle = true;
 					}
-					
+
 					if (!foundInTitle) {
 						for (Filepath path : mMovies.get(i).getFilepaths()) {
 							String filepath = path.getFilepath().toLowerCase(Locale.ENGLISH);

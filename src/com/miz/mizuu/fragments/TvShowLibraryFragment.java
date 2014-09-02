@@ -349,8 +349,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		if (mTvShows.size() == 0)
 			forceLoaderLoad();
 
-		if (mAdapter != null)
-			mAdapter.notifyDataSetChanged();
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -367,12 +366,21 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		private LayoutInflater inflater;
 		private final Context mContext;
 		private int mNumColumns = 0;
+		private ArrayList<TvShow> mTvShows = new ArrayList<TvShow>();
+		private ArrayList<Integer> mTvShowKeys = new ArrayList<Integer>();
 
 		public LoaderAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
+		// This is necessary in order to avoid random ArrayOutOfBoundsException when changing the items (i.e. during a library update)
+		public void setItems(ArrayList<TvShow> shows, ArrayList<Integer> showKeys) {
+			mTvShows = new ArrayList<TvShow>(shows);
+			mTvShowKeys = new ArrayList<Integer>(showKeys);
+			notifyDataSetChanged();
+		}
+		
 		@Override
 		public boolean isEmpty() {
 			return !mLoading && mTvShowKeys.size() == 0;
@@ -449,7 +457,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 
 	private void notifyDataSetChanged() {
 		if (mAdapter != null)
-			mAdapter.notifyDataSetChanged();
+			mAdapter.setItems(mTvShows, mTvShowKeys);
 
 		if (mSpinnerAdapter != null)
 			mSpinnerAdapter.notifyDataSetChanged();
