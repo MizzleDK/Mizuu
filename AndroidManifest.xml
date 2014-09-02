@@ -339,14 +339,26 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-        
-                <!-- Edit Movie activity -->
+
+        <!-- Edit TV show activity -->
         <activity
             android:name="com.miz.mizuu.EditTvShow"
             android:exported="false"
             android:hardwareAccelerated="false"
             android:icon="@drawable/white_app_icon"
             android:label="@string/stringEditTvShow" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Edit TV show episode activity -->
+        <activity
+            android:name="com.miz.mizuu.EditTvShowEpisode"
+            android:exported="false"
+            android:hardwareAccelerated="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/stringEditTvShowEpisode" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -384,7 +396,7 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-        
+
         <!-- Add file source Activity -->
         <activity
             android:name="com.miz.mizuu.AddFileSource"
@@ -395,7 +407,7 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-        
+
         <!-- Edit Movie activity -->
         <activity
             android:name="com.miz.remoteplayback.RemotePlayback"
@@ -558,7 +570,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 

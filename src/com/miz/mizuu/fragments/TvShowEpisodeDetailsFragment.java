@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -56,6 +57,7 @@ import com.miz.functions.BlurTransformation;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteTransformation;
+import com.miz.mizuu.EditTvShowEpisode;
 import com.miz.mizuu.IdentifyTvShow;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -118,6 +120,10 @@ import com.squareup.picasso.Picasso;
 
 		mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
 
+		loadEpisode();
+	}
+	
+	private void loadEpisode() {
 		if (!getArguments().getString("showId").isEmpty() && getArguments().getInt("season") >= 0 && getArguments().getInt("episode") >= 0) {
 			Cursor cursor = mDatabaseHelper.getEpisode(getArguments().getString("showId"), getArguments().getInt("season"), getArguments().getInt("episode"));
 
@@ -198,91 +204,7 @@ import com.squareup.picasso.Picasso;
 				MizLib.addActionBarMargin(getActivity(), view.findViewById(R.id.episode_relative_layout));
 		}
 
-		// Set the episode title
-		mTitle.setVisibility(View.VISIBLE);
-		mTitle.setText(mEpisode.getTitle());
-		mTitle.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf"));
-		mTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
-		mDescription.setTypeface(mLight);
-		mFileSource.setTypeface(mLight);
-		mDirector.setTypeface(mLight);
-		mWriter.setTypeface(mLight);
-		mGuestStars.setTypeface(mLight);
-
-		if (MizLib.isPortrait(getActivity())) {
-			mAirDate.setTypeface(mMedium);
-			mRating.setTypeface(mMedium);
-			mSeasonEpisodeNumber.setTypeface(mLightItalic);		
-			mSeasonEpisodeNumber.setText(getString(R.string.showSeason) + " " + mEpisode.getSeason() + ", " + getString(R.string.showEpisode) + " " + mEpisode.getEpisode());
-		} else {
-			mAirDate.setTypeface(mLight);
-			mRating.setTypeface(mLight);
-		}
-
-		// Set the movie plot
-		if (!MizLib.isPortrait(getActivity())) {
-			mDescription.setBackgroundResource(R.drawable.selectable_background);
-			mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
-			mDescription.setTag(true); // true = collapsed
-			mDescription.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (((Boolean) mDescription.getTag())) {
-						mDescription.setMaxLines(1000);
-						mDescription.setTag(false);
-					} else {
-						mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
-						mDescription.setTag(true);
-					}
-				}
-			});
-			mDescription.setEllipsize(TextUtils.TruncateAt.END);
-			mDescription.setFocusable(true);
-		} else {
-			if (MizLib.isTablet(getActivity()))
-				mDescription.setLineSpacing(0, 1.15f);
-		}
-		mDescription.setText(mEpisode.getDescription());
-
-		if (mShowFileLocation) {
-			mFileSource.setText(mEpisode.getAllFilepaths());
-		} else {
-			mFileSource.setVisibility(View.GONE);
-		}
-
-		// Set the episode air date
-		mAirDate.setText(MizLib.getPrettyDatePrecise(getActivity(), mEpisode.getReleasedate()));
-
-		// Set the movie rating
-		if (!mEpisode.getRating().equals("0.0")) {
-			try {
-				int rating = (int) (Double.parseDouble(mEpisode.getRating()) * 10);
-				mRating.setText(Html.fromHtml(rating + "<small> %</small>"));
-			} catch (NumberFormatException e) {
-				mRating.setText(mEpisode.getRating());
-			}
-		} else {
-			mRating.setText(R.string.stringNA);
-		}
-
-		if (TextUtils.isEmpty(mEpisode.getDirector()) || mEpisode.getDirector().equals(getString(R.string.stringNA))) {
-			mDirector.setVisibility(View.GONE);
-		} else {
-			mDirector.setText(mEpisode.getDirector());
-		}
-
-		if (TextUtils.isEmpty(mEpisode.getWriter()) || mEpisode.getWriter().equals(getString(R.string.stringNA))) {
-			mWriter.setVisibility(View.GONE);
-		} else {
-			mWriter.setText(mEpisode.getWriter());
-		}
-
-		if (TextUtils.isEmpty(mEpisode.getGuestStars()) || mEpisode.getGuestStars().equals(getString(R.string.stringNA))) {
-			mGuestStars.setVisibility(View.GONE);
-		} else {
-			mGuestStars.setText(mEpisode.getGuestStars());
-		}
+		loadData();
 
 		mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).config(MizuuApplication.getBitmapConfig()).transform(new PaletteTransformation(mEpisode.getEpisodePhoto().getAbsolutePath(), mDetailsArea)).into(mEpisodePhoto, new Callback() {
 			@Override
@@ -342,6 +264,94 @@ import com.squareup.picasso.Picasso;
 					mBackdrop.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
 				}
 			});
+	}
+	
+	private void loadData() {
+		// Set the episode title
+				mTitle.setVisibility(View.VISIBLE);
+				mTitle.setText(mEpisode.getTitle());
+				mTitle.setTypeface(MizuuApplication.getOrCreateTypeface(getActivity(), "RobotoCondensed-Regular.ttf"));
+				mTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
+				mDescription.setTypeface(mLight);
+				mFileSource.setTypeface(mLight);
+				mDirector.setTypeface(mLight);
+				mWriter.setTypeface(mLight);
+				mGuestStars.setTypeface(mLight);
+
+				if (MizLib.isPortrait(getActivity())) {
+					mAirDate.setTypeface(mMedium);
+					mRating.setTypeface(mMedium);
+					mSeasonEpisodeNumber.setTypeface(mLightItalic);		
+					mSeasonEpisodeNumber.setText(getString(R.string.showSeason) + " " + mEpisode.getSeason() + ", " + getString(R.string.showEpisode) + " " + mEpisode.getEpisode());
+				} else {
+					mAirDate.setTypeface(mLight);
+					mRating.setTypeface(mLight);
+				}
+
+				// Set the movie plot
+				if (!MizLib.isPortrait(getActivity())) {
+					mDescription.setBackgroundResource(R.drawable.selectable_background);
+					mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
+					mDescription.setTag(true); // true = collapsed
+					mDescription.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							if (((Boolean) mDescription.getTag())) {
+								mDescription.setMaxLines(1000);
+								mDescription.setTag(false);
+							} else {
+								mDescription.setMaxLines(getActivity().getResources().getInteger(R.integer.episode_details_max_lines));
+								mDescription.setTag(true);
+							}
+						}
+					});
+					mDescription.setEllipsize(TextUtils.TruncateAt.END);
+					mDescription.setFocusable(true);
+				} else {
+					if (MizLib.isTablet(getActivity()))
+						mDescription.setLineSpacing(0, 1.15f);
+				}
+				mDescription.setText(mEpisode.getDescription());
+
+				if (mShowFileLocation) {
+					mFileSource.setText(mEpisode.getAllFilepaths());
+				} else {
+					mFileSource.setVisibility(View.GONE);
+				}
+
+				// Set the episode air date
+				mAirDate.setText(MizLib.getPrettyDatePrecise(getActivity(), mEpisode.getReleasedate()));
+
+				// Set the movie rating
+				if (!mEpisode.getRating().equals("0.0")) {
+					try {
+						int rating = (int) (Double.parseDouble(mEpisode.getRating()) * 10);
+						mRating.setText(Html.fromHtml(rating + "<small> %</small>"));
+					} catch (NumberFormatException e) {
+						mRating.setText(mEpisode.getRating());
+					}
+				} else {
+					mRating.setText(R.string.stringNA);
+				}
+
+				if (TextUtils.isEmpty(mEpisode.getDirector()) || mEpisode.getDirector().equals(getString(R.string.stringNA))) {
+					mDirector.setVisibility(View.GONE);
+				} else {
+					mDirector.setText(mEpisode.getDirector());
+				}
+
+				if (TextUtils.isEmpty(mEpisode.getWriter()) || mEpisode.getWriter().equals(getString(R.string.stringNA))) {
+					mWriter.setVisibility(View.GONE);
+				} else {
+					mWriter.setText(mEpisode.getWriter());
+				}
+
+				if (TextUtils.isEmpty(mEpisode.getGuestStars()) || mEpisode.getGuestStars().equals(getString(R.string.stringNA))) {
+					mGuestStars.setVisibility(View.GONE);
+				} else {
+					mGuestStars.setText(mEpisode.getGuestStars());
+				}
 	}
 
 	private void setPanning(boolean successful) {
@@ -465,8 +475,19 @@ import com.squareup.picasso.Picasso;
 		case R.id.watchOffline:
 			watchOffline();
 			break;
+		case R.id.editTvShowEpisode:
+			editEpisode();
+			break;
 		}
 		return false;
+	}
+
+	private void editEpisode() {
+		Intent intent = new Intent(getActivity(), EditTvShowEpisode.class);
+		intent.putExtra("showId", mEpisode.getShowId());
+		intent.putExtra("season", MizLib.getInteger(mEpisode.getSeason()));
+		intent.putExtra("episode", MizLib.getInteger(mEpisode.getEpisode()));
+		startActivityForResult(intent, 0);
 	}
 
 	public void watchOffline() {
@@ -665,5 +686,15 @@ import com.squareup.picasso.Picasso;
 				Trakt.performEpisodeCheckin(mEpisode, getActivity());
 			}
 		}.start();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == Activity.RESULT_OK) {
+				loadEpisode();
+				loadData();
+			}
+		}
 	}
 }

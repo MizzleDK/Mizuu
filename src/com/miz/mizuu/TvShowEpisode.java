@@ -101,6 +101,10 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 		return MizLib.getTvShowEpisode(mContext, mShowId, mSeason, mEpisode);
 	}
 
+	public void setReleaseDate(int year, int month, int day) {
+		mReleaseDate = year + "-" + MizLib.addIndexZero(month) + "-" + MizLib.addIndexZero(day);
+	}
+	
 	public String getReleasedate() {
 		return mReleaseDate;
 	}
@@ -117,6 +121,10 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 		return StringUtils.replacePipesWithCommas(mGuestStars);
 	}
 
+	public void setRating(int rating) {
+		mRating = String.valueOf(Double.valueOf((double) rating / 10));
+	}
+	
 	public String getRating() {
 		if (TextUtils.isEmpty(mRating))
 			return "0.0";

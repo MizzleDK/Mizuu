@@ -212,6 +212,7 @@
     <string name="chooserWatchList">Watchlist</string>
     <string name="stringEditMovie">Edit movie</string>
     <string name="stringEditTvShow">Edit TV show</string>
+    <string name="stringEditTvShowEpisode">Edit TV show episode</string>
     <string name="stringLaunchScreen">Launch screen</string>
     <string name="stringLaunchScreenDescription">Select which section to show at launch.</string>
     <string name="stringRemoveUnavailableEntries">Remove unavailable files</string>
