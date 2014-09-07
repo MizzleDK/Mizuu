@@ -1157,6 +1157,9 @@ public class MizLib {
 				fileos.write(retVal, 0, length);
 			}
 		} catch(Exception e) {
+			// The download failed, so let's delete whatever was downloaded
+			deleteFile(new File(savePath));
+			
 			return false;
 		} finally {
 			if (fileos != null) {
