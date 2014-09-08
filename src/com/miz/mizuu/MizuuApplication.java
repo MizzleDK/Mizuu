@@ -52,7 +52,7 @@ import com.miz.db.DbAdapterTvShowEpisodeMappings;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.FileRequestTransformer;
-import com.miz.functions.Utils;
+import com.miz.functions.OkHttpDownloader;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Bus;
@@ -238,7 +238,7 @@ public class MizuuApplication extends Application {
 
 	public static Downloader getDownloader(Context context) {
 		if (sDownloader == null)
-			sDownloader = Utils.createDefaultDownloader(context);
+			sDownloader = new OkHttpDownloader(context);
 		return sDownloader;
 	}
 

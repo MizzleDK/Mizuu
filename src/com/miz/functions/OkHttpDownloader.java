@@ -16,7 +16,6 @@
 package com.miz.functions;
 
 import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
-import static com.miz.functions.Utils.parseResponseSourceHeader;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -34,6 +33,7 @@ import android.text.TextUtils;
 
 import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.StringUtils;
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkUrlFactory;
 import com.squareup.picasso.Downloader;
@@ -41,80 +41,84 @@ import com.squareup.picasso.Downloader;
 /** A {@link Downloader} which uses OkHttp to download images. */
 public class OkHttpDownloader implements Downloader {
 
-	private Context mContext;
+	private static final int MIN_DISK_CACHE_SIZE = 5 * 1024 * 1024; // 5MB
+	private static final int MAX_DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
+
 	static final String RESPONSE_SOURCE_ANDROID = "X-Android-Response-Source";
 	static final String RESPONSE_SOURCE_OKHTTP = "OkHttp-Response-Source";
 
-	private final OkUrlFactory urlFactory;
+	private final Context mContext;
+	private final File mCacheDir;
+	private final OkUrlFactory mUrlFactory;
 
 	/**
 	 * Create new downloader that uses OkHttp. This will install an image cache into your application
 	 * cache directory.
 	 */
-	public OkHttpDownloader(final Context context) {
-		this(Utils.createDefaultCacheDir(context));
-		mContext = context;
-	}
+	public OkHttpDownloader(Context context) {
 
-	/**
-	 * Create new downloader that uses OkHttp. This will install an image cache into your application
-	 * cache directory.
-	 *
-	 * @param cacheDir The directory in which the cache should be stored
-	 */
-	public OkHttpDownloader(final File cacheDir) {
-		this(cacheDir, Utils.calculateDiskCacheSize(cacheDir));
-	}
-
-	/**
-	 * Create new downloader that uses OkHttp. This will install an image cache into your application
-	 * cache directory.
-	 *
-	 * @param maxSize The size limit for the cache.
-	 */
-	public OkHttpDownloader(final Context context, final long maxSize) {
-		this(Utils.createDefaultCacheDir(context), maxSize);
-		mContext = context;
-	}
-
-	/**
-	 * Create new downloader that uses OkHttp. This will install an image cache into your application
-	 * cache directory.
-	 *
-	 * @param cacheDir The directory in which the cache should be stored
-	 * @param maxSize The size limit for the cache.
-	 */
-	public OkHttpDownloader(final File cacheDir, final long maxSize) {
-		this(new OkHttpClient());
-		try {
-			urlFactory.client().setCache(new com.squareup.okhttp.Cache(cacheDir, maxSize));
-		} catch (IOException ignored) {
+		// Create cache directory
+		mCacheDir = new File(context.getApplicationContext().getCacheDir(), "picasso-cache");
+		if (!mCacheDir.exists()) {
+			mCacheDir.mkdirs();
 		}
+
+		mUrlFactory = new OkUrlFactory(MizuuApplication.getOkHttpClient());
+
+		try {
+			mUrlFactory.client().setCache(new Cache(mCacheDir, calculateDiskCacheSize(mCacheDir)));
+		} catch (IOException e) {}
+
+		// Set context
+		mContext = context;
 	}
 
-	/**
-	 * Create a new downloader that uses the specified OkHttp instance. A response cache will not be
-	 * automatically configured.
-	 */
-	public OkHttpDownloader(OkHttpClient client) {
-		this.urlFactory = new OkUrlFactory(client);
+	static long calculateDiskCacheSize(File dir) {
+		long size = MIN_DISK_CACHE_SIZE;
+
+		try {
+			// Target 2% of the total space.
+			size = MizLib.getFreeMemory() / 50;
+		} catch (IllegalArgumentException ignored) {}
+
+		// Bound inside min/max size for disk cache.
+		return Math.max(Math.min(size, MAX_DISK_CACHE_SIZE), MIN_DISK_CACHE_SIZE);
 	}
 
 	protected HttpURLConnection openConnection(Uri uri) throws IOException {
-		HttpURLConnection connection = urlFactory.open(new URL(uri.toString()));
-		connection.setConnectTimeout(Utils.DEFAULT_CONNECT_TIMEOUT);
-		connection.setReadTimeout(Utils.DEFAULT_READ_TIMEOUT);
+		HttpURLConnection connection = mUrlFactory.open(new URL(uri.toString()));
+		connection.setConnectTimeout(15 * 1000); // 15s
+		connection.setReadTimeout(20 * 1000); // 20s		
 		return connection;
 	}
 
 	protected OkHttpClient getClient() {
-		return urlFactory.client();
+		return mUrlFactory.client();
+	}
+
+	/** Returns {@code true} if header indicates the response body was loaded from the disk cache. */
+	private boolean parseResponseSourceHeader(String header) {
+		if (header == null)
+			return false;
+			
+		String[] parts = header.split(" ", 2);
+		if ("CACHE".equals(parts[0]))
+			return true;
+		
+		if (parts.length == 1)
+			return false;
+
+		try {
+			return "CONDITIONAL_CACHE".equals(parts[0]) && Integer.parseInt(parts[1]) == 304;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	@Override
 	public Response load(Uri uri, boolean localCacheOnly) throws IOException {		
 		String imageUri = uri.toString();
-		
+
 		// Check if this is a HTTP request
 		if (imageUri.startsWith("http")) {
 			HttpURLConnection connection = openConnection(uri);
@@ -143,10 +147,10 @@ public class OkHttpDownloader implements Downloader {
 		// Custom data!
 		ArrayList<Filepath> filepaths = new ArrayList<Filepath>();
 		boolean ignoreNfo = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_NFO_FILES, true);
-		
+
 		// We only want to look for custom images if the user has asked for it
 		if (!ignoreNfo) {
-			
+
 			// Determine if this is a movie path or TV show path
 			if (imageUri.contains("movie")) {
 				// Let's get the movie ID
@@ -161,15 +165,15 @@ public class OkHttpDownloader implements Downloader {
 			} else if (imageUri.contains("tvshows")) {
 				// Handle TV shows... soon(TM)
 			}
-			
+
 			for (Filepath path : filepaths) {	
 				String filename = path.getFilepath();
-				
+
 				if (path.getType() == FileSource.SMB) {
-					
+
 					if (!TextUtils.isEmpty(filename)) {
 						SmbFile s = null;
-						
+
 						// Determine if this is a movie path or TV show path
 						if (imageUri.contains("movie")) {
 							if (imageUri.contains("movie-thumbs")) {
@@ -179,14 +183,14 @@ public class OkHttpDownloader implements Downloader {
 								// Movie backdrop
 								s = MizLib.getCustomCoverArt(filename, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, imageUri), MizLib.BACKDROP);
 							}
-							
+
 							if (s != null)
 								return new Response(s.getInputStream(), localCacheOnly, s.getContentLength());
 						}
 					}
-					
+
 				} else if (path.getType() == FileSource.FILE) {
-					
+
 					if (!TextUtils.isEmpty(filename)) {
 						// There's a valid filepath, let's look for custom movie data
 						filename = filename.substring(0, filename.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
@@ -196,7 +200,7 @@ public class OkHttpDownloader implements Downloader {
 							if (list != null) {
 								String name, absolutePath;
 								int count = list.length;
-								
+
 								// Determine if this is a movie path or TV show path
 								if (imageUri.contains("movie")) {
 									if (imageUri.contains("movie-thumbs")) {
@@ -204,7 +208,7 @@ public class OkHttpDownloader implements Downloader {
 										for (int i = 0; i < count; i++) {
 											name = list[i].getName();
 											absolutePath = list[i].getAbsolutePath();
-											
+
 											if (name.equalsIgnoreCase("poster.jpg") ||
 													name.equalsIgnoreCase("poster.jpeg") ||
 													name.equalsIgnoreCase("poster.tbn") ||
@@ -253,7 +257,7 @@ public class OkHttpDownloader implements Downloader {
 													absolutePath.equalsIgnoreCase(filename + "-backdrop.jpg") ||
 													absolutePath.equalsIgnoreCase(filename + "-backdrop.jpeg") ||
 													absolutePath.equalsIgnoreCase(filename + "-backdrop.tbn")) {
-												
+
 												return new Response(new BufferedInputStream(new FileInputStream(list[i]), 4096), localCacheOnly, list[i].length());
 											}
 										}
@@ -267,7 +271,7 @@ public class OkHttpDownloader implements Downloader {
 				}
 			}	
 		}
-		
+
 		// Return a Response based on the standard image path
 		File f = new File(imageUri);
 		return new Response(new BufferedInputStream(new FileInputStream(f), 4096), localCacheOnly, f.length());
