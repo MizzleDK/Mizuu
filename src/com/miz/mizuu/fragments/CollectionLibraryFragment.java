@@ -39,7 +39,6 @@ import static com.miz.functions.SortingKeys.WATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
 
 import java.io.File;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -538,9 +537,9 @@ public class CollectionLibraryFragment extends Fragment implements OnNavigationL
 										try {
 											final SmbFile file = new SmbFile(
 													MizLib.createSmbLoginString(
-															URLEncoder.encode(source.getDomain(), "utf-8"),
-															URLEncoder.encode(source.getUser(), "utf-8"),
-															URLEncoder.encode(source.getPassword(), "utf-8"),
+															source.getDomain(),
+															source.getUser(),
+															source.getPassword(),
 															path.getFilepath(),
 															false
 															));

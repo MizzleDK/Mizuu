@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 
 import jcifs.smb.NtlmPasswordAuthentication;
@@ -217,9 +216,9 @@ public class MakeAvailableOffline extends IntentService {
 			try {
 				mSmb = new SmbFile(
 						MizLib.createSmbLoginString(
-								URLEncoder.encode(mAuth.getDomain(), "utf-8"),
-								URLEncoder.encode(mAuth.getUsername(), "utf-8"),
-								URLEncoder.encode(mAuth.getPassword(), "utf-8"),
+								mAuth.getDomain(),
+								mAuth.getUsername(),
+								mAuth.getPassword(),
 								mFileUrl,
 								false
 								));

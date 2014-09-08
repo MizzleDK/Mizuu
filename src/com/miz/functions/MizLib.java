@@ -1334,9 +1334,10 @@ public class MizLib {
 
 		String[] list = MizuuApplication.getCifsFilesList(parentPath);
 		if (list == null) {
-			SmbFile s = new SmbFile(createSmbLoginString(URLEncoder.encode(auth.getDomain(), "utf-8"),
-					URLEncoder.encode(auth.getUsername(), "utf-8"),
-					URLEncoder.encode(auth.getPassword(), "utf-8"),
+			SmbFile s = new SmbFile(createSmbLoginString(
+					auth.getDomain(),
+					auth.getUsername(),
+					auth.getPassword(),
 					parentPath,
 					false));
 
@@ -1407,9 +1408,10 @@ public class MizLib {
 		list = null;
 
 		if (!customCoverArt.isEmpty())
-			return new SmbFile(createSmbLoginString(URLEncoder.encode(auth.getDomain(), "utf-8"),
-					URLEncoder.encode(auth.getUsername(), "utf-8"),
-					URLEncoder.encode(auth.getPassword(), "utf-8"),
+			return new SmbFile(createSmbLoginString(
+					auth.getDomain(),
+					auth.getUsername(),
+					auth.getPassword(),
 					customCoverArt,
 					false));
 
@@ -1436,9 +1438,10 @@ public class MizLib {
 
 		int count = subtitleFormats.length;
 		for (int i = 0; i < count; i++) {
-			subs.add(new SmbFile(createSmbLoginString(URLEncoder.encode(auth.getDomain(), "utf-8"),
-					URLEncoder.encode(auth.getUsername(), "utf-8"),
-					URLEncoder.encode(auth.getPassword(), "utf-8"),
+			subs.add(new SmbFile(createSmbLoginString(
+					auth.getDomain(),
+					auth.getUsername(),
+					auth.getPassword(),
 					filepath.replace(fileType, subtitleFormats[i]),
 					false)));
 		}
@@ -1452,9 +1455,9 @@ public class MizLib {
 		try {
 			String s = filepath.substring(0, filepath.lastIndexOf("/"));
 			SmbFile dir = new SmbFile(createSmbLoginString(
-					URLEncoder.encode(auth.getDomain(), "utf-8"),
-					URLEncoder.encode(auth.getUsername(), "utf-8"),
-					URLEncoder.encode(auth.getPassword(), "utf-8"),
+					auth.getDomain(),
+					auth.getUsername(),
+					auth.getPassword(),
 					s,
 					true));
 			SmbFile[] listFiles = dir.listFiles();
@@ -1479,14 +1482,22 @@ public class MizLib {
 
 	public static String createSmbLoginString(String domain, String user, String password, String server, boolean isFolder) {
 		// Create the string to fit the following syntax: smb://[[[domain;]username[:password]@]server[:port]/		
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("smb://");
+		StringBuilder sb = new StringBuilder("smb://");
+		
+		try {
+			user = URLEncoder.encode(user, "utf-8");
+		} catch (UnsupportedEncodingException e) {}
+		try {
+			password = URLEncoder.encode(password, "utf-8");
+		} catch (UnsupportedEncodingException e) {}
+		try {
+			domain = URLEncoder.encode(domain, "utf-8");
+		} catch (UnsupportedEncodingException e) {}
 
 		user = user.replace("+", "%20");
 		password = password.replace("+", "%20");
 		domain = domain.replace("+", "%20");
-		server = server.replace("+", "%20");
+		server = server.replace("smb://", "");
 
 		// Only add domain, username and password details if the username isn't empty
 		if (!user.isEmpty()) {
@@ -1504,7 +1515,7 @@ public class MizLib {
 			sb.append("@");
 		}
 
-		sb.append(server.replace("smb://", ""));
+		sb.append(server);
 
 		if (isFolder)
 			if (!server.endsWith("/"))
@@ -2155,9 +2166,10 @@ public class MizLib {
 		} else { // It's a network file
 			SmbFile temp;
 			for (int i = 1; i < 10; i++) {
-				temp = new SmbFile(createSmbLoginString(URLEncoder.encode(auth.getDomain(), "utf-8"),
-						URLEncoder.encode(auth.getUsername(), "utf-8"),
-						URLEncoder.encode(auth.getPassword(), "utf-8"),
+				temp = new SmbFile(createSmbLoginString(
+						auth.getDomain(),
+						auth.getUsername(),
+						auth.getPassword(),
 						filepath + i + fileType,
 						false));
 				if (temp.exists())

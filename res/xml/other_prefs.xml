@@ -167,14 +167,6 @@
         </Preference>
         <Preference
             android:icon="@drawable/ic_action_puzzle"
-            android:summary="Apache License, Version 2.0"
-            android:title="StickyGridHeaders by Tonic Artos" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/TonicArtos/StickyGridHeaders/" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_action_puzzle"
             android:summary="Creative Commons Attribution License, Version 3.0"
             android:title="YouTube Android Player API" >
             <intent
@@ -185,7 +177,6 @@
     <PreferenceCategory android:title="@string/translations" >
         <Preference
             android:icon="@drawable/ic_action_globe"
-            android:summary="Crowdin.net"
             android:title="@string/translations" >
             <intent
                 android:action="android.intent.action.VIEW"

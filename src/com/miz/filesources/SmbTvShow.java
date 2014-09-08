@@ -17,7 +17,6 @@
 package com.miz.filesources;
 
 import java.io.File;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -74,9 +73,9 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
 						try {
 							tempFile = new SmbFile(
 									MizLib.createSmbLoginString(
-											URLEncoder.encode(source.getDomain(), "utf-8"),
-											URLEncoder.encode(source.getUser(), "utf-8"),
-											URLEncoder.encode(source.getPassword(), "utf-8"),
+											source.getDomain(),
+											source.getUser(),
+											source.getPassword(),
 											dbEpisodes.get(i).getFilepath(),
 											false
 											));
@@ -143,9 +142,9 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
 				try {
 					tempFile = new SmbFile(
 							MizLib.createSmbLoginString(
-									URLEncoder.encode(source.getDomain(), "utf-8"),
-									URLEncoder.encode(source.getUser(), "utf-8"),
-									URLEncoder.encode(source.getPassword(), "utf-8"),
+									source.getDomain(),
+									source.getUser(),
+									source.getPassword(),
 									dbEpisodes.get(i).getFilepath(),
 									false
 									));
@@ -262,9 +261,9 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
 			FileSource fs = getFileSource();
 			SmbFile root = new SmbFile(
 					MizLib.createSmbLoginString(
-							URLEncoder.encode(fs.getDomain(), "utf-8"),
-							URLEncoder.encode(fs.getUser(), "utf-8"),
-							URLEncoder.encode(fs.getPassword(), "utf-8"),
+							fs.getDomain(),
+							fs.getUser(),
+							fs.getPassword(),
 							fs.getFilepath(),
 							true
 							));

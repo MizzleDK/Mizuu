@@ -18,7 +18,6 @@ package com.miz.mizuu.fragments;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -267,9 +266,10 @@ public class FileSourceBrowserFragment extends Fragment {
 			mBrowser = new BrowserFile(Environment.getExternalStorageDirectory());
 			break;
 		case FileSource.SMB:
-			mBrowser = new BrowserSmb(new SmbFile(MizLib.createSmbLoginString(URLEncoder.encode(getArguments().getString(DOMAIN), "utf-8"),
-					URLEncoder.encode(getArguments().getString(USER), "utf-8"),
-					URLEncoder.encode(getArguments().getString(PASSWORD), "utf-8"),
+			mBrowser = new BrowserSmb(new SmbFile(MizLib.createSmbLoginString(
+					getArguments().getString(DOMAIN),
+					getArguments().getString(USER),
+					getArguments().getString(PASSWORD),
 					getArguments().getString(SERVER),
 					true)));
 			break;

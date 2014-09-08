@@ -17,7 +17,6 @@
 package com.miz.service;
 
 import java.io.File;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import com.miz.functions.FileSource;
@@ -60,9 +59,9 @@ public class DeleteFile extends IntentService {
 				try {
 					final SmbFile smbFile = new SmbFile(
 							MizLib.createSmbLoginString(
-									URLEncoder.encode(source.getDomain(), "utf-8"),
-									URLEncoder.encode(source.getUser(), "utf-8"),
-									URLEncoder.encode(source.getPassword(), "utf-8"),
+									source.getDomain(),
+									source.getUser(),
+									source.getPassword(),
 									file,
 									false
 									));
@@ -82,9 +81,9 @@ public class DeleteFile extends IntentService {
 					for (int i = 0; i < count; i++) {
 						subs.add(new SmbFile(
 								MizLib.createSmbLoginString(
-										URLEncoder.encode(source.getDomain(), "utf-8"),
-										URLEncoder.encode(source.getUser(), "utf-8"),
-										URLEncoder.encode(source.getPassword(), "utf-8"),
+										source.getDomain(),
+										source.getUser(),
+										source.getPassword(),
 										file.replace(fileType, MizLib.subtitleFormats[i]),
 										false
 										)));

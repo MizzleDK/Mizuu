@@ -18,7 +18,6 @@ package com.miz.filesources;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,9 +78,9 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 						temp = new SmbFile(
 								MizLib.createSmbLoginString(
-										URLEncoder.encode(source.getDomain(), "utf-8"),
-										URLEncoder.encode(source.getUser(), "utf-8"),
-										URLEncoder.encode(source.getPassword(), "utf-8"),
+										source.getDomain(),
+										source.getUser(),
+										source.getPassword(),
 										dbMovies.get(i).getFilepath(),
 										false
 										));
@@ -125,9 +124,9 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 						temp = new SmbFile(
 								MizLib.createSmbLoginString(
-										URLEncoder.encode(source.getDomain(), "utf-8"),
-										URLEncoder.encode(source.getUser(), "utf-8"),
-										URLEncoder.encode(source.getPassword(), "utf-8"),
+										source.getDomain(),
+										source.getUser(),
+										source.getPassword(),
 										dbMovies.get(i).getFilepath(),
 										false
 										));
@@ -272,9 +271,9 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 			FileSource fs = getFileSource();
 			SmbFile root = new SmbFile(
 					MizLib.createSmbLoginString(
-							URLEncoder.encode(fs.getDomain(), "utf-8"),
-							URLEncoder.encode(fs.getUser(), "utf-8"),
-							URLEncoder.encode(fs.getPassword(), "utf-8"),
+							fs.getDomain(),
+							fs.getUser(),
+							fs.getPassword(),
 							fs.getFilepath(),
 							true
 							));

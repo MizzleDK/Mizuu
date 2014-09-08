@@ -22,7 +22,6 @@ import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
@@ -96,9 +95,9 @@ public class VideoUtils {
 				try{
 					final SmbFile file = new SmbFile(
 							MizLib.createSmbLoginString(
-									URLEncoder.encode(auth.getDomain(), "utf-8"),
-									URLEncoder.encode(auth.getUsername(), "utf-8"),
-									URLEncoder.encode(auth.getPassword(), "utf-8"),
+									auth.getDomain(),
+									auth.getUsername(),
+									auth.getPassword(),
 									filepath,
 									false
 									));
