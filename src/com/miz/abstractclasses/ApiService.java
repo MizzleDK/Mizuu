@@ -40,6 +40,15 @@ public abstract class ApiService<T> {
 	public abstract List<T> search(String query, String year, String language);
 	
 	/**
+	 * Search based on the query using N-gram search.
+	 * @param query Search query.
+	 * @param language Two-letter ISO 639-1 language code. Can be {@link null}.
+	 * @return {@link List} of search results. If no results were found,
+	 * the list will be empty.
+	 */
+	public abstract List<T> searchNgram(String query, String language);
+	
+	/**
 	 * Search based on a IMDb ID.
 	 * @param query IMDb ID.
 	 * @param language Two-letter ISO 639-1 language code. Can be {@link null}.

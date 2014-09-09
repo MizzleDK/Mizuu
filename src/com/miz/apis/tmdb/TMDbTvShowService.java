@@ -343,4 +343,17 @@ public class TMDbTvShowService extends TvShowApiService {
 			language = "en";
 		return language;
 	}
+
+	@Override
+	public List<TvShow> searchNgram(String query, String language) {
+		language = getLanguage(language);
+
+		String serviceUrl = "";
+
+		try {
+			serviceUrl = "https://api.themoviedb.org/3/search/tv?query=" + URLEncoder.encode(query, "utf-8") + "&language=" + language + "&search_type=ngram&api_key=" + mTmdbApiKey;
+		} catch (UnsupportedEncodingException e) {}
+
+		return getListFromUrl(serviceUrl);
+	}
 }

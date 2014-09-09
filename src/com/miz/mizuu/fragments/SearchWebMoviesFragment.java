@@ -105,7 +105,7 @@ public class SearchWebMoviesFragment extends Fragment {
 		super.onViewCreated(v, savedInstanceState);
 
 		pbar = (ProgressBar) v.findViewById(R.id.progressBar1);
-		v.findViewById(R.id.languageSection).setVisibility(View.GONE);
+		v.findViewById(R.id.spinner1).setVisibility(View.GONE);
 
 		lv = (ListView) v.findViewById(R.id.listView1);
 		hideProgressBar();
@@ -199,7 +199,7 @@ public class SearchWebMoviesFragment extends Fragment {
 					return null;
 
 				MovieApiService service = MizuuApplication.getMovieService(getActivity().getApplicationContext());
-				List<Movie> movieResults = service.search(params[0], "en");
+				List<Movie> movieResults = service.searchNgram(params[0], "en");
 
 				if (isCancelled())
 					return null;

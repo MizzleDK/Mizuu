@@ -554,4 +554,9 @@ public class TheTVDbService extends TvShowApiService {
 		
 		return backdrops;
 	}
+
+	@Override
+	public List<TvShow> searchNgram(String query, String language) {
+		throw new UnsupportedOperationException(); // Not supported for TheTVDb
+	}
 }

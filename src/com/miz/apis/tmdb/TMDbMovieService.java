@@ -310,4 +310,17 @@ public class TMDbMovieService extends MovieApiService {
 
 		return results;
 	}
+
+	@Override
+	public List<Movie> searchNgram(String query, String language) {
+		language = getLanguage(language);
+
+		String serviceUrl = "";
+
+		try {
+			serviceUrl = "https://api.themoviedb.org/3/search/movie?query=" + URLEncoder.encode(query, "utf-8") + "&language=" + language + "&search_type=ngram&api_key=" + mTmdbApiKey;
+		} catch (UnsupportedEncodingException e) {}
+
+		return getListFromUrl(serviceUrl);
+	}
 }
