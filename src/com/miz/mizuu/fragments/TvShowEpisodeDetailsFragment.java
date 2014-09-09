@@ -54,6 +54,7 @@ import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.BlurTransformation;
+import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteTransformation;
@@ -370,13 +371,13 @@ import com.squareup.picasso.Picasso;
 		if (paths.size() == 1) {
 			Filepath path = paths.get(0);
 			if (mEpisode.hasOfflineCopy(path)) {
-				boolean playbackStarted = VideoUtils.playVideo(getActivity(), mEpisode.getOfflineCopyUri(path), false, mEpisode);
+				boolean playbackStarted = VideoUtils.playVideo(getActivity(), mEpisode.getOfflineCopyUri(path), FileSource.FILE, mEpisode);
 				if (playbackStarted) {
 					mVideoPlaybackStarted = System.currentTimeMillis();
 					checkIn();
 				}
 			} else {
-				boolean playbackStarted = VideoUtils.playVideo(getActivity(), path.getFilepath(), path.isNetworkFile(), mEpisode);
+				boolean playbackStarted = VideoUtils.playVideo(getActivity(), path.getFilepath(), path.getType(), mEpisode);
 				if (playbackStarted) {
 					mVideoPlaybackStarted = System.currentTimeMillis();
 					checkIn();
@@ -386,7 +387,7 @@ import com.squareup.picasso.Picasso;
 			boolean hasOfflineCopy = false;
 			for (Filepath path : paths) {
 				if (mEpisode.hasOfflineCopy(path)) {
-					boolean playbackStarted = VideoUtils.playVideo(getActivity(), mEpisode.getOfflineCopyUri(path), false, mEpisode);
+					boolean playbackStarted = VideoUtils.playVideo(getActivity(), mEpisode.getOfflineCopyUri(path), FileSource.FILE, mEpisode);
 					if (playbackStarted) {
 						mVideoPlaybackStarted = System.currentTimeMillis();
 						checkIn();
@@ -402,7 +403,7 @@ import com.squareup.picasso.Picasso;
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						Filepath path = mEpisode.getFilepaths().get(which);
-						boolean playbackStarted = VideoUtils.playVideo(getActivity(), path.getFilepath(), path.isNetworkFile(), mEpisode);
+						boolean playbackStarted = VideoUtils.playVideo(getActivity(), path.getFilepath(), path.getType(), mEpisode);
 						if (playbackStarted) {
 							mVideoPlaybackStarted = System.currentTimeMillis();
 							checkIn();

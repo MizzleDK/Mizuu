@@ -39,7 +39,6 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -83,7 +82,6 @@ import com.miz.functions.Movie;
 import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
-import com.miz.remoteplayback.RemotePlayback;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.utils.LocalBroadcastUtils;
@@ -179,7 +177,6 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					mIgnorePrefixes
 					);
 		} catch (Exception e) {
-			System.out.println("EXCEPTION: " + e);
 			finish();
 			return;
 		} finally {
@@ -918,19 +915,19 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 		if (paths.size() == 1) {
 			Filepath path = paths.get(0);
 			if (mMovie.hasOfflineCopy(path)) {
-				boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, mMovie.getOfflineCopyUri(path), false, mMovie);
+				boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, mMovie.getOfflineCopyUri(path), FileSource.FILE, mMovie);
 				if (playbackStarted) {
 					mVideoPlaybackStarted = System.currentTimeMillis();
 					checkIn();
 				}
 			} else {
-				playMovie(paths.get(0).getFilepath(), paths.get(0).isNetworkFile(), paths.get(0).getType() == FileSource.UPNP);
+				playMovie(paths.get(0).getFilepath(), paths.get(0).getType());
 			}
 		} else {
 			boolean hasOfflineCopy = false;
 			for (Filepath path : paths) {
 				if (mMovie.hasOfflineCopy(path)) {
-					boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, mMovie.getOfflineCopyUri(path), false, mMovie);
+					boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, mMovie.getOfflineCopyUri(path), FileSource.FILE, mMovie);
 					if (playbackStarted) {
 						mVideoPlaybackStarted = System.currentTimeMillis();
 						checkIn();
@@ -946,45 +943,19 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						Filepath path = mMovie.getFilepaths().get(which);
-						playMovie(path.getFilepath(), path.isNetworkFile(), path.getType() == FileSource.UPNP);
+						playMovie(path.getFilepath(), path.getType());
 					}
 				});
 			}
 		}
 	}
-
-	private void playMovie(final String filepath, final boolean isNetworkFile, boolean isUpnpFile) {
-		if (isUpnpFile) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(MovieDetails.this);
-			builder.setTitle(R.string.where_to_play);
-			builder.setItems(R.array.upnp_play_dialog, new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if (which == 0) { // Play remotely
-						Intent remotePlayback = new Intent(MovieDetails.this, RemotePlayback.class);
-						remotePlayback.putExtra("videoUrl", filepath);
-						remotePlayback.putExtra("coverUrl", "");
-						remotePlayback.putExtra("title", mMovie.getTitle());
-						startActivity(remotePlayback);
-					} else {
-						playMovie(filepath, isNetworkFile);
-					}
-					
-					dialog.dismiss();
-				}
-			});
-			builder.show();
-		} else {
-			playMovie(filepath, isNetworkFile);
-		}
-	}
 	
-	private void playMovie(String filepath, boolean isNetworkFile) {
+	private void playMovie(String filepath, int filetype) {
 		if (filepath.toLowerCase(Locale.getDefault()).matches(".*(cd1|part1).*")) {
-			new GetSplitFiles(filepath, isNetworkFile).execute();
+			new GetSplitFiles(filepath, filetype).execute();
 		} else {
 			mVideoPlaybackStarted = System.currentTimeMillis();
-			boolean playbackStarted = VideoUtils.playVideo(this, filepath, isNetworkFile, mMovie);
+			boolean playbackStarted = VideoUtils.playVideo(this, filepath, filetype, mMovie);
 			if (playbackStarted)
 				checkIn();
 		}
@@ -994,11 +965,11 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 
 		private ProgressDialog progress;
 		private String orig_filepath;
-		private boolean isNetworkFile;
+		private int fileType;
 
-		public GetSplitFiles(String filepath, boolean isNetworkFile) {
+		public GetSplitFiles(String filepath, int filetype) {
 			this.orig_filepath = filepath;
-			this.isNetworkFile = isNetworkFile;
+			fileType = filetype;
 		}
 
 		@Override
@@ -1016,7 +987,7 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 			List<String> temp;
 
 			try {				
-				if (isNetworkFile)
+				if (fileType == FileSource.SMB)
 					temp = MizLib.getSplitParts(orig_filepath, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, orig_filepath));
 				else
 					temp = MizLib.getSplitParts(orig_filepath, null);
@@ -1041,13 +1012,13 @@ public class MovieDetails extends MizActivity implements OnNavigationListener {
 				builder.setTitle(getString(R.string.playPart));
 				builder.setAdapter(new SplitAdapter(getApplicationContext(), result), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, result.get(which).getFilepath(), isNetworkFile, mMovie);
+						boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, result.get(which).getFilepath(), fileType, mMovie);
 						if (playbackStarted)
 							checkIn();
 					}});
 				builder.show();
 			} else if (result.size() == 1) {
-				boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, result.get(0).getFilepath(), isNetworkFile, mMovie);
+				boolean playbackStarted = VideoUtils.playVideo(MovieDetails.this, result.get(0).getFilepath(), fileType, mMovie);
 				if (playbackStarted)
 					checkIn();
 			} else {

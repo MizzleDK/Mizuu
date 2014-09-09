@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
+import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.mizuu.R;
@@ -42,12 +43,14 @@ public class VideoUtils {
 
 	private VideoUtils() {} // No instantiation
 	
-	public static boolean playVideo(Activity activity, String filepath, boolean isNetworkFile, Object videoObject) {
+	public static boolean playVideo(Activity activity, String filepath, int filetype, Object videoObject) {
+		
+		System.out.println();
 		
 		boolean videoWildcard = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
 		boolean playbackStarted = false;
 		
-		if (isNetworkFile) {
+		if (filetype == FileSource.SMB) {
 			playbackStarted = playNetworkFile(activity, filepath, videoObject);
 		} else {
 			try { // Attempt to launch intent based on the MIME type
