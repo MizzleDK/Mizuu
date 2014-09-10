@@ -213,7 +213,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 		@Override
 		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 			mLoading = true;
-			return new SQLiteCursorLoader(getActivity(), DatabaseHelper.getHelper(getActivity()).getWritableDatabase(), DbAdapterTvShows.DATABASE_TABLE, DbAdapterTvShows.SELECT_ALL, "NOT(" + DbAdapterTvShows.KEY_SHOW_ID + " = 'invalid')", null, null, null, DbAdapterTvShows.KEY_SHOW_TITLE + " ASC");
+			return new SQLiteCursorLoader(getActivity(), DatabaseHelper.getHelper(getActivity()).getWritableDatabase(), DbAdapterTvShows.DATABASE_TABLE, DbAdapterTvShows.SELECT_ALL, "NOT(" + DbAdapterTvShows.KEY_SHOW_ID + " = '" + DbAdapterTvShows.UNIDENTIFIED_ID + "')", null, null, null, DbAdapterTvShows.KEY_SHOW_TITLE + " ASC");
 		}
 
 		@Override

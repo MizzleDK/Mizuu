@@ -59,7 +59,7 @@ import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteTransformation;
 import com.miz.mizuu.EditTvShowEpisode;
-import com.miz.mizuu.IdentifyTvShow;
+import com.miz.mizuu.IdentifyTvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
@@ -470,8 +470,7 @@ import com.squareup.picasso.Picasso;
 			watched(true);
 			break;
 		case R.id.identify:
-			Toast.makeText(getActivity(), "Not yet!", Toast.LENGTH_LONG).show();
-			//identifyEpisode();
+			identifyEpisode();
 			break;
 		case R.id.watchOffline:
 			watchOffline();
@@ -559,13 +558,14 @@ import com.squareup.picasso.Picasso;
 
 	private void identifyEpisode() {
 		if (mEpisode.getFilepaths().size() == 1) {
-			startActivity(getIdentifyIntent(mEpisode.getFilepaths().get(0).getFullFilepath()));
+			getActivity().startActivityForResult(getIdentifyIntent(mEpisode.getFilepaths().get(0).getFullFilepath()), 0);
+			
 		} else {
 			MizLib.showSelectFileDialog(getActivity(), mEpisode.getFilepaths(), new Dialog.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					startActivity(getIdentifyIntent(mEpisode.getFilepaths().get(which).getFullFilepath()));
-
+					getActivity().startActivityForResult(getIdentifyIntent(mEpisode.getFilepaths().get(which).getFullFilepath()), 0);
+					
 					// Dismiss the dialog
 					dialog.dismiss();
 				}
@@ -574,9 +574,12 @@ import com.squareup.picasso.Picasso;
 	}
 
 	private Intent getIdentifyIntent(String filepath) {
-		Intent i = new Intent(getActivity(), IdentifyTvShow.class);
-		i.putExtra("files", new String[]{filepath});
-		i.putExtra("isShow", false);
+		Intent i = new Intent(getActivity(), IdentifyTvShowEpisode.class);
+		ArrayList<String> filepaths = new ArrayList<String>();
+		filepaths.add(filepath);
+		i.putExtra("filepaths", filepaths);
+		i.putExtra("showId", mEpisode.getShowId());
+		i.putExtra("showTitle", MizuuApplication.getTvDbAdapter().getShowTitle(mEpisode.getShowId()));
 		return i;
 	}
 

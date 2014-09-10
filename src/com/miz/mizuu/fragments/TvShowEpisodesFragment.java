@@ -162,7 +162,7 @@ public class TvShowEpisodesFragment extends Fragment {
 				i.putExtra(SHOW_ID, mShowId);
 				i.putExtra("episode", mItems.get(arg2).getEpisode());
 				i.putExtra("season", mSeason);
-				startActivity(i);
+				getActivity().startActivityForResult(i, 0);
 			}
 		});
 

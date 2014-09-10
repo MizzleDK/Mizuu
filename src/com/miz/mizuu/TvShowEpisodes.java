@@ -22,7 +22,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -167,6 +169,15 @@ public class TvShowEpisodes extends MizActivity {
 					mViewPager.setCurrentItem(i);
 					break;
 				}
+			}
+		}
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == Activity.RESULT_OK) {
+				setResult(Activity.RESULT_OK);
+				finish();
 			}
 		}
 	}

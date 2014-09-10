@@ -499,11 +499,11 @@
     <string name="more">More</string>
     <string name="show_file_location">Show file location(s)</string>
     <string name="show_file_location_description">Make file location(s) visible in the movie and TV show details view.</string>
-    <string name="language">Language:</string>
     <string name="set_pref_language_title">Set preferred language</string>
     <string name="set_pref_language_description">Localize movie and TV show information into selected language. Defaults to English.</string>
     <string name="view_collection_online">View collection online</string>
     <string name="identifying_show">Identifying show…</string>
+    <string name="identifying_episodes">Identifying episodes…</string>
     <string name="cant_identify_while_updating">"You can't manually identify while the library is updating!"</string>
     <string name="data_source_shows">Source for TV show data</string>
     <string name="data_source_shows_description">Set the data source for TV show details.</string>

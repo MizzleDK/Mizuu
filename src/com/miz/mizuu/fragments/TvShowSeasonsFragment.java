@@ -178,7 +178,7 @@ public class TvShowSeasonsFragment extends Fragment {
 					i.putExtra(SHOW_ID, mShowId);
 					i.putExtra(SEASON, mItems.get(arg2).getSeason());
 					i.putExtra(EPISODE_COUNT, mItems.get(arg2).getEpisodeCount());
-					startActivity(i);
+					getActivity().startActivityForResult(i, 0);
 
 				} else {
 					// Notify the parent fragment that the right-hand fragment should be swapped
@@ -284,10 +284,7 @@ public class TvShowSeasonsFragment extends Fragment {
 		builder.setMessage(R.string.areYouSure);
 		builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				
-				System.out.println("SEASONS SIZE: " + selectedSeasons.size());
-				
+			public void onClick(DialogInterface dialog, int which) {				
 				// Go through all seasons and remove the selected ones
 				for (int season : selectedSeasons) {
 					System.out.println("SEASON " + season);
@@ -296,8 +293,6 @@ public class TvShowSeasonsFragment extends Fragment {
 					
 				// Check if we've removed all TV show episodes
 				if (MizuuApplication.getTvEpisodeDbAdapter().getEpisodeCount(mShowId) == 0) {
-					
-					System.out.println("NO EPISODES");
 					
 					// Update the TV show library
 					LocalBroadcastUtils.updateTvShowLibrary(activityContext);

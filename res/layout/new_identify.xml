@@ -6,41 +6,35 @@
     android:paddingRight="@dimen/details_padding"
     android:paddingTop="@dimen/details_padding" >
 
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/enterTitle" >
-
-        <requestFocus />
-    </EditText>
-
     <LinearLayout
-        android:id="@+id/languageSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical" >
+        android:gravity="bottom" >
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
-            android:text="@string/language"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:ems="10"
+            android:hint="@string/enterTitle"
+            android:inputType="textPersonName"
+            android:lines="1"
+            android:scrollHorizontally="true" />
 
         <Spinner
             android:id="@+id/spinner1"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <FrameLayout
-        android:layout_marginTop="@dimen/details_padding"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/details_padding" >
 
         <ListView
             android:id="@+id/listView1"

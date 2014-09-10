@@ -37,7 +37,6 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 	public static final String KEY_SHOW_FAVOURITE = "favourite";
 
 	public static final String DATABASE_TABLE = "tvshows";
-
 	public static final String UNIDENTIFIED_ID = "invalid";
 	
 	public static final String[] SELECT_ALL = new String[]{KEY_SHOW_ID, KEY_SHOW_TITLE, KEY_SHOW_PLOT, KEY_SHOW_ACTORS,

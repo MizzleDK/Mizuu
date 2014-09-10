@@ -19,6 +19,8 @@ package com.miz.mizuu;
 import java.util.ArrayList;
 
 import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -215,6 +217,15 @@ public class TvShowEpisodeDetails extends MizActivity {
 		@Override  
 		public int getCount() {  
 			return mEpisodes.size();
+		}
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == Activity.RESULT_OK) {
+				setResult(Activity.RESULT_OK);
+				finish();
+			}
 		}
 	}
 }

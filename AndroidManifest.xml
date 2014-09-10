@@ -298,6 +298,7 @@
         <service android:name="com.miz.service.TvShowsLibraryUpdate" />
         <service android:name="com.miz.service.WireUpnpService" />
         <service android:name="com.miz.service.IdentifyTvShowService" />
+        <service android:name="com.miz.service.IdentifyTvShowEpisodeService" />
         <service android:name="com.miz.service.IdentifyMovieService" />
         <service android:name="com.miz.service.DownloadImageService" />
 
@@ -386,12 +387,23 @@
             </intent-filter>
         </activity>
 
-        <!-- Identify Movie activity -->
+        <!-- Identify TV show activity -->
         <activity
             android:name="com.miz.mizuu.IdentifyTvShow"
             android:exported="false"
             android:icon="@drawable/white_app_icon"
             android:label="@string/identifyShow" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Identify TV show episode activity -->
+        <activity
+            android:name="com.miz.mizuu.IdentifyTvShowEpisode"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/identifyEpisodeTitle" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -408,8 +420,8 @@
             </intent-filter>
         </activity>
 
-        <!-- Edit Movie activity -->
-        <activity
+        <!-- Remote playback activity -->
+        <!-- <activity
             android:name="com.miz.remoteplayback.RemotePlayback"
             android:exported="false"
             android:icon="@drawable/white_app_icon"
@@ -418,7 +430,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
-        </activity>
+        </activity> -->
 
         <!-- Actor activity -->
         <activity
@@ -570,7 +582,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 

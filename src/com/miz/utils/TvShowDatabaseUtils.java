@@ -19,6 +19,7 @@ package com.miz.utils;
 import java.util.List;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import com.miz.db.DbAdapterTvShowEpisodeMappings;
@@ -69,6 +70,64 @@ public class TvShowDatabaseUtils {
 
 		// Check if we've removed all episodes for the given TV show
 		if (episodeAdapter.getEpisodeCount(showId) == 0) {
+			// Remove the TV show from the TV show database
+			showAdapter.deleteShow(showId);
+
+			// Remove the TV show thumbnail image
+			MizLib.getTvShowThumb(context, showId).delete();
+
+			// Remove the TV show backdrop image
+			MizLib.getTvShowBackdrop(context, showId).delete();
+		}
+	}
+
+	public static void removeEpisode(Context context, String showId, String filepath) {
+		// Should filepaths be removed completely or ignored in future library updates?
+		boolean ignoreFiles = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PreferenceKeys.IGNORED_FILES_ENABLED, false);
+
+		// Database adapters
+		DbAdapterTvShows showAdapter = MizuuApplication.getTvDbAdapter();
+		DbAdapterTvShowEpisodes episodeAdapter = MizuuApplication.getTvEpisodeDbAdapter();
+		DbAdapterTvShowEpisodeMappings episodeMappingsAdapter = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+		// Go through each filepath and remove the database entries
+		Cursor cursor = episodeMappingsAdapter.getAllFilepathInfo(filepath);
+		if (cursor != null) {
+			try {
+				while (cursor.moveToNext()) {
+					String season = cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_SEASON));
+					String episode = cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_EPISODE));
+
+					// Remove / ignore the filepath mapping
+					if (ignoreFiles)
+						episodeMappingsAdapter.ignoreFilepath(filepath);
+					else
+						episodeMappingsAdapter.deleteFilepath(filepath);
+
+					// Check if there are any more filepaths mapped to the season / episode
+					if (!episodeMappingsAdapter.hasMultipleFilepaths(showId, season, episode)) {
+						
+						episodeAdapter.deleteEpisode(showId, MizLib.getInteger(season), MizLib.getInteger(episode));
+						
+						// Delete the episode photo
+						MizLib.getTvShowEpisode(context, showId, season, episode).delete();
+
+						// Check if the season contains any more mapped filepaths
+						if (episodeAdapter.getEpisodesInSeason(context, showId, MizLib.getInteger(season)).size() == 0) {
+							
+							// Remove season image
+							MizLib.getTvShowSeason(context, showId, season).delete();
+						}
+					}
+				}
+			} catch (Exception ignored) {} finally {
+				cursor.close();
+			}
+		}
+
+		// Check if we've removed all episodes for the given TV show
+		if (episodeAdapter.getEpisodeCount(showId) == 0) {
+			
 			// Remove the TV show from the TV show database
 			showAdapter.deleteShow(showId);
 

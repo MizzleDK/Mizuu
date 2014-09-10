@@ -71,12 +71,6 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		return mDatabase.insert(DATABASE_TABLE, null, initialValues);
 	}
 
-	public boolean updateSingleItem(String showId, String table, String value) {
-		ContentValues values = new ContentValues();
-		values.put(table, value);
-		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "'", null) > 0;
-	}
-
 	public boolean updateEpisode(String filepath, String season, String episode, String showId, String episodeTitle, String episodePlot,
 			String episodeAirdate, String episodeRating, String episodeDirector, String episodeWriter, String episodeGuestStars, String hasWatched, String favorite) {
 		ContentValues initialValues = createContentValues(season,episode, showId, episodeTitle,
@@ -109,16 +103,8 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, "NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, null, null, null);
 	}
 
-	public Cursor getAllIgnoredEpisodesInDatabase() {
-		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE'", null, null, null, null);
-	}
-
 	public Cursor getAllUnidentifiedEpisodesInDatabase() {
-		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = 'invalid'", null, null, null, null);
-	}
-
-	public boolean ignoreEpisode(String showId) {
-		return updateSingleItem(showId, KEY_EPISODE_TITLE, "MIZ_REMOVED_EPISODE");
+		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = '" + DbAdapterTvShows.UNIDENTIFIED_ID + "'", null, null, null, null);
 	}
 
 	public boolean deleteEpisode(String showId, int season, int episode) {
@@ -145,7 +131,7 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 	}
 
 	public boolean deleteAllUnidentifiedEpisodes() {
-		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = 'invalid'", null) > 0 &&
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = '" + DbAdapterTvShows.UNIDENTIFIED_ID + "'", null) > 0 &&
 				MizuuApplication.getTvDbAdapter().deleteAllUnidentifiedShows();
 	}
 
