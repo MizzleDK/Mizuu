@@ -1,46 +1,58 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/card_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
-    <com.miz.views.AspectRatioImageViewBackdrop
-        android:id="@+id/cover"
+    <LinearLayout
+        android:id="@+id/card_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <com.miz.views.AspectRatioImageViewBackdrop
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/card_background_dark"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="2dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/card_title_color"
+            android:textIsSelectable="false"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/gridCoverSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/card_background_dark"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingBottom="2dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#666"
+            android:textIsSelectable="false"
+            android:textSize="12sp"
+            android:textStyle="italic" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/highlight"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:cropToPadding="true"
-        android:scaleType="centerCrop" />
+        android:src="@color/gridview_highlight"
+        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/card_background_dark"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="2dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/card_title_color"
-        android:textIsSelectable="false"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/gridCoverSubtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/card_background_dark"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:paddingBottom="2dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="#666"
-        android:textIsSelectable="false"
-        android:textSize="12sp"
-        android:textStyle="italic" />
-
-</LinearLayout>
+</FrameLayout>

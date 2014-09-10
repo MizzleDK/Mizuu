@@ -141,6 +141,13 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		c.close();
 		return count;
 	}
+	
+	public int getEpisodeCountForSeason(String showId, String season) {
+		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + season + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
+		int count = c.getCount();
+		c.close();
+		return count;
+	}
 
 	public int getSeasonCount(String showId) {
 		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON, null, KEY_SEASON);

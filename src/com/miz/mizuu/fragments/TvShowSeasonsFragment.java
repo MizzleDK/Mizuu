@@ -287,7 +287,6 @@ public class TvShowSeasonsFragment extends Fragment {
 			public void onClick(DialogInterface dialog, int which) {				
 				// Go through all seasons and remove the selected ones
 				for (int season : selectedSeasons) {
-					System.out.println("SEASON " + season);
 					TvShowDatabaseUtils.removeSeason(activityContext, mShowId, season);
 				}
 					

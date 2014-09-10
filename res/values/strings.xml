@@ -41,6 +41,10 @@
         <item quantity="one">season selected</item>
         <item quantity="other">seasons selected</item>
     </plurals>
+    <plurals name="episodes_selected">
+        <item quantity="one">episode selected</item>
+        <item quantity="other">episodes selected</item>
+    </plurals>
     <plurals name="file_location">
         <item quantity="one">File location</item>
         <item quantity="other">File locations</item>
@@ -514,6 +518,7 @@
     <string name="release_year">Release year</string>
     <string name="identifying_movie">Identifying movie…</string>
     <string name="remove_selected_seasons">Remove selected seasons</string>
+    <string name="remove_selected_episodes">Remove selected episodes</string>
     <string name="remote_playback">Remote playback</string>
     <string name="where_to_play">Where to play?</string>
     <string name="play_remotely">Play remotely</string>

@@ -35,6 +35,8 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	private String mShowId, mTitle, mDescription, mSeason, mEpisode, mReleaseDate, mDirector, mWriter, mGuestStars, mRating, mHasWatched, mFavorite, mSubtitleText;
 	private ArrayList<Filepath> mFilepaths = new ArrayList<Filepath>();
 
+	public TvShowEpisode() {}
+	
 	public TvShowEpisode(Context context, String showId, String title, String description,
 			String season, String episode, String releasedate, String director, String writer, String gueststars,
 			String rating, String hasWatched, String favorite) {
