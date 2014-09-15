@@ -43,6 +43,7 @@
     <dimen name="cover_height">360dp</dimen>
     <dimen name="details_large_font_size">36sp</dimen>
     <dimen name="details_medium_font_size">22sp</dimen>
+    <dimen name="details_small_font_size">16sp</dimen>
     <dimen name="details_area_header">18sp</dimen>
     <dimen name="details_description_font_size">20sp</dimen>
     <dimen name="details_very_small_padding">4dp</dimen>
@@ -52,5 +53,7 @@
     <dimen name="details_large_padding">20dp</dimen>
     <dimen name="details_top_margin">48dp</dimen>
     <dimen name="details_left_padding_large">252dp</dimen>
+    
+    <dimen name="horizontal_grid_item_width">120dp</dimen>
 
 </resources>

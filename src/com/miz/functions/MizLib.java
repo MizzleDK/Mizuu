@@ -28,7 +28,6 @@ import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +43,6 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -64,7 +62,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
@@ -85,7 +82,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.StatFs;
@@ -108,7 +104,6 @@ import com.miz.db.DbAdapterTvShows;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShow;
-import com.miz.mizuu.TvShowEpisode;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.service.MovieLibraryUpdate;
@@ -555,20 +550,6 @@ public class MizLib {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64, r.getDisplayMetrics());
 	}
 
-	public static Bitmap getNotificationImageThumbnail(Context c, String filepath) {
-		int size = getThumbnailNotificationSize(c);
-
-		try {
-			Bitmap bm = decodeSampledBitmapFromFile(filepath, size, size);
-			bm = Bitmap.createScaledBitmap(bm, size, (int) (size * 1.5), true);
-			bm = Bitmap.createBitmap(bm, 0, 0, size, size);
-
-			return bm;
-		} catch (Exception e) {
-			return decodeSampledBitmapFromResource(c.getResources(), R.drawable.refresh, size, size);
-		}
-	}
-
 	public static int getLargeNotificationWidth(Context c) {
 		Resources r = c.getResources();
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360, r.getDisplayMetrics());
@@ -780,71 +761,6 @@ public class MizLib {
 		}
 
 		return "w185";
-	}
-
-	public static Intent getVideoIntent(String fileUrl, boolean useWildcard, Object videoObject) {
-		if (fileUrl.startsWith("http"))
-			return getVideoIntent(Uri.parse(fileUrl), useWildcard, videoObject);
-
-		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
-		videoIntent.setDataAndType(Uri.fromFile(new File(fileUrl)), getMimeType(fileUrl, useWildcard));
-		videoIntent.putExtras(getVideoIntentBundle(videoObject));
-
-		return videoIntent;
-	}
-
-	public static Intent getVideoIntent(Uri file, boolean useWildcard, Object videoObject) {
-		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
-		videoIntent.setDataAndType(file, getMimeType(file.getPath(), useWildcard));
-		videoIntent.putExtras(getVideoIntentBundle(videoObject));
-
-		return videoIntent;
-	}
-
-	public static Intent getVideoIntent(String fileUrl, String mimeType, Object videoObject) {
-		if (fileUrl.startsWith("http"))
-			return getVideoIntent(Uri.parse(fileUrl), mimeType, videoObject);
-
-		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
-		videoIntent.setDataAndType(Uri.fromFile(new File(fileUrl)), mimeType);
-		videoIntent.putExtras(getVideoIntentBundle(videoObject));
-
-		return videoIntent;
-	}
-
-	public static Intent getVideoIntent(Uri file, String mimeType, Object videoObject) {
-		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
-		videoIntent.setDataAndType(file, mimeType);
-		videoIntent.putExtras(getVideoIntentBundle(videoObject));
-
-		return videoIntent;
-	}
-
-	private static Bundle getVideoIntentBundle(Object videoObject) {
-		Bundle b = new Bundle();
-		String title = "";
-		if (videoObject instanceof Movie) {
-			title = ((Movie) videoObject).getTitle();
-			b.putString("plot", ((Movie) videoObject).getPlot());
-			b.putString("date", ((Movie) videoObject).getReleasedate());
-			b.putDouble("rating", ((Movie) videoObject).getRawRating());
-			b.putString("cover", ((Movie) videoObject).getThumbnail().getAbsolutePath());
-			b.putString("genres", ((Movie) videoObject).getGenres());
-		} else if (videoObject instanceof TvShowEpisode) {
-			title = ((TvShowEpisode) videoObject).getTitle();
-			b.putString("plot", ((TvShowEpisode) videoObject).getDescription());
-			b.putString("date", ((TvShowEpisode) videoObject).getReleasedate());
-			b.putDouble("rating", ((TvShowEpisode) videoObject).getRawRating());
-			b.putString("cover", ((TvShowEpisode) videoObject).getEpisodePhoto().getAbsolutePath());
-			b.putString("episode", ((TvShowEpisode) videoObject).getEpisode());
-			b.putString("season", ((TvShowEpisode) videoObject).getSeason());
-		} else {
-			title = (String) videoObject;
-		}
-		b.putString("title", title);
-		b.putString("forcename", title);
-		b.putBoolean("forcedirect", true);
-		return b;
 	}
 
 	public static boolean checkFileTypes(String file) {
@@ -1188,6 +1104,13 @@ public class MizLib {
 
 		try {
 			Response response = client.newCall(request).execute();
+			
+			if (response.code() >= 429) {
+				// HTTP error 429 and above means that we've exceeded the query limit
+				// for TMDb. Sleep for 5 seconds and try again.
+				Thread.sleep(5000);
+				response = client.newCall(request).execute();
+			}
 			return new JSONObject(response.body().string());
 		} catch (Exception e) { // IOException and JSONException
 			return new JSONObject();
@@ -1725,84 +1648,6 @@ public class MizLib {
 			return 500 * 1024 * 1024;
 		}
 		return 50 * 1024 * 1024;
-	}
-
-	public static File getOldDataFolder() {
-		File dataFolder = new File(Environment.getExternalStorageDirectory().toString() + "/data/com.miz.mizuu");
-		return dataFolder;
-	}
-
-	public static boolean oldDataFolderExists() {
-		return getOldDataFolder().exists() && getOldDataFolder().list() != null;
-	}
-
-	public static File getMovieThumb(Context c, String movieId) {
-		return new File(MizuuApplication.getMovieThumbFolder(c), movieId + ".jpg");
-	}
-
-	public static File getMovieBackdrop(Context c, String movieId) {
-		return new File(MizuuApplication.getMovieBackdropFolder(c), movieId + "_bg.jpg");
-	}
-
-	public static File getTvShowThumb(Context c, String showId) {
-		return new File(MizuuApplication.getTvShowThumbFolder(c), showId + ".jpg");
-	}
-
-	public static File getTvShowBackdrop(Context c, String showId) {
-		return new File(MizuuApplication.getTvShowBackdropFolder(c), showId + "_tvbg.jpg");
-	}
-
-	public static File getTvShowEpisode(Context c, String showId, String season, String episode) {
-		return new File(MizuuApplication.getTvShowEpisodeFolder(c), showId + "_S" + MizLib.addIndexZero(season) + "E" + MizLib.addIndexZero(episode) + ".jpg");
-	}
-
-	public static File getTvShowEpisode(Context c, String showId, int season, int episode) {
-		return getTvShowEpisode(c, showId, String.valueOf(season), String.valueOf(episode));
-	}
-
-	public static File getTvShowSeason(Context c, String showId, String season) {
-		return new File(MizuuApplication.getTvShowSeasonFolder(c), showId + "_S" + MizLib.addIndexZero(season) + ".jpg");
-	}
-
-	public static File getTvShowSeason(Context c, String showId, int season) {
-		return getTvShowSeason(c, showId, String.valueOf(season));
-	}
-
-	public static File getOfflineFile(Context c, String filepath) {
-		return new File(MizuuApplication.getAvailableOfflineFolder(c), MizLib.md5(filepath) + "." + MizLib.getExtension(filepath));
-	}
-
-	public static void copyFile(File src, File dst) throws IOException {
-		InputStream in = new FileInputStream(src);
-		OutputStream out = new FileOutputStream(dst);
-
-		// Transfer bytes from in to out
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = in.read(buf)) > 0) {
-			out.write(buf, 0, len);
-		}
-		in.close();
-		out.close();
-	}
-
-	public static void moveFile(File src, File dst) throws IOException {
-		copyFile(src, dst);
-		src.delete();
-	}
-
-	public static void deleteRecursive(File fileOrDirectory, boolean deleteTopFolder) {
-		if (fileOrDirectory.isDirectory()) {
-			File[] listFiles = fileOrDirectory.listFiles();
-			if (listFiles != null) {
-				int count = listFiles.length;
-				for (int i = 0; i < count; i++)
-					deleteRecursive(listFiles[i], true);
-			}
-		}
-
-		if (deleteTopFolder)
-			fileOrDirectory.delete();
 	}
 
 	public static String getTraktUserName(Context c) {
@@ -2445,110 +2290,6 @@ public class MizLib {
 		// Certain titles include "XXX" (all caps), so test this against the normal-case title as a last check
 		return title.contains("XXX");
 	}
-
-	public static String getMimeType(String filepath, boolean useWildcard) {
-		if (useWildcard)
-			return "video/*";
-
-		HashMap<String, String> mimeTypes = new HashMap<String, String>();
-		mimeTypes.put("3gp",	"video/3gpp");
-		mimeTypes.put("aaf",	"application/octet-stream");
-		mimeTypes.put("mp4",	"video/mp4");
-		mimeTypes.put("ts",		"video/mp2t");
-		mimeTypes.put("webm",	"video/webm");
-		mimeTypes.put("m4v",	"video/x-m4v");
-		mimeTypes.put("mkv",	"video/x-matroska");
-		mimeTypes.put("divx",	"video/x-divx");
-		mimeTypes.put("xvid",	"video/x-xvid");
-		mimeTypes.put("rec",	"application/octet-stream");
-		mimeTypes.put("avi",	"video/avi");
-		mimeTypes.put("flv",	"video/x-flv");
-		mimeTypes.put("f4v",	"video/x-f4v");
-		mimeTypes.put("moi",	"application/octet-stream");
-		mimeTypes.put("mpeg",	"video/mpeg");
-		mimeTypes.put("mpg",	"video/mpeg");
-		mimeTypes.put("mts",	"video/mts");
-		mimeTypes.put("m2ts",	"video/mp2t");
-		mimeTypes.put("ogv",	"video/ogg");
-		mimeTypes.put("rm",		"application/vnd.rn-realmedia");
-		mimeTypes.put("rmvb",	"application/vnd.rn-realmedia-vbr");
-		mimeTypes.put("mov",	"video/quicktime");
-		mimeTypes.put("wmv",	"video/x-ms-wmv");
-		mimeTypes.put("iso",	"application/octet-stream");
-		mimeTypes.put("vob",	"video/dvd");
-		mimeTypes.put("ifo",	"application/octet-stream");
-		mimeTypes.put("wtv",	"video/wtv");
-		mimeTypes.put("pyv",	"video/vnd.ms-playready.media.pyv");
-		mimeTypes.put("ogm",	"video/ogg");
-		mimeTypes.put("img",	"application/octet-stream");
-
-		String mime = mimeTypes.get(getExtension(filepath));
-		if (mime == null)
-			return "video/*";
-		return mime;
-	}
-
-	/*
-	 * START OF APACHE COMMONS CODE
-	 * from http://svn.apache.org/repos/asf/commons/proper/io/trunk/src/main/java/org/apache/commons/io/FilenameUtils.java
-	 */
-
-	/*
-	 * Licensed to the Apache Software Foundation (ASF) under one or more
-	 * contributor license agreements.  See the NOTICE file distributed with
-	 * this work for additional information regarding copyright ownership.
-	 * The ASF licenses this file to You under the Apache License, Version 2.0
-	 * (the "License"); you may not use this file except in compliance with
-	 * the License.  You may obtain a copy of the License at
-	 *
-	 *      http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-
-
-	private static final int NOT_FOUND = -1;
-	public static final char EXTENSION_SEPARATOR = '.';
-	private static final char UNIX_SEPARATOR = '/';
-	private static final char WINDOWS_SEPARATOR = '\\';
-
-	public static String getExtension(final String filename) {
-		if (filename == null) {
-			return null;
-		}
-		final int index = indexOfExtension(filename);
-		if (index == NOT_FOUND) {
-			return "";
-		} else {
-			return filename.substring(index + 1);
-		}
-	}
-
-	public static int indexOfExtension(final String filename) {
-		if (filename == null) {
-			return NOT_FOUND;
-		}
-		final int extensionPos = filename.lastIndexOf(EXTENSION_SEPARATOR);
-		final int lastSeparator = indexOfLastSeparator(filename);
-		return lastSeparator > extensionPos ? NOT_FOUND : extensionPos;
-	}
-
-	public static int indexOfLastSeparator(final String filename) {
-		if (filename == null) {
-			return NOT_FOUND;
-		}
-		final int lastUnixPos = filename.lastIndexOf(UNIX_SEPARATOR);
-		final int lastWindowsPos = filename.lastIndexOf(WINDOWS_SEPARATOR);
-		return Math.max(lastUnixPos, lastWindowsPos);
-	}
-
-	/*
-	 * END OF APACHE COMMONS CODE
-	 */
 
 	public static boolean isNumber(String runtime) {
 		return TextUtils.isDigitsOnly(runtime);

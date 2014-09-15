@@ -16,12 +16,15 @@
 
 package com.miz.mizuu.fragments;
 
+import java.util.List;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -31,19 +34,27 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
 
+import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.db.DbAdapterTvShows;
+import com.miz.functions.Actor;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteTransformation;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
+import com.miz.utils.IntentUtils;
 import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.ViewUtils;
+import com.miz.views.HorizontalCardLayout;
 import com.miz.views.ObservableScrollView;
 import com.miz.views.PanningView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
@@ -55,6 +66,7 @@ import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 
 public class TvShowDetailsFragment extends Fragment {
 
+	private Context mContext;
 	private DbAdapterTvShows dbHelper;
 	private TvShow thisShow;
 	private TextView textTitle, textPlot, textGenre, textRuntime, textReleaseDate, textRating, textCertification;
@@ -64,6 +76,8 @@ public class TvShowDetailsFragment extends Fragment {
 	private Picasso mPicasso;
 	private Typeface mLight, mLightItalic, mMedium;
 	private Bus mBus;
+	private HorizontalCardLayout mActorsLayout;
+	private int mImageThumbSize, mImageThumbSpacing;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -83,6 +97,8 @@ public class TvShowDetailsFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
+		
+		mContext = getActivity();
 
 		mBus = MizuuApplication.getBus();
 
@@ -151,6 +167,10 @@ public class TvShowDetailsFragment extends Fragment {
 	public void onViewCreated(final View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
+		// This needs to be re-initialized here and not in onCreate()
+		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.horizontal_grid_item_width);
+		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+
 		mDetailsArea = v.findViewById(R.id.details_area);
 
 		// TV shows don't include a tagline or filepath
@@ -189,6 +209,7 @@ public class TvShowDetailsFragment extends Fragment {
 		textRating = (TextView) v.findViewById(R.id.textView12);
 		textCertification = (TextView) v.findViewById(R.id.textView11);
 		cover = (ImageView) v.findViewById(R.id.traktIcon);
+		mActorsLayout = (HorizontalCardLayout) v.findViewById(R.id.horizontal_card_layout);
 
 		// Set the show title
 		textTitle.setVisibility(View.VISIBLE);
@@ -264,15 +285,37 @@ public class TvShowDetailsFragment extends Fragment {
 			textCertification.setText(R.string.stringNA);
 		}
 
+		mActorsLayout.setTitle(R.string.detailsActors);
+		mActorsLayout.setSeeMoreVisibility(true);
+		mActorsLayout.getViewTreeObserver().addOnGlobalLayoutListener(
+				new ViewTreeObserver.OnGlobalLayoutListener() {
+					@Override
+					public void onGlobalLayout() {
+						if (mActorsLayout.getWidth() > 0) {
+							final int numColumns = (int) Math.floor(mActorsLayout.getWidth() / (mImageThumbSize + mImageThumbSpacing));	
+							mImageThumbSize = (mActorsLayout.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
+
+							loadActors(numColumns);
+							MizLib.removeViewTreeObserver(mActorsLayout.getViewTreeObserver(), this);
+						}
+					}
+				});
+		mActorsLayout.setSeeMoreOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(IntentUtils.getActorBrowserTvShows(mContext, thisShow.getTitle(), thisShow.getId()));
+			}
+		});
+
 		loadImages();
 	}
 
 	private void loadImages() {
+		mPicasso.load(thisShow.getCoverPhoto()).skipMemoryCache().error(R.drawable.loading_image).placeholder(R.drawable.loading_image).transform(new PaletteTransformation(thisShow.getCoverPhoto().getAbsolutePath(), mDetailsArea, mActorsLayout.getSeeMoreView())).into(cover);
+		
 		if (!MizLib.isPortrait(getActivity())) {
-			mPicasso.load(thisShow.getCoverPhoto()).skipMemoryCache().error(R.drawable.loading_image).placeholder(R.drawable.loading_image).transform(new PaletteTransformation(thisShow.getCoverPhoto().getAbsolutePath(), mDetailsArea)).into(cover);
 			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
 		} else {
-			mPicasso.load(thisShow.getCoverPhoto()).skipMemoryCache().error(R.drawable.loading_image).placeholder(R.drawable.loading_image).transform(new PaletteTransformation(thisShow.getCoverPhoto().getAbsolutePath(), mDetailsArea)).into(cover);
 			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 				@Override
 				public void onError() {
@@ -290,5 +333,34 @@ public class TvShowDetailsFragment extends Fragment {
 				}
 			});
 		}
+	}
+	
+	private void loadActors(final int capacity) {
+		// Show ProgressBar
+		new AsyncTask<Void, Void, Void>() {
+			private List<Actor> mActors;
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				TMDbTvShowService service = new TMDbTvShowService(mContext);
+				mActors = service.getActors(thisShow.getId());
+
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				if (mActors.size() > 0) {
+					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(mImageThumbSize, LayoutParams.WRAP_CONTENT);
+					lp.setMargins(0, 0, mImageThumbSpacing, 0);
+
+					for (int i = 0; i < mActors.size() && i < capacity; i++) {
+						mActorsLayout.addView(ViewUtils.setupActorCard(mContext, mPicasso, mActors.get(i)), i, lp);
+					}
+				} else {
+					mActorsLayout.setNoActorsVisibility(true);
+				}
+			}
+		}.execute();
 	}
 }

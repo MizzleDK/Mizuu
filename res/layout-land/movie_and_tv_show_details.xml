@@ -10,6 +10,11 @@
         android:contentDescription="@string/content_description_image_backdrop"
         android:scaleType="centerCrop" />
 
+    <ImageView
+        android:id="@+id/actionbar_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
     <RelativeLayout
         android:layout_width="@dimen/movie_details_landscape_width"
         android:layout_height="@dimen/movie_details_landscape_height"
@@ -198,6 +203,23 @@
                     android:textColor="#f0f0f0"
                     android:textSize="@dimen/details_description_font_size" />
 
+                <com.miz.views.HorizontalCardLayout
+                    android:id="@+id/horizontal_card_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/details_large_padding"
+                    android:layout_marginRight="@dimen/details_medium_padding"
+                    android:paddingBottom="@dimen/details_medium_padding" />
+
+                <com.miz.views.HorizontalCardLayout
+                    android:id="@+id/horizontal_card_layout_extra"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/details_large_padding"
+                    android:layout_marginRight="@dimen/details_medium_padding"
+                    android:paddingBottom="@dimen/details_medium_padding"
+                    android:visibility="gone" />
+                
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
@@ -210,7 +232,7 @@
                     android:gravity="center_vertical"
                     android:paddingBottom="@dimen/details_medium_padding"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textSize="@dimen/details_description_font_size" />
+                    android:textSize="@dimen/details_small_font_size" />
             </LinearLayout>
         </ScrollView>
 

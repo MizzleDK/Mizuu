@@ -21,6 +21,7 @@ import java.io.File;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.WidgetUtils;
 
@@ -116,7 +117,7 @@ public class DownloadImageService extends IntentService {
 				mNeedsResizing = true;
 			}
 
-			mDownloadPath = MizLib.getTvShowThumb(this, mContentId).getAbsolutePath();
+			mDownloadPath = FileUtils.getTvShowThumb(this, mContentId).getAbsolutePath();
 
 			break;
 
@@ -130,13 +131,13 @@ public class DownloadImageService extends IntentService {
 				mImageUrl = mImageUrl.replace("", "").replace("/_cache/", "/");
 			}
 
-			mDownloadPath = MizLib.getTvShowBackdrop(this, mContentId).getAbsolutePath();
+			mDownloadPath = FileUtils.getTvShowBackdrop(this, mContentId).getAbsolutePath();
 
 			break;
 
 		case IMAGE_TYPE_MOVIE_COVER:
 
-			mDownloadPath = MizLib.getMovieThumb(this, mContentId).getAbsolutePath();
+			mDownloadPath = FileUtils.getMovieThumb(this, mContentId).getAbsolutePath();
 
 			break;
 
@@ -145,7 +146,7 @@ public class DownloadImageService extends IntentService {
 			// TMDb URL's need to have part of it replaced with something else
 			mImageUrl = mImageUrl.replace(MizLib.getBackdropThumbUrlSize(this), MizLib.getBackdropUrlSize(this));
 
-			mDownloadPath = MizLib.getMovieBackdrop(this, mContentId).getAbsolutePath();
+			mDownloadPath = FileUtils.getMovieBackdrop(this, mContentId).getAbsolutePath();
 
 			break;
 		}

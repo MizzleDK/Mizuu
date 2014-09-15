@@ -54,7 +54,6 @@ import android.widget.FrameLayout.LayoutParams;
 import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
 import com.miz.functions.SpinnerItem;
-import com.miz.mizuu.fragments.ActorBrowserFragmentTv;
 import com.miz.mizuu.fragments.TvShowDetailsFragment;
 import com.miz.mizuu.fragments.TvShowSeasonsEpisodesFragment;
 import com.miz.utils.LocalBroadcastUtils;
@@ -114,7 +113,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 				mActionBar.setSelectedNavigationItem(position);
 				invalidateOptionsMenu();
 
-				updateActionBarDrawable(1, false, false);
+				updateActionBarDrawable(1, true, false);
 			}
 		});
 
@@ -192,8 +191,11 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 				mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
 				mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
 			}
-		} else { // Actors page
-			mActionBarOverlay.setVisibility(View.GONE);
+		} else {
+			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#FF000000"), Color.parseColor("#FF000000")});
+			mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
+			
+			mActionBarOverlay.setVisibility(View.VISIBLE);
 
 			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
 				mActionBar.show();
@@ -222,7 +224,6 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		spinnerItems.clear();
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.overview)));
 		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.seasons)));
-		spinnerItems.add(new SpinnerItem(thisShow.getTitle(), getString(R.string.detailsActors)));
 
 		mActionBar.setListNavigationCallbacks(spinnerAdapter, this);
 	}
@@ -393,24 +394,21 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 			switch (index) {
 			case 0:
 				return TvShowDetailsFragment.newInstance(thisShow.getId());
-			case 1:
-				return TvShowSeasonsEpisodesFragment.newInstance(thisShow.getId());
 			default:
-				return ActorBrowserFragmentTv.newInstance(thisShow.getId());
+				return TvShowSeasonsEpisodesFragment.newInstance(thisShow.getId());
 			}
 		}  
 
 		@Override  
 		public int getCount() {  
-			return 3;
+			return 2;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
 			case 0: return getString(R.string.overview);
-			case 1: return getString(R.string.episodes);
-			default: return getString(R.string.detailsActors);
+			default: return getString(R.string.episodes);
 			}
 		}
 	}

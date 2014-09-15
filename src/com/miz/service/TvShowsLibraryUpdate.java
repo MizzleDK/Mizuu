@@ -55,6 +55,7 @@ import com.miz.mizuu.CancelLibraryUpdate;
 import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.WidgetUtils;
 
@@ -257,10 +258,10 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllFilepaths();
 
 		// Delete all downloaded images files from the device
-		MizLib.deleteRecursive(MizuuApplication.getTvShowThumbFolder(this), false);
-		MizLib.deleteRecursive(MizuuApplication.getTvShowEpisodeFolder(this), false);
-		MizLib.deleteRecursive(MizuuApplication.getTvShowBackdropFolder(this), false);
-		MizLib.deleteRecursive(MizuuApplication.getTvShowSeasonFolder(this), false);
+		FileUtils.deleteRecursive(MizuuApplication.getTvShowThumbFolder(this), false);
+		FileUtils.deleteRecursive(MizuuApplication.getTvShowEpisodeFolder(this), false);
+		FileUtils.deleteRecursive(MizuuApplication.getTvShowBackdropFolder(this), false);
+		FileUtils.deleteRecursive(MizuuApplication.getTvShowSeasonFolder(this), false);
 	}
 
 	private void removeUnavailableFiles() {

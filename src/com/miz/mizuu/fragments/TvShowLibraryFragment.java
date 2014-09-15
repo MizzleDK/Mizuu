@@ -208,10 +208,10 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 			}
 		}
 	};
-
+	
 	LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
-		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {			
 			mLoading = true;
 			return new SQLiteCursorLoader(getActivity(), DatabaseHelper.getHelper(getActivity()).getWritableDatabase(), DbAdapterTvShows.DATABASE_TABLE, DbAdapterTvShows.SELECT_ALL, "NOT(" + DbAdapterTvShows.KEY_SHOW_ID + " = '" + DbAdapterTvShows.UNIDENTIFIED_ID + "')", null, null, null, DbAdapterTvShows.KEY_SHOW_TITLE + " ASC");
 		}
@@ -226,8 +226,7 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				}
 
 				@Override
-				protected Void doInBackground(Void... params) {
-					
+				protected Void doInBackground(Void... params) {					
 					ColumnIndexCache cache = new ColumnIndexCache();
 					
 					try {

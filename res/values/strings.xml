@@ -513,8 +513,8 @@
     <string name="data_source_shows_description">Set the data source for TV show details.</string>
     <string name="select_data_source_shows">Select source for TV show data</string>
     <string name="selectFile">Select a file</string>
-    <string name="no_actors">"There's no actors here!"</string>
-    <string name="no_actors_description">It looks some actors are missing here…</string>
+    <string name="no_actors">No actors found!</string>
+    <string name="no_actors_description">"It seems like there aren't any actors…"</string>
     <string name="release_year">Release year</string>
     <string name="identifying_movie">Identifying movie…</string>
     <string name="remove_selected_seasons">Remove selected seasons</string>
@@ -528,5 +528,7 @@
 	<string name="set_certification">Set certification</string>
 	<string name="set">Set</string>
 	<string name="create_new_certification">Create new certification</string>
+	<string name="see_more">See more</string>
+	<string name="no_similar_movies">No similar movies found!</string>
     
 </resources>

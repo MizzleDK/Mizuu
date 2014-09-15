@@ -237,7 +237,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 	
 	LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
 		@Override
-		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {			
 			mLoading = true;
 			return new SQLiteCursorLoader(getActivity(), DatabaseHelper.getHelper(getActivity()).getWritableDatabase(), DbAdapterMovies.DATABASE_TABLE,
 					DbAdapterMovies.SELECT_ALL, "NOT(" + DbAdapterMovies.KEY_TITLE + " = '" + DbAdapterMovies.REMOVED_MOVIE_TITLE + "')", null, null, null, null);
@@ -253,7 +253,7 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				}
 
 				@Override
-				protected Void doInBackground(Void... params) {
+				protected Void doInBackground(Void... params) {					
 					// Normally we'd have to go through each movie and add filepaths mapped to that movie
 					// one by one. This is a hacky approach that gets all filepaths at once and creates a
 					// map of them. That way it's easy to get filepaths for a specific movie - and it's
@@ -309,6 +309,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 								continue;
 						mMovieKeys.add(i);
 					}
+					
+					
 
 					return null;
 				}

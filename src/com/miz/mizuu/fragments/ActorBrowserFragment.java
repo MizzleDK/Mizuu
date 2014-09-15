@@ -17,14 +17,8 @@
 package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,24 +36,25 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.miz.abstractclasses.MovieApiService;
 import com.miz.functions.Actor;
 import com.miz.functions.CoverItem;
-import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.IntentUtils;
 import com.squareup.picasso.Picasso;
 
 public class ActorBrowserFragment extends Fragment {
 
 	private int mImageThumbSize, mImageThumbSpacing;
-	private ImageAdapter mAdapter;
 	private ArrayList<Actor> mActors = new ArrayList<Actor>();
 	private GridView mGridView = null;
 	private ProgressBar mProgressBar;
-	private String mJson, mTmdbApiKey;
 	private Picasso mPicasso;
 	private Config mConfig;
 	private boolean mLoaded = false;
+	private ImageAdapter mAdapter;
+	private View mEmptyView;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -74,16 +69,6 @@ public class ActorBrowserFragment extends Fragment {
 		return pageFragment;
 	}
 
-	public static ActorBrowserFragment newInstance(String movieId, String json, String baseUrl) { 
-		ActorBrowserFragment pageFragment = new ActorBrowserFragment();
-		Bundle bundle = new Bundle();
-		bundle.putString("movieId", movieId);
-		bundle.putString("json", json);
-		bundle.putString("baseUrl", baseUrl);
-		pageFragment.setArguments(bundle);
-		return pageFragment;
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
@@ -93,18 +78,10 @@ public class ActorBrowserFragment extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);	
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		mTmdbApiKey = MizLib.getTmdbApiKey(getActivity());
-
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
 
-		if (!getArguments().containsKey("json")) {		
-			if (getArguments().getString("movieId") == null) {
-				new GetActorDetails(getActivity()).execute(getActivity().getIntent().getExtras().getString("movieId"));
-			} else {
-				new GetActorDetails(getActivity()).execute(getArguments().getString("movieId"));
-			}
-		}
+		mAdapter = new ImageAdapter(getActivity());
 	}
 
 	@Override
@@ -112,27 +89,17 @@ public class ActorBrowserFragment extends Fragment {
 		return inflater.inflate(R.layout.image_grid_fragment, container, false);
 	}
 
+	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		mGridView = (GridView) v.findViewById(R.id.gridView);
-
-		if (!MizLib.isPortrait(getActivity()))
-			v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
-
-		if (!MizuuApplication.isFullscreen(getActivity()))
-			MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.container));
-		else
-			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
+		mEmptyView = v.findViewById(R.id.empty_library_layout);
 
 		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
-		if (mActors.size() > 0)
-			mProgressBar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
+		mProgressBar.setVisibility(View.GONE);
 
-		mAdapter = new ImageAdapter(getActivity());
+		mGridView = (GridView) v.findViewById(R.id.gridView);
 		mGridView.setAdapter(mAdapter);
-
-		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
 				new ViewTreeObserver.OnGlobalLayoutListener() {
 					@Override
@@ -147,49 +114,41 @@ public class ActorBrowserFragment extends Fragment {
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Intent intent = new Intent(getActivity(), com.miz.mizuu.Actor.class);
-				intent.putExtra("actorName", mActors.get(arg2).getName());
-				intent.putExtra("actorID", mActors.get(arg2).getId());
-				intent.putExtra("thumb", mActors.get(arg2).getUrl());
-				startActivity(intent);
+				startActivity(IntentUtils.getActorIntent(getActivity(), mActors.get(arg2)));
 			}
 		});
-		
+
+		// "No actors" message
 		TextView title = (TextView) v.findViewById(R.id.empty_library_title);
 		title.setText(R.string.no_actors);
-		
+
 		TextView description = (TextView) v.findViewById(R.id.empty_library_description);
 		description.setText(R.string.no_actors_description);
-		
-		mGridView.setEmptyView(v.findViewById(R.id.empty_library_layout));
-
-		if (getArguments().containsKey("json")) {
-			mJson = getArguments().getString("json");
-			loadJson(getArguments().getString("baseUrl"));
-		}
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		if (mAdapter != null) mAdapter.notifyDataSetChanged();
-	}
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
+		if (mActors.size() == 0)
+			new GetActorDetails(getArguments().getString("movieId"), getActivity()).execute();
+	}
+	
 	private class ImageAdapter extends BaseAdapter {
 
-		private LayoutInflater mInflater;
+		private final LayoutInflater mInflater;
 		private final Context mContext;
 
 		public ImageAdapter(Context context) {
 			mContext = context;
-			mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mInflater = LayoutInflater.from(mContext);
 		}
 
 		@Override
 		public int getCount() {
 			return mActors.size();
 		}
-		
+
 		@Override
 		public boolean isEmpty() {
 			return getCount() == 0 && mLoaded;
@@ -240,7 +199,7 @@ public class ActorBrowserFragment extends Fragment {
 			holder.cover.setImageResource(R.color.card_background_dark);
 
 			holder.text.setText(mActors.get(position).getName());
-			holder.subtext.setText(mActors.get(position).getCharacter().equals("null") ? "" : mActors.get(position).getCharacter());
+			holder.subtext.setText(mActors.get(position).getCharacter());
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
@@ -253,86 +212,37 @@ public class ActorBrowserFragment extends Fragment {
 		}
 	}
 
-	protected class GetActorDetails extends AsyncTask<String, String, String> {
-		
-		private Context mContext;
-		
-		public GetActorDetails(Context context) {
+	protected class GetActorDetails extends AsyncTask<Void, Void, Void> {
+
+		private final Context mContext;
+		private final String mMovieId;
+
+		public GetActorDetails(String movieId, Context context) {
+			mMovieId = movieId;
 			mContext = context;
 		}
-		
+
 		@Override
-		protected String doInBackground(String... params) {
-			try {
-				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
-				
-				JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + params[0] + "/casts?api_key=" + mTmdbApiKey);
+		protected void onPreExecute() {
+			mProgressBar.setVisibility(View.VISIBLE);
+		}
 
-				JSONArray jArray = jObject.getJSONArray("cast");
-
-				mActors.clear();
-
-				Set<String> actorIds = new HashSet<String>();
-
-				for (int i = 0; i < jArray.length(); i++) {
-					if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
-						actorIds.add(jArray.getJSONObject(i).getString("id"));
-
-						mActors.add(new Actor(
-								jArray.getJSONObject(i).getString("name"),
-								jArray.getJSONObject(i).getString("character"),
-								jArray.getJSONObject(i).getString("id"),
-								baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
-					}
-				}
-
-				actorIds.clear();
-				actorIds = null;
-			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
+		@Override
+		protected Void doInBackground(Void... params) {
+			MovieApiService service = MizuuApplication.getMovieService(mContext);
+			mActors = new ArrayList<Actor>(service.getActors(mMovieId));
 
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(Void result) {
 			if (isAdded()) {
 				mProgressBar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
+
+				mEmptyView.setVisibility((mActors.size() == 0) ? View.VISIBLE : View.GONE);
 			}
-		}
-	}
-
-	private void loadJson(String baseUrl) {		
-		try {
-			JSONObject jObject = new JSONObject(mJson);
-
-			JSONArray jArray = jObject.getJSONObject("casts").getJSONArray("cast");
-
-			mActors.clear();
-
-			Set<String> actorIds = new HashSet<String>();
-
-			for (int i = 0; i < jArray.length(); i++) {
-				if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
-					actorIds.add(jArray.getJSONObject(i).getString("id"));
-
-					mActors.add(new Actor(
-							jArray.getJSONObject(i).getString("name"),
-							jArray.getJSONObject(i).getString("character"),
-							jArray.getJSONObject(i).getString("id"),
-							baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
-				}
-			}
-
-			actorIds.clear();
-			actorIds = null;
-			
-			mLoaded = true;
-		} catch (Exception e) {}
-
-		if (isAdded()) {
-			mProgressBar.setVisibility(View.GONE);
-			mAdapter.notifyDataSetChanged();
 		}
 	}
 }

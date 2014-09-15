@@ -160,8 +160,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 	}
 
 	public boolean deleteAllMovies() {
-		return mDatabase.delete(DATABASE_TABLE, null, null) > 0 && MizuuApplication.getMovieMappingAdapter().deleteAllMovies() &&
-				MizuuApplication.getCollectionsAdapter().deleteAllCollections();
+		return mDatabase.delete(DATABASE_TABLE, null, null) > 0;
 	}
 
 	public String getCollectionId(String tmdbId) {
@@ -206,21 +205,6 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 		return mDatabase.query(DATABASE_TABLE, SELECT_ALL, includeRemoved ? null : "NOT(" + KEY_TITLE + " = '" + REMOVED_MOVIE_TITLE + "')", null, null, null, sort);
 	}
 
-	public Cursor fetchAllMoviesByActor(String actor) {
-		String newQuery = actor.replace("'", "''");
-		return mDatabase.query(DATABASE_TABLE, SELECT_ALL,
-				KEY_ACTORS + " like '%" + newQuery + "%'", null, KEY_TMDB_ID, null, KEY_TITLE + " ASC");
-	}
-
-	public int getMovieCountByActor(String actor) {
-		String newQuery = actor.replace("'", "''");
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, SELECT_ALL,
-				KEY_ACTORS + " like '%" + newQuery + "%'", null, KEY_TMDB_ID, null, KEY_TITLE + " ASC");
-		int count = cursor.getCount();
-		cursor.close();
-		return count;
-	}
-
 	public Cursor getAllIgnoredMovies() {
 		return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_TITLE + " = '" + REMOVED_MOVIE_TITLE + "'", null, null, null, null);
 	}
@@ -229,8 +213,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 	 * Return a Cursor over the list of all genres in the database
 	 */
 	public Cursor fetchAllGenres() {
-		return mDatabase.query(DATABASE_TABLE, SELECT_ALL,
-				null, null, KEY_GENRES, null, KEY_GENRES + " ASC");
+		return mDatabase.query(DATABASE_TABLE, SELECT_ALL, null, null, KEY_GENRES, null, KEY_GENRES + " ASC");
 	}
 
 	public Cursor fetchMovie(String movieId) throws SQLException {

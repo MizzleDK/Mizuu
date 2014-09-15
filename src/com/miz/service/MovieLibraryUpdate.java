@@ -49,7 +49,6 @@ import android.util.Log;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.apis.trakt.Trakt;
-import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterSources;
 import com.miz.filesources.FileMovie;
 import com.miz.filesources.SmbMovie;
@@ -64,6 +63,7 @@ import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.MovieDatabaseUtils;
 import com.miz.utils.WidgetUtils;
 
 public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpdateCallback {
@@ -256,13 +256,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	}
 
 	private void removeMoviesFromDatabase() {
-		// Delete all movies from the database
-		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
-		db.deleteAllMovies();
-
-		// Delete all downloaded images files from the device
-		MizLib.deleteRecursive(MizuuApplication.getMovieThumbFolder(this), false);
-		MizLib.deleteRecursive(MizuuApplication.getMovieBackdropFolder(this), false);
+		MovieDatabaseUtils.deleteAllMovies(this);
 	}
 
 	private void removeUnavailableFiles() {
@@ -272,7 +266,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	}
 
 	private void searchFolders() {
-
 		// Temporary collections
 		List<String> tempList = null;
 		HashMap<String, InputStream> tempNfoMap = null;
@@ -356,9 +349,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	};
 
 	private void updateMovies() {
-		
-		System.out.println("WAT DA FUCK");
-		
 		mMovieIdentification = new MovieIdentification(getApplicationContext(), this, mMovieQueue, mNfoFiles);
 		mMovieIdentification.start();
 	}

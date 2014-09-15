@@ -27,6 +27,7 @@ import android.text.TextUtils;
 
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
+import com.miz.utils.FileUtils;
 import com.miz.utils.StringUtils;
 
 public class TvShowEpisode implements Comparable<TvShowEpisode> {
@@ -100,7 +101,7 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	}
 
 	public File getEpisodePhoto() {
-		return MizLib.getTvShowEpisode(mContext, mShowId, mSeason, mEpisode);
+		return FileUtils.getTvShowEpisode(mContext, mShowId, mSeason, mEpisode);
 	}
 
 	public void setReleaseDate(int year, int month, int day) {
@@ -173,7 +174,7 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	}
 
 	public File getOfflineCopyFile(Filepath path) {
-		return MizLib.getOfflineFile(mContext, path.getFilepath());
+		return FileUtils.getOfflineFile(mContext, path.getFilepath());
 	}
 
 	/**
@@ -181,7 +182,7 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	 * @return
 	 */
 	public File getThumbnail() {
-		return MizLib.getTvShowThumb(mContext, mShowId);
+		return FileUtils.getTvShowThumb(mContext, mShowId);
 	}
 
 	/**
@@ -189,7 +190,7 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 	 * @return
 	 */
 	public File getTvShowBackdrop() {
-		return MizLib.getTvShowBackdrop(mContext, mShowId);
+		return FileUtils.getTvShowBackdrop(mContext, mShowId);
 	}
 
 	public String getSubtitleText() {

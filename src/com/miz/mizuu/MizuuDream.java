@@ -39,8 +39,8 @@ import android.widget.ViewSwitcher.ViewFactory;
 import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.ColumnIndexCache;
-import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 
 @SuppressLint("NewApi")
 public class MizuuDream extends DreamService implements ViewFactory {
@@ -84,7 +84,7 @@ public class MizuuDream extends DreamService implements ViewFactory {
 		Cursor cursor = mDatabaseHelper.fetchAllMovies(DbAdapterMovies.KEY_TITLE + " ASC", false);
 		while (cursor.moveToNext()) {
 			try {
-				temp = MizLib.getMovieBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TMDB_ID)));
+				temp = FileUtils.getMovieBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TMDB_ID)));
 				if (temp.exists())
 					mBackdrops.add(new Backdrop(temp.getAbsolutePath(),
 							cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_TITLE))
@@ -96,7 +96,7 @@ public class MizuuDream extends DreamService implements ViewFactory {
 		cursor = mDatabaseHelperTv.getAllShows();
 		while (cursor.moveToNext()) {
 			try {
-				temp = MizLib.getTvShowBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)));
+				temp = FileUtils.getTvShowBackdrop(this, cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)));
 				if (temp.exists())
 					mBackdrops.add(new Backdrop(temp.getAbsolutePath(),
 							cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_TITLE))

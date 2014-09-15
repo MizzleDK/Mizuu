@@ -25,6 +25,7 @@ import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.SortingKeys;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 
 
 public abstract class MediumBaseMovie extends BaseMovie {
@@ -95,7 +96,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public File getCollectionPoster() {
-		File collectionImage = MizLib.getMovieThumb(mContext, COLLECTION_ID);
+		File collectionImage = FileUtils.getMovieThumb(mContext, COLLECTION_ID);
 		if (collectionImage.exists() && collectionImage.length() > 0)
 			return collectionImage;
 		return getThumbnail();
@@ -204,7 +205,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public File getOfflineCopyFile(Filepath path) {
-		return MizLib.getOfflineFile(mContext, path.getFilepath());
+		return FileUtils.getOfflineFile(mContext, path.getFilepath());
 	}
 	
 	public String getSubText(int sort) {

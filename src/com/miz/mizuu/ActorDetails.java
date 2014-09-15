@@ -54,7 +54,7 @@ import com.miz.mizuu.fragments.ActorTvShowsFragment;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-public class Actor extends MizActivity implements OnNavigationListener {
+public class ActorDetails extends MizActivity implements OnNavigationListener {
 
 	private ViewPager mViewPager;
 	private String mActorId, mActorName, mJson, mBaseUrl, mActorThumb, mTmdbApiKey;

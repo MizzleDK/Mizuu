@@ -39,6 +39,7 @@ import com.miz.functions.MizLib;
 import com.miz.functions.MovieLibraryUpdateCallback;
 import com.miz.functions.NfoMovie;
 import com.miz.mizuu.MizuuApplication;
+import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.WidgetUtils;
 import com.squareup.picasso.Picasso;
@@ -156,6 +157,7 @@ public class MovieIdentification {
 			List<Movie> results = new ArrayList<Movie>();
 
 			if (!overrideMovieId()) {
+
 				// Check if there's an IMDb ID and attempt to search based on it
 				if (ms.hasImdbId()) {
 					results = service.searchByImdbId(ms.getImdbId(), null);
@@ -202,7 +204,7 @@ public class MovieIdentification {
 			downloadCovers = !MizuuApplication.getMovieAdapter().movieExists(movie.getId());
 
 		if (downloadCovers) {
-			String thumb_filepath = MizLib.getMovieThumb(mContext, movie.getId()).getAbsolutePath();
+			String thumb_filepath = FileUtils.getMovieThumb(mContext, movie.getId()).getAbsolutePath();
 
 			// Download the cover image and try again if it fails
 			if (!MizLib.downloadFile(movie.getCover(), thumb_filepath))
@@ -210,7 +212,7 @@ public class MovieIdentification {
 
 			// Download the backdrop image and try again if it fails
 			if (!TextUtils.isEmpty(movie.getBackdrop())) {
-				String backdropFile = MizLib.getMovieBackdrop(mContext, movie.getId()).getAbsolutePath();
+				String backdropFile = FileUtils.getMovieBackdrop(mContext, movie.getId()).getAbsolutePath();
 
 				if (!MizLib.downloadFile(movie.getBackdrop(), backdropFile))
 					MizLib.downloadFile(movie.getBackdrop(), backdropFile);
@@ -218,7 +220,7 @@ public class MovieIdentification {
 
 			// Download the collection image
 			if (!TextUtils.isEmpty(movie.getCollectionImage())) {
-				String collectionImage = MizLib.getMovieThumb(mContext, movie.getCollectionId()).getAbsolutePath();
+				String collectionImage = FileUtils.getMovieThumb(mContext, movie.getCollectionId()).getAbsolutePath();
 
 				if (!MizLib.downloadFile(movie.getCollectionImage(), collectionImage))
 					MizLib.downloadFile(movie.getCollectionImage(), collectionImage);
@@ -260,14 +262,14 @@ public class MovieIdentification {
 	}
 
 	private void updateNotification(Movie movie) {
-		File backdropFile = MizLib.getMovieBackdrop(mContext, movie.getId());
+		File backdropFile = FileUtils.getMovieBackdrop(mContext, movie.getId());
 		if (!backdropFile.exists())
-			backdropFile = MizLib.getMovieThumb(mContext, movie.getId());
+			backdropFile = FileUtils.getMovieThumb(mContext, movie.getId());
 
 		if (mCallback != null) {
 			try {
 				mCallback.onMovieAdded(movie.getTitle(),
-						mPicasso.load(MizLib.getMovieThumb(mContext, movie.getId())).resize(getNotificationImageSizeSmall(), (int) (getNotificationImageSizeSmall() * 1.5)).get(),
+						mPicasso.load(FileUtils.getMovieThumb(mContext, movie.getId())).resize(getNotificationImageSizeSmall(), (int) (getNotificationImageSizeSmall() * 1.5)).get(),
 						mPicasso.load(backdropFile).resize(getNotificationImageWidth(), getNotificationImageHeight()).skipMemoryCache().get(), mCount);
 			} catch (Exception e) {
 				mCallback.onMovieAdded(movie.getTitle(), null, null, mCount);

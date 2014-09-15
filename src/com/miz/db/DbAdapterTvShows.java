@@ -58,7 +58,8 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 	}
 	
 	public boolean showExists(String showTitle) {
-		Cursor mCursor = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_TITLE + "='" + showTitle.replace("'", "''") + "'", null, KEY_SHOW_TITLE, null, null, null);
+		String[] selectionArgs = new String[]{showTitle};
+		Cursor mCursor = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_TITLE + " = ?", selectionArgs, KEY_SHOW_TITLE, null, null, null);
 		if (mCursor == null)
 			return false;
 		try {
@@ -76,7 +77,8 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 	}
 	
 	public String getShowId(String showTitle) {
-		Cursor mCursor = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_TITLE + "='" + showTitle.replace("'", "''") + "'", null, KEY_SHOW_TITLE, null, null, null);
+		String[] selectionArgs = new String[]{showTitle};
+		Cursor mCursor = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_TITLE + " = ?", selectionArgs, KEY_SHOW_TITLE, null, null, null);
 		if (mCursor == null)
 			return "";
 		try {

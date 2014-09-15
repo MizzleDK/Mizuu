@@ -145,7 +145,7 @@ public class ActorMoviesFragment extends Fragment {
 				} else {
 					Intent i = new Intent(Intent.ACTION_VIEW);
 					i.setClass(getActivity(), TMDbMovieDetails.class);
-					i.putExtra("tmdbid", pics_sources.get(arg2).getId());
+					i.putExtra("tmdbId", pics_sources.get(arg2).getId());
 					i.putExtra("title", pics_sources.get(arg2).getTitle());
 					startActivity(i);
 				}

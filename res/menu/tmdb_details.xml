@@ -3,7 +3,6 @@
     <item
         android:id="@+id/trailer"
         android:icon="@drawable/youtube"
-        android:onClick="watchTrailer"
         android:showAsAction="ifRoom"
         android:title="@string/detailsTrailer">
     </item>

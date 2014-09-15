@@ -5,7 +5,9 @@ import static com.miz.functions.PreferenceKeys.TVSHOWS_RATINGS_SOURCE;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +22,7 @@ import com.miz.apis.thetvdb.Episode;
 import com.miz.apis.thetvdb.Season;
 import com.miz.apis.thetvdb.TvShow;
 import com.miz.apis.trakt.Trakt;
+import com.miz.functions.Actor;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 
@@ -355,5 +358,42 @@ public class TMDbTvShowService extends TvShowApiService {
 		} catch (UnsupportedEncodingException e) {}
 
 		return getListFromUrl(serviceUrl);
+	}
+
+	@Override
+	public List<Actor> getActors(String id) {
+		ArrayList<Actor> results = new ArrayList<Actor>();
+
+		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+
+		try {
+			JSONObject jObject;
+			
+			if (!id.startsWith("tmdb_")) {
+				jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/find/" + id + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
+				id = MizLib.getStringFromJSONObject(jObject.getJSONArray("tv_results").getJSONObject(0), "id", "");
+			} else {
+				id = id.replace("tmdb_", "");
+			}
+			
+			jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "/credits?api_key=" + mTmdbApiKey);	
+			JSONArray jArray = jObject.getJSONArray("cast");
+
+			Set<String> actorIds = new HashSet<String>();
+
+			for (int i = 0; i < jArray.length(); i++) {
+				if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
+					actorIds.add(jArray.getJSONObject(i).getString("id"));
+
+					results.add(new Actor(
+							jArray.getJSONObject(i).getString("name"),
+							jArray.getJSONObject(i).getString("character"),
+							jArray.getJSONObject(i).getString("id"),
+							baseUrl + MizLib.getActorUrlSize(mContext) + jArray.getJSONObject(i).getString("profile_path")));
+				}
+			}
+		} catch (Exception ignored) {}
+
+		return results;
 	}
 }

@@ -55,6 +55,7 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import com.miz.functions.MizLib;
+import com.miz.utils.FileUtils;
 
 import static com.miz.functions.PreferenceKeys.CONFIRM_BACK_PRESS;
 
@@ -95,7 +96,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 		while (cursor.moveToNext()) {
 			try {
 				backdrops.add(new Backdrop(
-						MizLib.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID))).getAbsolutePath(),
+						FileUtils.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID))).getAbsolutePath(),
 						cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID)),
 						true,
 						cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TITLE))
@@ -105,7 +106,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 		cursor = dbHelperTv.getAllShows();
 		while (cursor.moveToNext()) {
 			try {
-				backdrops.add(new Backdrop(MizLib.getTvShowBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID))).getAbsolutePath(),
+				backdrops.add(new Backdrop(FileUtils.getTvShowBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID))).getAbsolutePath(),
 								cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID)),
 								false,
 								cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_TITLE))

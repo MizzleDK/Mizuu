@@ -5,7 +5,9 @@ import static com.miz.functions.PreferenceKeys.MOVIE_RATINGS_SOURCE;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,7 +20,9 @@ import android.text.TextUtils;
 import com.miz.abstractclasses.MovieApiService;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterMovies;
+import com.miz.functions.Actor;
 import com.miz.functions.MizLib;
+import com.miz.functions.WebMovie;
 import com.miz.mizuu.R;
 
 public class TMDbMovieService extends MovieApiService {
@@ -101,8 +105,8 @@ public class TMDbMovieService extends MovieApiService {
 			String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 
 			JSONObject jObject = null;
-			if (json == null)
-				jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + mTmdbApiKey + (language.equals("en") ? "" : "&language=" + language) + "&append_to_response=releases,trailers,casts,images");
+			if (TextUtils.isEmpty(json))
+				jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + mTmdbApiKey + (language.equals("en") ? "" : "&language=" + language) + "&append_to_response=releases,trailers,credits,images");
 			else
 				jObject = new JSONObject(json);
 
@@ -195,7 +199,7 @@ public class TMDbMovieService extends MovieApiService {
 			try {
 				StringBuilder cast = new StringBuilder();
 
-				JSONArray array = jObject.getJSONObject("casts").getJSONArray("cast");
+				JSONArray array = jObject.getJSONObject("credits").getJSONArray("cast");
 				for (int i = 0; i < array.length(); i++) {
 					cast.append(array.getJSONObject(i).getString("name"));
 					cast.append("|");
@@ -243,7 +247,11 @@ public class TMDbMovieService extends MovieApiService {
 				} catch (Exception e) {}
 			}
 
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			// If something goes wrong here, i.e. API error, we won't get any details
+			// about the movie - in other words, it's unidentified
+			movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
+		}
 
 		return movie;
 	}
@@ -322,5 +330,57 @@ public class TMDbMovieService extends MovieApiService {
 		} catch (UnsupportedEncodingException e) {}
 
 		return getListFromUrl(serviceUrl);
+	}
+
+	@Override
+	public List<Actor> getActors(String id) {
+		ArrayList<Actor> results = new ArrayList<Actor>();
+
+		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+
+		try {
+			JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=" + mTmdbApiKey);	
+			JSONArray jArray = jObject.getJSONArray("cast");
+
+			Set<String> actorIds = new HashSet<String>();
+
+			for (int i = 0; i < jArray.length(); i++) {
+				if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
+					actorIds.add(jArray.getJSONObject(i).getString("id"));
+
+					results.add(new Actor(
+							jArray.getJSONObject(i).getString("name"),
+							jArray.getJSONObject(i).getString("character"),
+							jArray.getJSONObject(i).getString("id"),
+							baseUrl + MizLib.getActorUrlSize(mContext) + jArray.getJSONObject(i).getString("profile_path")));
+				}
+			}
+		} catch (Exception ignored) {}
+
+		return results;
+	}
+
+	@Override
+	public List<WebMovie> getSimilarMovies(String id) {
+		ArrayList<WebMovie> results = new ArrayList<WebMovie>();
+
+		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+
+		try {
+			JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + id + "/similar_movies?api_key=" + mTmdbApiKey);	
+			JSONArray jArray = jObject.getJSONArray("results");
+
+			for (int i = 0; i < jArray.length(); i++) {
+				if (!MizLib.isAdultContent(mContext, jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(mContext, jArray.getJSONObject(i).getString("original_title"))) {
+					results.add(new WebMovie(mContext,
+							jArray.getJSONObject(i).getString("original_title"),
+							jArray.getJSONObject(i).getString("id"),
+							baseUrl + MizLib.getImageUrlSize(mContext) + jArray.getJSONObject(i).getString("poster_path"),
+							jArray.getJSONObject(i).getString("release_date")));
+				}
+			}
+		} catch (Exception ignored) {}
+
+		return results;
 	}
 }

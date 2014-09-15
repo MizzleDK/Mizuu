@@ -53,6 +53,7 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.CancelOfflineDownload;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
@@ -138,9 +139,12 @@ public class MakeAvailableOffline extends IntentService {
 			message = getString(R.string.downloadingEpisode);
 		mBuilder.setTicker(message);
 		mBuilder.setContentTitle(message);
-
+		
 		mBuilder.setContentText(getContentText());
-		mBuilder.setLargeIcon(MizLib.getNotificationImageThumbnail(mContext, intent.getExtras().getString("thumb")));
+		try {
+			int size = MizLib.getThumbnailNotificationSize(mContext);
+			mBuilder.setLargeIcon(MizuuApplication.getPicasso(mContext).load(intent.getExtras().getString("thumb")).resize(size, (int) (size * 1.5)).get());
+		} catch (IOException ignored) {}
 		try {
 			int width = MizLib.getLargeNotificationWidth(mContext);
 			int height = (int) (width / 1.78);
@@ -202,9 +206,9 @@ public class MakeAvailableOffline extends IntentService {
 
 		if (!success) { // Delete the offline file if the transfer wasn't successful
 			if (mFileUrl.startsWith("http"))
-				MizLib.getOfflineFile(mContext, mFileUrl).delete();
+				FileUtils.getOfflineFile(mContext, mFileUrl).delete();
 			else
-				MizLib.getOfflineFile(mContext, mSmb.getCanonicalPath()).delete();
+				FileUtils.getOfflineFile(mContext, mSmb.getCanonicalPath()).delete();
 		}
 	}
 
@@ -232,9 +236,9 @@ public class MakeAvailableOffline extends IntentService {
 	private boolean checkIfLocalCopyExists() {
 		File f = null;
 		if (mFileUrl.startsWith("http"))
-			f = MizLib.getOfflineFile(mContext, mFileUrl);
+			f = FileUtils.getOfflineFile(mContext, mFileUrl);
 		else
-			f = MizLib.getOfflineFile(mContext, mSmb.getCanonicalPath());
+			f = FileUtils.getOfflineFile(mContext, mSmb.getCanonicalPath());
 		return f.exists() && mSize == f.length();
 	}
 
@@ -271,7 +275,7 @@ public class MakeAvailableOffline extends IntentService {
 				if (!response.isSuccessful())
 					return false;
 
-				File offline = MizLib.getOfflineFile(mContext, mFileUrl);
+				File offline = FileUtils.getOfflineFile(mContext, mFileUrl);
 				offline.createNewFile();
 				
 				fileos = new BufferedOutputStream(new FileOutputStream(offline));
@@ -308,7 +312,7 @@ public class MakeAvailableOffline extends IntentService {
 			}
 		} else {
 			try {
-				File offline = MizLib.getOfflineFile(mContext, mSmb.getCanonicalPath());
+				File offline = FileUtils.getOfflineFile(mContext, mSmb.getCanonicalPath());
 				offline.createNewFile();
 
 				mTotalLength = mSmb.length();

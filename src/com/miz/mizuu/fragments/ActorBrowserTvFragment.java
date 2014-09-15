@@ -17,14 +17,9 @@
 package com.miz.mizuu.fragments;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.List;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,21 +37,21 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.functions.Actor;
 import com.miz.functions.CoverItem;
-import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.IntentUtils;
 import com.squareup.picasso.Picasso;
 
-public class ActorBrowserFragmentTv extends Fragment {
+public class ActorBrowserTvFragment extends Fragment {
 
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
-	private ArrayList<Actor> actors = new ArrayList<Actor>();
+	private List<Actor> mActors = new ArrayList<Actor>();
 	private GridView mGridView = null;
-	private ProgressBar pbar;
-	private String mTmdbApiKey;
+	private ProgressBar mProgressBar;
 	private Picasso mPicasso;
 	private Config mConfig;
 	private boolean mLoaded = false;
@@ -64,10 +59,10 @@ public class ActorBrowserFragmentTv extends Fragment {
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
-	public ActorBrowserFragmentTv() {}
+	public ActorBrowserTvFragment() {}
 
-	public static ActorBrowserFragmentTv newInstance(String showId) { 
-		ActorBrowserFragmentTv pageFragment = new ActorBrowserFragmentTv();
+	public static ActorBrowserTvFragment newInstance(String showId) { 
+		ActorBrowserTvFragment pageFragment = new ActorBrowserTvFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString("showId", showId);
 		pageFragment.setArguments(bundle);		
@@ -83,8 +78,6 @@ public class ActorBrowserFragmentTv extends Fragment {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);	
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		mTmdbApiKey = MizLib.getTmdbApiKey(getActivity());
-
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
 		
@@ -99,16 +92,9 @@ public class ActorBrowserFragmentTv extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		if (!MizLib.isPortrait(getActivity()))
-			v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
-
-		if (!MizuuApplication.isFullscreen(getActivity()))
-			MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.container));
-		else
-			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
-
-		pbar = (ProgressBar) v.findViewById(R.id.progress);
-		if (actors.size() > 0) pbar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
+		if (mActors.size() > 0)
+			mProgressBar.setVisibility(View.GONE); // Hack to remove the ProgressBar on orientation change
 
 		mAdapter = new ImageAdapter(getActivity());
 
@@ -130,20 +116,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), com.miz.mizuu.Actor.class);
-
-				// Add the actor ID of the selected actor into a Bundle
-				Bundle bundle = new Bundle();
-				bundle.putString("actorName", actors.get(arg2).getName());
-				bundle.putString("actorID", actors.get(arg2).getId());
-				bundle.putString("thumb", actors.get(arg2).getUrl());
-
-				// Create a new Intent with the Bundle
-				intent.putExtras(bundle);
-
-				// Start the Intent for result
-				startActivity(intent);
+				startActivity(IntentUtils.getActorIntent(getActivity(), mActors.get(arg2)));
 			}
 		});
 		
@@ -174,7 +147,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 		@Override
 		public int getCount() {
-			return actors.size();
+			return mActors.size();
 		}
 		
 		@Override
@@ -205,6 +178,8 @@ public class ActorBrowserFragmentTv extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 			CoverItem holder;
+			
+			final Actor actor = mActors.get(position);
 
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
@@ -226,13 +201,13 @@ public class ActorBrowserFragmentTv extends Fragment {
 
 			holder.cover.setImageResource(R.color.card_background_dark);
 
-			holder.text.setText(actors.get(position).getName());
-			holder.subtext.setText(actors.get(position).getCharacter().equals("null") ? "" : actors.get(position).getCharacter());
+			holder.text.setText(actor.getName());
+			holder.subtext.setText(actor.getCharacter());
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			if (!actors.get(position).getUrl().endsWith("null"))
-				mPicasso.load(actors.get(position).getUrl()).error(R.drawable.noactor).config(mConfig).into(holder);
+			if (!actor.getUrl().endsWith("null"))
+				mPicasso.load(actor.getUrl()).error(R.drawable.noactor).config(mConfig).into(holder);
 			else
 				holder.cover.setImageResource(R.drawable.noactor);
 
@@ -253,39 +228,8 @@ public class ActorBrowserFragmentTv extends Fragment {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
-
-				JSONObject jObject = null;
-				
-				if (!mId.startsWith("tmdb_")) {
-					jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/find/" + mId + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
-					mId = MizLib.getStringFromJSONObject(jObject.getJSONArray("tv_results").getJSONObject(0), "id", "");
-				} else {
-					mId = mId.replace("tmdb_", "");
-				}
-
-				jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + mId + "/credits?api_key=" + mTmdbApiKey);
-
-				JSONArray jArray = jObject.getJSONArray("cast");
-
-				actors.clear();
-
-				Set<String> actorIds = new HashSet<String>();
-
-				for (int i = 0; i < jArray.length(); i++) {
-					if (!actorIds.contains(jArray.getJSONObject(i).getString("id"))) {
-						actorIds.add(jArray.getJSONObject(i).getString("id"));
-
-						actors.add(new Actor(
-								jArray.getJSONObject(i).getString("name"),
-								jArray.getJSONObject(i).getString("character"),
-								jArray.getJSONObject(i).getString("id"),
-								baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("profile_path")));
-					}
-				}
-
-				actorIds.clear();
-				actorIds = null;
+				TMDbTvShowService service = new TMDbTvShowService(mContext);
+				mActors = service.getActors(mId);
 				
 				mLoaded = true;
 			} catch (Exception e) {} // If the fragment is no longer attached to the Activity
@@ -296,7 +240,7 @@ public class ActorBrowserFragmentTv extends Fragment {
 		@Override
 		protected void onPostExecute(String result) {
 			if (isAdded()) {
-				pbar.setVisibility(View.GONE);
+				mProgressBar.setVisibility(View.GONE);
 				mAdapter.notifyDataSetChanged();
 			}
 		}

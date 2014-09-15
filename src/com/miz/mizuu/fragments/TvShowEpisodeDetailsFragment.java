@@ -65,6 +65,7 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
+import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.VideoUtils;
 import com.miz.views.ObservableScrollView;
@@ -607,7 +608,7 @@ import com.squareup.picasso.Picasso;
 				if (deleted) {
 					try {
 						// Delete episode images
-						File episodePhoto = MizLib.getTvShowEpisode(getActivity(), mEpisode.getShowId(), mEpisode.getSeason(), mEpisode.getEpisode());
+						File episodePhoto = FileUtils.getTvShowEpisode(getActivity(), mEpisode.getShowId(), mEpisode.getSeason(), mEpisode.getEpisode());
 						if (episodePhoto.exists()) {
 							MizLib.deleteFile(episodePhoto);
 						}
@@ -618,8 +619,8 @@ import com.squareup.picasso.Picasso;
 						boolean deletedShow = dbShow.deleteShow(mEpisode.getShowId());
 
 						if (deletedShow) {
-							MizLib.deleteFile(MizLib.getTvShowThumb(getActivity(), mEpisode.getShowId()));
-							MizLib.deleteFile(MizLib.getTvShowBackdrop(getActivity(), mEpisode.getShowId()));
+							MizLib.deleteFile(FileUtils.getTvShowThumb(getActivity(), mEpisode.getShowId()));
+							MizLib.deleteFile(FileUtils.getTvShowBackdrop(getActivity(), mEpisode.getShowId()));
 						}
 					}
 

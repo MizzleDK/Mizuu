@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	protected static final String TAG = "Mizuu";
 
-	protected static final String DATABASE_NAME = "mizuu_data";
+	public static final String DATABASE_NAME = "mizuu_data";
 	protected static final int DATABASE_VERSION = 5;
 
 	/**
@@ -29,7 +29,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_CREATE_MOVIE = "create table movie (tmdbid TEXT PRIMARY KEY, title TEXT, plot TEXT," +
 			"imdbid TEXT, rating TEXT, tagline TEXT, release TEXT, certification TEXT, runtime TEXT, trailer TEXT, genres TEXT," +
 			"favourite INTEGER, actors TEXT, to_watch TEXT, has_watched TEXT, date_added TEXT, collection_id TEXT);";
-
+	private static final String DATABASE_CREATE_MOVIE_TITLE_INDEX = "create index movie_title_index on " + DbAdapterMovies.DATABASE_TABLE +
+			" (" + DbAdapterMovies.KEY_TITLE + ");";
+	
 	/**
 	 * Create movie filepath table SQL statements
 	 */
@@ -88,8 +90,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase database) {
-		// Movie table
+		// Movie table and index
 		database.execSQL(DATABASE_CREATE_MOVIE);
+		database.execSQL(DATABASE_CREATE_MOVIE_TITLE_INDEX);
 
 		// Movie filepath mapping table and index
 		database.execSQL(DATABASE_CREATE_MOVIE_MAPPING);
@@ -203,8 +206,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		// We have a copy of all the old data - now let's drop the old table...
 		database.execSQL("DROP TABLE IF EXISTS movie");
 
-		// ... and create the new one
+		// ... and create the new one and index
 		database.execSQL(DATABASE_CREATE_MOVIE);
+		database.execSQL(DATABASE_CREATE_MOVIE_TITLE_INDEX);
 
 		// Also create movie filepath mapping table and index
 		database.execSQL(DATABASE_CREATE_MOVIE_MAPPING);

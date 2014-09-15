@@ -14,12 +14,12 @@ import com.squareup.picasso.Transformation;
 public class PaletteTransformation implements Transformation {
 
 	private String mKey;
-	private View mView;
+	private View[] mViews;
 	private boolean mHasSetBackground = false;
 
-	public PaletteTransformation(String key, View view) {
+	public PaletteTransformation(String key, View... views) {
 		mKey = key;
-		mView = view;
+		mViews = views;
 
 		Palette p = MizuuApplication.getPalette(mKey);
 		if (p != null) {
@@ -49,7 +49,7 @@ public class PaletteTransformation implements Transformation {
 	}
 
 	private void setBackgroundColor(Palette p, boolean animate) {
-		if (mView == null || mHasSetBackground)
+		if (mViews == null || mHasSetBackground)
 			return;
 
 		PaletteItem pi = p.getDarkVibrantColor();
@@ -62,11 +62,17 @@ public class PaletteTransformation implements Transformation {
 
 		if (pi != null) {
 			if (animate) {
-				ObjectAnimator backgroundColorAnimator = ObjectAnimator.ofObject(mView, "backgroundColor", new ArgbEvaluator(), 0xFF666666, pi.getRgb());
-				backgroundColorAnimator.setDuration(500);
-				backgroundColorAnimator.start();
+				for (View v : mViews) {
+					if (v != null) {
+						ObjectAnimator backgroundColorAnimator = ObjectAnimator.ofObject(v, "backgroundColor", new ArgbEvaluator(), 0xFF666666, pi.getRgb());
+						backgroundColorAnimator.setDuration(500);
+						backgroundColorAnimator.start();
+					}
+				}
 			} else {
-				mView.setBackgroundColor(pi.getRgb());
+				for (View v : mViews)
+					if (v != null)
+						v.setBackgroundColor(pi.getRgb());
 			}
 		}
 

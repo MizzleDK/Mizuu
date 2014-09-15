@@ -37,21 +37,23 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
 	}
 
 	public long createFilepathMapping(String filepath, String tmdbId) {
+		if (!filepathExists(tmdbId, filepath)) {
+			// Add values to a ContentValues object
+			ContentValues values = new ContentValues();
+			values.put(KEY_FILEPATH, filepath);
+			values.put(KEY_TMDB_ID, tmdbId);
+			values.put(KEY_IGNORED, 0);
 
-		// Add values to a ContentValues object
-		ContentValues values = new ContentValues();
-		values.put(KEY_FILEPATH, filepath);
-		values.put(KEY_TMDB_ID, tmdbId);
-		values.put(KEY_IGNORED, 0);
-
-		// Insert into database
-		return mDatabase.insert(DATABASE_TABLE, null, values);
+			// Insert into database
+			return mDatabase.insert(DATABASE_TABLE, null, values);
+		}
+		return -1;
 	}
 
 	public Cursor getAllFilepaths(boolean includeRemoved) {
 		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, includeRemoved ? null : "NOT(" + KEY_IGNORED + " = '1')", null, null, null, null);
 	}
-	
+
 	public Cursor getAllUnidentifiedFilepaths() {
 		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, "NOT(" + KEY_IGNORED + " = '1') AND " + KEY_TMDB_ID + "='" + DbAdapterMovies.UNIDENTIFIED_ID + "'", null, null, null, null);
 	}
@@ -80,7 +82,7 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
 
 		return mDatabase.update(DATABASE_TABLE, values, KEY_FILEPATH + "='" + filepath + "'", null) > 0;
 	}
-	
+
 	public boolean exists(String tmdbId) {
 		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_TMDB_ID + "='" + tmdbId + "'", null, null, null, null);
 		boolean result = false;
@@ -97,11 +99,29 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
 
 		return result;
 	}
-	
+
+	public boolean filepathExists(String tmdbId, String filepath) {
+		String[] selectionArgs = new String[]{tmdbId, filepath};
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_TMDB_ID + " = ? AND " + KEY_FILEPATH + " = ?", selectionArgs, null, null, null);
+		boolean result = false;
+
+		if (cursor != null) {
+			try {
+				if (cursor.getCount() > 0)
+					result = true;
+			} catch (Exception e) {
+			} finally {
+				cursor.close();
+			}
+		}
+
+		return result;
+	}
+
 	public boolean deleteMovie(String tmdbId) {
 		return mDatabase.delete(DATABASE_TABLE, KEY_TMDB_ID + "='" + tmdbId + "'", null) > 0;
 	}
-	
+
 	public boolean deleteAllMovies() {
 		return mDatabase.delete(DATABASE_TABLE, null, null) > 0;
 	}
@@ -146,9 +166,10 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
 
 		return paths;
 	}
-	
+
 	public String getIdForFilepath(String filepath) {
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, new String[]{KEY_TMDB_ID, KEY_FILEPATH}, KEY_FILEPATH + "='" + filepath + "'", null, null, null, null);
+		String[] selectionArgs = new String[]{filepath};
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, new String[]{KEY_TMDB_ID, KEY_FILEPATH}, KEY_FILEPATH + " = ?", selectionArgs, null, null, null);
 		String id = "";
 
 		if (cursor != null) {

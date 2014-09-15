@@ -24,6 +24,7 @@ import android.text.TextUtils;
 
 import com.miz.functions.MizLib;
 import com.miz.functions.SortingKeys;
+import com.miz.utils.FileUtils;
 import com.miz.utils.StringUtils;
 
 public class TvShow implements Comparable<TvShow> {
@@ -51,7 +52,7 @@ public class TvShow implements Comparable<TvShow> {
 		mFavorite = !(isFavorite.equals("0") || isFavorite.isEmpty());
 
 		// Thumbnail
-		mThumbnail = MizLib.getTvShowThumb(mContext, mId);
+		mThumbnail = FileUtils.getTvShowThumb(mContext, mId);
 
 		// Title		
 		if (TextUtils.isEmpty(TITLE)) {
@@ -165,7 +166,7 @@ public class TvShow implements Comparable<TvShow> {
 	}
 
 	public String getBackdrop() {
-		return MizLib.getTvShowBackdrop(mContext, mId).getAbsolutePath();
+		return FileUtils.getTvShowBackdrop(mContext, mId).getAbsolutePath();
 	}
 	
 	public void setRating(int rating) {

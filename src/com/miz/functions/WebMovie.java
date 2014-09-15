@@ -24,6 +24,7 @@ public class WebMovie {
 
 	private String mTitle, mId, mUrl, mDate;
 	private Context mContext;
+	private boolean mInLibrary;
 
 	public WebMovie(Context context, String title, String id, String url, String date) {
 		mContext = context;
@@ -37,10 +38,19 @@ public class WebMovie {
 	public String getId() { return mId; }
 	public String getUrl() { return mUrl; }
 	public String getRawDate() { return mDate; }
+	public boolean isInLibrary() { return mInLibrary; }
 
 	public String getDate() {
 		if (mDate.equals("null")) 
 			return mContext.getString(R.string.stringNA);
 		return mDate;
+	}
+	
+	public String getSubtitle() {
+		return MizLib.getPrettyDate(mContext, getDate()) + (isInLibrary() ? " (" + mContext.getString(R.string.inLibrary) + ")" : "");
+	}
+	
+	public void setInLibrary(boolean inLibrary) {
+		mInLibrary = inLibrary;
 	}
 }

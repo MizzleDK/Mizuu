@@ -27,6 +27,7 @@ import java.util.Locale;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
+import com.miz.utils.FileUtils;
 import com.miz.utils.StringUtils;
 
 public abstract class BaseMovie implements Comparable<BaseMovie> {
@@ -84,7 +85,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 	}
 
 	public File getThumbnail() {
-		return MizLib.getMovieThumb(mContext, mTmdbId);
+		return FileUtils.getMovieThumb(mContext, mTmdbId);
 	}
 
 	public String getTmdbId() {
@@ -92,7 +93,7 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 	}
 
 	public File getBackdrop() {
-		return MizLib.getMovieBackdrop(mContext, mTmdbId);
+		return FileUtils.getMovieBackdrop(mContext, mTmdbId);
 	}
 
 	@Override

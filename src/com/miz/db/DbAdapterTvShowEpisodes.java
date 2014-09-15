@@ -26,6 +26,7 @@ import com.miz.functions.EpisodeCounter;
 import com.miz.functions.GridEpisode;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
+import com.miz.utils.FileUtils;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -200,10 +201,10 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 
 			File temp;
 			while (cursor.moveToNext()) {
-				temp = MizLib.getTvShowEpisode(context, showId, cursor.getString(cache.getColumnIndex(cursor, KEY_SEASON)), cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE)));
+				temp = FileUtils.getTvShowEpisode(context, showId, cursor.getString(cache.getColumnIndex(cursor, KEY_SEASON)), cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE)));
 
 				if (!temp.exists())
-					temp = MizLib.getTvShowBackdrop(context, showId);
+					temp = FileUtils.getTvShowBackdrop(context, showId);
 
 				episodes.add(new GridEpisode(context,
 						cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE_TITLE)),

@@ -35,6 +35,8 @@ public class DbAdapterSources extends AbstractDbAdapter {
 	
 	private static final String DATABASE_TABLE = "sources";
 
+	private static final String[] ALL_ROWS = new String[]{KEY_ROWID, KEY_FILEPATH, KEY_FILESOURCE_TYPE, KEY_USER, KEY_PASSWORD, KEY_DOMAIN, KEY_TYPE};
+	
 	public DbAdapterSources(Context context) {
 		super(context);
 	}
@@ -67,7 +69,7 @@ public class DbAdapterSources extends AbstractDbAdapter {
 	 * @return
 	 */
 	public Cursor fetchAllMovieSources() {
-		return mDatabase.query(DATABASE_TABLE, new String[]{KEY_ROWID, KEY_FILEPATH, KEY_FILESOURCE_TYPE, KEY_USER, KEY_PASSWORD, KEY_DOMAIN, KEY_TYPE}, KEY_TYPE + "='" + KEY_TYPE_MOVIE + "'", null, null, null, null);
+		return mDatabase.query(DATABASE_TABLE, ALL_ROWS, KEY_TYPE + "='" + KEY_TYPE_MOVIE + "'", null, null, null, null);
 	}
 	
 	/**
@@ -75,7 +77,7 @@ public class DbAdapterSources extends AbstractDbAdapter {
 	 * @return
 	 */
 	public Cursor fetchAllShowSources() {
-		return mDatabase.query(DATABASE_TABLE, new String[]{KEY_ROWID, KEY_FILEPATH, KEY_FILESOURCE_TYPE, KEY_USER, KEY_PASSWORD, KEY_DOMAIN, KEY_TYPE}, KEY_TYPE + "='" + KEY_TYPE_SHOW + "'", null, null, null, null);
+		return mDatabase.query(DATABASE_TABLE, ALL_ROWS, KEY_TYPE + "='" + KEY_TYPE_SHOW + "'", null, null, null, null);
 	}
 	
 	/**
@@ -83,7 +85,7 @@ public class DbAdapterSources extends AbstractDbAdapter {
 	 * @return
 	 */
 	public Cursor fetchAllSources() {
-		return mDatabase.query(DATABASE_TABLE, new String[]{KEY_ROWID, KEY_FILEPATH, KEY_FILESOURCE_TYPE, KEY_USER, KEY_PASSWORD, KEY_DOMAIN, KEY_TYPE}, null, null, null, null, null);
+		return mDatabase.query(DATABASE_TABLE, ALL_ROWS, null, null, null, null, null);
 	}
 
 	private ContentValues createContentValues(String filepath, String type, int fileSourceType, String user, String password, String domain) {

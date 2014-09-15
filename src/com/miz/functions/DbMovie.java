@@ -18,6 +18,8 @@ package com.miz.functions;
 
 import java.io.File;
 
+import com.miz.utils.FileUtils;
+
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -43,11 +45,11 @@ public class DbMovie {
 	}
 
 	public String getThumbnail() {
-		return MizLib.getMovieThumb(mContext, mTmdbId).getAbsolutePath();
+		return FileUtils.getMovieThumb(mContext, mTmdbId).getAbsolutePath();
 	}
 
 	public String getBackdrop() {
-		return MizLib.getMovieBackdrop(mContext, mTmdbId).getAbsolutePath();
+		return FileUtils.getMovieBackdrop(mContext, mTmdbId).getAbsolutePath();
 	}
 
 	public String getRuntime() {
@@ -93,6 +95,6 @@ public class DbMovie {
 	}
 
 	public File getOfflineCopyFile() {
-		return MizLib.getOfflineFile(mContext, mFilepath);
+		return FileUtils.getOfflineFile(mContext, mFilepath);
 	}
 }

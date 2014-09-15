@@ -32,6 +32,7 @@ import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
 import com.miz.service.MoveFilesService;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
+import com.miz.utils.FileUtils;
 
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
@@ -51,7 +52,7 @@ public class SplashScreen extends MizActivity {
 			return;
 		}
 
-		if (MizLib.oldDataFolderExists()) {	
+		if (FileUtils.oldDataFolderExists()) {	
 			Intent moveFiles = new Intent(this, MoveFilesService.class);
 			startService(moveFiles);
 			finish();

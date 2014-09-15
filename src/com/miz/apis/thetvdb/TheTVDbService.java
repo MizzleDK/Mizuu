@@ -41,6 +41,7 @@ import com.miz.abstractclasses.TvShowApiService;
 import com.miz.apis.trakt.Show;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterTvShows;
+import com.miz.functions.Actor;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 
@@ -557,6 +558,11 @@ public class TheTVDbService extends TvShowApiService {
 
 	@Override
 	public List<TvShow> searchNgram(String query, String language) {
+		throw new UnsupportedOperationException(); // Not supported for TheTVDb
+	}
+
+	@Override
+	public List<Actor> getActors(String id) {
 		throw new UnsupportedOperationException(); // Not supported for TheTVDb
 	}
 }

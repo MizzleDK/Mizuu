@@ -29,8 +29,8 @@ import android.os.Bundle;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
-import com.miz.functions.MizLib;
 import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.StringUtils;
 
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseBooleanArray;
@@ -265,7 +265,7 @@ public class UnidentifiedTvShows extends MizActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.name.setText(mEpisodes.get(position).getTitle().substring(MizLib.indexOfLastSeparator(mEpisodes.get(position).getTitle()), mEpisodes.get(position).getTitle().length()));
+			holder.name.setText(mEpisodes.get(position).getTitle().substring(StringUtils.indexOfLastSeparator(mEpisodes.get(position).getTitle()), mEpisodes.get(position).getTitle().length()));
 			holder.size.setText(mEpisodes.get(position).getFilepaths().get(0).getFullFilepath());
 
 			return convertView;

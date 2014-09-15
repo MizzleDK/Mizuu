@@ -22,19 +22,29 @@ import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
+import com.google.android.youtube.player.YouTubeApiServiceUtil;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.miz.functions.FileSource;
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
+import com.miz.functions.TmdbTrailerSearch;
 import com.miz.mizuu.R;
+import com.miz.mizuu.TvShowEpisode;
 import com.miz.smbstreamer.Streamer;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 public class VideoUtils {
@@ -43,10 +53,7 @@ public class VideoUtils {
 
 	private VideoUtils() {} // No instantiation
 	
-	public static boolean playVideo(Activity activity, String filepath, int filetype, Object videoObject) {
-		
-		System.out.println();
-		
+	public static boolean playVideo(Activity activity, String filepath, int filetype, Object videoObject) {		
 		boolean videoWildcard = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
 		boolean playbackStarted = false;
 		
@@ -54,10 +61,10 @@ public class VideoUtils {
 			playbackStarted = playNetworkFile(activity, filepath, videoObject);
 		} else {
 			try { // Attempt to launch intent based on the MIME type
-				activity.startActivity(MizLib.getVideoIntent(filepath, videoWildcard, videoObject));
+				activity.startActivity(getVideoIntent(filepath, videoWildcard, videoObject));
 			} catch (Exception e) {
 				try { // Attempt to launch intent based on wildcard MIME type
-					activity.startActivity(MizLib.getVideoIntent(filepath, "video/*", videoObject));
+					activity.startActivity(getVideoIntent(filepath, "video/*", videoObject));
 				} catch (Exception e2) {
 					Toast.makeText(activity, activity.getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 				}
@@ -110,11 +117,11 @@ public class VideoUtils {
 						public void run(){
 							try{
 								Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(filepath).getPath())).getEncodedPath());	
-								activity.startActivity(MizLib.getVideoIntent(uri, videoWildcard, videoObject));
+								activity.startActivity(getVideoIntent(uri, videoWildcard, videoObject));
 							} catch (Exception e) {
 								try { // Attempt to launch intent based on wildcard MIME type
 									Uri uri = Uri.parse(Streamer.URL + Uri.fromFile(new File(Uri.parse(filepath).getPath())).getEncodedPath());	
-									activity.startActivity(MizLib.getVideoIntent(uri, "video/*", videoObject));
+									activity.startActivity(getVideoIntent(uri, "video/*", videoObject));
 								} catch (Exception e2) {
 									Toast.makeText(activity, activity.getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 								}
@@ -128,5 +135,149 @@ public class VideoUtils {
 		}.start();
 		
 		return true;
+	}
+	
+	public static void playTrailer(final Activity activity, final Movie movie) {
+		String localTrailer = "";
+		for (Filepath path : movie.getFilepaths()) {
+			if (path.getType() == FileSource.FILE) {
+				localTrailer = path.getFullFilepath();
+				break;
+			}
+		}
+
+		localTrailer = movie.getLocalTrailer(localTrailer);
+
+		if (!TextUtils.isEmpty(localTrailer)) {
+			try { // Attempt to launch intent based on the MIME type
+				activity.startActivity(getVideoIntent(localTrailer, false, movie.getTitle() + " " + activity.getString(R.string.detailsTrailer)));
+			} catch (Exception e) {
+				try { // Attempt to launch intent based on wildcard MIME type
+					activity.startActivity(getVideoIntent(localTrailer, "video/*", movie.getTitle() + " " + activity.getString(R.string.detailsTrailer)));
+				} catch (Exception e2) {
+					Toast.makeText(activity, activity.getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
+				}
+			}
+		} else {
+			if (!TextUtils.isEmpty(movie.getTrailer())) {
+				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(activity).equals(YouTubeInitializationResult.SUCCESS)) {
+					Intent intent = YouTubeStandalonePlayer.createVideoIntent(activity, MizLib.getYouTubeApiKey(activity), MizLib.getYouTubeId(movie.getTrailer()), 0, false, true);
+					activity.startActivity(intent);
+				} else {
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse(movie.getTrailer()));
+					activity.startActivity(intent);
+				}
+			} else {
+				new TmdbTrailerSearch(activity, movie.getTmdbId(), movie.getTitle()).execute();
+			}
+		}
+	}
+	
+	public static Intent getVideoIntent(String fileUrl, boolean useWildcard, Object videoObject) {
+		if (fileUrl.startsWith("http"))
+			return getVideoIntent(Uri.parse(fileUrl), useWildcard, videoObject);
+
+		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
+		videoIntent.setDataAndType(Uri.fromFile(new File(fileUrl)), getMimeType(fileUrl, useWildcard));
+		videoIntent.putExtras(getVideoIntentBundle(videoObject));
+
+		return videoIntent;
+	}
+
+	public static Intent getVideoIntent(Uri file, boolean useWildcard, Object videoObject) {
+		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
+		videoIntent.setDataAndType(file, getMimeType(file.getPath(), useWildcard));
+		videoIntent.putExtras(getVideoIntentBundle(videoObject));
+
+		return videoIntent;
+	}
+
+	public static Intent getVideoIntent(String fileUrl, String mimeType, Object videoObject) {
+		if (fileUrl.startsWith("http"))
+			return getVideoIntent(Uri.parse(fileUrl), mimeType, videoObject);
+
+		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
+		videoIntent.setDataAndType(Uri.fromFile(new File(fileUrl)), mimeType);
+		videoIntent.putExtras(getVideoIntentBundle(videoObject));
+
+		return videoIntent;
+	}
+
+	public static Intent getVideoIntent(Uri file, String mimeType, Object videoObject) {
+		Intent videoIntent = new Intent(Intent.ACTION_VIEW);
+		videoIntent.setDataAndType(file, mimeType);
+		videoIntent.putExtras(getVideoIntentBundle(videoObject));
+
+		return videoIntent;
+	}
+
+	private static Bundle getVideoIntentBundle(Object videoObject) {
+		Bundle b = new Bundle();
+		String title = "";
+		if (videoObject instanceof Movie) {
+			title = ((Movie) videoObject).getTitle();
+			b.putString("plot", ((Movie) videoObject).getPlot());
+			b.putString("date", ((Movie) videoObject).getReleasedate());
+			b.putDouble("rating", ((Movie) videoObject).getRawRating());
+			b.putString("cover", ((Movie) videoObject).getThumbnail().getAbsolutePath());
+			b.putString("genres", ((Movie) videoObject).getGenres());
+		} else if (videoObject instanceof TvShowEpisode) {
+			title = ((TvShowEpisode) videoObject).getTitle();
+			b.putString("plot", ((TvShowEpisode) videoObject).getDescription());
+			b.putString("date", ((TvShowEpisode) videoObject).getReleasedate());
+			b.putDouble("rating", ((TvShowEpisode) videoObject).getRawRating());
+			b.putString("cover", ((TvShowEpisode) videoObject).getEpisodePhoto().getAbsolutePath());
+			b.putString("episode", ((TvShowEpisode) videoObject).getEpisode());
+			b.putString("season", ((TvShowEpisode) videoObject).getSeason());
+		} else {
+			title = (String) videoObject;
+		}
+		b.putString("title", title);
+		b.putString("forcename", title);
+		b.putBoolean("forcedirect", true);
+		return b;
+	}
+	
+	public static String getMimeType(String filepath, boolean useWildcard) {
+		if (useWildcard)
+			return "video/*";
+
+		HashMap<String, String> mimeTypes = new HashMap<String, String>();
+		mimeTypes.put("3gp",	"video/3gpp");
+		mimeTypes.put("aaf",	"application/octet-stream");
+		mimeTypes.put("mp4",	"video/mp4");
+		mimeTypes.put("ts",		"video/mp2t");
+		mimeTypes.put("webm",	"video/webm");
+		mimeTypes.put("m4v",	"video/x-m4v");
+		mimeTypes.put("mkv",	"video/x-matroska");
+		mimeTypes.put("divx",	"video/x-divx");
+		mimeTypes.put("xvid",	"video/x-xvid");
+		mimeTypes.put("rec",	"application/octet-stream");
+		mimeTypes.put("avi",	"video/avi");
+		mimeTypes.put("flv",	"video/x-flv");
+		mimeTypes.put("f4v",	"video/x-f4v");
+		mimeTypes.put("moi",	"application/octet-stream");
+		mimeTypes.put("mpeg",	"video/mpeg");
+		mimeTypes.put("mpg",	"video/mpeg");
+		mimeTypes.put("mts",	"video/mts");
+		mimeTypes.put("m2ts",	"video/mp2t");
+		mimeTypes.put("ogv",	"video/ogg");
+		mimeTypes.put("rm",		"application/vnd.rn-realmedia");
+		mimeTypes.put("rmvb",	"application/vnd.rn-realmedia-vbr");
+		mimeTypes.put("mov",	"video/quicktime");
+		mimeTypes.put("wmv",	"video/x-ms-wmv");
+		mimeTypes.put("iso",	"application/octet-stream");
+		mimeTypes.put("vob",	"video/dvd");
+		mimeTypes.put("ifo",	"application/octet-stream");
+		mimeTypes.put("wtv",	"video/wtv");
+		mimeTypes.put("pyv",	"video/vnd.ms-playready.media.pyv");
+		mimeTypes.put("ogm",	"video/ogg");
+		mimeTypes.put("img",	"application/octet-stream");
+
+		String mime = mimeTypes.get(StringUtils.getExtension(filepath));
+		if (mime == null)
+			return "video/*";
+		return mime;
 	}
 }

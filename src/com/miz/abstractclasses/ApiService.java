@@ -18,6 +18,8 @@ package com.miz.abstractclasses;
 
 import java.util.List;
 
+import com.miz.functions.Actor;
+
 public abstract class ApiService<T> {
 
 	/**
@@ -64,4 +66,11 @@ public abstract class ApiService<T> {
 	 * @return Content object based on the supplied ID.
 	 */
 	public abstract T get(String id, String language);
+	
+	/**
+	 * Get actors for the given content ID.
+	 * @param id Movie or TV show ID.
+	 * @return {@link List} of {@link Actor} objects.
+	 */
+	public abstract List<Actor> getActors(String id);
 }

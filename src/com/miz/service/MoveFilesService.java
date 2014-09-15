@@ -19,10 +19,10 @@ package com.miz.service;
 import java.io.File;
 import java.io.IOException;
 
-import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.SplashScreen;
+import com.miz.utils.FileUtils;
 
 
 import android.app.IntentService;
@@ -65,7 +65,7 @@ public class MoveFilesService extends IntentService {
 		File[] listFiles;
 		String name = "";
 
-		File oldDataFolder = MizLib.getOldDataFolder();
+		File oldDataFolder = FileUtils.getOldDataFolder();
 		if (oldDataFolder.listFiles() != null) {
 			listFiles = oldDataFolder.listFiles();
 			int count = listFiles.length;
@@ -86,7 +86,7 @@ public class MoveFilesService extends IntentService {
 			}
 		}
 
-		File oldMovieThumbs = new File(MizLib.getOldDataFolder() + "/movie-thumbs");
+		File oldMovieThumbs = new File(FileUtils.getOldDataFolder() + "/movie-thumbs");
 		if (oldMovieThumbs.exists() && oldMovieThumbs.listFiles() != null) {
 			listFiles = oldMovieThumbs.listFiles();
 			int count = listFiles.length;
@@ -96,7 +96,7 @@ public class MoveFilesService extends IntentService {
 			}
 		}
 
-		File oldTvShowThumbs = new File(MizLib.getOldDataFolder() + "/tvshows-thumbs");
+		File oldTvShowThumbs = new File(FileUtils.getOldDataFolder() + "/tvshows-thumbs");
 		if (oldTvShowThumbs.exists() && oldTvShowThumbs.listFiles() != null) {
 			listFiles = oldTvShowThumbs.listFiles();
 			int count = listFiles.length;
@@ -107,7 +107,7 @@ public class MoveFilesService extends IntentService {
 		}
 
 		// Delete the old data folder
-		MizLib.deleteRecursive(oldDataFolder, true);
+		FileUtils.deleteRecursive(oldDataFolder, true);
 
 		Intent i = new Intent(this, SplashScreen.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -116,31 +116,31 @@ public class MoveFilesService extends IntentService {
 
 	private void movieBackdrop(File backdrop) {
 		try {
-			MizLib.copyFile(backdrop, new File(MizuuApplication.getMovieBackdropFolder(this), backdrop.getName()));
+			FileUtils.copyFile(backdrop, new File(MizuuApplication.getMovieBackdropFolder(this), backdrop.getName()));
 		} catch (IOException e) {}
 	}
 
 	private void tvShowBackdrop(File backdrop) {
 		try {
-			MizLib.copyFile(backdrop, new File(MizuuApplication.getTvShowBackdropFolder(this), backdrop.getName()));
+			FileUtils.copyFile(backdrop, new File(MizuuApplication.getTvShowBackdropFolder(this), backdrop.getName()));
 		} catch (IOException e) {}
 	}
 
 	private void episodePhoto(File episode) {
 		try {
-			MizLib.copyFile(episode, new File(MizuuApplication.getTvShowEpisodeFolder(this), episode.getName()));
+			FileUtils.copyFile(episode, new File(MizuuApplication.getTvShowEpisodeFolder(this), episode.getName()));
 		} catch (IOException e) {}
 	}
 
 	private void movieThumb(File thumb) {
 		try {
-			MizLib.copyFile(thumb, new File(MizuuApplication.getMovieThumbFolder(this), thumb.getName()));
+			FileUtils.copyFile(thumb, new File(MizuuApplication.getMovieThumbFolder(this), thumb.getName()));
 		} catch (IOException e) {}
 	}
 
 	private void tvShowThumb(File thumb) {
 		try {
-			MizLib.copyFile(thumb, new File(MizuuApplication.getTvShowThumbFolder(this), thumb.getName()));
+			FileUtils.copyFile(thumb, new File(MizuuApplication.getTvShowThumbFolder(this), thumb.getName()));
 		} catch (IOException e) {}
 	}
 }

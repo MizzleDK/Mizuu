@@ -67,7 +67,7 @@ public class TvShowDatabaseUtils {
 		}
 
 		// Remove season image
-		MizLib.getTvShowSeason(context, showId, season).delete();
+		FileUtils.getTvShowSeason(context, showId, season).delete();
 
 		// Check if we've removed all episodes for the given TV show
 		if (episodeAdapter.getEpisodeCount(showId) == 0) {
@@ -75,10 +75,10 @@ public class TvShowDatabaseUtils {
 			showAdapter.deleteShow(showId);
 
 			// Remove the TV show thumbnail image
-			MizLib.getTvShowThumb(context, showId).delete();
+			FileUtils.getTvShowThumb(context, showId).delete();
 
 			// Remove the TV show backdrop image
-			MizLib.getTvShowBackdrop(context, showId).delete();
+			FileUtils.getTvShowBackdrop(context, showId).delete();
 		}
 	}
 
@@ -111,13 +111,13 @@ public class TvShowDatabaseUtils {
 						episodeAdapter.deleteEpisode(showId, MizLib.getInteger(season), MizLib.getInteger(episode));
 
 						// Delete the episode photo
-						MizLib.getTvShowEpisode(context, showId, season, episode).delete();
+						FileUtils.getTvShowEpisode(context, showId, season, episode).delete();
 
 						// Check if the season contains any more mapped filepaths
 						if (episodeAdapter.getEpisodesInSeason(context, showId, MizLib.getInteger(season)).size() == 0) {
 
 							// Remove season image
-							MizLib.getTvShowSeason(context, showId, season).delete();
+							FileUtils.getTvShowSeason(context, showId, season).delete();
 						}
 					}
 				}
@@ -133,10 +133,10 @@ public class TvShowDatabaseUtils {
 			showAdapter.deleteShow(showId);
 
 			// Remove the TV show thumbnail image
-			MizLib.getTvShowThumb(context, showId).delete();
+			FileUtils.getTvShowThumb(context, showId).delete();
 
 			// Remove the TV show backdrop image
-			MizLib.getTvShowBackdrop(context, showId).delete();
+			FileUtils.getTvShowBackdrop(context, showId).delete();
 		}	
 	}
 
@@ -164,13 +164,13 @@ public class TvShowDatabaseUtils {
 				episodeAdapter.deleteEpisode(showId, season, episode);
 
 				// Delete the episode photo
-				MizLib.getTvShowEpisode(context, showId, season, episode).delete();
+				FileUtils.getTvShowEpisode(context, showId, season, episode).delete();
 
 				// Check if the season contains any more mapped filepaths
 				if (episodeAdapter.getEpisodesInSeason(context, showId, season).size() == 0) {
 
 					// Remove season image
-					MizLib.getTvShowSeason(context, showId, season).delete();
+					FileUtils.getTvShowSeason(context, showId, season).delete();
 				}
 			}
 		}
@@ -182,10 +182,10 @@ public class TvShowDatabaseUtils {
 			showAdapter.deleteShow(showId);
 
 			// Remove the TV show thumbnail image
-			MizLib.getTvShowThumb(context, showId).delete();
+			FileUtils.getTvShowThumb(context, showId).delete();
 
 			// Remove the TV show backdrop image
-			MizLib.getTvShowBackdrop(context, showId).delete();
+			FileUtils.getTvShowBackdrop(context, showId).delete();
 		}	
 	}
 }

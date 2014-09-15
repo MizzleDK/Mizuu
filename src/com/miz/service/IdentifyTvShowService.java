@@ -42,6 +42,7 @@ import com.miz.identification.ShowStructure;
 import com.miz.identification.TvShowIdentification;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.WidgetUtils;
 
@@ -137,8 +138,8 @@ public class IdentifyTvShowService extends IntentService implements TvShowLibrar
 		boolean result = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllFilepaths(mOldShowId);
 		if (result) {
 			// Delete the old TV show thumb and backdrop images
-			MizLib.getTvShowThumb(this, mOldShowId).delete();
-			MizLib.getTvShowBackdrop(this, mOldShowId).delete();
+			FileUtils.getTvShowThumb(this, mOldShowId).delete();
+			FileUtils.getTvShowBackdrop(this, mOldShowId).delete();
 
 			// Delete season photos
 			File[] seasonPhotos = MizuuApplication.getTvShowSeasonFolder(this).listFiles();

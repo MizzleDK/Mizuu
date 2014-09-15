@@ -161,7 +161,7 @@ public class SearchWebMoviesFragment extends Fragment {
 		} else {
 			Intent i = new Intent(Intent.ACTION_VIEW);
 			i.setClass(getActivity(), TMDbMovieDetails.class);
-			i.putExtra("tmdbid", results.get(arg2).getId());
+			i.putExtra("tmdbId", results.get(arg2).getId());
 			i.putExtra("title", results.get(arg2).getName());
 			startActivity(i);
 		}

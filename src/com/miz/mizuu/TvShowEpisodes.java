@@ -38,8 +38,8 @@ import com.miz.base.MizActivity;
 import com.miz.functions.EpisodeCounter;
 import com.miz.functions.GridSeason;
 import com.miz.functions.LibrarySectionAsyncTask;
-import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.TvShowEpisodesFragment;
+import com.miz.utils.FileUtils;
 
 public class TvShowEpisodes extends MizActivity {
 
@@ -58,9 +58,6 @@ public class TvShowEpisodes extends MizActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if (MizLib.isTablet(this) && !MizLib.isPortrait(this))
-			finish(); // Return to the two-pane layout
 		
 		MizuuApplication.setupTheme(this);
 		
@@ -143,10 +140,10 @@ public class TvShowEpisodes extends MizActivity {
 
 			File temp = null;
 			for (String key : seasons.keySet()) {
-				temp = MizLib.getTvShowSeason(mContext, mShowId, key);				
+				temp = FileUtils.getTvShowSeason(mContext, mShowId, key);				
 				mItems.add(new GridSeason(mContext, Integer.valueOf(key), seasons.get(key).getEpisodeCount(), seasons.get(key).getWatchedCount(),
 						temp.exists() ? temp :
-							MizLib.getTvShowThumb(mContext, mShowId)));
+							FileUtils.getTvShowThumb(mContext, mShowId)));
 			}
 
 			seasons.clear();

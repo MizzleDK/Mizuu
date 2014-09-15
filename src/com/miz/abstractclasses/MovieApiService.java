@@ -21,6 +21,7 @@ import java.util.List;
 import android.text.TextUtils;
 
 import com.miz.apis.tmdb.Movie;
+import com.miz.functions.WebMovie;
 
 public abstract class MovieApiService extends ApiService<Movie> {
 
@@ -45,6 +46,13 @@ public abstract class MovieApiService extends ApiService<Movie> {
 	 * @return {@link List} containing backdrop image paths
 	 */
 	public abstract List<String> getBackdrops(String id);
+	
+	/**
+	 * Get a {@link List} of similar content for a given movie ID.
+	 * @param id Movie ID.
+	 * @return {@link List} of similar content.
+	 */
+	public abstract List<WebMovie> getSimilarMovies(String id);
 	
 	/**
 	 * Get the language code or a default one if

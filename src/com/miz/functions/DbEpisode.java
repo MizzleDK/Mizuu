@@ -17,6 +17,7 @@
 package com.miz.functions;
 
 import com.miz.db.DbAdapterTvShows;
+import com.miz.utils.FileUtils;
 
 import android.content.Context;
 
@@ -44,7 +45,7 @@ public class DbEpisode {
 	}
 
 	public String getEpisodeCoverPath() {
-		return MizLib.getTvShowEpisode(mContext, mShowId, mSeason, mEpisode).getAbsolutePath();
+		return FileUtils.getTvShowEpisode(mContext, mShowId, mSeason, mEpisode).getAbsolutePath();
 	}
 	
 	public String getSeason() {
@@ -56,11 +57,11 @@ public class DbEpisode {
 	}
 
 	public String getThumbnail() {
-		return MizLib.getTvShowThumb(mContext, getShowId()).getAbsolutePath();
+		return FileUtils.getTvShowThumb(mContext, getShowId()).getAbsolutePath();
 	}
 
 	public String getBackdrop() {
-		return MizLib.getTvShowBackdrop(mContext, getShowId()).getAbsolutePath();
+		return FileUtils.getTvShowBackdrop(mContext, getShowId()).getAbsolutePath();
 	}
 
 	public boolean isNetworkFile() {

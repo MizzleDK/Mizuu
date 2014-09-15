@@ -38,6 +38,7 @@ import com.miz.identification.MovieIdentification;
 import com.miz.identification.MovieStructure;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.WidgetUtils;
 
@@ -121,8 +122,8 @@ public class IdentifyMovieService extends IntentService implements MovieLibraryU
 			MizuuApplication.getMovieAdapter().deleteMovie(mOldMovieId);
 			
 			// Delete the old movie cover art and backdrop images
-			MizLib.getMovieThumb(this, mOldMovieId).delete();
-			MizLib.getMovieBackdrop(this, mOldMovieId).delete();
+			FileUtils.getMovieThumb(this, mOldMovieId).delete();
+			FileUtils.getMovieBackdrop(this, mOldMovieId).delete();
 			
 			LocalBroadcastUtils.updateMovieLibrary(this);
 		}

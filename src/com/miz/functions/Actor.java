@@ -16,6 +16,8 @@
 
 package com.miz.functions;
 
+import android.text.TextUtils;
+
 import com.miz.utils.StringUtils;
 
 public class Actor {
@@ -42,6 +44,9 @@ public class Actor {
 	}
 
 	public String getCharacter() {
-		return StringUtils.replacePipesWithCommas(mCharacter);
+		String character = StringUtils.replacePipesWithCommas(mCharacter);
+		if (TextUtils.isEmpty(character) || character.equals("null"))
+			return "";
+		return character;
 	}
 }

@@ -28,5 +28,7 @@
     <dimen name="details_background_gradient_height">144dp</dimen>
     <dimen name="empty_library_message_width">400dp</dimen>
     <dimen name="backdrop_portrait_height">440dp</dimen>
+    
+    <dimen name="horizontal_grid_item_width">120dp</dimen>
 
 </resources>

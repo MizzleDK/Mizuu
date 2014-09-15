@@ -63,6 +63,7 @@ import com.miz.functions.TvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisodes;
+import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TvShowDatabaseUtils;
 import com.squareup.otto.Bus;
@@ -178,8 +179,7 @@ public class TvShowSeasonsFragment extends Fragment {
 					i.putExtra(SHOW_ID, mShowId);
 					i.putExtra(SEASON, mItems.get(arg2).getSeason());
 					i.putExtra(EPISODE_COUNT, mItems.get(arg2).getEpisodeCount());
-					getActivity().startActivityForResult(i, 0);
-
+					getActivity().startActivityForResult(i, 0);					
 				} else {
 					// Notify the parent fragment that the right-hand fragment should be swapped
 					mBus.post(mItems.get(arg2));
@@ -432,10 +432,10 @@ public class TvShowSeasonsFragment extends Fragment {
 
 			File temp = null;
 			for (String key : seasons.keySet()) {
-				temp = MizLib.getTvShowSeason(mContext, mShowId, key);				
+				temp = FileUtils.getTvShowSeason(mContext, mShowId, key);				
 				mItems.add(new GridSeason(mContext, Integer.valueOf(key), seasons.get(key).getEpisodeCount(), seasons.get(key).getWatchedCount(),
 						temp.exists() ? temp :
-							MizLib.getTvShowThumb(mContext, mShowId)));
+							FileUtils.getTvShowThumb(mContext, mShowId)));
 			}
 
 			seasons.clear();
