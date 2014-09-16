@@ -192,6 +192,4 @@ public class MovieFilenameTests extends AndroidTestCase {
 		assertEquals(true, ms.hasReleaseYear());
 		assertEquals(2009, ms.getReleaseYear());
 	}
-	
-	// "/2012 (2009).mkv"
 }

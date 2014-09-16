@@ -327,6 +327,21 @@ public class TvShowFilenameTests extends AndroidTestCase {
 		assertEquals(false, ss.hasReleaseYear());
 	}
 	
+	public void testCase21() {
+		ShowStructure ss = new ShowStructure("Music/iTunes/iTunes Media/TV Shows/One Piece/Season 1/11 Expose the Plot! Pirate Butler, C.mkv");
+		assertEquals("One Piece", ss.getShowFolderName());
+		assertEquals("Season 1", ss.getSeasonFolderName());
+		assertEquals("11 Expose the Plot! Pirate Butler, C.mkv", ss.getFilename());
+		assertEquals(false, ss.hasImdbId());
+		assertEquals(true, ss.hasSeasonFolder());
+		assertEquals(1, ss.getEpisodes().size());
+		assertEquals(1, ss.getEpisodes().get(0).getSeason());
+		assertEquals(11, ss.getEpisodes().get(0).getEpisode());
+		assertEquals("One Piece", ss.getDecryptedShowFolderName());
+		assertEquals("", ss.getDecryptedFilename());
+		assertEquals(false, ss.hasReleaseYear());
+	}
+	
 	public void testSpecialsSeasonFolder() {
 		ShowStructure ss = new ShowStructure("/2 Broke Girls/Special/2 Broke Girls - S01E01 - Reboot in Brooklyn.avi");
 		assertEquals(0, ss.getSeasonFolderNumber());

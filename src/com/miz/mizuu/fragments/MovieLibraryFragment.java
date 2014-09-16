@@ -309,8 +309,6 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 								continue;
 						mMovieKeys.add(i);
 					}
-					
-					
 
 					return null;
 				}
@@ -319,6 +317,8 @@ public class MovieLibraryFragment extends Fragment implements OnNavigationListen
 				protected void onPostExecute(Void result) {
 					showMovieSection(mActionBar.getSelectedNavigationIndex());
 
+					getActivity().invalidateOptionsMenu();
+					
 					mLoading = false;
 				}
 			}.execute();

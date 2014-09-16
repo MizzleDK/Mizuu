@@ -46,14 +46,14 @@ public class Movie extends MediumBaseMovie {
 		TRAILER = trailer;
 		
 		// getPlot()
-		if (PLOT == null || PLOT.isEmpty()) {
+		if (TextUtils.isEmpty(PLOT)) {
 			mGetPlot = mContext.getString(R.string.stringNoPlot);
 		} else {
 			mGetPlot = PLOT;
 		}
 		
 		// getTagline()
-		if (TAGLINE == null || TAGLINE.equals("NOTAGLINE")) {
+		if (TextUtils.isEmpty(TAGLINE) || TAGLINE.equals("NOTAGLINE")) {
 			mGetTagline = "";
 		} else {
 			mGetTagline = TAGLINE;
@@ -128,7 +128,7 @@ public class Movie extends MediumBaseMovie {
 	}
 
 	public boolean isPartOfCollection() {
-		return !COLLECTION_ID.isEmpty() || COLLECTION_ID == null;
+		return !TextUtils.isEmpty(COLLECTION_ID);
 	}
 	
 	public String getLocalTrailer(String path) {

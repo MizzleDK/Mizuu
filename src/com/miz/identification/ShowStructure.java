@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.text.TextUtils;
+
 import com.miz.functions.MizLib;
 
 public class ShowStructure {
@@ -106,7 +108,7 @@ public class ShowStructure {
 	}
 
 	public boolean hasSeasonFolder() {
-		return !getSeasonFolderName().isEmpty();
+		return !TextUtils.isEmpty(getSeasonFolderName());
 	}
 
 	public String getSeasonFolderName() {
@@ -114,7 +116,7 @@ public class ShowStructure {
 	}
 
 	public boolean hasShowFolder() {
-		return !getShowFolderName().isEmpty();
+		return !TextUtils.isEmpty(getShowFolderName());
 	}
 
 	public String getDecryptedShowFolderName() {

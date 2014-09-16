@@ -263,6 +263,8 @@ public class TvShowLibraryFragment extends Fragment implements OnNavigationListe
 				protected void onPostExecute(Void result) {
 					showTvShowSection(mActionBar.getSelectedNavigationIndex());
 
+					getActivity().invalidateOptionsMenu();
+
 					mLoading = false;
 				}
 

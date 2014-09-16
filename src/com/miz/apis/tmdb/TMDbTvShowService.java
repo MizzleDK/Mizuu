@@ -112,10 +112,10 @@ public class TMDbTvShowService extends TvShowApiService {
 		if (!language.equals("en")) { // This is a localized search - let's fill in the blanks
 			JSONObject englishResults = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "?api_key=" + mTmdbApiKey + "&language=en");
 
-			if (show.getTitle().isEmpty())
+			if (TextUtils.isEmpty(show.getTitle()))
 				show.setTitle(MizLib.getStringFromJSONObject(englishResults, "name", ""));
 
-			if (show.getDescription().isEmpty())
+			if (TextUtils.isEmpty(show.getDescription()))
 				show.setDescription(MizLib.getStringFromJSONObject(englishResults, "overview", ""));
 		}
 

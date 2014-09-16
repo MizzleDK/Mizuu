@@ -142,21 +142,21 @@ public class MizLib {
 
 	public static String getTmdbApiKey(Context context) {
 		String key = context.getString(R.string.tmdb_api_key);
-		if (key.isEmpty() || key.equals("add_your_own"))
+		if (TextUtils.isEmpty(key) || key.equals("add_your_own"))
 			throw new RuntimeException("You need to add a TMDb API key!");
 		return key;
 	}
 
 	public static String getTvdbApiKey(Context context) {
 		String key = context.getString(R.string.tvdb_api_key);
-		if (key.isEmpty() || key.equals("add_your_own"))
+		if (TextUtils.isEmpty(key) || key.equals("add_your_own"))
 			throw new RuntimeException("You need to add a TVDb API key!");
 		return key;
 	}
 
 	public static String getYouTubeApiKey(Context context) {
 		String key = context.getString(R.string.youtube_api_key);
-		if (key.isEmpty() || key.equals("add_your_own"))
+		if (TextUtils.isEmpty(key) || key.equals("add_your_own"))
 			throw new RuntimeException("You need to add a YouTube API key!");
 		return key;
 	}
@@ -1222,7 +1222,7 @@ public class MizLib {
 		if (source == null) {
 			auth = NtlmPasswordAuthentication.ANONYMOUS;
 		} else {
-			if (source.getDomain().isEmpty() && source.getUser().isEmpty() && source.getPassword().isEmpty()) {
+			if (TextUtils.isEmpty(source.getDomain()) && TextUtils.isEmpty(source.getUser()) && TextUtils.isEmpty(source.getPassword())) {
 				auth = NtlmPasswordAuthentication.ANONYMOUS;
 			} else {
 				auth = new NtlmPasswordAuthentication(source.getDomain(), source.getUser(), source.getPassword());
@@ -1330,7 +1330,7 @@ public class MizLib {
 
 		list = null;
 
-		if (!customCoverArt.isEmpty())
+		if (!TextUtils.isEmpty(customCoverArt))
 			return new SmbFile(createSmbLoginString(
 					auth.getDomain(),
 					auth.getUsername(),
@@ -1423,16 +1423,16 @@ public class MizLib {
 		server = server.replace("smb://", "");
 
 		// Only add domain, username and password details if the username isn't empty
-		if (!user.isEmpty()) {
+		if (!TextUtils.isEmpty(user)) {
 			// Add the domain details
-			if (!domain.isEmpty())
+			if (!TextUtils.isEmpty(domain))
 				sb.append(domain).append(";");
 
 			// Add username
 			sb.append(user);
 
 			// Add password
-			if (!password.isEmpty())
+			if (!TextUtils.isEmpty(password))
 				sb.append(":").append(password);
 
 			sb.append("@");
@@ -1773,7 +1773,7 @@ public class MizLib {
 				} catch (Exception e) {}
 			}
 
-			if (!after.isEmpty())
+			if (!TextUtils.isEmpty(after))
 				output = after;
 		}
 
@@ -1786,7 +1786,7 @@ public class MizLib {
 			output = sb.toString();
 		}
 
-		if (!customTags.isEmpty()) {
+		if (!TextUtils.isEmpty(customTags)) {
 			String[] custom = customTags.split("<MiZ>");
 			int count = custom.length;
 			for (int i = 0; i < count; i++)
@@ -2251,13 +2251,13 @@ public class MizLib {
 				if (o1.getRawDate() != null)
 					first = o1.getRawDate().replace("-", "");
 
-				if (!(first.equals("null") | first.isEmpty()))
+				if (!TextUtils.isEmpty(first))
 					firstDate = Integer.valueOf(first);
 
 				if (o2.getRawDate() != null)
 					second = o2.getRawDate().replace("-", "");
 
-				if (!(second.equals("null") | second.isEmpty()))
+				if (!TextUtils.isEmpty(second))
 					secondDate = Integer.valueOf(second);
 
 				// This part is reversed to get the highest numbers first

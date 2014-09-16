@@ -469,7 +469,7 @@ public class MovieDetailsFragment extends Fragment {
 				R.string.stringMarkAsUnwatched : R.string.stringMarkAsWatched);
 
 		// Only allow the user to browse artwork if it's a valid TMDb movie
-		menu.findItem(R.id.change_cover).setVisible(!MizLib.isValidTmdbId(mMovie.getTmdbId()));
+		menu.findItem(R.id.change_cover).setVisible(MizLib.isValidTmdbId(mMovie.getTmdbId()));
 
 		// Go through filepaths and find a network file for offline watching
 		for (Filepath path : mMovie.getFilepaths()) {

@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
@@ -45,7 +46,7 @@ public class Trakt {
 	
 	public static String getApiKey(Context context) {
 		String key = context.getString(R.string.trakt_api_key);
-		if (key.isEmpty() || key.equals("add_your_own"))
+		if (TextUtils.isEmpty(key) || key.equals("add_your_own"))
 			throw new RuntimeException("You need to add a Trakt API key!");
 		return key;
 	}
@@ -55,7 +56,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return false;
 
 		try {
@@ -90,7 +91,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return false;
 
 		try {
@@ -128,7 +129,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return false;
 
 		try {
@@ -167,7 +168,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty() || movies.size() == 0)
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || movies.size() == 0)
 			return false;
 
 		try {
@@ -200,7 +201,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return false;
 
 		try {
@@ -226,7 +227,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty() || !settings.getBoolean(SYNC_WITH_TRAKT, false) || episodes.size() == 0)
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || !settings.getBoolean(SYNC_WITH_TRAKT, false) || episodes.size() == 0)
 			return false;
 
 		try {
@@ -261,7 +262,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return false;
 
 		try {
@@ -296,7 +297,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty() || movies.size() == 0)
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || movies.size() == 0)
 			return false;
 
 		try {
@@ -329,7 +330,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty() || movies.size() == 0)
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || movies.size() == 0)
 			return false;
 
 		try {
@@ -362,7 +363,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty() || movies.size() == 0)
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || movies.size() == 0)
 			return false;
 
 		try {
@@ -396,7 +397,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return false;
 
 		return true;
@@ -407,7 +408,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return false;
 
 		try {
@@ -442,7 +443,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty() || shows.size() == 0)
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || shows.size() == 0)
 			return false;
 
 		try {
@@ -475,7 +476,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return new JSONArray();
 
 		try {
@@ -506,7 +507,7 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (username.isEmpty() || password.isEmpty())
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
 			return new JSONArray();
 
 		try {

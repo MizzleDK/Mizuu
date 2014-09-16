@@ -22,6 +22,7 @@ import static com.miz.functions.SortingKeys.RATING;
 import static com.miz.functions.SortingKeys.RELEASE;
 import static com.miz.functions.SortingKeys.TITLE;
 import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
+import android.text.TextUtils;
 
 public class MovieSortHelper implements Comparable<MovieSortHelper> {
 
@@ -61,13 +62,13 @@ public class MovieSortHelper implements Comparable<MovieSortHelper> {
 				if (mMovie.getReleasedate() != null)
 					first = mMovie.getReleasedate().replace("-", "").replace(".", "").replace("/", ""); // TODO FIX THIS. It shouldn't be possible to have dates with '/' or '.'
 
-				if (!(first.equals("null") | first.isEmpty()))
+				if (!TextUtils.isEmpty(first))
 					firstDate = Integer.valueOf(first);
 
 				if (another.mMovie.getReleasedate() != null)
 					second = another.mMovie.getReleasedate().replace("-", "").replace("/", "");
 
-				if (!(second.equals("null") | second.isEmpty()))
+				if (!TextUtils.isEmpty(second))
 					secondDate = Integer.valueOf(second);
 
 				// This part is reversed to get the highest numbers first

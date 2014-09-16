@@ -36,6 +36,7 @@ import org.w3c.dom.NodeList;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
 import com.miz.abstractclasses.TvShowApiService;
 import com.miz.apis.trakt.Show;
@@ -397,7 +398,7 @@ public class TheTVDbService extends TvShowApiService {
 		ArrayList<TvShow> results = new ArrayList<TvShow>();
 
 		// Fail early
-		if (serviceUrl.isEmpty())
+		if (TextUtils.isEmpty(serviceUrl))
 			return results;
 
 		try {

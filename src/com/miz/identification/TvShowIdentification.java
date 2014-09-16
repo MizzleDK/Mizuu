@@ -42,6 +42,7 @@ import com.squareup.picasso.Picasso;
 import android.content.Context;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 
 public class TvShowIdentification {
@@ -272,7 +273,7 @@ public class TvShowIdentification {
 		boolean downloadCovers = true;
 
 		// Check if the show already exists before downloading the show info
-		if (!thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID) && !thisShow.getId().isEmpty()) {
+		if (!TextUtils.isEmpty(thisShow.getId()) && !thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID)) {
 			DbAdapterTvShows db = MizuuApplication.getTvDbAdapter();
 			Cursor cursor = db.getShow(thisShow.getId());
 			if (cursor.getCount() > 0) {
@@ -281,19 +282,19 @@ public class TvShowIdentification {
 		}
 
 		if (downloadCovers) {
-			if (!thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID) && !thisShow.getId().isEmpty()) {
+			if (!TextUtils.isEmpty(thisShow.getId()) && !thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID)) {
 				String thumb_filepath = FileUtils.getTvShowThumb(mContext, thisShow.getId()).getAbsolutePath();
 				String backdrop_filepath = FileUtils.getTvShowBackdrop(mContext, thisShow.getId()).getAbsolutePath();
 
 				// Download the cover file and try again if it fails
-				if (!thisShow.getCoverUrl().isEmpty())
+				if (!TextUtils.isEmpty(thisShow.getCoverUrl()))
 					if (!MizLib.downloadFile(thisShow.getCoverUrl(), thumb_filepath))
 						MizLib.downloadFile(thisShow.getCoverUrl(), thumb_filepath);
 
 				MizLib.resizeBitmapFileToCoverSize(mContext, thumb_filepath);
 
 				// Download the backdrop image file and try again if it fails
-				if (!thisShow.getBackdropUrl().isEmpty())
+				if (!TextUtils.isEmpty(thisShow.getBackdropUrl()))
 					if (!MizLib.downloadFile(thisShow.getBackdropUrl(), backdrop_filepath))
 						MizLib.downloadFile(thisShow.getBackdropUrl(), backdrop_filepath);
 
@@ -327,7 +328,7 @@ public class TvShowIdentification {
 		}
 
 		// Download the episode screenshot file and try again if it fails
-		if (!thisEpisode.getScreenshotUrl().isEmpty()) {
+		if (!TextUtils.isEmpty(thisEpisode.getScreenshotUrl())) {
 			String screenshotFile = FileUtils.getTvShowEpisode(mContext, thisShow.getId(), season, episode).getAbsolutePath();
 			if (!MizLib.downloadFile(thisEpisode.getScreenshotUrl(), screenshotFile))
 				MizLib.downloadFile(thisEpisode.getScreenshotUrl(), screenshotFile);

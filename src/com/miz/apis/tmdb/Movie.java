@@ -16,13 +16,15 @@
 
 package com.miz.apis.tmdb;
 
+import android.text.TextUtils;
+
 public class Movie {
 	
 	private String id = "", title = "", originalTitle = "", plot = "", cover = "", backdrop = "", rating = "0.0", tagline = "", releasedate = "", imdbId = "",
 			certification = "", runtime = "0", trailer = "", genres = "", cast = "", collectionTitle = "", collectionId = "", collectionImage = "", year = "";
 
 	public String getId() {
-		if (id.isEmpty())
+		if (TextUtils.isEmpty(id))
 			return title;
 		return id;
 	}

@@ -157,7 +157,6 @@ public class MovieIdentification {
 			List<Movie> results = new ArrayList<Movie>();
 
 			if (!overrideMovieId()) {
-
 				// Check if there's an IMDb ID and attempt to search based on it
 				if (ms.hasImdbId()) {
 					results = service.searchByImdbId(ms.getImdbId(), null);
@@ -190,6 +189,9 @@ public class MovieIdentification {
 
 			if (movie == null && results.size() > 0) {
 				movie = service.get(results.get(0).getId(), mLocale);
+			} else {
+				movie = new Movie();
+				movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 			}
 
 			createMovie(ms, movie);
@@ -198,7 +200,7 @@ public class MovieIdentification {
 
 	private void createMovie(MovieStructure ms, Movie movie) {
 		boolean downloadCovers = true;
-
+		
 		if (!movie.getId().equals(DbAdapterMovies.UNIDENTIFIED_ID) && !TextUtils.isEmpty(movie.getId()))
 			// We only want to download covers if the movie doesn't already exist
 			downloadCovers = !MizuuApplication.getMovieAdapter().movieExists(movie.getId());

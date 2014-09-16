@@ -28,6 +28,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -122,7 +123,7 @@ public class AccountsFragment extends Fragment {
 		});
 
 		traktUser.setText(settings.getString(TRAKT_USERNAME, ""));
-		if (settings.getString(TRAKT_PASSWORD, "").isEmpty()) {
+		if (TextUtils.isEmpty(settings.getString(TRAKT_PASSWORD, ""))) {
 			traktPass.setText("");
 			traktUser.setEnabled(true);
 			traktPass.setEnabled(true);
@@ -187,7 +188,7 @@ public class AccountsFragment extends Fragment {
 					
 					if (response.isSuccessful()) {
 						String name = jObject.getString("full_name");
-						if (name.equals("null") || name.isEmpty())
+						if (TextUtils.isEmpty(name) || name.equals("null"))
 							name = jObject.getString("username");
 						String avatar = jObject.getString("avatar");
 

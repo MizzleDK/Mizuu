@@ -127,19 +127,19 @@ public class TMDbMovieService extends MovieApiService {
 			if (!language.equals("en")) { // This is a localized search - let's fill in the blanks
 				JSONObject englishResults = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + mTmdbApiKey + "&language=en&append_to_response=releases");
 
-				if (movie.getTitle().isEmpty())
+				if (TextUtils.isEmpty(movie.getTitle()))
 					movie.setTitle(MizLib.getStringFromJSONObject(englishResults, "title", ""));
 
-				if (movie.getPlot().isEmpty())
+				if (TextUtils.isEmpty(movie.getPlot()))
 					movie.setPlot(MizLib.getStringFromJSONObject(englishResults, "overview", ""));
 
-				if (movie.getTagline().isEmpty())
+				if (TextUtils.isEmpty(movie.getTagline()))
 					movie.setTagline(MizLib.getStringFromJSONObject(englishResults, "tagline", ""));
 
-				if (movie.getRating().equals("0.0"))
+				if (TextUtils.isEmpty(movie.getRating()))
 					movie.setRating(MizLib.getStringFromJSONObject(englishResults, "vote_average", "0.0"));
 
-				if (movie.getReleasedate().isEmpty())
+				if (TextUtils.isEmpty(movie.getReleasedate()))
 					movie.setReleasedate(MizLib.getStringFromJSONObject(englishResults, "release_date", ""));
 
 				if (movie.getRuntime().equals("0"))
@@ -155,7 +155,7 @@ public class TMDbMovieService extends MovieApiService {
 				movie.setCollectionId(jObject.getJSONObject("belongs_to_collection").getString("id"));
 			} catch (Exception e) {}
 
-			if (!movie.getCollectionId().isEmpty() && json == null) {
+			if (!TextUtils.isEmpty(movie.getCollectionId()) && json == null) {
 				JSONObject collection = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/collection/" + movie.getCollectionId() + "/images?api_key=" + mTmdbApiKey);
 				JSONArray array = collection.getJSONArray("posters");
 				if (array.length() > 0)

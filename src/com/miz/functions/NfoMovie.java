@@ -29,6 +29,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.miz.apis.tmdb.Movie;
 import com.miz.db.DbAdapterMovies;
@@ -144,7 +145,7 @@ public class NfoMovie {
 						}
 					}
 
-					if (mMovie.getReleasedate().isEmpty())
+					if (TextUtils.isEmpty(mMovie.getReleasedate()))
 						try {
 							list = firstElement.getElementsByTagName("year");
 							element = (Element) list.item(0);
@@ -311,12 +312,12 @@ public class NfoMovie {
 		DbAdapterMovies dbHelper = MizuuApplication.getMovieAdapter();
 
 		// Create the movie entry
-		dbHelper.createMovie(mMovie.getId().isEmpty() ? mFilepath : mMovie.getId(), mMovie.getTitle(), mMovie.getPlot(), mMovie.getImdbId(),
+		dbHelper.createMovie(TextUtils.isEmpty(mMovie.getId()) ? mFilepath : mMovie.getId(), mMovie.getTitle(), mMovie.getPlot(), mMovie.getImdbId(),
 				mMovie.getRating(), mMovie.getTagline(), mMovie.getReleasedate(), mMovie.getCertification(), mMovie.getRuntime(), mMovie.getTrailer(),
 				mMovie.getGenres(), "0", mMovie.getCast(), mMovie.getCollectionTitle(), mMovie.getCollectionId(), "0", "0", String.valueOf(System.currentTimeMillis()));
 
 		// Create the filepath mapping
-		MizuuApplication.getMovieMappingAdapter().createFilepathMapping(mFilepath, mMovie.getId().isEmpty() ? mFilepath : mMovie.getId());
+		MizuuApplication.getMovieMappingAdapter().createFilepathMapping(mFilepath, TextUtils.isEmpty(mMovie.getId()) ? mFilepath : mMovie.getId());
 
 		com.miz.functions.Movie temp = new com.miz.functions.Movie(mContext, mMovie.getTitle(), mMovie.getPlot(), mMovie.getTagline(), mMovie.getId(), mMovie.getImdbId(), mMovie.getRating(),
 				mMovie.getReleasedate(), mMovie.getCertification(), mMovie.getRuntime(), mMovie.getTrailer(), mMovie.getGenres(), "0", mMovie.getCast(),

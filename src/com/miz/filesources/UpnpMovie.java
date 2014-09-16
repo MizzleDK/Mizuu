@@ -49,6 +49,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.IBinder;
+import android.text.TextUtils;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapterMovies;
@@ -188,7 +189,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 			for (Device<?, ?, ?> device : mUpnpService.getRegistry().getDevices()) {
 				try {
-					if (device.getDetails().getSerialNumber() != null && !device.getDetails().getSerialNumber().isEmpty()) {
+					if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
 						if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
 							startBrowse(device);
 							found = true;
@@ -272,7 +273,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 					&& device.getType().getType().equals("MediaServer")) {
 				if (!found) {
 					try {
-						if (device.getDetails().getSerialNumber() != null && !device.getDetails().getSerialNumber().isEmpty()) {
+						if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
 							if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
 								startBrowse(device);
 								found = true;
@@ -295,7 +296,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 		public void localDeviceAdded(Registry registry, LocalDevice device) {
 			if (!found) {
 				try {
-					if (device.getDetails().getSerialNumber() != null && !device.getDetails().getSerialNumber().isEmpty()) {
+					if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
 						if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
 							startBrowse(device);
 							found = true;
