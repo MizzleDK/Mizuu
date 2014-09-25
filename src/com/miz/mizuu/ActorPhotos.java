@@ -20,38 +20,27 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
-import android.view.Window;
 
 import com.miz.base.MizActivity;
-import com.miz.functions.MizLib;
-import com.miz.mizuu.fragments.ActorDetailsFragment;
+import com.miz.mizuu.fragments.ActorPhotosFragment;
 
-public class ActorDetails extends MizActivity {
+public class ActorPhotos extends MizActivity {
 
-	private static String TAG = "ActorDetailsFragment";
+	private static String TAG = "ActorPhotosFragment";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		if (isFullscreen())
-			setTheme(R.style.Mizuu_Theme_Transparent_NoBackGround_FullScreen);
-		else
-			setTheme(R.style.Mizuu_Theme_NoBackGround_Transparent);
-
-		if (MizLib.isPortrait(this))
-			getWindow().setBackgroundDrawableResource(R.drawable.bg);
-
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-
-		setTitle(null);
 		
-		String actorId = getIntent().getExtras().getString("actorID");
+		String actorId = getIntent().getExtras().getString("actorId");
+		String actorName = getIntent().getExtras().getString("actorName");
+		
+		getActionBar().setSubtitle(actorName);
 
 		Fragment frag = getSupportFragmentManager().findFragmentByTag(TAG);
 		if (frag == null && savedInstanceState == null) {
 			final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			ft.replace(android.R.id.content, ActorDetailsFragment.newInstance(actorId), TAG);
+			ft.replace(android.R.id.content, ActorPhotosFragment.newInstance(actorId), TAG);
 			ft.commit();
 		}
 	}

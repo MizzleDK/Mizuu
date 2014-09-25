@@ -1,5 +1,6 @@
 package com.miz.apis.tmdb;
 
+import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
 import static com.miz.functions.PreferenceKeys.MOVIE_RATINGS_SOURCE;
 
 import java.io.UnsupportedEncodingException;
@@ -21,16 +22,25 @@ import com.miz.abstractclasses.MovieApiService;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.Actor;
+import com.miz.functions.CompleteActor;
 import com.miz.functions.MizLib;
 import com.miz.functions.WebMovie;
 import com.miz.mizuu.R;
 
 public class TMDbMovieService extends MovieApiService {
 
+	private static TMDbMovieService mService;
+
 	private final String mRatingsProvider, mTmdbApiKey;
 	private final Context mContext;
 
-	public TMDbMovieService(Context context) {
+	public static TMDbMovieService getInstance(Context context) {
+		if (mService == null)
+			mService = new TMDbMovieService(context);
+		return mService;
+	}
+
+	private TMDbMovieService(Context context) {
 		mContext = context;
 		mRatingsProvider = PreferenceManager.getDefaultSharedPreferences(mContext).getString(MOVIE_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_4));
 		mTmdbApiKey = MizLib.getTmdbApiKey(mContext);
@@ -260,6 +270,157 @@ public class TMDbMovieService extends MovieApiService {
 	public Movie get(String id, String language) {
 		return get(id, null, language);
 	}
+	
+	public Movie getCompleteMovie(String id, String language) {
+		Movie movie = new Movie();
+		movie.setId(id);
+
+		if (id.equals(DbAdapterMovies.UNIDENTIFIED_ID))
+			return movie;
+
+		try {
+			// Get the base URL from the preferences
+			String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+
+			JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + mTmdbApiKey + (language.equals("en") ? "" : "&language=" + language) + "&append_to_response=releases,trailers,credits,images,similar_movies");
+
+			movie.setTitle(MizLib.getStringFromJSONObject(jObject, "title", ""));
+
+			movie.setPlot(MizLib.getStringFromJSONObject(jObject, "overview", ""));
+
+			movie.setImdbId(MizLib.getStringFromJSONObject(jObject, "imdb_id", ""));
+
+			movie.setRating(MizLib.getStringFromJSONObject(jObject, "vote_average", "0.0"));
+
+			movie.setTagline(MizLib.getStringFromJSONObject(jObject, "tagline", ""));
+
+			movie.setReleasedate(MizLib.getStringFromJSONObject(jObject, "release_date", ""));
+
+			movie.setRuntime(MizLib.getStringFromJSONObject(jObject, "runtime", "0"));
+
+			if (!language.equals("en")) { // This is a localized search - let's fill in the blanks
+				JSONObject englishResults = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + mTmdbApiKey + "&language=en&append_to_response=releases");
+
+				if (TextUtils.isEmpty(movie.getTitle()))
+					movie.setTitle(MizLib.getStringFromJSONObject(englishResults, "title", ""));
+
+				if (TextUtils.isEmpty(movie.getPlot()))
+					movie.setPlot(MizLib.getStringFromJSONObject(englishResults, "overview", ""));
+
+				if (TextUtils.isEmpty(movie.getTagline()))
+					movie.setTagline(MizLib.getStringFromJSONObject(englishResults, "tagline", ""));
+
+				if (TextUtils.isEmpty(movie.getRating()))
+					movie.setRating(MizLib.getStringFromJSONObject(englishResults, "vote_average", "0.0"));
+
+				if (TextUtils.isEmpty(movie.getReleasedate()))
+					movie.setReleasedate(MizLib.getStringFromJSONObject(englishResults, "release_date", ""));
+
+				if (movie.getRuntime().equals("0"))
+					movie.setRuntime(MizLib.getStringFromJSONObject(englishResults, "runtime", "0"));
+			}
+
+			try {
+				movie.setCover(baseUrl + MizLib.getImageUrlSize(mContext) + jObject.getString("poster_path"));
+			} catch (Exception e) {}
+
+			try {
+				String genres = "";
+				for (int i = 0; i < jObject.getJSONArray("genres").length(); i++)
+					genres = genres + jObject.getJSONArray("genres").getJSONObject(i).getString("name") + ", ";
+				movie.setGenres(genres.substring(0, genres.length() - 2));
+			} catch (Exception e) {}
+
+			try {
+				if (jObject.getJSONObject("trailers").getJSONArray("youtube").length() > 0) {
+
+					// Go through all YouTube links and looks for trailers
+					JSONArray youtube = jObject.getJSONObject("trailers").getJSONArray("youtube");
+					for (int i = 0; i < youtube.length(); i++) {
+						if (youtube.getJSONObject(i).getString("type").equals("Trailer")) {
+							movie.setTrailer("http://www.youtube.com/watch?v=" + youtube.getJSONObject(i).getString("source"));
+							break;
+						}
+					}
+
+					// If no trailer was set, use whatever YouTube link is available (featurette, interviews, etc.)
+					if (TextUtils.isEmpty(movie.getTrailer())) {
+						movie.setTrailer("http://www.youtube.com/watch?v=" + jObject.getJSONObject("trailers").getJSONArray("youtube").getJSONObject(0).getString("source"));
+					}
+				}
+			} catch (Exception e) {}
+
+			try {
+				for (int i = 0; i < jObject.getJSONObject("releases").getJSONArray("countries").length(); i++) {
+					JSONObject jo = jObject.getJSONObject("releases").getJSONArray("countries").getJSONObject(i);
+					if (jo.getString("iso_3166_1").equalsIgnoreCase("us") || jo.getString("iso_3166_1").equalsIgnoreCase(language))
+						movie.setCertification(jo.getString("certification"));
+				}
+			} catch (Exception e) {}
+
+			try {
+				ArrayList<Actor> actors = new ArrayList<Actor>();
+
+				JSONArray array = jObject.getJSONObject("credits").getJSONArray("cast");
+				Set<String> actorIds = new HashSet<String>();
+
+				for (int i = 0; i < array.length(); i++) {
+					if (!actorIds.contains(array.getJSONObject(i).getString("id"))) {
+						actorIds.add(array.getJSONObject(i).getString("id"));
+
+						actors.add(new Actor(
+								array.getJSONObject(i).getString("name"),
+								array.getJSONObject(i).getString("character"),
+								array.getJSONObject(i).getString("id"),
+								baseUrl + MizLib.getActorUrlSize(mContext) + array.getJSONObject(i).getString("profile_path")));
+					}
+				}
+
+				movie.setActors(actors);
+			} catch (Exception e) {}
+
+			try {
+				ArrayList<WebMovie> similarMovies = new ArrayList<WebMovie>();
+				JSONArray jArray = jObject.getJSONObject("similar_movies").getJSONArray("results");
+
+				for (int i = 0; i < jArray.length(); i++) {
+					if (!MizLib.isAdultContent(mContext, jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(mContext, jArray.getJSONObject(i).getString("original_title"))) {
+						similarMovies.add(new WebMovie(mContext,
+								jArray.getJSONObject(i).getString("original_title"),
+								jArray.getJSONObject(i).getString("id"),
+								baseUrl + MizLib.getImageUrlSize(mContext) + jArray.getJSONObject(i).getString("poster_path"),
+								jArray.getJSONObject(i).getString("release_date")));
+					}
+				}
+				
+				movie.setSimilarMovies(similarMovies);
+			} catch (Exception ignored) {}
+
+			try {
+				JSONArray array = jObject.getJSONObject("images").getJSONArray("backdrops");
+
+				if (array.length() > 0) {
+					movie.setBackdrop(baseUrl + MizLib.getBackdropUrlSize(mContext) + array.getJSONObject(0).getString("file_path"));
+				} else { // Try with English set as the language, if no results are returned (usually caused by a server-side cache error)
+					try {
+						jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/movie/" + id + "/images?api_key=" + mTmdbApiKey);
+
+						JSONArray array2 = jObject.getJSONArray("backdrops");
+						if (array2.length() > 0) {
+							movie.setBackdrop(baseUrl + MizLib.getBackdropUrlSize(mContext) + array2.getJSONObject(0).getString("file_path"));
+						}
+					} catch (Exception e) {}
+				}
+			} catch (Exception e) {}
+
+		} catch (Exception e) {
+			// If something goes wrong here, i.e. API error, we won't get any details
+			// about the movie - in other words, it's unidentified
+			movie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
+		}
+
+		return movie;
+	}
 
 	@Override
 	public List<String> getCovers(String id) {
@@ -382,5 +543,112 @@ public class TMDbMovieService extends MovieApiService {
 		} catch (Exception ignored) {}
 
 		return results;
+	}
+
+	public CompleteActor getCompleteActorDetails(final String actorId) {
+		JSONObject json = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/person/" + actorId + "?api_key=" + mTmdbApiKey + "&append_to_response=movie_credits,tv_credits,images,tagged_images");
+		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
+		boolean includeAdult = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(INCLUDE_ADULT_CONTENT, false);
+
+		// Set up actor details
+		CompleteActor actor = new CompleteActor(actorId);
+		actor.setName(MizLib.getStringFromJSONObject(json, "name", ""));
+		actor.setBiography(MizLib.getStringFromJSONObject(json, "biography", ""));
+		actor.setBirthday(MizLib.getStringFromJSONObject(json, "birthday", ""));
+		actor.setDayOfDeath(MizLib.getStringFromJSONObject(json, "deathday", ""));
+		actor.setPlaceOfBirth(MizLib.getStringFromJSONObject(json, "place_of_birth", ""));
+
+		String profilePhoto = MizLib.getStringFromJSONObject(json, "profile_path", "");
+		if (!TextUtils.isEmpty(profilePhoto))
+			profilePhoto = baseUrl + "w500" + profilePhoto;
+		actor.setProfilePhoto(profilePhoto);
+
+		// Set up movies
+		List<WebMovie> movies = new ArrayList<WebMovie>();
+		try {
+			JSONArray movieArray = json.getJSONObject("movie_credits").getJSONArray("cast");
+			for (int i = 0; i < movieArray.length(); i++) {
+
+				final JSONObject thisObject = movieArray.getJSONObject(i);
+
+				boolean isAdult = thisObject.getBoolean("adult") |
+						MizLib.isAdultContent(mContext, MizLib.getStringFromJSONObject(thisObject, "title", "")) |
+						MizLib.isAdultContent(mContext, MizLib.getStringFromJSONObject(thisObject, "original_title", ""));
+
+				// Continue to the next loop iteration if this is an adult title
+				if (!includeAdult && isAdult)
+					continue;
+
+				WebMovie movie = new WebMovie(mContext,
+						MizLib.getStringFromJSONObject(thisObject, "title", ""),
+						String.valueOf(thisObject.getInt("id")),
+						baseUrl + MizLib.getImageUrlSize(mContext) + MizLib.getStringFromJSONObject(thisObject, "poster_path", ""),
+						MizLib.getStringFromJSONObject(thisObject, "release_date", ""));
+
+				movies.add(movie);
+			}
+		} catch (JSONException ignored) {} finally {
+			actor.setMovies(movies);
+		}
+
+		// Set up TV shows
+		List<WebMovie> shows = new ArrayList<WebMovie>();
+		try {
+			JSONArray showArray = json.getJSONObject("tv_credits").getJSONArray("cast");
+			for (int i = 0; i < showArray.length(); i++) {
+
+				final JSONObject thisObject = showArray.getJSONObject(i);
+
+				boolean isAdult =
+						MizLib.isAdultContent(mContext, MizLib.getStringFromJSONObject(thisObject, "name", "")) |
+						MizLib.isAdultContent(mContext, MizLib.getStringFromJSONObject(thisObject, "original_name", ""));
+
+				// Continue to the next loop iteration if this is an adult title
+				if (!includeAdult && isAdult)
+					continue;
+
+				WebMovie show = new WebMovie(mContext,
+						MizLib.getStringFromJSONObject(thisObject, "name", ""),
+						String.valueOf(thisObject.getInt("id")),
+						baseUrl + MizLib.getImageUrlSize(mContext) + MizLib.getStringFromJSONObject(thisObject, "poster_path", ""),
+						MizLib.getStringFromJSONObject(thisObject, "first_air_date", ""));
+
+				shows.add(show);
+			}
+		} catch (JSONException ignored) {} finally {
+			actor.setTvShows(shows);
+		}
+
+		int count = 0;
+
+		try {
+			count += json.getJSONObject("movie_credits").getJSONArray("cast").length();
+			count += json.getJSONObject("tv_credits").getJSONArray("cast").length();
+		} catch (JSONException ignored) {}
+
+		actor.setKnownCreditCount(count);
+
+		List<String> photos = new ArrayList<String>();
+		try {
+			JSONArray photoArray = json.getJSONObject("images").getJSONArray("profiles");
+			for (int i = 0; i < photoArray.length(); i++) {
+				photos.add(baseUrl + MizLib.getImageUrlSize(mContext) + photoArray.getJSONObject(i).getString("file_path"));
+			}
+		} catch (JSONException ignored) {} finally {
+			actor.setPhotos(photos);
+		}
+
+		List<String> taggedPhotos = new ArrayList<String>();
+		try {
+			JSONArray photoArray = json.getJSONObject("tagged_images").getJSONArray("results");
+			for (int i = 0; i < photoArray.length(); i++) {
+				if (photoArray.getJSONObject(i).getString("image_type").equals("backdrop"))
+					taggedPhotos.add(baseUrl + MizLib.getBackdropThumbUrlSize(mContext) + photoArray.getJSONObject(i).getString("file_path"));
+			}
+		} catch (JSONException ignored) {} finally {
+			actor.setTaggedPhotos(taggedPhotos);
+		}
+
+		return actor;
 	}
 }

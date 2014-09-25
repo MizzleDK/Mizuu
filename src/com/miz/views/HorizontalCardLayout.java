@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Chris Banes (modified by Michell Bak)
+ * Copyright (C) 2014 Chris Banes (heavily modified by Michell Bak)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.miz.views;
 
+import java.util.List;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -25,14 +27,20 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.miz.functions.Actor;
+import com.miz.functions.WebMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.ViewUtils;
+import com.squareup.picasso.Picasso;
 
 public class HorizontalCardLayout extends LinearLayout {
 
+	public static final int MOVIES = 1000, TV_SHOWS = 1100, PHOTOS = 1200,
+			TAGGED_PHOTOS = 1300, RELATED_MOVIES = 1400, ACTORS = 1500;
+
 	private final View mTitleLayout;
-	private final TextView mTitleTextView;
-	private final TextView mSeeMoreTextView;
+	private final TextView mTitleTextView, mSeeMoreTextView;
 	private LinearLayout mCardContent;
 	private ProgressBar mProgressBar;
 	private TextView mErrorTextView;
@@ -54,8 +62,7 @@ public class HorizontalCardLayout extends LinearLayout {
 		mTitleLayout = getChildAt(0);
 		mTitleLayout.setClickable(true);
 		mTitleLayout.setFocusable(true);
-		
-		
+
 		mTitleTextView = (TextView) mTitleLayout.findViewById(R.id.title);
 		if (!isInEditMode())
 			mTitleTextView.setTypeface(MizuuApplication.getOrCreateTypeface(context, "RobotoCondensed-LightItalic.ttf"));
@@ -64,12 +71,11 @@ public class HorizontalCardLayout extends LinearLayout {
 		if (!isInEditMode())
 			mSeeMoreTextView.setTypeface(MizuuApplication.getOrCreateTypeface(context, "RobotoCondensed-Regular.ttf"));
 
-		mCardContent = (LinearLayout) getChildAt(1).findViewById(R.id.linear_layout);
-		mProgressBar = (ProgressBar) getChildAt(1).findViewById(R.id.progress_bar);
-		mErrorTextView = (TextView) getChildAt(1).findViewById(R.id.error_message);
-		
-		//setClickable(true);
-		//setFocusable(true);
+		if (!isInEditMode()) {
+			mCardContent = (LinearLayout) getChildAt(1).findViewById(R.id.linear_layout);
+			mProgressBar = (ProgressBar) getChildAt(1).findViewById(R.id.progress_bar);
+			mErrorTextView = (TextView) getChildAt(1).findViewById(R.id.error_message);
+		}
 	}
 
 	public void setSeeMoreVisibility(boolean visible) {
@@ -79,7 +85,7 @@ public class HorizontalCardLayout extends LinearLayout {
 	public void setSeeMoreOnClickListener(OnClickListener listener) {
 		mTitleLayout.setOnClickListener(listener);
 	}
-	
+
 	public View getSeeMoreView() {
 		return mSeeMoreTextView;
 	}
@@ -91,35 +97,55 @@ public class HorizontalCardLayout extends LinearLayout {
 	public void setTitle(int titleResId) {
 		setTitle(getResources().getString(titleResId));
 	}
-	
+
 	public void setProgressBarVisibility(boolean visible) {
 		mProgressBar.setVisibility(visible ? VISIBLE : GONE);
 	}
-	
+
 	public void setNoActorsVisibility(boolean visible) {
-		if (visible) {
-			mErrorTextView.setText(R.string.no_actors);
-			mErrorTextView.setVisibility(VISIBLE);
+		mErrorTextView.setVisibility(visible ? VISIBLE : GONE);
+		mCardContent.setVisibility(visible ? GONE : VISIBLE);
+		
+		if (visible)
 			setProgressBarVisibility(false);
-			mCardContent.setVisibility(GONE);
-		} else {
-			mErrorTextView.setVisibility(GONE);
-		}
-	}
-	
-	public void setNoSimilarMoviesVisibility(boolean visible) {
-		setVisibility(visible ? GONE : VISIBLE);
 	}
 
 	@Override
 	public void addView(View child, int index, ViewGroup.LayoutParams params) {
 		if (mCardContent != null) {
 			mCardContent.addView(child, index, params);
-			
+
 			// Automatically hide the ProgressBar when items are added
-			setProgressBarVisibility(false);
+			if (mProgressBar.getVisibility() == VISIBLE)
+				setProgressBarVisibility(false);
 		} else {
 			super.addView(child, index, params);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void loadItems(Context context, Picasso picasso, int capacity, int width, List<?> items, int type) {
+		if (items.size() > 0) {
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT);
+			lp.setMargins(0, 0, getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing), 0);
+
+			for (int i = 0; i < items.size() && i < capacity; i++) {
+				if (type == MOVIES || type == RELATED_MOVIES) {
+					addView(ViewUtils.setupMovieCard(context, picasso, (WebMovie) items.get(i)), i, lp);
+				} else if (type == TV_SHOWS) {
+					addView(ViewUtils.setupTvShowCard(context, picasso, (WebMovie) items.get(i)), i, lp);
+				} else if (type == PHOTOS) {
+					addView(ViewUtils.setupPhotoCard(context, picasso, (String) items.get(i), (List<String>) items, i), i, lp);
+				} else if (type == TAGGED_PHOTOS) {
+					addView(ViewUtils.setupTaggedPhotoCard(context, picasso, (String) items.get(i), (List<String>) items, i), i, lp);
+				} else if (type == ACTORS) {
+					addView(ViewUtils.setupActorCard(context, picasso, (Actor) items.get(i)), i, lp);
+				}
+			}
+
+			setSeeMoreVisibility(items.size() > capacity);
+		} else {
+			setVisibility(GONE);
 		}
 	}
 }

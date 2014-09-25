@@ -16,7 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -104,15 +103,7 @@ public class ActorPhotoFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				if (isAdded()) {
-					ActionBar ab = getActivity().getActionBar();
-					
-					mBus.post(Boolean.valueOf(!ab.isShowing()));
-					
-					if (ab.isShowing()) {
-						ab.hide();
-					} else {
-						ab.show();
-					}
+					mBus.post(new Object());
 				}
 			}
 		});

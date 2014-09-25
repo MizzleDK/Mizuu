@@ -39,5 +39,6 @@
     <dimen name="details_left_padding_large">316dp</dimen>
     
     <dimen name="horizontal_grid_item_width">140dp</dimen>
+    <dimen name="horizontal_grid_item_backdrop_width">210dp</dimen>
 
 </resources>

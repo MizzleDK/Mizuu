@@ -16,21 +16,11 @@
 
 package com.miz.mizuu.fragments;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,40 +31,39 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.miz.db.DbAdapterMovies;
+import com.miz.apis.tmdb.TMDbMovieService;
+import com.miz.functions.CompleteActor;
 import com.miz.functions.CoverItem;
-import com.miz.functions.MizLib;
 import com.miz.functions.WebMovie;
 import com.miz.mizuu.MizuuApplication;
-import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
-import com.miz.mizuu.TMDbMovieDetails;
+import com.miz.utils.IntentUtils;
 import com.squareup.picasso.Picasso;
 
 public class ActorMoviesFragment extends Fragment {
 
+	private Context mContext;
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
-	private ArrayList<WebMovie> pics_sources = new ArrayList<WebMovie>();
-	private SparseBooleanArray movieMap = new SparseBooleanArray();
-	private GridView mGridView = null;
-	private DbAdapterMovies db;
+	private GridView mGridView;
 	private Picasso mPicasso;
 	private Config mConfig;
-	private String json, baseUrl;
+	private ProgressBar mProgressBar;
+	private String mActorId;
+	private CompleteActor mActor;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public ActorMoviesFragment() {}
 
-	public static ActorMoviesFragment newInstance(String json, String baseUrl) { 
+	public static ActorMoviesFragment newInstance(String actorId) { 
 		ActorMoviesFragment pageFragment = new ActorMoviesFragment();
 		Bundle bundle = new Bundle();
-		bundle.putString("json", json);
-		bundle.putString("baseUrl", baseUrl);
+		bundle.putString("actorId", actorId);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
@@ -85,16 +74,15 @@ public class ActorMoviesFragment extends Fragment {
 
 		setRetainInstance(true);
 
-		db = MizuuApplication.getMovieAdapter();
-
+		mContext = getActivity();
+		
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
 
-		json = getArguments().getString("json");
-		baseUrl = getArguments().getString("baseUrl");
+		mActorId = getArguments().getString("actorId");
 	}
 
 	@Override
@@ -105,20 +93,8 @@ public class ActorMoviesFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		if (!MizLib.isPortrait(getActivity()))
-			v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
-
-		if (!MizuuApplication.isFullscreen(getActivity()))
-			MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.container));
-		else
-			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
-
-		v.findViewById(R.id.progress).setVisibility(View.GONE);
-
-		mAdapter = new ImageAdapter(getActivity());
-
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
 		mGridView = (GridView) v.findViewById(R.id.gridView);
-		mGridView.setAdapter(mAdapter);
 
 		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -135,30 +111,19 @@ public class ActorMoviesFragment extends Fragment {
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (movieMap.get(Integer.valueOf(pics_sources.get(arg2).getId()))) {
-					Intent intent = new Intent();
-					intent.setClass(getActivity(), MovieDetails.class);
-					intent.putExtra("tmdbId", pics_sources.get(arg2).getId());
-
-					// Start the Intent for result
-					startActivityForResult(intent, 0);
-				} else {
-					Intent i = new Intent(Intent.ACTION_VIEW);
-					i.setClass(getActivity(), TMDbMovieDetails.class);
-					i.putExtra("tmdbId", pics_sources.get(arg2).getId());
-					i.putExtra("title", pics_sources.get(arg2).getTitle());
-					startActivity(i);
-				}
+				getActivity().startActivityForResult(IntentUtils.getTmdbMovieDetails(mContext, mActor.getMovies().get(arg2)), 0);
 			}
 		});
 
-		loadData();
+		new MovieLoader(mContext, mActorId).execute();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (mAdapter != null) mAdapter.notifyDataSetChanged();
+		
+		if (mAdapter != null)
+			mAdapter.notifyDataSetChanged();
 	}
 
 	private class ImageAdapter extends BaseAdapter {
@@ -173,12 +138,12 @@ public class ActorMoviesFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return pics_sources.size();
+			return mActor.getMovies().size();
 		}
 
 		@Override
 		public Object getItem(int position) {
-			return pics_sources.get(position).getUrl();
+			return null;
 		}
 
 		@Override
@@ -189,6 +154,8 @@ public class ActorMoviesFragment extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 
+			final WebMovie movie = mActor.getMovies().get(position);
+			
 			CoverItem holder;
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
@@ -210,16 +177,11 @@ public class ActorMoviesFragment extends Fragment {
 
 			holder.cover.setImageResource(R.color.card_background_dark);
 
-			holder.text.setText(pics_sources.get(position).getTitle());
+			holder.text.setText(movie.getTitle());
+			holder.subtext.setText(movie.getSubtitle());
 
-			if (movieMap.get(Integer.valueOf(pics_sources.get(position).getId()))) {
-				holder.subtext.setText(MizLib.getPrettyDate(mContext, pics_sources.get(position).getDate()) + " (" + getString(R.string.inLibrary) + ")");
-			} else {
-				holder.subtext.setText(MizLib.getPrettyDate(mContext, pics_sources.get(position).getDate()));
-			}
-
-			if (!pics_sources.get(position).getUrl().contains("null"))
-				mPicasso.load(pics_sources.get(position).getUrl()).config(mConfig).into(holder);
+			if (!movie.getUrl().contains("null"))
+				mPicasso.load(movie.getUrl()).error(R.drawable.loading_image).config(mConfig).into(holder);
 			else
 				holder.cover.setImageResource(R.drawable.loading_image);
 
@@ -227,58 +189,29 @@ public class ActorMoviesFragment extends Fragment {
 		}
 	}
 
-	private void loadData() {
-		try {
-			JSONObject jObject = new JSONObject(json);
+	private class MovieLoader extends AsyncTask<Void, Void, Void> {
 
-			JSONArray jArray = jObject.getJSONObject("movie_credits").getJSONArray("cast");
+		private final Context mContext;
+		private final String mActorId;
 
-			Set<String> movieIds = new HashSet<String>();
+		public MovieLoader(Context context, String actorId) {
+			mContext = context;
+			mActorId = actorId;
+		}
 
-			for (int i = 0; i < jArray.length(); i++) {
-				if (!movieIds.contains(jArray.getJSONObject(i).getString("id"))) {
-					movieIds.add(jArray.getJSONObject(i).getString("id"));
-
-					if (!isInArray(jArray.getJSONObject(i).getString("id")))
-						if (!MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("title")) && !MizLib.isAdultContent(getActivity(), jArray.getJSONObject(i).getString("original_title"))) {
-							pics_sources.add(new WebMovie(getActivity().getApplicationContext(),
-									jArray.getJSONObject(i).getString("original_title"),
-									jArray.getJSONObject(i).getString("id"),
-									baseUrl + MizLib.getImageUrlSize(getActivity()) + jArray.getJSONObject(i).getString("poster_path"),
-									jArray.getJSONObject(i).getString("release_date")));
-						}
-				}
-			}
-
-			movieIds.clear();
-			movieIds = null;
-
-			Collections.sort(pics_sources, MizLib.getWebMovieDateComparator());
-
-			new MoviesInLibraryCheck(pics_sources).execute();
-		} catch (Exception ignored) {}
-	}
-
-	private boolean isInArray(String id) {
-		for (int i = 0; i < pics_sources.size(); i++)
-			if (id.equals(pics_sources.get(i).getId()))
-				return true;
-		return false;
-	}
-
-	private class MoviesInLibraryCheck extends AsyncTask<Void, Void, Void> {
-
-		private ArrayList<WebMovie> movies = new ArrayList<WebMovie>();
-
-		public MoviesInLibraryCheck(ArrayList<WebMovie> movies) {
-			this.movies = movies;
-			movieMap.clear();
+		@Override
+		protected void onPreExecute() {
+			mProgressBar.setVisibility(View.VISIBLE);
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			for (int i = 0; i < movies.size(); i++)
-				movieMap.put(Integer.valueOf(movies.get(i).getId()), db.movieExists(movies.get(i).getId()));
+			mActor = TMDbMovieService.getInstance(mContext).getCompleteActorDetails(mActorId);
+
+			for (int i = 0; i < mActor.getMovies().size(); i++) {
+				String id = mActor.getMovies().get(i).getId();
+				mActor.getMovies().get(i).setInLibrary(MizuuApplication.getMovieAdapter().movieExists(id));
+			}
 
 			return null;
 		}
@@ -286,7 +219,10 @@ public class ActorMoviesFragment extends Fragment {
 		@Override
 		protected void onPostExecute(Void result) {
 			if (isAdded()) {
-				mAdapter.notifyDataSetChanged();
+				mProgressBar.setVisibility(View.GONE);
+				
+				mAdapter = new ImageAdapter(getActivity());
+				mGridView.setAdapter(mAdapter);
 			}
 		}
 	}

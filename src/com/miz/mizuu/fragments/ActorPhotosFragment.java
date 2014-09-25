@@ -16,14 +16,9 @@
 
 package com.miz.mizuu.fragments;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap.Config;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,35 +30,37 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import com.miz.apis.tmdb.TMDbMovieService;
+import com.miz.functions.CompleteActor;
 import com.miz.functions.CoverItem;
-import com.miz.functions.MizLib;
-import com.miz.mizuu.ImageViewer;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.IntentUtils;
 import com.squareup.picasso.Picasso;
 
 public class ActorPhotosFragment extends Fragment {
 
+	private Context mContext;
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
-	private ArrayList<String> pics_sources = new ArrayList<String>();
-	private GridView mGridView = null;
-	private String json, baseUrl;
+	private GridView mGridView;
 	private Picasso mPicasso;
 	private Config mConfig;
+	private ProgressBar mProgressBar;
+	private String mActorId;
+	private CompleteActor mActor;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
 	 */
 	public ActorPhotosFragment() {}
-
-	public static ActorPhotosFragment newInstance(String json, String actorName, String baseUrl) { 
+	
+	public static ActorPhotosFragment newInstance(String actorId) { 
 		ActorPhotosFragment pageFragment = new ActorPhotosFragment();
 		Bundle bundle = new Bundle();
-		bundle.putString("json", json);
-		bundle.putString("actorName", actorName);
-		bundle.putString("baseUrl", baseUrl);
+		bundle.putString("actorId", actorId);
 		pageFragment.setArguments(bundle);
 		return pageFragment;
 	}
@@ -74,14 +71,15 @@ public class ActorPhotosFragment extends Fragment {
 
 		setRetainInstance(true);
 
+		mContext = getActivity();
+		
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-
-		json = getArguments().getString("json");
-		baseUrl = getArguments().getString("baseUrl");
 		
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
+		
+		mActorId = getArguments().getString("actorId");
 	}
 
 	@Override
@@ -92,20 +90,8 @@ public class ActorPhotosFragment extends Fragment {
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
 
-		if (!MizLib.isPortrait(getActivity()))
-			v.findViewById(R.id.container).setBackgroundResource(MizuuApplication.getBackgroundColorResource(getActivity()));
-
-		if (!MizuuApplication.isFullscreen(getActivity()))
-			MizLib.addActionBarAndStatusBarPadding(getActivity(), v.findViewById(R.id.container));
-		else
-			MizLib.addActionBarPadding(getActivity(), v.findViewById(R.id.container));
-
-		v.findViewById(R.id.progress).setVisibility(View.GONE);
-
-		mAdapter = new ImageAdapter(getActivity());
-
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
 		mGridView = (GridView) v.findViewById(R.id.gridView);
-		mGridView.setAdapter(mAdapter);
 
 		// Calculate the total column width to set item heights by factor 1.5
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -122,25 +108,17 @@ public class ActorPhotosFragment extends Fragment {
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				String[] photos = new String[pics_sources.size()];
-				for (int i = 0; i < photos.length; i++)
-					photos[i] = pics_sources.get(i).replace(MizLib.getActorUrlSize(getActivity()), "original");
-
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), ImageViewer.class);
-				intent.putExtra("photos", photos);
-				intent.putExtra("actorName", getArguments().getString("actorName"));
-				intent.putExtra("selectedIndex", arg2);
-				startActivity(intent);
+				startActivity(IntentUtils.getActorPhotoIntent(mContext, mActor.getPhotos(), arg2));
 			}
 		});
 
-		loadData();
+		new PhotoLoader(mContext, mActorId).execute();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
 	}
@@ -157,12 +135,12 @@ public class ActorPhotosFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return pics_sources.size();
+			return mActor.getPhotos().size();
 		}
 
 		@Override
 		public Object getItem(int position) {
-			return pics_sources.get(position);
+			return null;
 		}
 
 		@Override
@@ -189,25 +167,42 @@ public class ActorPhotosFragment extends Fragment {
 
 			// Finally load the image asynchronously into the ImageView, this also takes care of
 			// setting a placeholder image while the background thread runs
-			mPicasso.load(pics_sources.get(position)).placeholder(R.color.card_background_dark).config(mConfig).into(holder.cover);
+			mPicasso.load(mActor.getPhotos().get(position)).placeholder(R.color.card_background_dark).config(mConfig).into(holder.cover);
 
 			return convertView;
 		}
 	}
 
-	private void loadData() {
-		try {
-			pics_sources.clear();
-			
-			JSONObject jObject = new JSONObject(json);
+	private class PhotoLoader extends AsyncTask<Void, Void, Void> {
 
-			JSONArray jArray = jObject.getJSONObject("images").getJSONArray("profiles");
+		private final Context mContext;
+		private final String mActorId;
 
-			for (int i = 0; i < jArray.length(); i++) {
-				pics_sources.add(baseUrl + MizLib.getActorUrlSize(getActivity()) + jArray.getJSONObject(i).getString("file_path"));
+		public PhotoLoader(Context context, String actorId) {
+			mContext = context;
+			mActorId = actorId;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			mProgressBar.setVisibility(View.VISIBLE);
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			mActor = TMDbMovieService.getInstance(mContext).getCompleteActorDetails(mActorId);
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			if (isAdded()) {
+				mProgressBar.setVisibility(View.GONE);
+				
+				mAdapter = new ImageAdapter(getActivity());
+				mGridView.setAdapter(mAdapter);
 			}
-
-			mAdapter.notifyDataSetChanged();
-		} catch (Exception ignored) {}
+		}
 	}
 }

@@ -30,5 +30,6 @@
     <dimen name="backdrop_portrait_height">440dp</dimen>
     
     <dimen name="horizontal_grid_item_width">120dp</dimen>
+    <dimen name="horizontal_grid_item_backdrop_width">180dp</dimen>
 
 </resources>

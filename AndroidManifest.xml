@@ -431,7 +431,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
-        </activity>
+        </activity>
         -->
 
 
@@ -441,6 +441,50 @@
             android:exported="false"
             android:icon="@drawable/white_app_icon"
             android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Actor movies activity -->
+        <activity
+            android:name="com.miz.mizuu.ActorMovies"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/chooserMovies" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Actor TV shows activity -->
+        <activity
+            android:name="com.miz.mizuu.ActorTvShows"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/chooserTVShows" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Actor photos activity -->
+        <activity
+            android:name="com.miz.mizuu.ActorPhotos"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/actorsShowAllPhotos" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Actor tagged photos activity -->
+        <activity
+            android:name="com.miz.mizuu.ActorTaggedPhotos"
+            android:exported="false"
+            android:icon="@drawable/white_app_icon"
+            android:label="@string/actorsTaggedPhotos" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -618,7 +662,7 @@
             Point to additional information for this dream (optional)
             <meta-data
                 android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
+                android:resource="@xml/my_dream" />
             -->
         </service>
 

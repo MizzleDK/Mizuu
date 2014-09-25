@@ -60,5 +60,6 @@
     <dimen name="details_left_padding_large">162dp</dimen>
     
     <dimen name="horizontal_grid_item_width">80dp</dimen>
+    <dimen name="horizontal_grid_item_backdrop_width">120dp</dimen>
 
 </resources>

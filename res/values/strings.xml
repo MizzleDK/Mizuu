@@ -54,7 +54,7 @@
     <string name="content_description_image_backdrop">Background image</string>
     <string name="content_description_cover_image">Cover image</string>
     <string name="content_description_no_content_icon">No content icon</string>
-    
+
     <!-- APP STRINGS -->
     <string name="app_name">Mizuu</string>
     <string name="app_name_movies">Mizuu - movies</string>
@@ -514,6 +514,10 @@
     <string name="select_data_source_shows">Select source for TV show data</string>
     <string name="selectFile">Select a file</string>
     <string name="no_actors">No actors found!</string>
+    <string name="no_movies">No movies found!</string>
+    <string name="no_tv_shows">No TV shows found!</string>
+    <string name="no_photos">No photos found!</string>
+    <string name="no_tagged_photos">No tagged photos found!</string>
     <string name="no_actors_description">"It seems like there aren't any actors…"</string>
     <string name="release_year">Release year</string>
     <string name="identifying_movie">Identifying movie…</string>
@@ -523,12 +527,16 @@
     <string name="where_to_play">Where to play?</string>
     <string name="play_remotely">Play remotely</string>
     <string name="play_locally">Play locally</string>
-	<string name="set_runtime">Set runtime</string>
-	<string name="set_rating">Set rating</string>
-	<string name="set_certification">Set certification</string>
-	<string name="set">Set</string>
-	<string name="create_new_certification">Create new certification</string>
-	<string name="see_more">See more</string>
-	<string name="no_similar_movies">No similar movies found!</string>
-    
+    <string name="set_runtime">Set runtime</string>
+    <string name="set_rating">Set rating</string>
+    <string name="set_certification">Set certification</string>
+    <string name="set">Set</string>
+    <string name="create_new_certification">Create new certification</string>
+    <string name="see_more">See more</string>
+    <string name="no_similar_movies">No similar movies found!</string>
+    <string name="birthday">Birthday</string>
+    <string name="actor_known_credits">Known credits</string>
+    <string name="blur_backdrops_description">Background images for movies and TV shows will be blurry in landscape mode.</string>
+    <string name="blur_backdrops">Blur background images</string>
+
 </resources>

@@ -1,0 +1,19 @@
+<com.miz.views.ForegroundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/buttonstyle"
+    android:orientation="vertical" >
+
+    <com.miz.views.GridItemImageView
+        android:id="@+id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:background="@drawable/buttonstyle"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop" />
+
+</com.miz.views.ForegroundLinearLayout>

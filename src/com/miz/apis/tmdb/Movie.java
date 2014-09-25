@@ -16,13 +16,22 @@
 
 package com.miz.apis.tmdb;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.text.TextUtils;
+
+import com.miz.functions.Actor;
+import com.miz.functions.WebMovie;
 
 public class Movie {
 	
 	private String id = "", title = "", originalTitle = "", plot = "", cover = "", backdrop = "", rating = "0.0", tagline = "", releasedate = "", imdbId = "",
 			certification = "", runtime = "0", trailer = "", genres = "", cast = "", collectionTitle = "", collectionId = "", collectionImage = "", year = "";
-
+	
+	private List<Actor> mActors = new ArrayList<Actor>();
+	private List<WebMovie> mSimilarMovies = new ArrayList<WebMovie>();
+	
 	public String getId() {
 		if (TextUtils.isEmpty(id))
 			return title;
@@ -177,4 +186,19 @@ public class Movie {
 		return year;
 	}
 	
+	public void setActors(List<Actor> actors) {
+		mActors = actors;
+	}
+	
+	public List<Actor> getActors() {
+		return mActors;
+	}
+	
+	public void setSimilarMovies(List<WebMovie> movies) {
+		mSimilarMovies = movies;
+	}
+	
+	public List<WebMovie> getSimilarMovies() {
+		return mSimilarMovies;
+	}
 }

@@ -217,15 +217,15 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 	}
 
 	public Cursor fetchMovie(String movieId) throws SQLException {
-		Cursor mCursor = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDB_ID + "='" + movieId + "'", null, null, null, null, null);
-		if (mCursor != null) {
-			mCursor.moveToFirst();
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_TMDB_ID + " = ?", new String[]{movieId}, null, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
 		}
-		return mCursor;
+		return cursor;
 	}
 
 	public boolean movieExists(String movieId) {
-		Cursor mCursor = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_TMDB_ID + "='" + movieId + "'", null, null, null, null, null);
+		Cursor mCursor = mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_TMDB_ID + " = ?", new String[]{movieId}, null, null, null, null);
 		if (mCursor == null)
 			return false;
 		try {

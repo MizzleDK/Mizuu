@@ -16,6 +16,8 @@
 
 package com.miz.utils;
 
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Context;
@@ -51,7 +53,7 @@ public class ViewUtils {
 		View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
 
 		// Load image
-		picasso.load(actor.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.noactor).into(((ImageView) v.findViewById(R.id.cover)));
+		picasso.load(actor.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
 
 		// Set title
 		((TextView) v.findViewById(R.id.text)).setText(actor.getName());
@@ -84,7 +86,7 @@ public class ViewUtils {
 		View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
 
 		// Load image
-		picasso.load(movie.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.noactor).into(((ImageView) v.findViewById(R.id.cover)));
+		picasso.load(movie.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
 
 		// Set title
 		((TextView) v.findViewById(R.id.text)).setText(movie.getTitle());
@@ -99,6 +101,89 @@ public class ViewUtils {
 			@Override
 			public void onClick(View v) {
 				context.startActivity(IntentUtils.getTmdbMovieDetails(context, movie));
+			}
+		});
+
+		return v;
+	}
+	
+	/**
+	 * Returns a TV show card with title, release date, image and click listener.
+	 * @param context
+	 * @param picasso
+	 * @param movie
+	 * @return
+	 */
+	@SuppressLint("InflateParams")
+	public static View setupTvShowCard(final Context context, Picasso picasso, final WebMovie show) {
+		View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
+
+		// Load image
+		picasso.load(show.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+
+		// Set title
+		((TextView) v.findViewById(R.id.text)).setText(show.getTitle());
+		((TextView) v.findViewById(R.id.text)).setTypeface(MizuuApplication.getOrCreateTypeface(context, "Roboto-Medium.ttf"));
+
+		// Set subtitle
+		((TextView) v.findViewById(R.id.gridCoverSubtitle)).setText(show.getSubtitle());
+		((TextView) v.findViewById(R.id.gridCoverSubtitle)).setSingleLine(true);
+
+		// Set click listener
+		v.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				context.startActivity(IntentUtils.getTmdbTvShowLink(show));
+			}
+		});
+
+		return v;
+	}
+	
+	/**
+	 * Returns a photo card with image and click listener.
+	 * @param context
+	 * @param picasso
+	 * @param movie
+	 * @return
+	 */
+	@SuppressLint("InflateParams")
+	public static View setupPhotoCard(final Context context, Picasso picasso, final String url, final List<String> items, final int index) {
+		View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small_no_text, null);
+
+		// Load image
+		picasso.load(url).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+
+		// Set click listener
+		v.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				context.startActivity(IntentUtils.getActorPhotoIntent(context, items, index));
+			}
+		});
+
+		return v;
+	}
+	
+	/**
+	 * Returns a photo card with image and click listener.
+	 * @param context
+	 * @param picasso
+	 * @param movie
+	 * @return
+	 */
+	@SuppressLint("InflateParams")
+	public static View setupTaggedPhotoCard(final Context context, Picasso picasso, final String url, final List<String> items, final int index) {
+		View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small_landscape_no_text, null);
+
+		// Load image
+		picasso.load(url).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+
+		// Set click listener
+		v.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				context.startActivity(IntentUtils.getActorTaggedPhotoIntent(context, items, index));
 			}
 		});
 

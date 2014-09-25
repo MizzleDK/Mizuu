@@ -16,17 +16,26 @@
 
 package com.miz.utils;
 
+import java.util.List;
+
 import com.miz.functions.Actor;
+import com.miz.functions.MizLib;
 import com.miz.functions.WebMovie;
 import com.miz.mizuu.ActorBrowser;
 import com.miz.mizuu.ActorBrowserTv;
 import com.miz.mizuu.ActorDetails;
+import com.miz.mizuu.ActorMovies;
+import com.miz.mizuu.ActorPhotos;
+import com.miz.mizuu.ActorTaggedPhotos;
+import com.miz.mizuu.ActorTvShows;
+import com.miz.mizuu.ImageViewer;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.SimilarMovies;
 import com.miz.mizuu.TMDbMovieDetails;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 public class IntentUtils {
 
@@ -105,5 +114,64 @@ public class IntentUtils {
 		movieDetailsIntent.putExtra("tmdbId", movie.getId());
 		movieDetailsIntent.putExtra("title", movie.getTitle());
 		return movieDetailsIntent;
+	}
+	
+	public static Intent getTmdbTvShowLink(WebMovie show) {
+		Intent showIntent = new Intent(Intent.ACTION_VIEW);
+		showIntent.setData(Uri.parse("http://www.themoviedb.org/tv/" + show.getId()));
+		return showIntent;
+	}
+
+	public static Intent getActorPhotoIntent(Context context, List<String> photos, int selectedIndex) {	
+		String[] array = new String[photos.size()];
+		for (int i = 0; i < photos.size(); i++)
+			array[i] = photos.get(i).replace(MizLib.getActorUrlSize(context), "original");
+		
+		Intent intent = new Intent(context, ImageViewer.class);
+		intent.putExtra("photos", array);
+		intent.putExtra("selectedIndex", selectedIndex);
+
+		return intent;
+	}
+	
+	public static Intent getActorTaggedPhotoIntent(Context context, List<String> photos, int selectedIndex) {	
+		String[] array = new String[photos.size()];
+		for (int i = 0; i < photos.size(); i++)
+			array[i] = photos.get(i).replace(MizLib.getBackdropThumbUrlSize(context), "original");
+		
+		Intent intent = new Intent(context, ImageViewer.class);
+		intent.putExtra("photos", array);
+		intent.putExtra("portraitPhotos", false);
+		intent.putExtra("selectedIndex", selectedIndex);
+
+		return intent;
+	}
+	
+	public static Intent getActorMoviesIntent(Context context, String actorName, String actorId) {
+		Intent actorMoviesIntent = new Intent(context, ActorMovies.class);
+		actorMoviesIntent.putExtra("actorName", actorName);
+		actorMoviesIntent.putExtra("actorId", actorId);
+		return actorMoviesIntent;
+	}
+	
+	public static Intent getActorTvShowsIntent(Context context, String actorName, String actorId) {
+		Intent actorTvShowIntent = new Intent(context, ActorTvShows.class);
+		actorTvShowIntent.putExtra("actorName", actorName);
+		actorTvShowIntent.putExtra("actorId", actorId);
+		return actorTvShowIntent;
+	}
+	
+	public static Intent getActorPhotosIntent(Context context, String actorName, String actorId) {
+		Intent actorPhotosIntent = new Intent(context, ActorPhotos.class);
+		actorPhotosIntent.putExtra("actorName", actorName);
+		actorPhotosIntent.putExtra("actorId", actorId);
+		return actorPhotosIntent;
+	}
+	
+	public static Intent getActorTaggedPhotosIntent(Context context, String actorName, String actorId) {
+		Intent actorTaggedPhotosIntent = new Intent(context, ActorTaggedPhotos.class);
+		actorTaggedPhotosIntent.putExtra("actorName", actorName);
+		actorTaggedPhotosIntent.putExtra("actorId", actorId);
+		return actorTaggedPhotosIntent;
 	}
 }
