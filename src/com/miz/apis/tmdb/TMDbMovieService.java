@@ -42,7 +42,7 @@ public class TMDbMovieService extends MovieApiService {
 
 	private TMDbMovieService(Context context) {
 		mContext = context;
-		mRatingsProvider = PreferenceManager.getDefaultSharedPreferences(mContext).getString(MOVIE_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_4));
+		mRatingsProvider = PreferenceManager.getDefaultSharedPreferences(mContext).getString(MOVIE_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_1));
 		mTmdbApiKey = MizLib.getTmdbApiKey(mContext);
 	}
 
