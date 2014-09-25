@@ -201,9 +201,9 @@ public class CoverSearchFragmentTv extends Fragment {
 			TvShowApiService service = null;
 			if (id.startsWith("tmdb_")) {
 				id = id.replace("tmdb_", "");
-				service = new TMDbTvShowService(getActivity());
+				service = TMDbTvShowService.getInstance(getActivity());
 			} else {
-				service = new TheTVDbService(getActivity());
+				service = TheTVDbService.getInstance(getActivity());
 			}
 
 			mImages.addAll(service.getCovers(id));

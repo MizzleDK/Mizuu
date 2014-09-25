@@ -392,12 +392,12 @@ public class MizuuApplication extends Application {
 	public static TvShowApiService getTvShowService(Context context) {
 		String option = PreferenceManager.getDefaultSharedPreferences(context).getString(TV_SHOW_DATA_SOURCE, context.getString(R.string.ratings_option_0));
 		if (option.equals(context.getString(R.string.ratings_option_0)))
-			return new TheTVDbService(context);
-		return new TMDbTvShowService(context);
+			return TheTVDbService.getInstance(context);
+		return TMDbTvShowService.getInstance(context);
 	}
 	
 	public static MovieApiService getMovieService(Context context) {
-		return new TMDbMovieService(context);
+		return TMDbMovieService.getInstance(context);
 	}
 	
 	/**

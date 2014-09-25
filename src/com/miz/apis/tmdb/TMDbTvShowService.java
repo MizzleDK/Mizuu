@@ -28,10 +28,18 @@ import com.miz.mizuu.R;
 
 public class TMDbTvShowService extends TvShowApiService {
 
+	private static TMDbTvShowService mService;
+	
 	private final String mRatingsProvider, mTmdbApiKey;
 	private final Context mContext;
 
-	public TMDbTvShowService(Context context) {
+	public static TMDbTvShowService getInstance(Context context) {
+		if (mService == null)
+			mService = new TMDbTvShowService(context);
+		return mService;
+	}
+	
+	private TMDbTvShowService(Context context) {
 		mContext = context;
 		mRatingsProvider = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_4));
 		mTmdbApiKey = MizLib.getTmdbApiKey(mContext);

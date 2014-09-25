@@ -228,7 +228,7 @@ public class ActorBrowserTvFragment extends Fragment {
 		@Override
 		protected String doInBackground(String... params) {
 			try {
-				TMDbTvShowService service = new TMDbTvShowService(mContext);
+				TMDbTvShowService service = TMDbTvShowService.getInstance(mContext);
 				mActors = service.getActors(mId);
 				
 				mLoaded = true;

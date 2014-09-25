@@ -48,10 +48,18 @@ import com.miz.mizuu.R;
 
 public class TheTVDbService extends TvShowApiService {
 
+	private static TheTVDbService mService;
+	
 	private final String mRatingsProvider, mTvdbApiKey;
 	private final Context mContext;
 
-	public TheTVDbService(Context context) {
+	public static TheTVDbService getInstance(Context context) {
+		if (mService == null)
+			mService = new TheTVDbService(context);
+		return mService;
+	}
+	
+	private TheTVDbService(Context context) {
 		mContext = context;
 		mRatingsProvider = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_4));
 		mTvdbApiKey = MizLib.getTvdbApiKey(mContext);
