@@ -16,27 +16,29 @@
 
 package com.miz.functions;
 
+import com.miz.utils.StringUtils;
+
 public class Filepath {
 
 	private final String mFilepath;
-	
+
 	public Filepath(String path) {
 		mFilepath = path;
 	}
-	
+
 	public String getFilepath() {
 		String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[1] : mFilepath;
-		
+
 		if (getType() == FileSource.SMB)
 			return MizLib.transformSmbPath(temp);
-		
+
 		return temp;
 	}
-	
+
 	public String getFullFilepath() {
 		return mFilepath;
 	}
-	
+
 	public int getType() {
 		if (mFilepath.contains("smb://")) {
 			return FileSource.SMB;
@@ -46,7 +48,24 @@ public class Filepath {
 			return FileSource.FILE;
 		}
 	}
-	
+
+	public String getFilepathName() {
+		try {
+			String path = mFilepath;
+
+			// Check if this is a UPnP filepath
+			if (path.contains("<MiZ>"))
+				path = path.split("<MiZ>")[0];
+
+			if (path.contains("/"))
+				path = path.substring(path.lastIndexOf("/") + 1, path.length());
+
+			return path;
+		} catch (Exception e) {
+			return getFilepath();
+		}
+	}
+
 	public boolean isNetworkFile() {
 		int type = getType();
 		return type == FileSource.SMB || type == FileSource.UPNP;

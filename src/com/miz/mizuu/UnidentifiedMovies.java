@@ -28,9 +28,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovieMappings;
-import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.db.DbAdapterTvShowEpisodes;
+import com.miz.functions.Filepath;
 import com.miz.utils.LocalBroadcastUtils;
 
 import android.support.v4.content.LocalBroadcastManager;
@@ -47,7 +47,7 @@ import android.widget.TextView;
 
 public class UnidentifiedMovies extends MizActivity {
 
-	private ArrayList<String> mFilepaths = new ArrayList<String>();
+	private ArrayList<Filepath> mFilepaths = new ArrayList<Filepath>();
 	private ListView mList;
 
 	@Override
@@ -57,12 +57,12 @@ public class UnidentifiedMovies extends MizActivity {
 		setContentView(R.layout.unidentified_files_layout);
 
 		mList = (ListView) findViewById(R.id.listView1);
+		mList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				Intent intent = new Intent(UnidentifiedMovies.this, IdentifyMovie.class);
-				intent.putExtra("fileName", mFilepaths.get(arg2));
-				intent.putExtra("tmdbId", DbAdapterMovies.UNIDENTIFIED_ID);
+				intent.putExtra("fileName", mFilepaths.get(arg2).getFullFilepath());
 				startActivityForResult(intent, 0);
 			}
 		});
@@ -92,7 +92,7 @@ public class UnidentifiedMovies extends MizActivity {
 		Cursor cursor = MizuuApplication.getMovieMappingAdapter().getAllUnidentifiedFilepaths();
 		try {
 			while (cursor.moveToNext()) {
-				mFilepaths.add(cursor.getString(cursor.getColumnIndex(DbAdapterMovieMappings.KEY_FILEPATH)));
+				mFilepaths.add(new Filepath(cursor.getString(cursor.getColumnIndex(DbAdapterMovieMappings.KEY_FILEPATH))));
 			}
 		} catch (Exception e) {} finally {
 			cursor.close();
@@ -178,6 +178,8 @@ public class UnidentifiedMovies extends MizActivity {
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
+			
+			final Filepath filepath = mFilepaths.get(position);
 			ViewHolder holder;
 
 			if (convertView == null) {
@@ -190,8 +192,8 @@ public class UnidentifiedMovies extends MizActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.name.setText(getFilename(position));
-			holder.size.setText(getFilepath(position));
+			holder.name.setText(filepath.getFilepathName());
+			holder.size.setText(filepath.getFilepath());
 
 			return convertView;
 		}
@@ -204,29 +206,6 @@ public class UnidentifiedMovies extends MizActivity {
 		@Override
 		public long getItemId(int position) {
 			return 0;
-		}
-		
-		private String getFilename(int position) {
-			String path = mFilepaths.get(position);
-			
-			// Check if this is a UPnP filepath
-			if (path.contains("<MiZ>"))
-				path = path.split("<MiZ>")[0];
-			
-			if (path.contains("/"))
-				path = path.substring(path.lastIndexOf("/") + 1, path.length());
-			
-			return path;
-		}
-		
-		private String getFilepath(int position) {
-			String path = mFilepaths.get(position);
-			
-			// Check if this is a UPnP filepath
-			if (path.contains("<MiZ>"))
-				path = path.split("<MiZ>")[1];
-			
-			return path;
 		}
 	}
 }
