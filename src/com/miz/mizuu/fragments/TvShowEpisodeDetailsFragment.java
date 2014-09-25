@@ -241,12 +241,12 @@ import com.squareup.picasso.Picasso;
 		});
 
 		if (!MizLib.isPortrait(getActivity()))
-			mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity().getApplicationContext(), mEpisode.getEpisodePhoto().getAbsolutePath() + "-blur", 4)).config(MizuuApplication.getBitmapConfig()).into(mBackdrop, new Callback() {
+			mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).error(R.drawable.bg).transform(new BlurTransformation(getActivity().getApplicationContext(), mEpisode.getEpisodePhoto().getAbsolutePath() + "-blur", 4)).into(mBackdrop, new Callback() {
 				@Override public void onError() {
 					if (!isAdded())
 						return;
 
-					mPicasso.load(mEpisode.getTvShowBackdrop()).placeholder(R.drawable.bg).error(R.drawable.nobackdrop).transform(new BlurTransformation(getActivity().getApplicationContext(), mEpisode.getTvShowBackdrop().getAbsolutePath() + "-blur", 4)).config(MizuuApplication.getBitmapConfig()).config(MizuuApplication.getBitmapConfig()).into(mBackdrop, new Callback() {
+					mPicasso.load(mEpisode.getTvShowBackdrop()).placeholder(R.drawable.bg).error(R.drawable.nobackdrop).transform(new BlurTransformation(getActivity().getApplicationContext(), mEpisode.getTvShowBackdrop().getAbsolutePath() + "-blur", 4)).into(mBackdrop, new Callback() {
 						@Override
 						public void onError() {}
 

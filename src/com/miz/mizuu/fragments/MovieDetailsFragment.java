@@ -63,7 +63,6 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,11 +71,13 @@ import com.miz.abstractclasses.MovieApiService;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.Actor;
+import com.miz.functions.BlurTransformation;
 import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.functions.PaletteTransformation;
+import com.miz.functions.PreferenceKeys;
 import com.miz.mizuu.EditMovie;
 import com.miz.mizuu.IdentifyMovie;
 import com.miz.mizuu.Main;
@@ -135,7 +136,7 @@ public class MovieDetailsFragment extends Fragment {
 		setRetainInstance(true);
 
 		mContext = getActivity();
-		
+
 		mActionBar = getActivity().getActionBar();
 
 		mIgnorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
@@ -149,7 +150,7 @@ public class MovieDetailsFragment extends Fragment {
 		mBoldItalic = MizuuApplication.getOrCreateTypeface(mContext, "Roboto-BoldItalic.ttf");
 
 		mPicasso = MizuuApplication.getPicassoDetailsView(mContext);
-		
+
 		mDatabase = MizuuApplication.getMovieAdapter();
 
 		Cursor cursor = mDatabase.fetchMovie(getArguments().getString("tmdbId"));
@@ -272,7 +273,6 @@ public class MovieDetailsFragment extends Fragment {
 		mTitle.setVisibility(View.VISIBLE);
 		mTitle.setText(mMovie.getTitle());
 		mTitle.setTypeface(MizuuApplication.getOrCreateTypeface(mContext, "RobotoCondensed-Regular.ttf"));
-		mTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
 		mPlot.setTypeface(mLight);
 		mSrc.setTypeface(mLight);
@@ -402,25 +402,20 @@ public class MovieDetailsFragment extends Fragment {
 
 			@Override
 			protected void onPostExecute(Void result) {
-				if (mActors.size() > 0) {
-					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(mImageThumbSize, LayoutParams.WRAP_CONTENT);
-					lp.setMargins(0, 0, mImageThumbSpacing, 0);
-
-					for (int i = 0; i < mActors.size() && i < capacity; i++) {
-						mActorsLayout.addView(ViewUtils.setupActorCard(mContext, mPicasso, mActors.get(i)), i, lp);
-					}
-				} else {
-					mActorsLayout.setNoActorsVisibility(true);
-				}
+				mActorsLayout.loadItems(mContext, mPicasso, capacity, mImageThumbSize, mActors, HorizontalCardLayout.ACTORS);
 			}
 		}.execute();
 	}
 
 	private void loadImages() {
 		mPicasso.load(mMovie.getThumbnail()).error(R.drawable.loading_image).placeholder(R.drawable.loading_image).transform(new PaletteTransformation(mMovie.getThumbnail().getAbsolutePath(), mDetailsArea, mActorsLayout.getSeeMoreView())).into(mCover);
-		
+
 		if (!MizLib.isPortrait(mContext)) {
-			mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(mBackground);		
+			if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(PreferenceKeys.BLUR_BACKDROPS, false)) {
+				mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).transform(new BlurTransformation(mContext, mMovie.getBackdrop().getAbsolutePath(), 8)).into(mBackground);
+			} else {
+				mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(mBackground);
+			}
 		} else {
 			mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(mBackground, new Callback() {
 				@Override

@@ -75,5 +75,6 @@ public class PreferenceKeys {
 	public static final String SHOW_FILE_LOCATION = "prefsShowFileLocation";
 	public static final String LANGUAGE_PREFERENCE = "prefsLanguagePreference";
 	public static final String TV_SHOW_DATA_SOURCE = "prefsShowsDataSource";
+	public static final String BLUR_BACKDROPS = "prefsBlurBackdrops";
 	
 }

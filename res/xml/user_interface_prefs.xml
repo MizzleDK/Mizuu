@@ -28,7 +28,14 @@
             android:key="prefsGridItemSize"
             android:summary="@string/overviewGridItemSizeDescription"
             android:title="@string/overviewGridItemSizeTitle" />
-        <CheckBoxPreference
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/backdrops"
+            android:key="prefsBlurBackdrops"
+            android:summary="@string/blur_backdrops_description"
+            android:title="@string/blur_backdrops" />
+                <CheckBoxPreference
             android:defaultValue="true"
             android:icon="@drawable/file"
             android:key="prefsShowFileLocation"

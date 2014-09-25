@@ -16,8 +16,6 @@
 
 package com.miz.mizuu.fragments;
 
-import java.util.List;
-
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -41,19 +39,16 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.miz.abstractclasses.MovieApiService;
 import com.miz.apis.tmdb.Movie;
+import com.miz.apis.tmdb.TMDbMovieService;
 import com.miz.apis.trakt.Trakt;
-import com.miz.functions.Actor;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteTransformation;
 import com.miz.functions.TmdbTrailerSearch;
-import com.miz.functions.WebMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.IntentUtils;
@@ -77,7 +72,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private boolean isRetained = false;
 	private Picasso mPicasso;
 	private Typeface mLight, mLightItalic, mMedium, mBoldItalic;
-	private MovieApiService mMovieApiService;
+	private TMDbMovieService mMovieApiService;
 	private HorizontalCardLayout mActorsLayout, mSimilarMoviesLayout;
 	private int mImageThumbSize, mImageThumbSpacing;
 	private Drawable mActionBarBackgroundDrawable;
@@ -113,7 +108,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		mMedium = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-Medium.ttf");
 		mBoldItalic = MizuuApplication.getOrCreateTypeface(getActivity(), "Roboto-BoldItalic.ttf");
 
-		mMovieApiService = MizuuApplication.getMovieService(getActivity());
+		mMovieApiService = TMDbMovieService.getInstance(mContext);
 
 		// Get the database ID of the movie in question
 		movieId = getArguments().getString("movieId");
@@ -130,7 +125,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 		movieDetailsLayout = MizLib.isPortrait(getActivity()) ? v.findViewById(R.id.movieDetailsLayout_portrait) : v.findViewById(R.id.movieDetailsLayout);
-		progressBar = v.findViewById(R.id.progressBar1);
+		progressBar = v.findViewById(R.id.progress_layout);
 		mDetailsArea = v.findViewById(R.id.details_area);
 
 		this.container = (FrameLayout) v.findViewById(R.id.container);
@@ -191,12 +186,20 @@ public class TmdbMovieDetailsFragment extends Fragment {
 	private class MovieLoader extends AsyncTask<String, Object, Object> {
 		@Override
 		protected Object doInBackground(String... params) {
-			mMovie = mMovieApiService.get(movieId, "en");
+			mMovie = mMovieApiService.getCompleteMovie(movieId, "en");
+
+			for (int i = 0; i < mMovie.getSimilarMovies().size(); i++) {
+				String id = mMovie.getSimilarMovies().get(i).getId();
+				mMovie.getSimilarMovies().get(i).setInLibrary(MizuuApplication.getMovieAdapter().movieExists(id));
+			}
+
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Object result) {
+			getActivity().invalidateOptionsMenu();
+			
 			setupFields();
 		}
 	}
@@ -298,7 +301,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 								final int numColumns = (int) Math.floor(mActorsLayout.getWidth() / (mImageThumbSize + mImageThumbSpacing));	
 								mImageThumbSize = (mActorsLayout.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
 
-								loadActors(numColumns);
+								mActorsLayout.loadItems(mContext, mPicasso, numColumns, mImageThumbSize, mMovie.getActors(), HorizontalCardLayout.ACTORS);
 								MizLib.removeViewTreeObserver(mActorsLayout.getViewTreeObserver(), this);
 							}
 						}
@@ -321,7 +324,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
 								final int numColumns = (int) Math.floor(mSimilarMoviesLayout.getWidth() / (mImageThumbSize + mImageThumbSpacing));	
 								mImageThumbSize = (mSimilarMoviesLayout.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
 
-								loadSimilarMovies(numColumns);
+								mSimilarMoviesLayout.loadItems(mContext, mPicasso, numColumns, mImageThumbSize, mMovie.getSimilarMovies(), HorizontalCardLayout.RELATED_MOVIES);
 								MizLib.removeViewTreeObserver(mSimilarMoviesLayout.getViewTreeObserver(), this);
 							}
 						}
@@ -397,81 +400,20 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		}
 	}
 
-	private void loadActors(final int capacity) {
-		// Show ProgressBar
-		new AsyncTask<Void, Void, Void>() {
-			private List<Actor> mActors;
-
-			@Override
-			protected Void doInBackground(Void... params) {
-				MovieApiService service = MizuuApplication.getMovieService(mContext);
-				mActors = service.getActors(mMovie.getId());
-
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				if (mActors.size() > 0) {
-					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(mImageThumbSize, LayoutParams.WRAP_CONTENT);
-					lp.setMargins(0, 0, mImageThumbSpacing, 0);
-
-					for (int i = 0; i < mActors.size() && i < capacity; i++) {
-						mActorsLayout.addView(ViewUtils.setupActorCard(mContext, mPicasso, mActors.get(i)), i, lp);
-					}
-				} else {
-					mActorsLayout.setNoActorsVisibility(true);
-				}
-			}
-		}.execute();
-	}
-
-	private void loadSimilarMovies(final int capacity) {
-		// Show ProgressBar
-		new AsyncTask<Void, Void, Void>() {
-			private List<WebMovie> mSimilarMovies;
-			
-			@Override
-			protected Void doInBackground(Void... params) {
-				MovieApiService service = MizuuApplication.getMovieService(mContext);
-				mSimilarMovies = service.getSimilarMovies(mMovie.getId());
-
-				for (int i = 0; i < mSimilarMovies.size(); i++) {
-					String id = mSimilarMovies.get(i).getId();
-					mSimilarMovies.get(i).setInLibrary(MizuuApplication.getMovieAdapter().movieExists(id));
-				}
-				
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				if (mSimilarMovies.size() > 0) {
-					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(mImageThumbSize, LayoutParams.WRAP_CONTENT);
-					lp.setMargins(0, 0, mImageThumbSpacing, 0);
-
-					for (int i = 0; i < mSimilarMovies.size() && i < capacity; i++) {
-						mSimilarMoviesLayout.addView(ViewUtils.setupMovieCard(mContext, mPicasso, mSimilarMovies.get(i)), i, lp);
-					}
-				} else {
-					mSimilarMoviesLayout.setNoSimilarMoviesVisibility(true);
-				}
-			}
-		}.execute();
-	}
-
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.tmdb_details, menu);
+		if (mMovie != null) {
+			inflater.inflate(R.menu.tmdb_details, menu);
 
-		if (MizLib.isTablet(mContext)) {
-			menu.findItem(R.id.share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-			menu.findItem(R.id.checkIn).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-			menu.findItem(R.id.openInBrowser).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			if (MizLib.isTablet(mContext)) {
+				menu.findItem(R.id.share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+				menu.findItem(R.id.checkIn).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+				menu.findItem(R.id.openInBrowser).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			}
+
+			if (!Trakt.hasTraktAccount(mContext))
+				menu.findItem(R.id.checkIn).setVisible(false);
 		}
-		
-		if (!Trakt.hasTraktAccount(mContext))
-			menu.findItem(R.id.checkIn).setVisible(false);
 	}
 
 	@Override
@@ -492,10 +434,10 @@ public class TmdbMovieDetailsFragment extends Fragment {
 		case R.id.trailer:
 			watchTrailer();
 		}
-		
+
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	public void shareMovie() {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");

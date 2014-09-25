@@ -36,9 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
@@ -46,14 +44,15 @@ import android.widget.ImageView.ScaleType;
 import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.Actor;
+import com.miz.functions.BlurTransformation;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteTransformation;
+import com.miz.functions.PreferenceKeys;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.R;
 import com.miz.utils.IntentUtils;
 import com.miz.utils.LocalBroadcastUtils;
-import com.miz.utils.ViewUtils;
 import com.miz.views.HorizontalCardLayout;
 import com.miz.views.ObservableScrollView;
 import com.miz.views.PanningView;
@@ -314,7 +313,11 @@ public class TvShowDetailsFragment extends Fragment {
 		mPicasso.load(thisShow.getCoverPhoto()).skipMemoryCache().error(R.drawable.loading_image).placeholder(R.drawable.loading_image).transform(new PaletteTransformation(thisShow.getCoverPhoto().getAbsolutePath(), mDetailsArea, mActorsLayout.getSeeMoreView())).into(cover);
 		
 		if (!MizLib.isPortrait(getActivity())) {
-			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
+			if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(PreferenceKeys.BLUR_BACKDROPS, false)) {
+				mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).transform(new BlurTransformation(mContext, thisShow.getBackdrop(), 8)).into(background);
+			} else {
+				mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
+			}
 		} else {
 			mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
 				@Override
@@ -342,7 +345,7 @@ public class TvShowDetailsFragment extends Fragment {
 
 			@Override
 			protected Void doInBackground(Void... params) {
-				TMDbTvShowService service = new TMDbTvShowService(mContext);
+				TMDbTvShowService service = TMDbTvShowService.getInstance(mContext);
 				mActors = service.getActors(thisShow.getId());
 
 				return null;
@@ -350,16 +353,7 @@ public class TvShowDetailsFragment extends Fragment {
 
 			@Override
 			protected void onPostExecute(Void result) {
-				if (mActors.size() > 0) {
-					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(mImageThumbSize, LayoutParams.WRAP_CONTENT);
-					lp.setMargins(0, 0, mImageThumbSpacing, 0);
-
-					for (int i = 0; i < mActors.size() && i < capacity; i++) {
-						mActorsLayout.addView(ViewUtils.setupActorCard(mContext, mPicasso, mActors.get(i)), i, lp);
-					}
-				} else {
-					mActorsLayout.setNoActorsVisibility(true);
-				}
+				mActorsLayout.loadItems(mContext, mPicasso, capacity, mImageThumbSize, mActors, HorizontalCardLayout.ACTORS);
 			}
 		}.execute();
 	}
