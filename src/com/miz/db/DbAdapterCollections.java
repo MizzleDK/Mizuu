@@ -52,7 +52,7 @@ public class DbAdapterCollections extends AbstractDbAdapter {
 	}
 
 	public boolean collectionExists(String collectionId) {
-		Cursor mCursor = mDatabase.query(true, DATABASE_TABLE, ALL_COLUMNS, KEY_COLLECTION_ID + "='" + collectionId + "'", null, null, null, null, null);
+		Cursor mCursor = mDatabase.query(true, DATABASE_TABLE, ALL_COLUMNS, KEY_COLLECTION_ID + " = ?", new String[]{collectionId}, null, null, null, null);
 		if (mCursor == null)
 			return false;
 		try {
@@ -70,7 +70,7 @@ public class DbAdapterCollections extends AbstractDbAdapter {
 	}
 	
 	public String getCollection(String collectionId) {
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_COLLECTION_ID + "='" + collectionId + "'", null, null, null, null);
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_COLLECTION_ID + " = ?", new String[]{collectionId}, null, null, null);
 		String collection = "";
 
 		if (cursor != null) {
@@ -108,7 +108,7 @@ public class DbAdapterCollections extends AbstractDbAdapter {
 	}
 	
 	public boolean deleteCollection(String collectionId) {
-		return mDatabase.delete(DATABASE_TABLE, KEY_COLLECTION_ID + "='" + collectionId + "'", null) > 0;
+		return mDatabase.delete(DATABASE_TABLE, KEY_COLLECTION_ID + " = ?", new String[]{collectionId}) > 0;
 	}
 	
 	public boolean deleteAllCollections() {

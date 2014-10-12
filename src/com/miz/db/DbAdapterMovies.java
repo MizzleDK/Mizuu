@@ -102,7 +102,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 		ContentValues updateValues = createUpdateContentValues(title, plot, imdbid, rating, tagline, release, certification,
 				runtime, trailer, genres, actors, collectionId, date);
 
-		return mDatabase.update(DATABASE_TABLE, updateValues, KEY_TMDB_ID + "='" + tmdbid + "'", null) > 0 &&
+		return mDatabase.update(DATABASE_TABLE, updateValues, KEY_TMDB_ID + " = ?", new String[]{tmdbid}) > 0 &&
 				MizuuApplication.getCollectionsAdapter().createCollection(collectionId, collectionId) > 0;
 	}
 
@@ -110,7 +110,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 		ContentValues values = new ContentValues();
 		values.put(column, value);
 
-		return mDatabase.update(DATABASE_TABLE, values, KEY_TMDB_ID + "='" + tmdbId + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, values, KEY_TMDB_ID + " = ?", new String[]{tmdbId}) > 0;
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 	public boolean editUpdateMovie(String tmdbId, String title, String plot, String rating, String tagline, String release,
 			String certification, String runtime, String genres, String toWatch, String hasWatched, String date) {
 		ContentValues updateValues = createEditContentValues(title, plot, rating, tagline, release, certification, runtime, genres, toWatch, hasWatched, date);
-		return mDatabase.update(DATABASE_TABLE, updateValues, KEY_TMDB_ID + "='" + tmdbId + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, updateValues, KEY_TMDB_ID + " = ?", new String[]{tmdbId}) > 0;
 	}
 	
 	public boolean editMovie(String movieId, String title, String tagline, String description,
@@ -133,7 +133,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 		cv.put(KEY_CERTIFICATION, certification);
 		cv.put(KEY_RUNTIME, runtime);
 		cv.put(KEY_GENRES, genres);
-		return mDatabase.update(DATABASE_TABLE, cv, KEY_TMDB_ID + "='" + movieId + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, cv, KEY_TMDB_ID + " = ?", new String[]{movieId}) > 0;
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 	 * Deletes movie
 	 */
 	public boolean deleteMovie(String tmdbId) {
-		boolean result = mDatabase.delete(DATABASE_TABLE, KEY_TMDB_ID + "='" + tmdbId + "'", null) > 0;
+		boolean result = mDatabase.delete(DATABASE_TABLE, KEY_TMDB_ID + " = ?", new String[]{tmdbId}) > 0;
 
 		// When deleting a movie, check if there's other movies
 		// linked to the collection - if not, delete the collection entry
@@ -164,7 +164,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 	}
 
 	public String getCollectionId(String tmdbId) {
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_TMDB_ID + "='" + tmdbId + "'", null, null, null, null);
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_TMDB_ID + " = ?", new String[]{tmdbId}, null, null, null);
 		String collectionId = "";
 
 		if (cursor != null) {
@@ -182,7 +182,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
 	}
 
 	public boolean hasMultipleCollectionMappings(String collectionId) {
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_COLLECTION_ID + "='" + collectionId + "'", null, null, null, null);
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_COLLECTION_ID + " = ?", new String[]{collectionId}, null, null, null);
 		boolean result = false;
 
 		if (cursor != null) {

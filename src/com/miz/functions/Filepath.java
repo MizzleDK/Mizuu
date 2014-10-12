@@ -16,8 +16,6 @@
 
 package com.miz.functions;
 
-import com.miz.utils.StringUtils;
-
 public class Filepath {
 
 	private final String mFilepath;

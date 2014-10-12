@@ -281,10 +281,10 @@ public class AddNetworkFilesourceDialog extends Activity {
 		}
 
 		if (MizLib.isWifiConnected(this)) {
-			mDomain = domain.getText().toString();
-			mUser = username.getText().toString();
-			mPass = password.getText().toString();
-			mServer = server.getText().toString();
+			mDomain = domain.getText().toString().trim();
+			mUser = username.getText().toString().trim();
+			mPass = password.getText().toString().trim();
+			mServer = server.getText().toString().trim();
 			attemptLogin();
 		} else
 			Toast.makeText(AddNetworkFilesourceDialog.this, getString(R.string.noConnection), Toast.LENGTH_LONG).show();

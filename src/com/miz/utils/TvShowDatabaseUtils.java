@@ -188,4 +188,8 @@ public class TvShowDatabaseUtils {
 			FileUtils.getTvShowBackdrop(context, showId).delete();
 		}	
 	}
+	
+	public static void removeAllUnidentifiedFiles() {
+		MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllUnidentifiedFilepaths();
+	}
 }

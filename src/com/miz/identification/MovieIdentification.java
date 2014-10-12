@@ -91,11 +91,11 @@ public class MovieIdentification {
 		mMovieId = movieId;
 	}
 
-	public boolean overrideMovieId() {
+	private boolean overrideMovieId() {
 		return null != getMovieId();
 	}
 
-	public String getMovieId() {
+	private String getMovieId() {
 		return mMovieId;
 	}
 
@@ -237,22 +237,76 @@ public class MovieIdentification {
 		DbAdapterMovieMappings dbHelperMovieMapping = MizuuApplication.getMovieMappingAdapter();
 		DbAdapterMovies dbHelper = MizuuApplication.getMovieAdapter();
 
-		if (dbHelper.movieExists(movie.getId())) {
-
-			// Get the old filepath ID before updating the mapping
-			String oldId = dbHelperMovieMapping.getIdForFilepath(ms.getFilepath());
-
-			// Update the mapping TMDb ID to the new one
-			dbHelperMovieMapping.updateTmdbId(ms.getFilepath(), movie.getId());
-
-			// Let's check if the old TMDb ID is mapped to
-			// any other file paths - if not, remove the movie
-			// entry in the movie database
-			if (!dbHelperMovieMapping.exists(oldId))
-				dbHelper.deleteMovie(oldId);
+		// Check if this is manual identification by the user
+		if (overrideMovieId()) {
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			/**
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * TODO FIX THIS SHIT TODO
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 */
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 		} else {
-			// Create the mapping
-			dbHelperMovieMapping.createFilepathMapping(ms.getFilepath(), movie.getId());
+			// This is Mizuu's automatic library update...
+			
+			// Check if movie already exists
+			if (dbHelper.movieExists(movie.getId())) {
+				
+				// Get the old filepath ID before updating the mapping
+				String oldId = dbHelperMovieMapping.getIdForFilepath(ms.getFilepath());
+
+				// Update the mapping TMDb ID to the new one
+				dbHelperMovieMapping.updateTmdbId(ms.getFilepath(), movie.getId());
+
+				// Let's check if the old TMDb ID is mapped to
+				// any other file paths - if not, remove the movie
+				// entry in the movie database
+				if (!dbHelperMovieMapping.exists(oldId))
+					dbHelper.deleteMovie(oldId);
+				
+			} else {
+				// The movie mapping doesn't exist - so let's create it
+				dbHelperMovieMapping.createFilepathMapping(ms.getFilepath(), movie.getId());
+			}
 		}
 
 		// Finally, create or update the movie

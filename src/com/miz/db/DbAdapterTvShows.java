@@ -129,15 +129,15 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 	public boolean updateShowSingleItem(String showId, String table, String value) {
 		ContentValues values = new ContentValues();
 		values.put(table, value);
-		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = '" + showId + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
 	}
 
 	public Cursor getShow(String showId) {
-		return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_SHOW_ID + " = '" + showId + "'", null, null, null, null);
+		return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_SHOW_ID + " = ?", new String[]{showId}, null, null, null);
 	}
 
 	public String getShowTitle(String showId) {
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, new String[]{KEY_SHOW_TITLE, KEY_SHOW_ID}, KEY_SHOW_ID + " = '" + showId + "'", null, null, null, null);
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, new String[]{KEY_SHOW_TITLE, KEY_SHOW_ID}, KEY_SHOW_ID + " = ?", new String[]{showId}, null, null, null);
 		if (cursor.moveToFirst()) {
 			String showTitle = cursor.getString(cursor.getColumnIndex(KEY_SHOW_TITLE));
 			cursor.close();
@@ -158,13 +158,9 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 		return mDatabase.delete(DATABASE_TABLE, null, null) > 0;
 	}
 
-	public boolean deleteAllUnidentifiedShows() {
-		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "= '" + UNIDENTIFIED_ID + "'", null) > 0;
-	}
-
 	public int count() {
 		Cursor c = mDatabase.query(DATABASE_TABLE, new String[] {KEY_SHOW_ID, KEY_SHOW_TITLE},
-				"not (" + KEY_SHOW_ID + " = '" + UNIDENTIFIED_ID + "') and not (" + KEY_SHOW_TITLE + " like '%MizUnidentified%'" + ") and not (" + KEY_SHOW_ID + " = ''" + ")", null, KEY_SHOW_ID, null, null);
+				"NOT (" + KEY_SHOW_ID + " = '" + UNIDENTIFIED_ID + "') AND NOT (" + KEY_SHOW_TITLE + " LIKE '%MizUnidentified%'" + ") AND NOT (" + KEY_SHOW_ID + " = ''" + ")", null, KEY_SHOW_ID, null, null);
 		int count = c.getCount();
 		c.close();
 		return count;
@@ -216,6 +212,6 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 		cv.put(KEY_SHOW_CERTIFICATION, certification);
 		cv.put(KEY_SHOW_RUNTIME, runtime);
 		cv.put(KEY_SHOW_GENRES, genres);
-		return mDatabase.update(DATABASE_TABLE, cv, KEY_SHOW_ID + "='" + showId + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, cv, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
 	}
 }

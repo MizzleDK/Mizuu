@@ -43,4 +43,7 @@ public class MovieDatabaseUtils {
 		FileUtils.deleteRecursive(MizuuApplication.getMovieBackdropFolder(context), false);
 	}
 
+	public static void removeAllUnidentifiedFiles() {
+		MizuuApplication.getMovieMappingAdapter().deleteAllUnidentifiedFilepaths();
+	}
 }

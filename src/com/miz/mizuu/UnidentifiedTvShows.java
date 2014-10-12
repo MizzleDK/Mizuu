@@ -27,10 +27,10 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import com.miz.base.MizActivity;
-import com.miz.db.DbAdapterTvShows;
-import com.miz.db.DbAdapterTvShowEpisodes;
+import com.miz.db.DbAdapterTvShowEpisodeMappings;
+import com.miz.functions.Filepath;
 import com.miz.utils.LocalBroadcastUtils;
-import com.miz.utils.StringUtils;
+import com.miz.utils.TvShowDatabaseUtils;
 
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseBooleanArray;
@@ -50,7 +50,7 @@ import android.widget.TextView;
 
 public class UnidentifiedTvShows extends MizActivity {
 
-	private ArrayList<TvShowEpisode> mEpisodes = new ArrayList<TvShowEpisode>();
+	private ArrayList<Filepath> mFilepaths = new ArrayList<Filepath>();
 	private ListView mList;
 
 	@Override
@@ -131,7 +131,7 @@ public class UnidentifiedTvShows extends MizActivity {
 		SparseBooleanArray sba = mList.getCheckedItemPositions();
 		ArrayList<String> filepaths = new ArrayList<String>();
 		for (int i = 0; i < sba.size(); i++) {
-			filepaths.add(mEpisodes.get(sba.keyAt(i)).getFilepaths().get(0).getFullFilepath());
+			filepaths.add(mFilepaths.get(sba.keyAt(i)).getFullFilepath());
 		}
 
 		Intent i = new Intent();
@@ -144,31 +144,23 @@ public class UnidentifiedTvShows extends MizActivity {
 	}
 
 	private void loadData() {
-		mEpisodes.clear();
+		mFilepaths.clear();
 
-		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
-		Cursor cursor = db.getAllUnidentifiedEpisodesInDatabase();
-		while (cursor.moveToNext()) {
-			mEpisodes.add(new TvShowEpisode(this,
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_TITLE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_PLOT)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_AIRDATE)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_DIRECTOR)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_WRITER)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_GUESTSTARS)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_RATING)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_HAS_WATCHED)),
-					cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_FAVOURITE))
-					));
+		Cursor cursor = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getAllUnidentifiedFilepaths();
+		try {
+			if (cursor != null) {
+				while (cursor.moveToNext()) {
+					mFilepaths.add(new Filepath(cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_FILEPATH))));
+				}
+			}
+		} catch (Exception ignored) {} finally {
+			if (cursor != null)
+				cursor.close();
 		}
-		cursor.close();
 
 		mList.setAdapter(new ListAdapter(this));
 
-		enableNoFilesMessage(mEpisodes.size() == 0);
+		enableNoFilesMessage(mFilepaths.size() == 0);
 	}
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -204,13 +196,11 @@ public class UnidentifiedTvShows extends MizActivity {
 			.setCancelable(false)
 			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-					DbAdapterTvShows dbTvShow = MizuuApplication.getTvDbAdapter();
-					dbTvShow.deleteAllUnidentifiedShows();
+					
+					TvShowDatabaseUtils.removeAllUnidentifiedFiles();
 
-					DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
-					db.deleteAllUnidentifiedEpisodes();
-
-					mEpisodes.clear();
+					mFilepaths.clear();
+					
 					((BaseAdapter) mList.getAdapter()).notifyDataSetChanged();
 					enableNoFilesMessage(true);
 				}
@@ -248,7 +238,7 @@ public class UnidentifiedTvShows extends MizActivity {
 
 		@Override
 		public int getCount() {
-			return mEpisodes.size();
+			return mFilepaths.size();
 		}
 
 		@Override
@@ -265,8 +255,8 @@ public class UnidentifiedTvShows extends MizActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.name.setText(mEpisodes.get(position).getTitle().substring(StringUtils.indexOfLastSeparator(mEpisodes.get(position).getTitle()), mEpisodes.get(position).getTitle().length()));
-			holder.size.setText(mEpisodes.get(position).getFilepaths().get(0).getFullFilepath());
+			holder.name.setText(mFilepaths.get(position).getFilepathName());
+			holder.size.setText(mFilepaths.get(position).getFilepath());
 
 			return convertView;
 		}

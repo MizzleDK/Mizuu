@@ -76,25 +76,27 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 			String episodeAirdate, String episodeRating, String episodeDirector, String episodeWriter, String episodeGuestStars, String hasWatched, String favorite) {
 		ContentValues initialValues = createContentValues(season,episode, showId, episodeTitle,
 				episodePlot, episodeAirdate, episodeRating, episodeDirector, episodeWriter, episodeGuestStars, hasWatched, favorite);
-		return mDatabase.update(DATABASE_TABLE, initialValues, KEY_SHOW_ID + "='" + showId + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, initialValues, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
 	}
 
 	public boolean updateEpisode(String showId, String season, String episode, String table, String value) {
 		ContentValues values = new ContentValues();
 		values.put(table, value);
-		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + season + "' AND " + KEY_EPISODE + "='" + episode + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+				new String[]{showId, season, episode}) > 0;
 	}
 
 	public Cursor getEpisode(String showId, int season, int episode) {
-		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + MizLib.addIndexZero(season) + "' AND " + KEY_EPISODE + "='" + MizLib.addIndexZero(episode) + "'", null, null, null, null);
+		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+				new String[]{showId, MizLib.addIndexZero(season), MizLib.addIndexZero(episode)}, null, null, null);
 	}
 
 	public static int OLDEST_FIRST = 0, NEWEST_FIRST = 1;
 	public Cursor getAllEpisodes(String showId, int type) {
 		if (type == OLDEST_FIRST)
-			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
+			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", new String[]{showId}, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
 		else
-			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " desc, " + KEY_EPISODE + " desc");
+			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", new String[]{showId}, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " desc, " + KEY_EPISODE + " desc");
 	}
 
 	public Cursor getAllEpisodesInDatabase(boolean includeRemoved) {
@@ -104,26 +106,23 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, "NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, null, null, null);
 	}
 
-	public Cursor getAllUnidentifiedEpisodesInDatabase() {
-		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = '" + DbAdapterTvShows.UNIDENTIFIED_ID + "'", null, null, null, null);
-	}
-
 	public boolean deleteEpisode(String showId, int season, int episode) {
 		boolean result = true;
 		if (getEpisodeCount(showId) == 1)
 			result = MizuuApplication.getTvDbAdapter().deleteShow(showId);
 
-		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" +
-				MizLib.addIndexZero(season) + "' AND " + KEY_EPISODE + "='" + MizLib.addIndexZero(episode) + "'", null) > 0;
+		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+				new String[]{showId, MizLib.addIndexZero(season), MizLib.addIndexZero(episode)}) > 0;
 	}
 
 	public boolean deleteAllEpisodes(String showId) {
 		boolean result = MizuuApplication.getTvDbAdapter().deleteShow(showId);
-		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "= '" + showId + "'", null) > 0;
+		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
 	}
 
 	public boolean removeSeason(String showId, int season) {
-		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = '" + showId + "' and " + KEY_SEASON + " = '" + MizLib.addIndexZero(season) + "'", null) > 0;
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ? and " + KEY_SEASON + " = ?",
+				new String[]{showId, MizLib.addIndexZero(season)}) > 0;
 	}
 
 	public boolean deleteAllEpisodesInDatabase() {
@@ -131,27 +130,25 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 				MizuuApplication.getTvDbAdapter().deleteAllShowsInDatabase();
 	}
 
-	public boolean deleteAllUnidentifiedEpisodes() {
-		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = '" + DbAdapterTvShows.UNIDENTIFIED_ID + "'", null) > 0 &&
-				MizuuApplication.getTvDbAdapter().deleteAllUnidentifiedShows();
-	}
-
 	public int getEpisodeCount(String showId) {
-		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
+		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')",
+				new String[]{showId}, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
 		int count = c.getCount();
 		c.close();
 		return count;
 	}
 	
 	public int getEpisodeCountForSeason(String showId, String season) {
-		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + season + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
+		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')",
+				new String[]{showId, season}, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
 		int count = c.getCount();
 		c.close();
 		return count;
 	}
 
 	public int getSeasonCount(String showId) {
-		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON, null, KEY_SEASON);
+		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')",
+				new String[]{showId}, KEY_SEASON, null, KEY_SEASON);
 		int count = c.getCount();
 		c.close();
 		return count;
@@ -163,7 +160,7 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		ColumnIndexCache cache = new ColumnIndexCache();
 		Cursor c = null;
 		try {
-			c = mDatabase.query(DATABASE_TABLE, new String[]{KEY_SHOW_ID, KEY_EPISODE_TITLE, KEY_SEASON, KEY_HAS_WATCHED}, KEY_SHOW_ID + "='" + showId + "' AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc");
+			c = mDatabase.query(DATABASE_TABLE, new String[]{KEY_SHOW_ID, KEY_EPISODE_TITLE, KEY_SEASON, KEY_HAS_WATCHED}, KEY_SHOW_ID + " = ? AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", new String[]{showId}, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc");
 			while (c.moveToNext()) {
 				String season = c.getString(cache.getColumnIndex(c, KEY_SEASON));
 
@@ -197,7 +194,8 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 
 		try {
 			String seasonWithIndex = MizLib.addIndexZero(season);
-			cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' and " + KEY_SEASON + "='" + seasonWithIndex + "'", null, KEY_EPISODE, null, KEY_EPISODE + " asc");
+			cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? and " + KEY_SEASON + " = ?",
+					new String[]{showId, seasonWithIndex}, KEY_EPISODE, null, KEY_EPISODE + " asc");
 
 			File temp;
 			while (cursor.moveToNext()) {
@@ -226,7 +224,8 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 
 	public String getLatestEpisodeAirdate(String showId) {
 		String s = "";
-		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_EPISODE_AIRDATE + " LIKE '%-%'", null, null, null, KEY_EPISODE_AIRDATE + " desc"); // %-% hack to make sure that the airdate includes a hyphen and is an actual date
+		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND " + KEY_EPISODE_AIRDATE + " LIKE '%-%'",
+				new String[]{showId}, null, null, KEY_EPISODE_AIRDATE + " desc"); // %-% hack to make sure that the airdate includes a hyphen and is an actual date
 		if (c.moveToFirst())
 			s = c.getString(mCache.getColumnIndex(c, DbAdapterTvShowEpisodes.KEY_EPISODE_AIRDATE));
 		c.close();
@@ -234,20 +233,22 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 	}
 
 	public boolean hasUnwatchedEpisodes(String showId) {
-		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = '" + showId + "' AND " + KEY_HAS_WATCHED + " = '0'", null, null, null, null);
+		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND " + KEY_HAS_WATCHED + " = '0'", new String[]{showId}, null, null, null);
 		return c.getCount() > 0;
 	}
 
 	public boolean setSeasonWatchStatus(String showId, String season, boolean watched) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_HAS_WATCHED, watched ? "1" : "0");
-		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + season + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ?",
+				new String[]{showId, season}) > 0;
 	}
 
 	public boolean setEpisodeWatchStatus(String showId, String season, String episode, boolean watched) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_HAS_WATCHED, watched ? "1" : "0");
-		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + season + "' AND " + KEY_EPISODE + "='" + episode + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+				new String[]{showId, season, episode}) > 0;
 	}
 
 	private ContentValues createContentValues(String season, String episode, String showId, String episodeTitle,
@@ -279,7 +280,7 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		cv.put(KEY_EPISODE_DIRECTOR, director);
 		cv.put(KEY_EPISODE_WRITER, writer);
 		cv.put(KEY_EPISODE_GUESTSTARS, guestStars);
-		return mDatabase.update(DATABASE_TABLE, cv, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + MizLib.addIndexZero(season) +
-				"' AND " + KEY_EPISODE + "='" + MizLib.addIndexZero(episode) + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, cv, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+				new String[]{showId, MizLib.addIndexZero(season), MizLib.addIndexZero(episode)}) > 0;
 	}
 }

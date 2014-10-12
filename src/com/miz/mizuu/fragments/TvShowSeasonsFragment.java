@@ -215,10 +215,10 @@ public class TvShowSeasonsFragment extends Fragment {
 			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 				switch (item.getItemId()) {
 				case R.id.watched:
-					changeWatchedStatus(true);
+					changeWatchedStatus(true, new HashSet<Integer>(mCheckedSeasons));
 					break;
 				case R.id.unwatched:
-					changeWatchedStatus(false);
+					changeWatchedStatus(false, new HashSet<Integer>(mCheckedSeasons));
 					break;
 				case R.id.remove:
 					removeSelectedSeasons(new HashSet<Integer>(mCheckedSeasons));
@@ -238,11 +238,12 @@ public class TvShowSeasonsFragment extends Fragment {
 
 			@Override
 			public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {				
-				if (checked)
+				if (checked) {
 					mCheckedSeasons.add(mItems.get(position).getSeason());
-				else
+				} else {
 					mCheckedSeasons.remove(mItems.get(position).getSeason());
-
+				}
+				
 				int count = mCheckedSeasons.size();
 				mode.setTitle(count + " " + getResources().getQuantityString(R.plurals.seasons_selected, count, count));
 
@@ -259,18 +260,18 @@ public class TvShowSeasonsFragment extends Fragment {
 		new SeasonLoader(selectFirstSeason).execute();
 	}
 
-	private void changeWatchedStatus(boolean watched) {
+	private void changeWatchedStatus(boolean watched, final Set<Integer> selectedSeasons) {
 		// Create and open database
 		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
 		// This ought to be done in the background, but performance is fairly decent
 		// - roughly 0.7 seconds to update 600 entries on a Sony Xperia Tablet Z2
-		for (int season : mCheckedSeasons) {
-			db.setSeasonWatchStatus(mShowId, mItems.get(season).getSeasonZeroIndex(), watched);
+		for (int season : selectedSeasons) {
+			db.setSeasonWatchStatus(mShowId, MizLib.addIndexZero(season), watched);
 		}
 
 		if (MizLib.isOnline(mContext) && Trakt.hasTraktAccount(mContext))
-			syncWatchedStatusWithTrakt(mCheckedSeasons, watched);
+			syncWatchedStatusWithTrakt(selectedSeasons, watched);
 
 		loadSeasons(true);
 	}

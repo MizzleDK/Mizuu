@@ -77,8 +77,8 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 	}
 
 	public String getFirstFilepath(String showId, String season, String episode) {
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" +
-				season + "' AND " + KEY_EPISODE + "='" + episode + "'", null, null, null, null);
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+				new String[]{showId, season, episode}, null, null, null);
 		String filepath = "";
 
 		if (cursor != null) {
@@ -98,8 +98,8 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 	public ArrayList<String> getFilepathsForEpisode(String showId, String season, String episode) {
 		ArrayList<String> paths = new ArrayList<String>();
 
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" +
-				season + "' AND " + KEY_EPISODE + "='" + episode + "'", null, null, null, null);
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+				new String[]{showId, season, episode}, null, null, null);
 
 		if (cursor != null) {
 			try {
@@ -115,6 +115,11 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 		return paths;
 	}
 
+	public Cursor getAllUnidentifiedFilepaths() {
+		String[] selectionArgs = new String[]{DbAdapterTvShows.UNIDENTIFIED_ID};
+		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ?", selectionArgs, null, null, null);
+	}
+	
 	public Cursor getAllFilepaths() {
 		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, null, null, null, null, null);
 	}
@@ -125,11 +130,11 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 	}
 
 	public Cursor getAllFilepaths(String showId) {
-		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "'", null, null, null, null);
+		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ?", new String[]{showId}, null, null, null);
 	}
 
 	public Cursor getAllIgnoredFilepaths() {
-		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_IGNORED + "='1'", null, null, null, null);
+		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_IGNORED + " = '1'", null, null, null, null);
 	}
 
 	public boolean deleteFilepath(String filepath) {
@@ -177,16 +182,20 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 
 	public boolean deleteAllFilepaths(String showId) {
 		boolean result = MizuuApplication.getTvEpisodeDbAdapter().deleteAllEpisodes(showId); // This also deletes the show
-		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "='" + showId + "'", null) > 0;
+		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
 	}
 
 	public boolean deleteAllFilepaths() {
 		return mDatabase.delete(DATABASE_TABLE, null, null) > 0;
 	}
+	
+	public boolean deleteAllUnidentifiedFilepaths() {
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ?", new String[]{DbAdapterTvShows.UNIDENTIFIED_ID}) > 0;
+	}
 
 	public boolean hasMultipleFilepaths(String showId, String season, String episode) {
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" +
-				season + "' AND " + KEY_EPISODE + "='" + episode + "'", null, null, null, null);
+		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+				new String[]{showId, season, episode}, null, null, null);
 		boolean result = false;
 
 		if (cursor != null) {
@@ -203,13 +212,15 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 	}
 
 	public boolean removeSeason(String showId, int season) {
-		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + MizLib.addIndexZero(season) + "'", null) > 0;
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ?",
+				new String[]{showId, MizLib.addIndexZero(season)}) > 0;
 	}
 
 	public boolean ignoreSeason(String showId, int season) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_IGNORED, 1); // Set the ignored value to 1 (true)
 
-		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + "='" + showId + "' AND " + KEY_SEASON + "='" + MizLib.addIndexZero(season) + "'", null) > 0;
+		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ?",
+				new String[]{showId, MizLib.addIndexZero(season)}) > 0;
 	}
 }

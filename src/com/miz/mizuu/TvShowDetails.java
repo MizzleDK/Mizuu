@@ -194,7 +194,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		} else {
 			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#FF000000"), Color.parseColor("#FF000000")});
 			mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
-			
+
 			mActionBarOverlay.setVisibility(View.VISIBLE);
 
 			if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
@@ -247,16 +247,17 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		case 0:
 			getMenuInflater().inflate(R.menu.tv_show_details, menu);
 
-			try {
-				if (thisShow.isFavorite()) {
-					menu.findItem(R.id.show_fav).setIcon(R.drawable.fav);
-					menu.findItem(R.id.show_fav).setTitle(R.string.menuFavouriteTitleRemove);
-				} else {
-					menu.findItem(R.id.show_fav).setIcon(R.drawable.ic_action_star_0);
-					menu.findItem(R.id.show_fav).setTitle(R.string.menuFavouriteTitle);
-				}
+			// If this is a tablet, we have more room to display icons
+			if (MizLib.isTablet(this))
+				menu.findItem(R.id.share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-			} catch (Exception e) {} // This can happen if thisShow is null for whatever reason
+			boolean favorite = false;
+			if (thisShow != null)
+				favorite = thisShow.isFavorite();
+			
+			menu.findItem(R.id.show_fav).setIcon(favorite ? R.drawable.fav : R.drawable.ic_action_star_0);
+			menu.findItem(R.id.show_fav).setTitle(favorite ?  R.string.menuFavouriteTitleRemove : R.string.menuFavouriteTitle);
+
 			break;
 
 		case 1:
@@ -306,6 +307,12 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 			}
 			startActivity(browserIntent);
 			break;
+		case R.id.share:
+			Intent intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_TEXT, ((thisShow.getIdType() == TvShow.THETVDB) ? "http://thetvdb.com/?tab=series&id=" : "http://www.themoviedb.org/tv/") + thisShow.getIdWithoutHack());
+			startActivity(intent);
+			return true;
 		}
 		return false;
 	}
@@ -325,7 +332,7 @@ public class TvShowDetails extends MizActivity implements OnNavigationListener {
 		i.putExtra("showId", thisShow.getId());
 		startActivityForResult(i, 0);
 	}
-	
+
 	private void editTvShow() {
 		Intent intent = new Intent(this, EditTvShow.class);
 		intent.putExtra("showId", thisShow.getId());

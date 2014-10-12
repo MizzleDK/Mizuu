@@ -28,10 +28,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovieMappings;
-import com.miz.db.DbAdapterTvShows;
-import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.Filepath;
 import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.MovieDatabaseUtils;
 
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
@@ -57,7 +56,7 @@ public class UnidentifiedMovies extends MizActivity {
 		setContentView(R.layout.unidentified_files_layout);
 
 		mList = (ListView) findViewById(R.id.listView1);
-		mList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		mList.setChoiceMode(ListView.CHOICE_MODE_NONE);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -68,14 +67,14 @@ public class UnidentifiedMovies extends MizActivity {
 		});
 
 		loadData();
-		
+
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		
+
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 	}
 
@@ -85,7 +84,7 @@ public class UnidentifiedMovies extends MizActivity {
 			loadData();
 		}
 	};
-	
+
 	private void loadData() {
 		mFilepaths.clear();
 
@@ -129,11 +128,7 @@ public class UnidentifiedMovies extends MizActivity {
 			.setCancelable(false)
 			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-					DbAdapterTvShows dbTvShow = MizuuApplication.getTvDbAdapter();
-					dbTvShow.deleteAllUnidentifiedShows();
-
-					DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
-					db.deleteAllUnidentifiedEpisodes();
+					MovieDatabaseUtils.removeAllUnidentifiedFiles();
 
 					mFilepaths.clear();
 					((BaseAdapter) mList.getAdapter()).notifyDataSetChanged();
@@ -165,10 +160,10 @@ public class UnidentifiedMovies extends MizActivity {
 
 	private class ListAdapter extends BaseAdapter {
 
-		private LayoutInflater inflater;
+		private LayoutInflater mInflater;
 
 		public ListAdapter(Context c) {
-			inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mInflater = LayoutInflater.from(c);
 		}
 
 		@Override
@@ -178,12 +173,12 @@ public class UnidentifiedMovies extends MizActivity {
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
-			
+
 			final Filepath filepath = mFilepaths.get(position);
 			ViewHolder holder;
 
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.file_list_item, parent, false);
+				convertView = mInflater.inflate(R.layout.file_list_item, parent, false);
 				holder = new ViewHolder();
 				holder.name = (TextView) convertView.findViewById(R.id.text1);
 				holder.size = (TextView) convertView.findViewById(R.id.size);

@@ -210,10 +210,10 @@ public class TvShowEpisodesFragment extends Fragment {
 			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 				switch (item.getItemId()) {
 				case R.id.watched:
-					changeWatchedStatus(true);
+					changeWatchedStatus(true, new HashSet<Integer>(mCheckedEpisodes));
 					break;
 				case R.id.unwatched:
-					changeWatchedStatus(false);
+					changeWatchedStatus(false, new HashSet<Integer>(mCheckedEpisodes));
 					break;
 				case R.id.remove:
 					removeSelectedEpisodes(new HashSet<Integer>(mCheckedEpisodes));
@@ -256,17 +256,17 @@ public class TvShowEpisodesFragment extends Fragment {
 		loadEpisodes();
 	}
 
-	private void changeWatchedStatus(boolean watched) {
+	private void changeWatchedStatus(boolean watched, final Set<Integer> checkedEpisodes) {
 		// Create and open database
 		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
 		// This ought to be done in the background, but performance is fairly decent
-		for (int episode : mCheckedEpisodes) {
+		for (int episode : checkedEpisodes) {
 			db.setEpisodeWatchStatus(mShowId, MizLib.addIndexZero(mSeason), MizLib.addIndexZero(episode), watched);
 		}
 
 		if (MizLib.isOnline(mContext) && Trakt.hasTraktAccount(mContext))
-			syncWatchedStatusWithTrakt(mCheckedEpisodes, watched);
+			syncWatchedStatusWithTrakt(checkedEpisodes, watched);
 
 		loadEpisodes();
 	}
