@@ -2,44 +2,50 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:padding="@dimen/movie_details_padding" >
+    android:padding="@dimen/content_details_baseline_margin" >
 
     <TextView
         android:id="@+id/moviesTitle"
-        style="@style/MenuHeader"
-        android:layout_width="match_parent"
+        android:textSize="18sp"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:text="@string/chooserMovies" />
 
     <CheckBox
         android:id="@+id/moviesCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/movie_details_padding"
         android:text="@string/enableScheduledLibraryUpdates" />
 
     <Spinner
         android:id="@+id/moviesSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/movie_details_padding"
+        android:layout_marginTop="@dimen/content_details_area_margin"
         android:entries="@array/scheduledUpdates" />
 
     <TextView
         android:id="@+id/nextMovieUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/movie_details_padding"
+        android:textSize="@dimen/content_details_body_text"
+        android:layout_marginTop="@dimen/content_details_area_margin"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textIsSelectable="false"
         android:visibility="gone" />
 
     <TextView
         android:id="@+id/showsTitle"
-        style="@style/MenuHeader"
-        android:layout_width="match_parent"
+        android:textSize="18sp"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/movie_details_padding"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="@dimen/content_details_baseline_margin"
         android:text="@string/chooserTVShows" />
 
     <CheckBox
@@ -53,14 +59,16 @@
         android:id="@+id/showsSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/movie_details_padding"
+        android:layout_marginTop="@dimen/content_details_area_margin"
+        android:textSize="@dimen/content_details_body_text"
         android:entries="@array/scheduledUpdates" />
 
     <TextView
         android:id="@+id/nextShowsUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/movie_details_padding"
+        android:textSize="@dimen/content_details_body_text"
+        android:layout_marginTop="@dimen/content_details_area_margin"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textIsSelectable="false"
         android:visibility="gone" />

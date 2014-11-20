@@ -8,5 +8,4 @@
     android:textSize="14sp"
     android:textColor="#8A000000"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:text="@string/stringMenu" />
+    android:paddingRight="16dp" />

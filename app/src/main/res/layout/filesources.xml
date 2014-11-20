@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp" >
+    android:padding="@dimen/content_details_baseline_margin" >
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -13,6 +13,8 @@
 
         <ListView
             android:id="@+id/listView1"
+            android:divider="@null"
+            android:dividerHeight="0dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/filesource_list" >

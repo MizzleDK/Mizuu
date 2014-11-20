@@ -214,11 +214,13 @@ public class FileSources extends MizActivity {
 				convertView = mInflater.inflate(R.layout.file_source_list_header, parent, false);
 				TextView title = (TextView) convertView.findViewById(R.id.title);
 				title.setText(mItems.get(position).getTitle());
-				title.setTypeface(TypefaceUtils.getRobotoLight(getApplicationContext()));
+				title.setTypeface(TypefaceUtils.getRobotoMedium(getApplicationContext()));
 			} else {
 				convertView = mInflater.inflate(R.layout.filesource_list, parent, false);
 				((TextView) convertView.findViewById(R.id.txtListTitle)).setText(mItems.get(position).getTitle());
+                ((TextView) convertView.findViewById(R.id.txtListTitle)).setTypeface(TypefaceUtils.getRobotoCondensedRegular(getApplicationContext()));
 				((TextView) convertView.findViewById(R.id.txtListPlot)).setText(mItems.get(position).getFileSource().getFilepath());
+                ((TextView) convertView.findViewById(R.id.txtListPlot)).setTypeface(TypefaceUtils.getRobotoLight(getApplicationContext()));
 				((ImageView) convertView.findViewById(R.id.traktIcon)).setImageResource(mItems.get(position).getFileSource().isMovie() ? R.drawable.ic_movie_white_24dp : R.drawable.ic_tv_white_24dp);
 				((ImageView)convertView.findViewById(R.id.imageView2)).setOnClickListener(new OnClickListener() {
 					@Override

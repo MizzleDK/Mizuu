@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This NEEDS a layout in order to use the margins -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/options"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
-
-    <TextView
-        android:id="@+id/options"
-        style="@style/MenuHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/list_padding"
-        android:layout_marginRight="@dimen/list_padding"
-        android:layout_marginTop="8dp"
-        android:text="@string/stringMenu" />
-
-</FrameLayout>
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/list_padding"
+    android:paddingRight="@dimen/list_padding"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:textStyle="bold"
+    android:text="@string/stringMenu" />
