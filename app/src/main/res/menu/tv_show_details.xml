@@ -25,17 +25,17 @@
         <item
             android:id="@+id/change_cover"
             android:enabled="true"
-            android:icon="@drawable/backdrops"
+            android:icon="@drawable/ic_image_white_24dp"
             android:title="@string/browseMedia">
         </item>
         <item
             android:id="@+id/editTvShow"
-            android:icon="@drawable/ic_action_edit"
+            android:icon="@drawable/ic_edit_white_24dp"
             android:title="@string/stringEditTvShow">
         </item>
         <item
             android:id="@+id/openInBrowser"
-            android:icon="@drawable/ic_action_globe"
+            android:icon="@drawable/ic_language_white_24dp"
             android:title="@string/openInBrowser">
         </item>
         <item

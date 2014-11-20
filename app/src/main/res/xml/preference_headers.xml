@@ -2,7 +2,7 @@
 
     <header
         android:fragment="com.miz.mizuu.fragments.Prefs"
-        android:icon="@drawable/ic_action_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
         android:title="@string/prefsUIGeneral" >
         <extra
             android:name="resource"
@@ -22,7 +22,7 @@
         android:title="@string/scheduledUpdates" />
     <header
         android:fragment="com.miz.mizuu.fragments.Prefs"
-        android:icon="@drawable/user_interface"
+        android:icon="@drawable/ic_palette_white_24dp"
         android:title="@string/prefsUI" >
         <extra
             android:name="resource"
@@ -30,11 +30,11 @@
     </header>
     <header
         android:fragment="com.miz.mizuu.fragments.AccountsFragment"
-        android:icon="@drawable/photo"
+        android:icon="@drawable/ic_person_white_24dp"
         android:title="@string/social" />
     <header
         android:fragment="com.miz.mizuu.fragments.Prefs"
-        android:icon="@drawable/ic_action_puzzle"
+        android:icon="@drawable/ic_extension_white_24dp"
         android:title="@string/advanced" >
         <extra
             android:name="resource"
@@ -42,7 +42,7 @@
     </header>
     <header
         android:fragment="com.miz.mizuu.fragments.Prefs"
-        android:icon="@drawable/other"
+        android:icon="@drawable/ic_info_outline_white_24dp"
         android:title="@string/other" >
         <extra
             android:name="resource"
@@ -50,7 +50,7 @@
     </header>
     <header
         android:fragment="com.miz.mizuu.fragments.ContactDeveloperFragment"
-        android:icon="@drawable/ic_action_mail"
+        android:icon="@drawable/ic_help_white_24dp"
         android:title="@string/menuAboutContact" />
 
 </preference-headers>

@@ -79,18 +79,6 @@
         <item name="android:background">@drawable/accent_bottom_border_grey</item>
     </style>
 
-    <style name="DrawerListHeader">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">#585858</item>
-        <item name="android:paddingTop">14dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="android:paddingRight">20dp</item>
-        <item name="android:paddingLeft">20dp</item>
-        <item name="android:background">@drawable/accent_bottom_border_grey</item>
-    </style>
-
     <!-- Theme for cancel library update dialog and such -->
     <style name="Mizuu.Theme.Transparent.Dialog" parent="android:Theme.Holo">
         <item name="android:windowIsTranslucent">true</item>
@@ -113,6 +101,13 @@
 
     <style name="Mizuu.Theme.Preference.ActionBar" parent="@android:style/Widget.Holo.ActionBar">
         <item name="android:background">#aa000000</item>
+    </style>
+
+    <style name="Button.RightAligned" parent="android:style/Widget.Holo.Button">
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:layout_gravity">right</item>
     </style>
 
 </resources>

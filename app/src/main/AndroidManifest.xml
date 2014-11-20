@@ -41,8 +41,7 @@
         <!-- Welcome activity -->
         <activity
             android:name="com.miz.mizuu.Welcome"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -51,8 +50,7 @@
         <!-- Show details activity -->
         <activity
             android:name="com.miz.mizuu.TvShowDetails"
-            android:exported="true"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
                 <action android:name="android.intent.action.SEARCH" />
@@ -79,8 +77,7 @@
         <!-- ImageViewer activity -->
         <activity
             android:name="com.miz.mizuu.ImageViewer"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -89,8 +86,7 @@
         <!-- TvShowEpisodes activity -->
         <activity
             android:name="com.miz.mizuu.TvShowEpisodes"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -99,8 +95,7 @@
         <!-- TvShowSeasons activity -->
         <activity
             android:name="com.miz.mizuu.TvShowSeasons"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -110,7 +105,6 @@
         <activity
             android:name="com.miz.mizuu.Main"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/app_name"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -149,8 +143,7 @@
         <!-- Collection activity -->
         <activity
             android:name="com.miz.mizuu.MovieCollection"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -159,7 +152,6 @@
         <activity
             android:name="com.miz.mizuu.MovieCoverFanartBrowser"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/browseMedia" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -168,7 +160,6 @@
         <activity
             android:name="com.miz.mizuu.ShowCoverFanartBrowser"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/browseMedia" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -178,8 +169,7 @@
         <!-- TMDB movie details view -->
         <activity
             android:name="com.miz.mizuu.TMDbMovieDetails"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -188,8 +178,7 @@
         <!-- TV show episode details view -->
         <activity
             android:name="com.miz.mizuu.TvShowEpisodeDetails"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
@@ -199,7 +188,6 @@
         <activity
             android:name="com.miz.mizuu.UnidentifiedTvShows"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/unidentifiedFiles" >
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
@@ -210,7 +198,6 @@
         <activity
             android:name="com.miz.mizuu.UnidentifiedMovies"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/unidentifiedFiles" >
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
@@ -221,7 +208,6 @@
         <activity
             android:name="com.miz.mizuu.FileSources"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/fileSources" >
             <intent-filter>
                 <action android:name="com.miz.mizuu.FileSources" />
@@ -235,7 +221,6 @@
             android:name="com.miz.mizuu.AddNetworkFilesourceDialog"
             android:exported="false"
             android:hardwareAccelerated="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/networkLogin"
             android:theme="@android:style/Theme.Holo.Dialog" >
             <intent-filter>
@@ -248,7 +233,6 @@
             android:name="com.miz.mizuu.AddUpnpFilesourceDialog"
             android:exported="false"
             android:hardwareAccelerated="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/select_upnp_server"
             android:theme="@android:style/Theme.Holo.Dialog" >
             <intent-filter>
@@ -272,7 +256,6 @@
         <activity
             android:name="com.miz.mizuu.FileSourceBrowser"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/fileSources"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
@@ -285,7 +268,6 @@
         <!-- Preferences activity -->
         <activity
             android:name="com.miz.mizuu.Preferences"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/settings_name" >
         </activity>
 
@@ -307,7 +289,6 @@
             android:name="com.miz.mizuu.Update"
             android:exported="false"
             android:hardwareAccelerated="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/updateMoviesTitle" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -317,8 +298,7 @@
         <!-- Movie Details activity -->
         <activity
             android:name="com.miz.mizuu.MovieDetails"
-            android:exported="true"
-            android:icon="@drawable/white_app_icon" >
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
                 <action android:name="android.intent.action.SEARCH" />
@@ -334,7 +314,6 @@
             android:name="com.miz.mizuu.EditMovie"
             android:exported="false"
             android:hardwareAccelerated="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/stringEditMovie" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -346,7 +325,6 @@
             android:name="com.miz.mizuu.EditTvShow"
             android:exported="false"
             android:hardwareAccelerated="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/stringEditTvShow" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -358,7 +336,6 @@
             android:name="com.miz.mizuu.EditTvShowEpisode"
             android:exported="false"
             android:hardwareAccelerated="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/stringEditTvShowEpisode" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -369,7 +346,6 @@
         <activity
             android:name="com.miz.mizuu.IdentifyMovie"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/identifyMovieTitle" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -380,7 +356,6 @@
         <activity
             android:name="com.miz.mizuu.SearchWebMovies"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/stringSearch" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -391,7 +366,6 @@
         <activity
             android:name="com.miz.mizuu.IdentifyTvShow"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/identifyShow" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -402,7 +376,6 @@
         <activity
             android:name="com.miz.mizuu.IdentifyTvShowEpisode"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/identifyEpisodeTitle" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -413,36 +386,16 @@
         <activity
             android:name="com.miz.mizuu.AddFileSource"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:title="@string/addFileSourceTitle" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <!-- Remote playback activity -->
-        <!--
-        <activity
-            android:name="com.miz.remoteplayback.RemotePlayback"
-            android:exported="false"
-            android:icon="@drawable/white_app_icon"
-            android:label="@string/remote_playback"
-            android:theme="@style/Theme.AppCompat" >
-            <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-
-
-        -->
-
-
         <!-- Actor activity -->
         <activity
             android:name="com.miz.mizuu.ActorDetails"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -453,7 +406,6 @@
         <activity
             android:name="com.miz.mizuu.ActorMovies"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/chooserMovies" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -464,7 +416,6 @@
         <activity
             android:name="com.miz.mizuu.ActorTvShows"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/chooserTVShows" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -475,7 +426,6 @@
         <activity
             android:name="com.miz.mizuu.ActorPhotos"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/actorsShowAllPhotos" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -486,7 +436,6 @@
         <activity
             android:name="com.miz.mizuu.ActorTaggedPhotos"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/actorsTaggedPhotos" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -497,7 +446,6 @@
         <activity
             android:name="com.miz.mizuu.ActorBrowser"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/detailsActors" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -508,7 +456,6 @@
         <activity
             android:name="com.miz.mizuu.ActorBrowserTv"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/detailsActors" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -519,7 +466,6 @@
         <activity
             android:name=".SimilarMovies"
             android:exported="false"
-            android:icon="@drawable/white_app_icon"
             android:label="@string/relatedMovies" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
@@ -669,25 +615,6 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
-            <!--
-            Point to additional information for this dream (optional)
-            <meta-data
-                android:name="android.service.dream"
-                android:resource="@xml/my_dream" />
-
-
-
-
-
-
-
-
-
-
-
-
-            -->
         </service>
 
         <receiver android:name="com.miz.functions.StartScheduledUpdatesService" >
@@ -713,10 +640,5 @@
             android:authorities="com.miz.contentprovider.TvShowActorContentProvider"
             android:exported="false" />
     </application>
-
-    <instrumentation
-        android:name="android.test.InstrumentationTestRunner"
-        android:label="Mizuu com.miz.tests"
-        android:targetPackage="com.miz.mizuu" />
 
 </manifest>

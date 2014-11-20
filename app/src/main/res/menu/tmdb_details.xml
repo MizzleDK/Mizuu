@@ -11,7 +11,7 @@
     </item>
     <item
         android:id="@+id/openInBrowser"
-        android:icon="@drawable/ic_action_globe"
+        android:icon="@drawable/ic_language_white_24dp"
         android:title="@string/openInBrowser">
     </item>
 

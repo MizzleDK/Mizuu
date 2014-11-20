@@ -161,7 +161,7 @@ public class DownloadImageService extends IntentService {
 		mBuilder.setContentText(getString(R.string.few_moments));
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_download));
+		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_file_download_white_24dp));
 
 		// Build notification
 		Notification updateNotification = mBuilder.build();

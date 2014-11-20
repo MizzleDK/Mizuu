@@ -30,13 +30,12 @@
                     android:id="@+id/fab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_action_playback_play"
+                    android:src="@drawable/ic_play_arrow_white_36dp"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="false"
                     android:layout_marginRight="@dimen/content_details_baseline_margin"
                     android:layout_marginTop="@dimen/content_details_fab_negative_margin"
                     android:layout_below="@+id/imageBackground"
-                    android:paddingRight="8dp"
                     app:fab_type="mini"/>
 
                 <android.support.v7.widget.CardView
@@ -253,7 +252,7 @@
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/file"
+                    android:drawableLeft="@drawable/ic_folder_open_white_24dp"
                     android:drawablePadding="@dimen/details_small_padding"
                     android:layout_marginTop="@dimen/details_medium_padding"
                     android:gravity="center_vertical"

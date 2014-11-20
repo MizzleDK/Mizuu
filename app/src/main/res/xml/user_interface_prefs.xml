@@ -3,19 +3,19 @@
     <PreferenceCategory android:title="@string/prefsUIGeneral" >
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/titles"
+            android:icon="@drawable/ic_format_quote_white_24dp"
             android:key="prefsShowGridTitles"
             android:summary="@string/prefsShowGridTitles"
             android:title="@string/prefsShowGridTitlesTitle" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/titles"
+            android:icon="@drawable/ic_format_clear_white_24dp"
             android:key="prefsIgnorePrefixesInTitles"
             android:summary="@string/ignoreMoviePrefixesDescription"
             android:title="@string/ignoreMoviePrefixes" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_action_expand"
+            android:icon="@drawable/ic_fullscreen_white_24dp"
             android:key="prefsFullscreen"
             android:summary="@string/fullscreenModeDescription"
             android:title="@string/fullscreenMode" />
@@ -24,14 +24,14 @@
             android:defaultValue="@string/normal"
             android:entries="@array/grid_item_size"
             android:entryValues="@array/grid_item_size"
-            android:icon="@drawable/ic_action_tiles_large"
+            android:icon="@drawable/ic_view_module_white_24dp"
             android:key="prefsGridItemSize"
             android:summary="@string/overviewGridItemSizeDescription"
             android:title="@string/overviewGridItemSizeTitle" />
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/backdrops"
+            android:icon="@drawable/ic_image_white_24dp"
             android:key="prefsBlurBackdrops"
             android:summary="@string/blur_backdrops_description"
             android:title="@string/blur_backdrops" />
@@ -48,7 +48,7 @@
             android:defaultValue="@string/listView"
             android:entries="@array/seasonsLayout"
             android:entryValues="@array/seasonsLayout"
-            android:icon="@drawable/ic_action_list_grid"
+            android:icon="@drawable/ic_view_module_white_24dp"
             android:key="prefsSeasonsLayout"
             android:summary="@string/setEpisodesLayoutDescription"
             android:title="@string/setEpisodeLayout" />
@@ -75,7 +75,7 @@
             android:dialogTitle="@string/tv_shows_start_page_title"
             android:entries="@array/tv_shows_start_page"
             android:entryValues="@array/tv_shows_start_page"
-            android:icon="@drawable/ic_action_settings"
+            android:icon="@drawable/ic_settings_white_24dp"
             android:key="prefsTvShowsStartPage"
             android:summary="@string/tv_shows_start_page_description"
             android:title="@string/tv_shows_start_page_title" />

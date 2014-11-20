@@ -149,7 +149,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 					}
 					i.setClass(getApplicationContext(), Main.class);
 					startActivity(i);
-					overridePendingTransition(R.anim.mainfadein, R.anim.splashfadeout);
+					overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 				}
 			}
 		});
@@ -343,27 +343,27 @@ public class Welcome extends MizActivity implements ViewFactory {
 
 			switch (position) {
 			case 1:
-				icon.setImageResource(R.drawable.ic_action_movie);
+				icon.setImageResource(R.drawable.ic_movie_white_24dp);
 				title.setText(getString(R.string.chooserMovies));
 				description.setText(String.valueOf(mNumMovies));
 				break;
 			case 2:
-				icon.setImageResource(R.drawable.ic_action_tv);
+				icon.setImageResource(R.drawable.ic_tv_white_24dp);
 				title.setText(getString(R.string.chooserTVShows));
 				description.setText(String.valueOf(mNumShows));
 				break;
 			case 3:
-				icon.setImageResource(R.drawable.ic_action_list_2);
+				icon.setImageResource(R.drawable.ic_list_white_24dp);
 				title.setText(getString(R.string.chooserWatchList));
 				description.setText(String.valueOf(mNumWatchlist));
 				break;
 			case 5:
-				icon.setImageResource(R.drawable.ic_action_movie);
+				icon.setImageResource(R.drawable.ic_movie_white_24dp);
 				title.setText(getString(R.string.chooserMovies));
 				description.setVisibility(View.GONE);
 				break;
 			case 6:
-				icon.setImageResource(R.drawable.ic_action_globe);
+				icon.setImageResource(R.drawable.ic_language_white_24dp);
 				title.setText(getString(R.string.chooserWebVideos));
 				description.setVisibility(View.GONE);
 				break;

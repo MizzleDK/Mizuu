@@ -12,4 +12,11 @@
         <item name="android:colorControlHighlight">#fff</item>
     </style>
 
+    <style name="Button.RightAligned" parent="android:style/Widget.Material.Button" >
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:layout_gravity">right</item>
+    </style>
+
 </resources>

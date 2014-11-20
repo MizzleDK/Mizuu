@@ -2,7 +2,7 @@
 
     <PreferenceCategory android:title="@string/other" >
         <Preference
-            android:icon="@drawable/ic_action_google_play"
+            android:icon="@drawable/ic_play_shopping_bag_white_24dp"
             android:key="prefsFeedback"
             android:summary="@string/prefsAppFeedbackDescription"
             android:title="@string/prefsAppFeedback" >
@@ -13,7 +13,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefsCredits" >
         <Preference
-            android:icon="@drawable/ic_action_tv"
+            android:icon="@drawable/ic_tv_white_24dp"
             android:summary="@string/prefsCreditsTvDbDescription"
             android:title="@string/prefsCreditsTvDb" >
             <intent
@@ -21,7 +21,7 @@
                 android:data="http://thetvdb.com" />
         </Preference>
         <Preference
-            android:icon="@drawable/reddit"
+            android:icon="@drawable/ic_language_white_24dp"
             android:summary="www.reddit.com"
             android:title="@string/choiceReddit" >
             <intent
@@ -29,7 +29,7 @@
                 android:data="http://reddit.com/r/videos/" />
         </Preference>
         <Preference
-            android:icon="@drawable/tedtalks"
+            android:icon="@drawable/ic_language_white_24dp"
             android:summary="www.ted.com"
             android:title="@string/choiceTedTalks" >
             <intent
@@ -37,7 +37,7 @@
                 android:data="http://youtube.com" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_movie"
+            android:icon="@drawable/ic_movie_white_24dp"
             android:summary="@string/prefsCreditsTmdbDescription"
             android:title="@string/prefsCreditsTmdbTitle" >
             <intent
@@ -45,7 +45,7 @@
                 android:data="http://themoviedb.org" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_tv"
+            android:icon="@drawable/ic_tv_white_24dp"
             android:summary="@string/prefsCreditsTraktDescription"
             android:title="@string/prefsCreditsTraktTitle" >
             <intent
@@ -53,7 +53,7 @@
                 android:data="http://trakt.tv" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_tv"
+            android:icon="@drawable/ic_tv_white_24dp"
             android:summary="@string/prefsCreditsTvRageDescription"
             android:title="@string/prefsCreditsTvRage" >
             <intent
@@ -61,7 +61,7 @@
                 android:data="http://tvrage.com" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_globe"
+            android:icon="@drawable/ic_language_white_24dp"
             android:summary="@string/prefsCreditsWikipediaDescription"
             android:title="@string/prefsCreditsWikipedia" >
             <intent
@@ -69,7 +69,7 @@
                 android:data="http://wikipedia.org" />
         </Preference>
         <Preference
-            android:icon="@drawable/youtube"
+            android:icon="@drawable/ic_language_white_24dp"
             android:summary="www.youtube.com"
             android:title="@string/choiceYouTube" >
             <intent
@@ -79,7 +79,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/thirdPartyLibraries" >
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Creative Commons Attribution, Version 2.5"
             android:title="Android Support library" >
             <intent
@@ -87,7 +87,7 @@
                 android:data="http://developer.android.com/tools/extras/support-library.html" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Apache License, Version 2.0"
             android:title="Apache Commons FilenameUtils" >
             <intent
@@ -95,7 +95,7 @@
                 android:data="http://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/FilenameUtils.html" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="GNU Lesser General Public License"
             android:title="Cling by 4thline" >
             <intent
@@ -103,7 +103,7 @@
                 android:data="http://4thline.org/projects/cling/" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Apache License, Version 2.0"
             android:title="CWAC LoaderEx by CommonsWare" >
             <intent
@@ -111,7 +111,7 @@
                 android:data="https://github.com/commonsguy/cwac-loaderex" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Apache License, Version 2.0"
             android:title="Guava collection libraries by Google" >
             <intent
@@ -119,7 +119,7 @@
                 android:data="https://code.google.com/p/guava-libraries/" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="LGPL, Version 2.1"
             android:title="jCIFS" >
             <intent
@@ -127,7 +127,7 @@
                 android:data="http://jcifs.samba.org/" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Apache License, Version 2.0"
             android:title="OkHttp by Square, Inc." >
             <intent
@@ -135,7 +135,7 @@
                 android:data="http://square.github.io/okhttp/" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Apache License, Version 2.0"
             android:title="Otto by Square, Inc." >
             <intent
@@ -143,7 +143,7 @@
                 android:data="http://square.github.io/otto/" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:title="PagerSlidingTabStrip by Andreas Stuetz and Javier Pardo"
             android:summary="Apache License, Version 2.0">
             <intent
@@ -151,7 +151,7 @@
                 android:data="https://github.com/jpardogo/PagerSlidingTabStrip" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Apache License, Version 2.0"
             android:title="Picasso by Square, Inc." >
             <intent
@@ -159,7 +159,7 @@
                 android:data="http://square.github.io/picasso/" />
         </Preference>
         <Preference
-            android:icon="@drawable/ic_action_puzzle"
+            android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Creative Commons Attribution License, Version 3.0"
             android:title="YouTube Android Player API" >
             <intent
@@ -169,7 +169,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/translations" >
         <Preference
-            android:icon="@drawable/ic_action_globe"
+            android:icon="@drawable/ic_language_white_24dp"
             android:title="@string/translations" >
             <intent
                 android:action="android.intent.action.VIEW"

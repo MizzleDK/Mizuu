@@ -9,19 +9,19 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/play"
-        android:icon="@android:drawable/ic_media_play"
+        android:icon="@drawable/ic_play_arrow_white_24dp"
         android:title="Play"
         android:visible="false"
         app:showAsAction="always"/>
     <item
         android:id="@+id/pause"
-        android:icon="@android:drawable/ic_media_pause"
+        android:icon="@drawable/ic_pause_white_24dp"
         android:title="Pause"
         android:visible="false"
         app:showAsAction="always"/>
     <item
         android:id="@+id/stop"
-        android:icon="@drawable/ignoresmallfiles"
+        android:icon="@drawable/ic_stop_white_24dp"
         android:title="Stop"
         android:visible="false"
         app:showAsAction="always"/>

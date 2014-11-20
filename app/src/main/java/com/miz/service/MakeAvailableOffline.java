@@ -156,7 +156,7 @@ public class MakeAvailableOffline extends IntentService {
 					);
 		} catch (IOException e) {}
 
-		mBuilder.addAction(R.drawable.ic_action_discard, getString(android.R.string.cancel), mContentIntent);
+		mBuilder.addAction(R.drawable.ic_close_white_24dp, getString(android.R.string.cancel), mContentIntent);
 
 		boolean exists = checkIfNetworkFileExists();
 

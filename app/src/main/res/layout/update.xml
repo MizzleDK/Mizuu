@@ -6,77 +6,83 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp" >
+        android:padding="@dimen/content_details_baseline_margin" >
 
         <TextView
             android:id="@+id/TextView01"
-            style="@style/MenuHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/options" />
+            android:textSize="@dimen/content_details_subheader"
+            android:text="@string/options"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp"/>
 
         <CheckBox
             android:id="@+id/checkBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="@string/updateCheckBox"
-            android:textSize="18sp" />
+            android:textSize="@dimen/content_details_body_text" />
 
         <CheckBox
             android:id="@+id/checkBox2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/stringRemoveUnavailableEntries"
-            android:textSize="18sp" />
+            android:textSize="@dimen/content_details_body_text" />
 
         <TextView
             android:id="@+id/row_title_movies_online"
-            style="@style/MenuHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/fileSources" />
+            android:layout_marginTop="@dimen/content_details_baseline_margin"
+            android:textSize="@dimen/content_details_subheader"
+            android:text="@string/fileSources"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
             android:id="@+id/file_sources_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:textSize="@dimen/content_details_body_text"
             android:text="@string/prefsFileSourcesDescription"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
+            style="@style/Button.RightAligned"
             android:id="@+id/select_file_sources_button"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_action_list_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:onClick="selectSources"
             android:text="@string/txtSelectFileSources" />
 
         <TextView
             android:id="@+id/TextView03"
-            style="@style/MenuHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/menuUpdateTitle" />
+            android:layout_marginTop="@dimen/content_details_baseline_margin"
+            android:textSize="@dimen/content_details_subheader"
+            android:text="@string/menuUpdateTitle"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
             android:id="@+id/update_library_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:textSize="@dimen/content_details_body_text"
             android:text="@string/updateThirdStepDescription"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
+            style="@style/Button.RightAligned"
             android:id="@+id/start_update_button"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_sync_white_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:onClick="startUpdate"
             android:text="@string/newuser_btStartSearch" >
         </Button>

@@ -26,13 +26,6 @@
                     android:layout_height="@dimen/backdrop_portrait_height"
                     android:src="@drawable/bg" />
 
-                <ImageView
-                    android:id="@+id/shadow"
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_gravity="bottom"
-                    android:src="@drawable/bottom_shadow" />
-
             </FrameLayout>
 
             <LinearLayout
@@ -165,7 +158,7 @@
                     android:layout_marginBottom="@dimen/details_medium_padding"
                     android:layout_marginLeft="@dimen/details_large_padding"
                     android:layout_marginRight="@dimen/details_medium_padding"
-                    android:drawableLeft="@drawable/director"
+                    android:drawableLeft="@drawable/ic_movie_creation_white_24dp"
                     android:drawablePadding="@dimen/movie_details_padding"
                     android:focusable="false"
                     android:gravity="center_vertical"
@@ -180,7 +173,7 @@
                     android:layout_marginBottom="@dimen/details_medium_padding"
                     android:layout_marginLeft="@dimen/details_large_padding"
                     android:layout_marginRight="@dimen/details_medium_padding"
-                    android:drawableLeft="@drawable/ic_action_edit"
+                    android:drawableLeft="@drawable/ic_edit_white_24dp"
                     android:drawablePadding="@dimen/movie_details_padding"
                     android:focusable="false"
                     android:gravity="center_vertical"
@@ -195,7 +188,7 @@
                     android:layout_marginBottom="@dimen/details_medium_padding"
                     android:layout_marginLeft="@dimen/details_large_padding"
                     android:layout_marginRight="@dimen/details_medium_padding"
-                    android:drawableLeft="@drawable/ic_action_users"
+                    android:drawableLeft="@drawable/ic_people_white_24dp"
                     android:drawablePadding="@dimen/movie_details_padding"
                     android:focusable="false"
                     android:gravity="center_vertical"

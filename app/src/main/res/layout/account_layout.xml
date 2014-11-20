@@ -37,7 +37,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:paddingRight="@dimen/movie_details_padding"
-                        android:src="@drawable/ic_action_tv" />
+                        android:src="@drawable/ic_tv_white_24dp" />
                 </FrameLayout>
 
                 <LinearLayout

@@ -3,12 +3,12 @@
     <PreferenceCategory android:title="@string/prefsUIGeneral" >
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_action_key"
+            android:icon="@drawable/ic_lock_white_24dp"
             android:key="prefsRootAccess"
             android:summary="@string/enableRootAccessDescription"
             android:title="@string/enableRootAccess" />
         <CheckBoxPreference
-            android:icon="@drawable/ic_action_settings"
+            android:icon="@drawable/ic_settings_white_24dp"
             android:key="prefsConfirmBackPress"
             android:summary="@string/confirmBackPressDescription"
             android:title="@string/confirmBackPressTitle" />
@@ -24,20 +24,20 @@
             android:defaultValue="@string/_16kb"
             android:entries="@array/bufferSizes"
             android:entryValues="@array/bufferSizes"
-            android:icon="@drawable/buffer_size"
+            android:icon="@drawable/ic_cloud_download_white_24dp"
             android:key="prefsBufferSize"
             android:summary="@string/bufferSizeDescription"
             android:title="@string/bufferSize" />
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_action_wifi"
+            android:icon="@drawable/ic_signal_wifi_statusbar_not_connected_white_24dp"
             android:key="prefsDisableEthernetWiFiCheck"
             android:summary="@string/disableEthernetWiFiCheckDescription"
             android:title="@string/disableEthernetWiFiCheck" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_action_download"
+            android:icon="@drawable/ic_file_download_white_24dp"
             android:key="prefsIgnoreFilesizeCheck"
             android:summary="@string/ignoreFilesizeCheck"
             android:title="@string/ignoreFilesizeCheckTitle" />
@@ -45,7 +45,7 @@
     <PreferenceCategory android:title="@string/video" >
         <CheckBoxPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_action_movie"
+            android:icon="@drawable/ic_movie_white_24dp"
             android:key="prefsIgnoreFileType"
             android:summary="@string/ignoreFileTypeDescription"
             android:title="@string/ignoreFileType" />

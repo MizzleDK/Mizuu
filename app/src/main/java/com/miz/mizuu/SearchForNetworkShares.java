@@ -181,7 +181,7 @@ public class SearchForNetworkShares extends Activity {
 
 			holder.name.setText(hosts.get(position));
 			holder.desc.setVisibility(View.GONE);
-			holder.icon.setImageResource(R.drawable.folder);
+			holder.icon.setImageResource(R.drawable.ic_folder_open_white_24dp);
 
 			return convertView;
 		}

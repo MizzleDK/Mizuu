@@ -422,14 +422,14 @@ public class FileSourceBrowserFragment extends Fragment {
 				holder.name.setText(browser.getName());
 
 				if (browser.isDirectory()) {
-					holder.icon.setImageResource(R.drawable.folder);
+					holder.icon.setImageResource(R.drawable.ic_folder_open_white_24dp);
 					holder.size.setText("");
 					holder.size.setVisibility(View.GONE);
 				} else {
 					if (MizLib.isVideoFile(browser.getName()))
-						holder.icon.setImageResource(R.drawable.ic_action_movie);
+						holder.icon.setImageResource(R.drawable.ic_movie_white_24dp);
 					else if (MizLib.isSubtitleFile(browser.getName()))
-						holder.icon.setImageResource(R.drawable.ic_action_subtitles);
+						holder.icon.setImageResource(R.drawable.ic_subtitles_white_24dp);
 					else
 						holder.icon.setImageResource(R.drawable.ic_insert_drive_file_white_24dp);
 					holder.size.setText(MizLib.filesizeToString(browser.getSize()));
@@ -479,7 +479,7 @@ public class FileSourceBrowserFragment extends Fragment {
 				holder.size = (TextView) convertView.findViewById(R.id.size);
 				holder.size.setVisibility(View.GONE);
 				holder.icon = (ImageView) convertView.findViewById(R.id.icon);
-				holder.icon.setImageResource(R.drawable.folder);
+				holder.icon.setImageResource(R.drawable.ic_folder_open_white_24dp);
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
