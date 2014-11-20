@@ -296,7 +296,6 @@
         <service android:name="com.miz.service.MakeAvailableOffline" />
         <service android:name="com.miz.service.MovieLibraryUpdate" />
         <service android:name="com.miz.service.TvShowsLibraryUpdate" />
-        <service android:name="com.miz.service.TvShowsLibraryUpdate" />
         <service android:name="com.miz.service.WireUpnpService" />
         <service android:name="com.miz.service.IdentifyTvShowService" />
         <service android:name="com.miz.service.IdentifyTvShowEpisodeService" />
