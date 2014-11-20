@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <group
+        android:id="@+id/group1"
+        android:enabled="true"
+        android:visible="true" >
+        <item
+            android:id="@+id/remove_all"
+            android:enabled="true"
+            android:icon="@drawable/ic_delete_white_24dp"
+            android:title="@string/removeAll">
+        </item>
+    </group>
+
+</menu>

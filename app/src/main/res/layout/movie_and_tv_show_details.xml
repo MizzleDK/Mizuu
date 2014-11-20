@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.miz.views.ObservableScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/observableScrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:scaleType="centerCrop"
+                    android:id="@+id/imageBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/backdrop_portrait_height"
+                    android:src="@drawable/bg" />
+
+                <com.melnykov.fab.FloatingActionButton
+                    android:id="@+id/fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_playback_play"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="false"
+                    android:layout_marginRight="@dimen/content_details_baseline_margin"
+                    android:layout_marginTop="@dimen/content_details_fab_negative_margin"
+                    android:layout_below="@+id/imageBackground"
+                    android:paddingRight="8dp"
+                    app:fab_type="mini"/>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cardview"
+                    android:layout_below="@+id/imageBackground"
+                    android:transitionName="cover"
+                    android:layout_width="@dimen/content_details_portrait_thumb_width"
+                    android:layout_height="@dimen/content_details_portrait_thumb_height"
+                    android:layout_marginLeft="@dimen/content_details_baseline_margin"
+                    android:layout_marginBottom="@dimen/content_details_baseline_margin"
+                    android:layout_marginTop="@dimen/content_details_portrait_thumb_negative_margin">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/traktIcon"
+                        android:src="@drawable/loading_image"
+                        android:scaleType="centerCrop" />
+
+                </android.support.v7.widget.CardView>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/fab"
+                    android:layout_toRightOf="@+id/cardview"
+                    android:layout_marginTop="@dimen/content_details_title_margin_top"
+                    android:layout_marginLeft="@dimen/content_details_baseline_margin"
+                    android:layout_marginStart="@dimen/content_details_baseline_margin"
+                    android:layout_toLeftOf="@+id/fab"
+                    android:layout_toStartOf="@+id/fab"
+                    android:id="@+id/linearLayout">
+
+                    <TextView
+                        android:id="@+id/movieTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="A Million Ways to Die in the West"
+                        android:maxLines="3"
+                        android:ellipsize="end"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/content_details_title" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="May 2014"
+                        android:id="@+id/textReleaseDate"
+                        android:layout_marginTop="@dimen/content_details_small_margin"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/content_details_subheader" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="Comedy, Western"
+                        android:id="@+id/textView7"
+                        android:layout_marginTop="@dimen/content_details_very_small_margin"
+                        android:layout_marginBottom="@dimen/content_details_baseline_margin"
+                        android:textStyle="bold|italic"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/content_details_subheader" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/details_area"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/content_details_large_margin"
+                android:background="#666"
+                android:elevation="4dp"
+                android:paddingTop="@dimen/content_details_small_margin"
+                android:paddingLeft="@dimen/content_details_baseline_margin"
+                android:paddingRight="@dimen/content_details_baseline_margin"
+                android:paddingBottom="@dimen/content_details_small_margin">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/detailsRunTime"
+                        android:id="@+id/TextView03"
+                        android:textSize="@dimen/content_details_area_subheader" />
+
+                    <TextView
+                        android:gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="1 hr 56 mins"
+                        android:id="@+id/textView9"
+                        android:textSize="@dimen/content_details_area_header"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/detailsCertification"
+                        android:id="@+id/TextView01"
+                        android:textSize="@dimen/content_details_area_subheader" />
+
+                    <TextView
+                        android:gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="R"
+                        android:id="@+id/textView11"
+                        android:textSize="@dimen/content_details_area_header"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/detailsRating"
+                        android:id="@+id/textView61"
+                        android:textSize="@dimen/content_details_area_subheader" />
+
+                    <TextView
+                        android:gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="61 %"
+                        android:id="@+id/textView12"
+                        android:textSize="@dimen/content_details_area_header"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/details_area"
+                android:padding="@dimen/content_details_baseline_margin" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Bring protection"
+                    android:id="@+id/textView6"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/content_details_subheader" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Medium Text"
+                    android:textSize="@dimen/content_details_body_text"
+                    android:id="@+id/textView2"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp" />
+
+                <com.miz.views.HorizontalCardLayout
+                    android:id="@+id/horizontal_card_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <com.miz.views.HorizontalCardLayout
+                    android:id="@+id/horizontal_card_layout_extra"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/details_medium_padding"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/file"
+                    android:drawablePadding="@dimen/details_small_padding"
+                    android:layout_marginTop="@dimen/details_medium_padding"
+                    android:gravity="center_vertical"
+                    android:textColor="#FFFFFF"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="@dimen/content_details_filepath" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.miz.views.ObservableScrollView>
+
+    <FrameLayout
+        android:id="@+id/progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <include layout="@layout/toolbar_layout" />
+
+</FrameLayout>

@@ -1,0 +1,99 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/prefsIdentification" >
+        <Preference
+            android:icon="@drawable/ic_language_white_24dp"
+            android:key="prefsLanguagePreference"
+            android:summary="@string/set_pref_language_description"
+            android:title="@string/set_pref_language_title" />
+        <Preference
+            android:fragment="com.miz.mizuu.fragments.CustomTagsFragment"
+            android:icon="@drawable/ic_action_tags"
+            android:summary="@string/ignoreFilenameTagsDescription"
+            android:title="@string/ignoredFilenameTagsTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefsSearchNavTitle" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:icon="@drawable/folder"
+            android:key="prefsEnableSubFolderSearch"
+            android:summary="@string/prefsSubfolderSearch"
+            android:title="@string/prefsSubfolderSearchTitle" />
+
+        <ListPreference
+            android:defaultValue="@string/smallFilesOption_2"
+            android:dialogTitle="@string/setFileSizeLimit"
+            android:entries="@array/smallFiles"
+            android:entryValues="@array/smallFiles"
+            android:icon="@drawable/ignoresmallfiles"
+            android:key="prefsIgnoreFilesSize"
+            android:summary="@string/ignoreSmallFilesDescription"
+            android:title="@string/setFileSizeLimit" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_insert_drive_file_white_24dp"
+            android:key="prefsIgnoreNfoFiles"
+            android:summary="@string/ignorenfo"
+            android:title="@string/ignorenfotitle" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_delete_white_24dp"
+            android:key="prefsIgnoredFilesEnabled"
+            android:summary="@string/includePreviouslyRemovedFiles"
+            android:title="@string/includePreviouslyRemovedFilesTitle" />
+
+        <Preference
+            android:fragment="com.miz.mizuu.fragments.IgnoredFilesFragment"
+            android:icon="@drawable/ic_action_list_2"
+            android:key="prefsIgnoredFiles"
+            android:summary="@string/ignoredFilesDescription"
+            android:title="@string/ignoredFilesTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/chooserMovies" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_action_lock_closed"
+            android:key="prefsIncludeAdultContent"
+            android:summary="@string/includeAdultContentDescription"
+            android:title="@string/includeAdultContent" />
+
+        <ListPreference
+            android:defaultValue="@string/ratings_option_1"
+            android:dialogTitle="@string/selectSourceForMovieRatings"
+            android:entries="@array/rating_options"
+            android:entryValues="@array/rating_options"
+            android:icon="@drawable/ic_action_ratings"
+            android:key="prefsMovieRatingsSource"
+            android:summary="@string/dataSourceOfMovieRatings"
+            android:title="@string/sourceForMovieRatings" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/chooserTVShows" >
+        <ListPreference
+            android:defaultValue="@string/ratings_option_0"
+            android:dialogTitle="@string/select_data_source_shows"
+            android:entries="@array/show_data_source"
+            android:entryValues="@array/show_data_source"
+            android:icon="@drawable/ic_action_tv"
+            android:key="prefsShowsDataSource"
+            android:summary="@string/data_source_shows_description"
+            android:title="@string/data_source_shows" />
+        <ListPreference
+            android:defaultValue="@string/ratings_option_2"
+            android:dialogTitle="@string/selectSourceForShowRatings"
+            android:entries="@array/rating_options_shows"
+            android:entryValues="@array/rating_options_shows"
+            android:icon="@drawable/ic_action_ratings"
+            android:key="prefsShowsRatingsSource"
+            android:summary="@string/dataSourceOfShowRatings"
+            android:title="@string/sourceForShowRatings" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_sort_white_24dp"
+            android:key="prefsDvdOrdering"
+            android:summary="@string/use_dvd_order_description"
+            android:title="@string/use_dvd_order" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

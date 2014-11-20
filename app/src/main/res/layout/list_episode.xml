@@ -1,0 +1,63 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:id="@+id/card_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <com.miz.views.AspectRatioImageViewBackdrop
+            android:id="@+id/cover"
+            android:layout_width="@dimen/backdrop_thumbnail_width"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:id="@+id/list_season_text_area"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/movie_details_padding"
+            android:paddingRight="@dimen/movie_details_padding"
+            android:paddingBottom="@dimen/details_very_small_padding"
+            android:paddingTop="@dimen/details_very_small_padding">
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/card_title_color"
+                android:textIsSelectable="false"
+                android:textSize="@dimen/details_text_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/gridCoverSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#666"
+                android:textIsSelectable="false"
+                android:textSize="@dimen/season_list_subtitle"
+                android:textStyle="italic" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/highlight"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@color/gridview_highlight"
+        android:visibility="gone" />
+
+</FrameLayout>

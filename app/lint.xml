@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <issue id="AlwaysShowAction">
+        <ignore path="res/menu/menu.xml" />
+        <ignore path="res/menu/menutv.xml" />
+    </issue>
+    <issue id="ExtraTranslation" severity="warning" />
+    <issue id="ImpliedQuantity" severity="ignore" />
+    <issue id="InvalidPackage" severity="ignore" />
+    <issue id="MergeRootFrame">
+        <ignore path="res/layout/actionbar_discard_button.xml" />
+        <ignore path="res/layout/actionbar_done_button.xml" />
+        <ignore path="res/layout/actionbar_send_button.xml" />
+    </issue>
+    <issue id="MissingQuantity" severity="ignore" />
+    <issue id="MissingRegistered" severity="ignore">
+        <ignore path="res/layout/seasons_grid.xml" />
+        <ignore path="res/layout/viewpager.xml" />
+    </issue>
+    <issue id="MissingTranslation" severity="ignore">
+        <ignore path="res/values/arrays.xml" />
+    </issue>
+    <issue id="NestedWeights">
+        <ignore path="res/layout-xlarge-port-mdpi/showdetails.xml" />
+    </issue>
+    <issue id="NewApi" severity="warning">
+        <ignore path="src/com/miz/mizuu_beta/UpdateShowsService.java" />
+    </issue>
+    <issue id="ParserError" severity="ignore" />
+    <issue id="Registered">
+        <ignore path="src/com/miz/base/MizActivity.java" />
+    </issue>
+    <issue id="UnusedResources">
+        <ignore path="res/xml/preferences.xml" />
+        <ignore path="res/xml/preferences2.xml" />
+        <ignore path="res/xml/preferences3.xml" />
+        <ignore path="res/xml/preferences4.xml" />
+    </issue>
+    <issue id="UseCompoundDrawables">
+        <ignore path="res/layout-normal-port-xhdpi/moviedetails.xml" />
+        <ignore path="res/layout-normal-port-xhdpi/new_showdetails.xml" />
+    </issue>
+</lint>

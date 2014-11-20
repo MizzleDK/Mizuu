@@ -1,21 +1,27 @@
+#built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
 bin/
 gen/
-.externalToolBuilders/org.eclipse.cdt.managedbuilder.core.genmakebuilder.launch
-.idea/ant.xml
-.idea/compiler.xml
-.idea/copyright/profiles_settings.xml
-.idea/encodings.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/scopes/scope_settings.xml
-.idea/uiDesigner.xml
-.idea/vcs.xml
-.idea/workspace.xml
-.settings/org.eclipse.jdt.core.prefs
-.settings/org.eclipse.ltk.core.refactoring.prefs
-.idea/.name
-.idea/gradle.xml
+
+# Local configuration file (sdk path, etc)
 local.properties
-res/drawable-hdpi/Thumbs.db
-res/values/com_crashlytics_export_strings.xml
-res/values/api_keys.xml
+
+# Windows thumbnail db
+Thumbs.db
+
+# OSX files
+.DS_Store
+
+# Android Studio
+.idea
+.gradle
+build/

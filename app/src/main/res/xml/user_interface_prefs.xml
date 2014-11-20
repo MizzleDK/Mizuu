@@ -1,0 +1,84 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/prefsUIGeneral" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/titles"
+            android:key="prefsShowGridTitles"
+            android:summary="@string/prefsShowGridTitles"
+            android:title="@string/prefsShowGridTitlesTitle" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/titles"
+            android:key="prefsIgnorePrefixesInTitles"
+            android:summary="@string/ignoreMoviePrefixesDescription"
+            android:title="@string/ignoreMoviePrefixes" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_action_expand"
+            android:key="prefsFullscreen"
+            android:summary="@string/fullscreenModeDescription"
+            android:title="@string/fullscreenMode" />
+
+        <ListPreference
+            android:defaultValue="@string/normal"
+            android:entries="@array/grid_item_size"
+            android:entryValues="@array/grid_item_size"
+            android:icon="@drawable/ic_action_tiles_large"
+            android:key="prefsGridItemSize"
+            android:summary="@string/overviewGridItemSizeDescription"
+            android:title="@string/overviewGridItemSizeTitle" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/backdrops"
+            android:key="prefsBlurBackdrops"
+            android:summary="@string/blur_backdrops_description"
+            android:title="@string/blur_backdrops" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_insert_drive_file_white_24dp"
+            android:key="prefsShowFileLocation"
+            android:summary="@string/show_file_location_description"
+            android:title="@string/show_file_location" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/chooserTVShows" >
+        <ListPreference
+            android:defaultValue="@string/listView"
+            android:entries="@array/seasonsLayout"
+            android:entryValues="@array/seasonsLayout"
+            android:icon="@drawable/ic_action_list_grid"
+            android:key="prefsSeasonsLayout"
+            android:summary="@string/setEpisodesLayoutDescription"
+            android:title="@string/setEpisodeLayout" />
+        <ListPreference
+            android:defaultValue="@string/oldestFirst"
+            android:dialogTitle="@string/tvShowEpisodesOrderType"
+            android:entries="@array/episodesOrder"
+            android:entryValues="@array/episodesOrder"
+            android:icon="@drawable/ic_sort_white_24dp"
+            android:key="prefsEpisodesOrder"
+            android:summary="@string/tvShowEpisodesOrderTypeDescription"
+            android:title="@string/tvShowEpisodesOrderType" />
+        <ListPreference
+            android:defaultValue="@string/oldestFirst"
+            android:dialogTitle="@string/tvShowSeasonsOrderType"
+            android:entries="@array/episodesOrder"
+            android:entryValues="@array/episodesOrder"
+            android:icon="@drawable/ic_sort_white_24dp"
+            android:key="prefsSeasonsOrder"
+            android:summary="@string/tvShowSeasonsOrderTypeDescription"
+            android:title="@string/tvShowSeasonsOrderType" />
+        <ListPreference
+            android:defaultValue="@string/showDetails"
+            android:dialogTitle="@string/tv_shows_start_page_title"
+            android:entries="@array/tv_shows_start_page"
+            android:entryValues="@array/tv_shows_start_page"
+            android:icon="@drawable/ic_action_settings"
+            android:key="prefsTvShowsStartPage"
+            android:summary="@string/tv_shows_start_page_description"
+            android:title="@string/tv_shows_start_page_title" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

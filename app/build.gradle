@@ -1,0 +1,70 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.0.2"
+
+    defaultConfig {
+        applicationId "com.miz.mizuu"
+        minSdkVersion 15
+        targetSdkVersion 21
+
+        testApplicationId "com.miz.test"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url 'http://4thline.org/m2'
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.google.guava:guava:16.0.1'
+    compile 'com.android.support:support-v4:21.0.+'
+    compile 'com.android.support:appcompat-v7:21.0.+'
+    compile 'com.android.support:palette-v7:21.0.+'
+    compile 'com.android.support:mediarouter-v7:21.0.+'
+    compile 'com.android.support:recyclerview-v7:+'
+    compile 'com.android.support:cardview-v7:21.+'
+    compile 'com.squareup.picasso:picasso:2.3.4'
+    compile 'com.squareup.okhttp:okhttp:2.1.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.1.0'
+    compile 'com.squareup.okio:okio:1.0.1'
+    compile 'com.squareup:otto:1.3.4'
+    compile 'com.jpardogo.materialtabstrip:library:1.0.4+'
+    compile files('libs/cling-core-1.0.5.jar')
+    compile files('libs/cling-support-1.0.5.jar')
+    compile files('libs/jcifs.jar')
+    compile files('libs/teleal-common-1.0.13.jar')
+    compile files('libs/YouTubeAndroidPlayerApi.jar')
+
+/**
+ * // Cling
+ compile group: 'org.fourthline.cling', name: 'cling-core', version:'2.0.1'
+ compile group: 'org.fourthline.cling', name: 'cling-support', version:'2.0.1'
+ compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'8.1.12.v20130726'
+ compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version:'8.1.12.v20130726'
+ compile group: 'org.eclipse.jetty', name: 'jetty-client', version:'8.1.12.v20130726'
+ compile group: 'org.slf4j', name: 'slf4j-jdk14', version:'1.7.5'
+ */
+
+}

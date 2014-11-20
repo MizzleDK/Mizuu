@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:scaleType="centerCrop"
+        android:id="@+id/imageBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg" />
+
+    <com.miz.views.ObservableScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/observableScrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <View
+                android:id="@+id/empty_view"
+                android:layout_height="100dp"
+                android:layout_width="match_parent" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/content_details_main_height" >
+
+                <View
+                    android:id="@+id/background_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#F0303030"
+                    android:layout_marginTop="@dimen/content_details_large_margin"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/cardview"
+                        android:layout_width="@dimen/content_details_thumb_width"
+                        android:layout_height="@dimen/content_details_thumb_height"
+                        android:layout_marginLeft="@dimen/content_details_baseline_margin"
+                        android:layout_marginBottom="@dimen/content_details_baseline_margin">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/actor_image"
+                            android:src="@drawable/noactor"
+                            android:scaleType="centerCrop" />
+
+                    </android.support.v7.widget.CardView>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/fab"
+                        android:layout_toRightOf="@+id/cardview"
+                        android:paddingTop="@dimen/content_details_baseline_margin"
+                        android:layout_marginTop="@dimen/content_details_large_margin"
+                        android:layout_marginLeft="@dimen/content_details_baseline_margin"
+                        android:layout_marginStart="@dimen/content_details_baseline_margin"
+                        android:layout_marginBottom="@dimen/content_details_area_margin"
+                        android:paddingRight="@dimen/content_details_baseline_margin"
+                        android:id="@+id/linearLayout">
+
+                        <TextView
+                            android:id="@+id/actor_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:maxLines="3"
+                            android:ellipsize="end"
+                            android:textColor="#FFFFFF"
+                            android:textSize="@dimen/content_details_title" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:id="@+id/place_of_birth"
+                            android:layout_marginTop="@dimen/content_details_small_margin"
+                            android:textStyle="bold"
+                            android:textColor="#FFFFFF"
+                            android:textSize="@dimen/content_details_subheader" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/details_area"
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="@dimen/content_details_large_margin"
+                        android:background="#666"
+                        android:elevation="4dp"
+                        android:layout_below="@id/linearLayout"
+                        android:layout_toRightOf="@id/cardview"
+                        android:paddingTop="@dimen/content_details_small_margin"
+                        android:paddingLeft="@dimen/content_details_baseline_margin"
+                        android:paddingRight="@dimen/content_details_area_right_padding"
+                        android:paddingBottom="@dimen/content_details_small_margin" >
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center_horizontal"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:gravity="center_horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:text="@string/birthday"
+                                android:id="@+id/TextView03"
+                                android:textSize="@dimen/content_details_area_subheader" />
+
+                            <TextView
+                                android:gravity="center_horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:id="@+id/actor_birthday"
+                                android:textSize="@dimen/content_details_area_header"
+                                android:textColor="#FFFFFF"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center_horizontal"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:gravity="center_horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:text="@string/actor_known_credits"
+                                android:id="@+id/textView61"
+                                android:textSize="@dimen/content_details_area_subheader" />
+
+                            <TextView
+                                android:gravity="center_horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:id="@+id/actor_known_credits"
+                                android:textSize="@dimen/content_details_area_header"
+                                android:textColor="#FFFFFF"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_below="@+id/details_area"
+                        android:layout_alignLeft="@+id/details_area"
+                        android:paddingTop="@dimen/content_details_area_margin"
+                        android:paddingLeft="@dimen/content_details_baseline_margin"
+                        android:paddingRight="@dimen/content_details_area_right_padding" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="#FFFFFF"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textSize="@dimen/content_details_body_text"
+                            android:id="@+id/actor_biography"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="12dp" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/background_view_more"
+                android:background="#F0303030"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@+id/details_area"
+                android:paddingBottom="@dimen/content_details_baseline_margin"
+                android:paddingLeft="@dimen/content_details_baseline_margin"
+                android:paddingRight="@dimen/content_details_baseline_margin" >
+
+                <com.miz.views.HorizontalCardLayout
+                    android:id="@+id/actor_movie_cards"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/details_medium_padding" />
+
+                <com.miz.views.HorizontalCardLayout
+                    android:id="@+id/actor_tv_cards"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/details_medium_padding" />
+
+                <com.miz.views.HorizontalCardLayout
+                    android:id="@+id/actor_photo_cards"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/details_medium_padding" />
+
+                <com.miz.views.HorizontalCardLayout
+                    android:id="@+id/actor_tagged_photo_cards"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/details_medium_padding" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.miz.views.ObservableScrollView>
+
+    <FrameLayout
+        android:id="@+id/progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <include layout="@layout/toolbar_layout" />
+
+</FrameLayout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight">
+    <item>
+        <selector android:exitFadeDuration="@android:integer/config_mediumAnimTime">
+
+            <item android:drawable="@color/pressed" android:state_pressed="true"/>
+            <item android:drawable="@android:color/transparent"/>
+
+        </selector>
+    </item>
+</ripple>

@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/cancel_editing"
+        android:icon="@drawable/ic_action_discard"
+        app:showAsAction="ifRoom"
+        android:title="@string/cancel" />
+    <item
+        android:id="@+id/done_editing"
+        android:icon="@drawable/ic_done_white_24dp"
+        app:showAsAction="ifRoom"
+        android:title="@string/done" />
+
+</menu>
