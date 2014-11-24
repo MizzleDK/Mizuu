@@ -41,9 +41,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.miz.apis.thetvdb.TheTVDbService;
 import com.miz.apis.tmdb.TMDbMovieService;
+import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.mizuu.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,17 +63,18 @@ public class RemotePlaybackFragment extends Fragment {
 	private Menu mMenu;
 	private ImageView mBackgroundImage;
 	
-	private String mVideoUrl, mTitle, mCoverUrl, mId;
+	private String mVideoUrl, mTitle, mCoverUrl, mId, mType;
 
 	public RemotePlaybackFragment() {} // Empty constructor
 	
-	public static RemotePlaybackFragment newInstance(String videoUrl, String coverUrl, String title, String id) {
+	public static RemotePlaybackFragment newInstance(String videoUrl, String coverUrl, String title, String id, String type) {
 		RemotePlaybackFragment fragment = new RemotePlaybackFragment();
 		Bundle args = new Bundle();
 		args.putString("videoUrl", videoUrl);
 		args.putString("coverUrl", coverUrl);
 		args.putString("title", title);
         args.putString("id", id);
+        args.putString("type", type);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -87,6 +91,7 @@ public class RemotePlaybackFragment extends Fragment {
 		mCoverUrl = arguments.getString("coverUrl");
 		mTitle = arguments.getString("title");
         mId = arguments.getString("id");
+        mType = arguments.getString("type");
 		
 		mMediaRouteSelector = new MediaRouteSelector.Builder().addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK).build();
 
@@ -341,19 +346,31 @@ public class RemotePlaybackFragment extends Fragment {
         @Override
         protected String doInBackground(Void... params) {
 
-            TMDbMovieService service = TMDbMovieService.getInstance(getActivity());
-            List<String> covers = service.getCovers(mId);
+            List<String> covers = new ArrayList<String>();
 
-            if (covers.size() > 0) {
-                return covers.get(0);
+            if (mType.equals("movie")) {
+                TMDbMovieService service = TMDbMovieService.getInstance(getActivity());
+                covers = service.getCovers(mId);
+            } else {
+                if (mId.startsWith("tmdb_")) {
+                    TMDbTvShowService service = TMDbTvShowService.getInstance(getActivity());
+                    covers = service.getCovers(mId.replace("tmdb_", ""));
+                } else {
+                    TheTVDbService service = TheTVDbService.getInstance(getActivity());
+                    covers = service.getCovers(mId);
+                }
             }
 
+            if (covers.size() > 0)
+                return covers.get(0);
             return null;
         }
 
         protected void onPostExecute(String result) {
             if (!TextUtils.isEmpty(result))
                 mCoverUrl = result;
+
+            System.out.println("COVER: " + mCoverUrl);
         }
     }
 }

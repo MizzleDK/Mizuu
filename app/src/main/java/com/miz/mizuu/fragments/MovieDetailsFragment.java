@@ -538,6 +538,7 @@ public class MovieDetailsFragment extends Fragment {
                                 i.putExtra("coverUrl", "");
                                 i.putExtra("title", mMovie.getTitle());
                                 i.putExtra("id", mMovie.getTmdbId());
+                                i.putExtra("type", "movie");
 
                                 if (networkFiles.get(which).getType() == FileSource.SMB) {
                                     String url = VideoUtils.startSmbServer(getActivity(), networkFiles.get(which).getFilepath(), mMovie);

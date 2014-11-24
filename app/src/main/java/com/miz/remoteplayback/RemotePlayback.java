@@ -33,11 +33,15 @@ public class RemotePlayback extends MizActivity {
 		final String coverUrl = extras.getString("coverUrl");
 		final String title = extras.getString("title");
         final String id = extras.getString("id");
+        final String type = extras.getString("type", "movie");
+
+        System.out.println("ID: " + title);
+
 
 		final FragmentManager fm = getSupportFragmentManager();
 		
 		if (fm.findFragmentById(android.R.id.content) == null) {
-			fm.beginTransaction().add(android.R.id.content, RemotePlaybackFragment.newInstance(videoUrl, coverUrl, title, id)).commit();
+			fm.beginTransaction().add(android.R.id.content, RemotePlaybackFragment.newInstance(videoUrl, coverUrl, title, id, type)).commit();
 		}
 	}
 

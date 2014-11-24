@@ -40,9 +40,6 @@ public class TvShowSeasons extends MizActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-
         if (isFullscreen())
             setTheme(R.style.Mizuu_Theme_NoBackground_FullScreen);
         else

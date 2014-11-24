@@ -16,7 +16,6 @@
 
 package com.miz.mizuu;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -28,6 +27,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -37,6 +37,7 @@ import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.TvShowEpisodeDetailsFragment;
+import com.miz.utils.ViewUtils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -52,33 +53,23 @@ public class TvShowEpisodeDetails extends MizActivity {
 	private ViewPager mViewPager;
 	private DbAdapterTvShowEpisodes mDatabaseHelper;
 	private Bus mBus;
-	private Drawable mActionBarBackgroundDrawable;
-	private ImageView mActionBarOverlay;
-	private ActionBar mActionBar;
 
 	@Override
 	protected int getLayoutResource() {
-		return R.layout.viewpager;
+		return R.layout.viewpager_with_toolbar_overlay;
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		mBus = MizuuApplication.getBus();
-
-		if (isFullscreen())
-			setTheme(R.style.Mizuu_Theme_NoBackground_FullScreen);
-		else
-			setTheme(R.style.Mizuu_Theme_NoBackground);
-
-		if (MizLib.isPortrait(this)) {
-			getWindow().setBackgroundDrawableResource(R.drawable.bg);
-		}
-
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-
 		super.onCreate(savedInstanceState);
-		
-		mActionBar = getActionBar();
+
+        // Set theme
+        setTheme(R.style.Mizuu_Theme_NoBackground);
+
+        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), isFullscreen(), true);
+
+        ViewUtils.setProperToolbarSize(this, mToolbar);
 
 		mShowId = getIntent().getExtras().getString(SHOW_ID);
 		mSeason = getIntent().getExtras().getInt("season");
@@ -109,16 +100,14 @@ public class TvShowEpisodeDetails extends MizActivity {
 		}
 
 		mShowTitle = MizuuApplication.getTvDbAdapter().getShowTitle(mShowId);
-		mActionBar.setTitle(mShowTitle);
+        setTitle(mShowTitle);
 
 		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
 		mViewPager.setAdapter(new TvShowEpisodeDetailsAdapter(getSupportFragmentManager()));
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				updateActionBar(position);
-
-				updateActionBarDrawable(1, true, false);
+                ViewUtils.updateToolbarBackground(TvShowEpisodeDetails.this, mToolbar, 0, mEpisodes.get(position).getTitle(), Color.TRANSPARENT);
 			}
 		});
 
@@ -128,7 +117,6 @@ public class TvShowEpisodeDetails extends MizActivity {
 			for (int i = 0; i < mEpisodes.size(); i++) {
 				if (mEpisodes.get(i).getSeason().equals(MizLib.addIndexZero(mSeason)) && mEpisodes.get(i).getEpisode().equals(MizLib.addIndexZero(mEpisode))) {
 					mViewPager.setCurrentItem(i);
-					updateActionBar(i);
 					continue;
 				}
 			}
@@ -136,35 +124,16 @@ public class TvShowEpisodeDetails extends MizActivity {
 	}
 
 	@Subscribe
-	public void onScrollChanged(Integer newAlpha) {
-		updateActionBarDrawable(newAlpha, true, false);
-	}
-
-	private void updateActionBarDrawable(int newAlpha, boolean setBackground, boolean showActionBar) {
-		mActionBarOverlay.setVisibility(View.VISIBLE);
-
-		if (MizLib.isPortrait(this) && !MizLib.isTablet(this) && !MizLib.usesNavigationControl(this))
-			if (newAlpha == 0) {
-				mActionBar.hide();
-				mActionBarOverlay.setVisibility(View.GONE);
-			} else
-				mActionBar.show();
-
-		if (setBackground) {
-			mActionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
-			mActionBarOverlay.setImageDrawable(mActionBarBackgroundDrawable);
-		}
-
-		if (showActionBar) {
-			mActionBar.show();
-		}
+	public void onScrollChanged(TvShowEpisodeDetailsFragment.BusToolbarColorObject object) {
+        ViewUtils.updateToolbarBackground(this, mToolbar, object.getAlpha(),
+                mEpisodes.get(mViewPager.getCurrentItem()).getTitle(), object.getToolbarColor());
 	}
 
 	public void onResume() {
 		super.onResume();
 
 		mBus.register(this);
-		updateActionBarDrawable(1, true, true);
+        ViewUtils.updateToolbarBackground(this, mToolbar, 0, mShowTitle, Color.TRANSPARENT);
 	}
 
 	@Override
@@ -188,17 +157,13 @@ public class TvShowEpisodeDetails extends MizActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		mActionBar.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("tab", mViewPager.getCurrentItem());
-	}
-
-	private void updateActionBar(int position) {
-		mActionBar.setSubtitle("S" + mEpisodes.get(position).getSeason() + "E" + mEpisodes.get(position).getEpisode());
 	}
 
 	private class TvShowEpisodeDetailsAdapter extends FragmentPagerAdapter {

@@ -77,6 +77,8 @@ public class WebVideosViewPagerFragment extends Fragment {
         mTabs = (PagerSlidingTabStrip) v.findViewById(R.id.tabs);
         mTabs.setShouldExpand(true);
         mTabs.setViewPager(mViewPager);
+        if (MizLib.hasLollipop())
+            mTabs.setElevation(4);
 
         if (MizLib.hasLollipop())
             ((ActionBarActivity) getActivity()).getSupportActionBar().setElevation(0);

@@ -190,6 +190,9 @@ public class MovieDiscoveryViewPagerFragment extends Fragment {
         mViewPager.setAdapter(new WebVideosAdapter(getChildFragmentManager()));
         mTabs.setViewPager(mViewPager);
         mTabs.setVisibility(View.VISIBLE);
+        if (MizLib.hasLollipop())
+            mTabs.setElevation(4);
+
         mProgressBar.setVisibility(View.GONE);
     }
 }

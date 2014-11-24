@@ -4,7 +4,7 @@
     android:layout_height="match_parent" >
 
     <com.miz.views.ObservableScrollView
-        android:id="@+id/scrollView1"
+        android:id="@+id/observableScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:overScrollMode="never" >
@@ -40,15 +40,15 @@
                     android:layout_marginLeft="@dimen/details_padding"
                     android:layout_marginRight="@dimen/details_padding"
                     android:layout_marginTop="@dimen/details_padding"
-                    android:ellipsize="end"
-                    android:maxLines="3"
                     android:shadowColor="#000"
                     android:shadowDx="1.0"
                     android:shadowDy="1.0"
                     android:shadowRadius="1.0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#f0f0f0"
-                    android:textSize="@dimen/details_large_font_size" />
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/content_details_title" />
                 
                 <TextView
                     android:id="@+id/textView7"
@@ -66,18 +66,16 @@
 
                 <LinearLayout
                     android:id="@+id/details_area"
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/details_medium_padding"
-                    android:layout_marginTop="@dimen/details_padding"
+                    android:minHeight="@dimen/content_details_large_margin"
                     android:background="#666"
-                    android:baselineAligned="false"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal"
-                    android:paddingBottom="@dimen/details_between_padding"
-                    android:paddingLeft="@dimen/details_large_padding"
-                    android:paddingRight="@dimen/details_medium_padding"
-                    android:paddingTop="@dimen/details_between_padding" >
+                    android:elevation="4dp"
+                    android:paddingTop="@dimen/content_details_small_margin"
+                    android:paddingLeft="@dimen/content_details_baseline_margin"
+                    android:paddingRight="@dimen/content_details_baseline_margin"
+                    android:paddingBottom="@dimen/content_details_small_margin">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -87,6 +85,8 @@
                         android:orientation="vertical" >
 
                         <TextView
+                            android:textSize="@dimen/content_details_area_subheader"
+                            android:gravity="center_horizontal"
                             android:id="@+id/TextView03"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -94,18 +94,18 @@
                             android:lines="1"
                             android:maxLines="1"
                             android:text="@string/detailsAirDate"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textSize="@dimen/details_area_header" />
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
+                            android:gravity="center_horizontal"
+                            android:textSize="@dimen/content_details_area_header"
                             android:id="@+id/textReleaseDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:lines="1"
                             android:maxLines="1"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textSize="@dimen/details_medium_font_size" />
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -134,7 +134,8 @@
                             android:lines="1"
                             android:maxLines="1"
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textSize="@dimen/details_medium_font_size" />
+                            android:gravity="center_horizontal"
+                            android:textSize="@dimen/content_details_area_header" />
                     </LinearLayout>
                 </LinearLayout>
 
