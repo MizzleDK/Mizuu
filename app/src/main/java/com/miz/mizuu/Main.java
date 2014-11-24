@@ -26,6 +26,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -54,10 +55,13 @@ import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
+import com.miz.functions.MovieLoader;
 import com.miz.mizuu.fragments.AccountsFragment;
 import com.miz.mizuu.fragments.ContactDeveloperFragment;
 import com.miz.mizuu.fragments.MovieDiscoveryViewPagerFragment;
 import com.miz.mizuu.fragments.MovieLibraryFragment;
+import com.miz.mizuu.fragments.MovieLibraryOverviewFragment;
+import com.miz.mizuu.fragments.NewMovieLibraryFragment;
 import com.miz.mizuu.fragments.TvShowLibraryFragment;
 import com.miz.mizuu.fragments.WebVideosViewPagerFragment;
 import com.miz.utils.LocalBroadcastUtils;
@@ -190,7 +194,7 @@ public class Main extends MizActivity {
             ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
             switch (type) {
                 case MOVIES:
-                    ft.replace(R.id.content_frame, MovieLibraryFragment.newInstance(MovieLibraryFragment.MAIN), "frag" + type);
+                    ft.replace(R.id.content_frame, MovieLibraryOverviewFragment.newInstance(), "frag" + type);
                     break;
                 case SHOWS:
                     ft.replace(R.id.content_frame, TvShowLibraryFragment.newInstance(), "frag" + type);
@@ -472,6 +476,9 @@ public class Main extends MizActivity {
                     mPicasso.load(mBackdropPath).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 180)).into(backgroundImage);
                 else
                     mPicasso.load(R.drawable.default_menu_backdrop).resize(MizLib.convertDpToPixels(getApplicationContext(), 320), MizLib.convertDpToPixels(getApplicationContext(), 180)).into(backgroundImage);
+
+                // Dark color filter on the background image
+                backgroundImage.setColorFilter(Color.parseColor("#aa181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
 
                 // Take the user to the Trakt login screen
                 convertView.findViewById(R.id.personalizedArea).setOnClickListener(new View.OnClickListener() {

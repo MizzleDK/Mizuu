@@ -551,5 +551,6 @@
     <string name="early_access">Early access testing</string>
     <string name="chromecast_title">Chromecast support (preview)</string>
     <string name="chromecast_description">Enable support for casting of SMB and UPnP files.</string>
+    <string name="choiceNewReleases">New releases</string>
 
 </resources>

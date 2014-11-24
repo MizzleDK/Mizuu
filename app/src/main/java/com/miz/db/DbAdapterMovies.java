@@ -25,7 +25,10 @@ import android.text.TextUtils;
 
 import com.miz.mizuu.MizuuApplication;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class DbAdapterMovies extends AbstractDbAdapter {
 
@@ -168,7 +171,24 @@ public class DbAdapterMovies extends AbstractDbAdapter {
     }
 
     public Cursor getCollections() {
-        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, null, null, KEY_COLLECTION_ID, null, null);
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, "NOT(" + KEY_COLLECTION_ID + " = '')", null, KEY_COLLECTION_ID, null, null);
+    }
+
+    public Cursor getFavorites() {
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_FAVOURITE + " = 1", null, null, null, null);
+    }
+
+    public Cursor getNewReleases() {
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_RELEASEDATE +
+                " >= date('now', '-9 months')", null, null, null, KEY_RELEASEDATE + " DESC", "50");
+    }
+
+    public Cursor getWatched() {
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_HAS_WATCHED + " = 1", null, null, null, null);
+    }
+
+    public Cursor getUnwatched() {
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_HAS_WATCHED + " = 0", null, null, null, null);
     }
 
     public Cursor fetchMovie(String movieId) throws SQLException {

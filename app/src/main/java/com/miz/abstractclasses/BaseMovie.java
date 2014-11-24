@@ -57,11 +57,11 @@ public abstract class BaseMovie implements Comparable<BaseMovie> {
 			}
 		}
 
-		List<String> paths = MizuuApplication.getMovieFilepaths(mTmdbId);
-		if (paths != null)
-			setFilepaths(paths);
-		else
-			setFilepaths(MizuuApplication.getMovieMappingAdapter().getMovieFilepaths(getTmdbId()));
+        List<String> paths = MizuuApplication.getMovieFilepaths(mTmdbId);
+        if (paths != null)
+            setFilepaths(paths);
+        else
+            setFilepaths(MizuuApplication.getMovieMappingAdapter().getMovieFilepaths(getTmdbId()));
 	}
 
 	public String getTitle() {
