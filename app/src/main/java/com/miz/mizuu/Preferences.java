@@ -16,45 +16,71 @@
 
 package com.miz.mizuu;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import com.google.common.collect.Lists;
+import com.miz.functions.MizLib;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Preferences extends PreferenceActivity {
 
-    private Toolbar mToolbar;
+    private View mBreadcrumb;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
 
         setTheme(R.style.Mizuu_Theme_Preference);
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-	}
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-	@Override
-	public void onBuildHeaders(List<Header> target) {
-		loadHeadersFromResource(R.xml.preference_headers, target);
-	}
+    @Override
+    public void onBuildHeaders(List<Header> target) {
+        loadHeadersFromResource(R.xml.preference_headers, target);
 
-	@Override
-	protected boolean isValidFragment(String fragmentName) {
-		return true;
-	}
+        if (MizLib.hasLollipop()) {
+            // Lollipop has some strange colors for the breadcrumb title,
+            // so we're fixing it using reflection
+            mBreadcrumb = findViewById(android.R.id.title);
+            if (mBreadcrumb == null) {
+                // Single pane layout
+                return;
+            }
+
+            try {
+                final Field titleColor = mBreadcrumb.getClass().getDeclaredField("mTextColor");
+                titleColor.setAccessible(true);
+                titleColor.setInt(mBreadcrumb, Color.WHITE);
+            } catch (final Exception ignored) {}
+        }
+    }
+
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        return true;
+    }
 }

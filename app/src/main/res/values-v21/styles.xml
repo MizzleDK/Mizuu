@@ -10,6 +10,8 @@
         <item name="android:colorControlNormal">#fff</item>
         <item name="android:colorControlActivated">#fff</item>
         <item name="android:colorControlHighlight">#fff</item>
+        <item name="android:activatedBackgroundIndicator">@drawable/menu_selector</item>
+        <item name="android:textColor">#fff</item>
     </style>
 
     <style name="Button.RightAligned" parent="android:style/Widget.Material.Button" >
