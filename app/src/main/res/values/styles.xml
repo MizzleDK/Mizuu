@@ -3,7 +3,6 @@
 
     <style name="Mizuu.Theme.NoBackground" parent="@style/Mizuu.Theme">
         <item name="android:windowBackground">@null</item>
-        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
@@ -19,8 +18,6 @@
     </style>
 
     <style name="Mizuu.Theme.Translucent" parent="@style/Mizuu.Theme">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="Mizuu.Theme.Translucent.FullScreen" parent="@style/Mizuu.Theme.Translucent">
@@ -43,11 +40,6 @@
         <item name="colorControlActivated">#fff</item>
         <item name="colorControlHighlight">#fff</item>
         <item name="colorSwitchThumbNormal">#b0b0b0</item>
-        <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
-        <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
-        <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
     </style>
 
     <style name="Mizuu.Theme.ActionButton.Overflow" parent="@style/Widget.AppCompat.ActionButton.Overflow">

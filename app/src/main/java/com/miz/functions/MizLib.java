@@ -2175,7 +2175,7 @@ public class MizLib {
         StringBuilder sb = new StringBuilder();
         for (String s : filenames) {
             sb.append(s);
-            sb.append(",");
+            sb.append("<MiZ>");
         }
         sb.substring(0, sb.length() - 1);
 

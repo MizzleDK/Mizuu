@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <style name="Mizuu.Theme" parent="Theme.AppCompat">
+        <item name="android:listSelector">@drawable/list_selector</item>
+        <item name="android:windowBackground">@drawable/bg</item>
+        <item name="android:editTextStyle">@style/RobotoEditTextStyle</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
+        <item name="actionOverflowButtonStyle">@style/Mizuu.Theme.ActionButton.Overflow</item>
+        <item name="colorPrimary">#3f51b5</item>
+        <item name="colorAccent">#1a237e</item>
+        <item name="colorPrimaryDark">#1a237e</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="colorControlNormal">#aaffffff</item>
+        <item name="colorControlActivated">#fff</item>
+        <item name="colorControlHighlight">#fff</item>
+        <item name="colorSwitchThumbNormal">#b0b0b0</item>
+    </style>
+
     <style name="Mizuu.Theme.Preference" parent="android:Theme.Material">
         <item name="android:windowBackground">@drawable/bg</item>
         <item name="android:colorPrimary">#3f51b5</item>
