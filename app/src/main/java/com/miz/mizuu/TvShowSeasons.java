@@ -59,7 +59,7 @@ public class TvShowSeasons extends MizActivity {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(TAG);
         if (frag == null) {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.content, TvShowSeasonsFragment.newInstance(mShowId, MizLib.isTablet(this) && !MizLib.isPortrait(this), mToolbarColor), TAG);
+            ft.add(R.id.content, TvShowSeasonsFragment.newInstance(mShowId, mToolbarColor), TAG);
             ft.commit();
         }
     }

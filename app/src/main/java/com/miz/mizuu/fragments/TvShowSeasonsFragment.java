@@ -73,420 +73,400 @@ import java.util.Set;
 
 public class TvShowSeasonsFragment extends Fragment {
 
-	private static final String SHOW_ID = "showId";
-	private static final String DUAL_PANE = "dualPane";
-	private static final String SEASON = "season";
-	private static final String EPISODE_COUNT = "episodeCount";
+    private static final String SHOW_ID = "showId";
+    private static final String SEASON = "season";
+    private static final String EPISODE_COUNT = "episodeCount";
 
-	private Set<Integer> mCheckedSeasons = new HashSet<Integer>();
-	private List<GridSeason> mItems = new ArrayList<GridSeason>();
-	private int mImageThumbSize, mImageThumbSpacing, mSelectedIndex;
-	private GridView mGridView;
-	private ProgressBar mProgressBar;
-	private ImageAdapter mAdapter;
-	private String mShowId;
-	private Picasso mPicasso;
-	private Config mConfig;
-	private boolean mDualPane, mContextualActionBarEnabled;
-	private Bus mBus;
-	private Context mContext;
+    private Set<Integer> mCheckedSeasons = new HashSet<Integer>();
+    private List<GridSeason> mItems = new ArrayList<GridSeason>();
+    private int mImageThumbSize, mImageThumbSpacing, mSelectedIndex;
+    private GridView mGridView;
+    private ProgressBar mProgressBar;
+    private ImageAdapter mAdapter;
+    private String mShowId;
+    private Picasso mPicasso;
+    private Config mConfig;
+    private boolean mContextualActionBarEnabled;
+    private Bus mBus;
+    private Context mContext;
     private int mToolbarColor;
 
-	public static TvShowSeasonsFragment newInstance(String showId, boolean dualPane, int color) {
-		TvShowSeasonsFragment frag = new TvShowSeasonsFragment();
-		Bundle b = new Bundle();
-		b.putString(SHOW_ID, showId);
-		b.putBoolean(DUAL_PANE, dualPane);
+    public static TvShowSeasonsFragment newInstance(String showId, int color) {
+        TvShowSeasonsFragment frag = new TvShowSeasonsFragment();
+        Bundle b = new Bundle();
+        b.putString(SHOW_ID, showId);
         b.putInt(IntentKeys.TOOLBAR_COLOR, color);
-		frag.setArguments(b);
-		return frag;
-	}
+        frag.setArguments(b);
+        return frag;
+    }
 
-	public TvShowSeasonsFragment() {}
+    public TvShowSeasonsFragment() {}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		mContext = getActivity().getApplicationContext();
+        mContext = getActivity().getApplicationContext();
 
-		mBus = MizuuApplication.getBus();
-		mBus.register(this);
+        mBus = MizuuApplication.getBus();
+        mBus.register(this);
 
-		mPicasso = MizuuApplication.getPicasso(mContext);
-		mConfig = MizuuApplication.getBitmapConfig();
+        mPicasso = MizuuApplication.getPicasso(mContext);
+        mConfig = MizuuApplication.getBitmapConfig();
 
-		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
-		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+        mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		mShowId = getArguments().getString(SHOW_ID);
-		mDualPane = getArguments().getBoolean(DUAL_PANE);
+        mShowId = getArguments().getString(SHOW_ID);
         mToolbarColor = getArguments().getInt(IntentKeys.TOOLBAR_COLOR);
-	}
+    }
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-		mBus.unregister(this);
-	}
+        mBus.unregister(this);
+    }
 
-	@Subscribe
-	public void refreshData(com.miz.mizuu.TvShowEpisode episode) {		
-		loadSeasons(false);
-	}
+    @Subscribe
+    public void refreshData(com.miz.mizuu.TvShowEpisode episode) {
+        loadSeasons(false);
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.image_grid_fragment, container, false);
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.image_grid_fragment, container, false);
+    }
 
-	public void onViewCreated(View v, Bundle savedInstanceState) {
-		super.onViewCreated(v, savedInstanceState);
+    public void onViewCreated(View v, Bundle savedInstanceState) {
+        super.onViewCreated(v, savedInstanceState);
 
-		mAdapter = new ImageAdapter(mContext);
+        mAdapter = new ImageAdapter(mContext);
 
-		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
+        mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
 
-		mGridView = (GridView) v.findViewById(R.id.gridView);
-		mGridView.setEmptyView(v.findViewById(R.id.progress));
-		mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
-		mGridView.setAdapter(mAdapter);
-		mGridView.setColumnWidth(mImageThumbSize);
+        mGridView = (GridView) v.findViewById(R.id.gridView);
+        mGridView.setEmptyView(v.findViewById(R.id.progress));
+        mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+        mGridView.setAdapter(mAdapter);
+        mGridView.setColumnWidth(mImageThumbSize);
 
-		// Calculate the total column width to set item heights by factor 1.5
-		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
-				new ViewTreeObserver.OnGlobalLayoutListener() {
-					@Override
-					public void onGlobalLayout() {
-						if (mAdapter.getNumColumns() == 0) {
-							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-							if (numColumns > 0) {
-								mAdapter.setNumColumns(numColumns);
-							}
-						}
-					}
-				});
-		mGridView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				// Update the selected index variable
-				mSelectedIndex = arg2;
+        // Calculate the total column width to set item heights by factor 1.5
+        mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (mAdapter.getNumColumns() == 0) {
+                            final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+                            if (numColumns > 0) {
+                                mAdapter.setNumColumns(numColumns);
+                            }
+                        }
+                    }
+                });
+        mGridView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                // Update the selected index variable
+                mSelectedIndex = arg2;
 
-				if (!mDualPane) {
-					// Show the episode browser Activity for the given season
-                    getActivity().startActivityForResult(IntentUtils.getTvShowSeasonIntent(getActivity(), mShowId, mItems.get(arg2).getSeason(), mItems.get(arg2).getEpisodeCount(), mToolbarColor), 0);
+                // Show the episode browser Activity for the given season
+                getActivity().startActivityForResult(IntentUtils.getTvShowSeasonIntent(getActivity(), mShowId, mItems.get(arg2).getSeason(), mItems.get(arg2).getEpisodeCount(), mToolbarColor), 0);
+            }
+        });
+        mGridView.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                mGridView.setItemChecked(position, true);
+                return true;
+            }
+        });
+        mGridView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.seasons_contextual, menu);
+
+                mContextualActionBarEnabled = true;
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.watched:
+                        changeWatchedStatus(true, new HashSet<Integer>(mCheckedSeasons));
+                        break;
+                    case R.id.unwatched:
+                        changeWatchedStatus(false, new HashSet<Integer>(mCheckedSeasons));
+                        break;
+                    case R.id.remove:
+                        removeSelectedSeasons(new HashSet<Integer>(mCheckedSeasons));
+                        break;
+                }
+
+                mode.finish();
+
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mContextualActionBarEnabled = false;
+                mCheckedSeasons.clear();
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                if (checked) {
+                    mCheckedSeasons.add(mItems.get(position).getSeason());
                 } else {
-					// Notify the parent fragment that the right-hand fragment should be swapped
-					mBus.post(mItems.get(arg2));
+                    mCheckedSeasons.remove(mItems.get(position).getSeason());
+                }
 
-					// Nasty hack to update the selected item highlight...
-					mAdapter.notifyDataSetChanged();
-				}
-			}
-		});
-		mGridView.setOnItemLongClickListener(new OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				mGridView.setItemChecked(position, true);
-				return true;
-			}
-		});
-		mGridView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
-			@Override
-			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-				MenuInflater inflater = mode.getMenuInflater();
-				inflater.inflate(R.menu.seasons_contextual, menu);
+                int count = mCheckedSeasons.size();
+                mode.setTitle(count + " " + getResources().getQuantityString(R.plurals.seasons_selected, count, count));
 
-				mContextualActionBarEnabled = true;
-				return true;
-			}
+                // Nasty hack to update the selected items highlight...
+                mAdapter.notifyDataSetChanged();
+            }
+        });
 
-			@Override
-			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-				return true;
-			}
+        // The layout has been created - let's load the data
+        loadSeasons(true);
+    }
 
-			@Override
-			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-				switch (item.getItemId()) {
-				case R.id.watched:
-					changeWatchedStatus(true, new HashSet<Integer>(mCheckedSeasons));
-					break;
-				case R.id.unwatched:
-					changeWatchedStatus(false, new HashSet<Integer>(mCheckedSeasons));
-					break;
-				case R.id.remove:
-					removeSelectedSeasons(new HashSet<Integer>(mCheckedSeasons));
-					break;
-				}
+    private void loadSeasons(boolean selectFirstSeason) {
+        new SeasonLoader(selectFirstSeason).execute();
+    }
 
-				mode.finish();
+    private void changeWatchedStatus(boolean watched, final Set<Integer> selectedSeasons) {
+        // Create and open database
+        DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
-				return true;
-			}
+        // This ought to be done in the background, but performance is fairly decent
+        // - roughly 0.7 seconds to update 600 entries on a Sony Xperia Tablet Z2
+        for (int season : selectedSeasons) {
+            db.setSeasonWatchStatus(mShowId, MizLib.addIndexZero(season), watched);
+        }
 
-			@Override
-			public void onDestroyActionMode(ActionMode mode) {
-				mContextualActionBarEnabled = false;
-				mCheckedSeasons.clear();
-			}
+        if (MizLib.isOnline(mContext) && Trakt.hasTraktAccount(mContext))
+            syncWatchedStatusWithTrakt(selectedSeasons, watched);
 
-			@Override
-			public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {				
-				if (checked) {
-					mCheckedSeasons.add(mItems.get(position).getSeason());
-				} else {
-					mCheckedSeasons.remove(mItems.get(position).getSeason());
-				}
-				
-				int count = mCheckedSeasons.size();
-				mode.setTitle(count + " " + getResources().getQuantityString(R.plurals.seasons_selected, count, count));
+        loadSeasons(true);
+    }
 
-				// Nasty hack to update the selected items highlight...
-				mAdapter.notifyDataSetChanged();
-			}
-		});
+    private void removeSelectedSeasons(final Set<Integer> selectedSeasons) {
+        // Get the Activity Context
+        final Context activityContext = getActivity();
 
-		// The layout has been created - let's load the data
-		loadSeasons(true);
-	}
+        AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+        builder.setTitle(R.string.remove_selected_seasons);
+        builder.setMessage(R.string.areYouSure);
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Go through all seasons and remove the selected ones
+                for (int season : selectedSeasons) {
+                    TvShowDatabaseUtils.removeSeason(activityContext, mShowId, season);
+                }
 
-	private void loadSeasons(boolean selectFirstSeason) {
-		new SeasonLoader(selectFirstSeason).execute();
-	}
+                // Check if we've removed all TV show episodes
+                if (MizuuApplication.getTvEpisodeDbAdapter().getEpisodeCount(mShowId) == 0) {
 
-	private void changeWatchedStatus(boolean watched, final Set<Integer> selectedSeasons) {
-		// Create and open database
-		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
+                    // Update the TV show library
+                    LocalBroadcastUtils.updateTvShowLibrary(activityContext);
 
-		// This ought to be done in the background, but performance is fairly decent
-		// - roughly 0.7 seconds to update 600 entries on a Sony Xperia Tablet Z2
-		for (int season : selectedSeasons) {
-			db.setSeasonWatchStatus(mShowId, MizLib.addIndexZero(season), watched);
-		}
+                    // Finish the Activity
+                    getActivity().finish();
+                } else {
+                    // There's still episodes left, so re-load the TV show seasons
+                    loadSeasons(true);
+                }
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
 
-		if (MizLib.isOnline(mContext) && Trakt.hasTraktAccount(mContext))
-			syncWatchedStatusWithTrakt(selectedSeasons, watched);
+    private class ImageAdapter extends BaseAdapter {
 
-		loadSeasons(true);
-	}
+        private LayoutInflater inflater;
+        private final Context mContext;
+        private int mNumColumns = 0;
 
-	private void removeSelectedSeasons(final Set<Integer> selectedSeasons) {
-		// Get the Activity Context
-		final Context activityContext = getActivity();
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-		builder.setTitle(R.string.remove_selected_seasons);
-		builder.setMessage(R.string.areYouSure);
-		builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {				
-				// Go through all seasons and remove the selected ones
-				for (int season : selectedSeasons) {
-					TvShowDatabaseUtils.removeSeason(activityContext, mShowId, season);
-				}
-					
-				// Check if we've removed all TV show episodes
-				if (MizuuApplication.getTvEpisodeDbAdapter().getEpisodeCount(mShowId) == 0) {
-					
-					// Update the TV show library
-					LocalBroadcastUtils.updateTvShowLibrary(activityContext);
-					
-					// Finish the Activity
-					getActivity().finish();
-				} else {
-					// There's still episodes left, so re-load the TV show seasons
-					loadSeasons(true);
-				}
-			}
-		});
-		builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
-		builder.show();
-	}
+        public ImageAdapter(Context context) {
+            mContext = context;
+            inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
 
-	private class ImageAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return mItems.size();
+        }
 
-		private LayoutInflater inflater;
-		private final Context mContext;
-		private int mNumColumns = 0;
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
 
-		public ImageAdapter(Context context) {
-			mContext = context;
-			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		}
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
 
-		@Override
-		public int getCount() {
-			return mItems.size();
-		}
+        @Override
+        public int getItemViewType(int position) {
+            return 0;
+        }
 
-		@Override
-		public Object getItem(int position) {
-			return position;
-		}
+        @Override
+        public int getViewTypeCount() {
+            return 1;
+        }
 
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
+        @Override
+        public View getView(final int position, View convertView, ViewGroup container) {
 
-		@Override
-		public int getItemViewType(int position) {
-			return 0;
-		}
+            final GridSeason mSeason = mItems.get(position);
+            final CoverItem holder;
 
-		@Override
-		public int getViewTypeCount() {
-			return 1;
-		}
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.grid_season_cover, container, false);
+                holder = new CoverItem();
 
-		@Override
-		public View getView(final int position, View convertView, ViewGroup container) {
+                holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
+                holder.cover = (ImageView) convertView.findViewById(R.id.cover);
+                holder.highlight = (ImageView) convertView.findViewById(R.id.highlight);
+                holder.text = (TextView) convertView.findViewById(R.id.text);
+                holder.text.setSingleLine(true);
+                holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+                holder.subtext.setSingleLine(true);
 
-			final GridSeason mSeason = mItems.get(position);
-			final CoverItem holder;
+                holder.text.setTypeface(TypefaceUtils.getRobotoMedium(mContext));
 
-			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_season_cover, container, false);
-				holder = new CoverItem();
+                convertView.setTag(holder);
+            } else {
+                holder = (CoverItem) convertView.getTag();
+            }
 
-				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
-				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
-				holder.highlight = (ImageView) convertView.findViewById(R.id.highlight);
-				holder.text = (TextView) convertView.findViewById(R.id.text);
-				holder.text.setSingleLine(true);
-				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				holder.subtext.setSingleLine(true);
+            holder.cover.setImageResource(R.color.card_background_dark);
 
-				holder.text.setTypeface(TypefaceUtils.getRobotoMedium(mContext));
-
-				convertView.setTag(holder);
-			} else {
-				holder = (CoverItem) convertView.getTag();
-			}
-
-			holder.cover.setImageResource(R.color.card_background_dark);
-
-			// Android's GridView is pretty stupid regarding selectors
-			// so we have to highlight the selected view manually - yuck!
-			if (!mContextualActionBarEnabled) {
-				if (position == mSelectedIndex && mDualPane) {
-					holder.highlight.setVisibility(View.VISIBLE);
-				} else {
-					holder.highlight.setVisibility(View.GONE);
-				}
-			} else {
-				if (mCheckedSeasons.contains(mSeason.getSeason())) {
-					holder.highlight.setVisibility(View.VISIBLE);
-				} else {
-					holder.highlight.setVisibility(View.GONE);
-				}
-			}
+            // Android's GridView is pretty stupid regarding selectors
+            // so we have to highlight the selected view manually - yuck!
+            if (!mContextualActionBarEnabled) {
+                holder.highlight.setVisibility(View.GONE);
+            } else {
+                if (mCheckedSeasons.contains(mSeason.getSeason())) {
+                    holder.highlight.setVisibility(View.VISIBLE);
+                } else {
+                    holder.highlight.setVisibility(View.GONE);
+                }
+            }
 
             holder.text.setText(mSeason.getHeaderText());
-			holder.subtext.setText(mSeason.getSubtitleText());
+            holder.subtext.setText(mSeason.getSubtitleText());
 
-			mPicasso.load(mSeason.getCover()).error(R.drawable.loading_image).fit().config(mConfig).into(holder.cover);
+            mPicasso.load(mSeason.getCover()).error(R.drawable.loading_image).fit().config(mConfig).into(holder.cover);
 
-			return convertView;
-		}
+            return convertView;
+        }
 
-		public void setNumColumns(int numColumns) {
-			mNumColumns = numColumns;
-		}
+        public void setNumColumns(int numColumns) {
+            mNumColumns = numColumns;
+        }
 
-		public int getNumColumns() {
-			return mNumColumns;
-		}
-	}
+        public int getNumColumns() {
+            return mNumColumns;
+        }
+    }
 
-	private class SeasonLoader extends LibrarySectionAsyncTask<Void, Void, Void> {
+    private class SeasonLoader extends LibrarySectionAsyncTask<Void, Void, Void> {
 
-		private boolean mSelectFirstSeason;
+        private boolean mSelectFirstSeason;
 
-		public SeasonLoader(boolean selectFirstSeason) {
-			mSelectFirstSeason = selectFirstSeason;
-		}
+        public SeasonLoader(boolean selectFirstSeason) {
+            mSelectFirstSeason = selectFirstSeason;
+        }
 
-		@Override
-		protected void onPreExecute() {
-			mItems.clear();
-		}
+        @Override
+        protected void onPreExecute() {
+            mItems.clear();
+        }
 
-		@Override
-		protected Void doInBackground(Void... params) {
-			HashMap<String, EpisodeCounter> seasons = MizuuApplication.getTvEpisodeDbAdapter().getSeasons(mShowId);
+        @Override
+        protected Void doInBackground(Void... params) {
+            HashMap<String, EpisodeCounter> seasons = MizuuApplication.getTvEpisodeDbAdapter().getSeasons(mShowId);
 
-			File temp = null;
-			for (String key : seasons.keySet()) {
-				temp = FileUtils.getTvShowSeason(mContext, mShowId, key);				
-				mItems.add(new GridSeason(mContext, mShowId, Integer.valueOf(key), seasons.get(key).getEpisodeCount(), seasons.get(key).getWatchedCount(),
-						temp.exists() ? temp :
-							FileUtils.getTvShowThumb(mContext, mShowId)));
-			}
+            File temp = null;
+            for (String key : seasons.keySet()) {
+                temp = FileUtils.getTvShowSeason(mContext, mShowId, key);
+                mItems.add(new GridSeason(mContext, mShowId, Integer.valueOf(key), seasons.get(key).getEpisodeCount(), seasons.get(key).getWatchedCount(),
+                        temp.exists() ? temp :
+                                FileUtils.getTvShowThumb(mContext, mShowId)));
+            }
 
-			seasons.clear();
-			seasons = null;
+            seasons.clear();
+            seasons = null;
 
-			Collections.sort(mItems);
+            Collections.sort(mItems);
 
-			return null;
-		}
+            return null;
+        }
 
-		@Override
-		public void onPostExecute(Void result) {
-			mProgressBar.setVisibility(View.GONE);
-			mAdapter.notifyDataSetChanged();
+        @Override
+        public void onPostExecute(Void result) {
+            mProgressBar.setVisibility(View.GONE);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
 
-			// This is a dual-pane device, so tell the parent fragment that
-			// we want to display the episodes of the first available season
-			if (mDualPane && mItems.size() > 0 && mSelectFirstSeason)
-				mBus.post(mItems.get(0));
-		}
-	}
+    private void syncWatchedStatusWithTrakt(final Set<Integer> checkedSeasons, final boolean watched) {
+        new com.miz.functions.AsyncTask<Void, Boolean, Boolean>() {
 
-	private void syncWatchedStatusWithTrakt(final Set<Integer> checkedSeasons, final boolean watched) {
-		new com.miz.functions.AsyncTask<Void, Boolean, Boolean>() {
+            private Set<Integer> mSelectedSeasons;
+            private List<TvShowEpisode> mEpisodes = new ArrayList<TvShowEpisode>();
 
-			private Set<Integer> mSelectedSeasons;
-			private List<TvShowEpisode> mEpisodes = new ArrayList<TvShowEpisode>();
+            @Override
+            protected void onPreExecute() {
+                mSelectedSeasons = new HashSet<Integer>(checkedSeasons);
 
-			@Override
-			protected void onPreExecute() {
-				mSelectedSeasons = new HashSet<Integer>(checkedSeasons);
+                DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
-				DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
+                for (int season : mSelectedSeasons) {
+                    List<GridEpisode> temp = db.getEpisodesInSeason(mContext, mShowId, mItems.get(season).getSeason());
+                    for (int i = 0; i < temp.size(); i++) {
+                        mEpisodes.add(new TvShowEpisode(mShowId, temp.get(i).getEpisode(), temp.get(i).getSeason()));
+                    }
+                    temp.clear();
+                    temp = null;
+                }
+            }
 
-				for (int season : mSelectedSeasons) {
-					List<GridEpisode> temp = db.getEpisodesInSeason(mContext, mShowId, mItems.get(season).getSeason());
-					for (int i = 0; i < temp.size(); i++) {
-						mEpisodes.add(new TvShowEpisode(mShowId, temp.get(i).getEpisode(), temp.get(i).getSeason()));
-					}
-					temp.clear();
-					temp = null;
-				}
-			}
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                boolean result = Trakt.markEpisodeAsWatched(mShowId, mEpisodes, mContext, watched);
+                if (!result) // Try again if it failed
+                    result = Trakt.markEpisodeAsWatched(mShowId, mEpisodes, mContext, watched);
 
-			@Override
-			protected Boolean doInBackground(Void... params) {
-				boolean result = Trakt.markEpisodeAsWatched(mShowId, mEpisodes, mContext, watched);
-				if (!result) // Try again if it failed
-					result = Trakt.markEpisodeAsWatched(mShowId, mEpisodes, mContext, watched);
+                return result;
+            }
 
-				return result;
-			}
-
-			@Override
-			protected void onPostExecute(Boolean result) {
-				if (!result)
-					Toast.makeText(mContext, R.string.sync_error, Toast.LENGTH_LONG).show();
-			}
-		}.execute();
-	}
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (!result)
+                    Toast.makeText(mContext, R.string.sync_error, Toast.LENGTH_LONG).show();
+            }
+        }.execute();
+    }
 }
