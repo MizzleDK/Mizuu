@@ -43,13 +43,13 @@ public class MoveFilesService extends IntentService {
 
 		// Setup up notification
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        builder.setColor(getResources().getColor(R.color.color_primary));
 		builder.setSmallIcon(R.drawable.ic_sync_white_24dp);
 		builder.setTicker(getString(R.string.movingDataFiles));
 		builder.setContentTitle(getString(R.string.movingDataFiles));
 		builder.setContentText(getString(R.string.movingDataFilesDescription));
 		builder.setOngoing(true);
 		builder.setOnlyAlertOnce(true);
-		builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sync_white_24dp));
 
 		// Build notification
 		Notification updateNotification = builder.build();

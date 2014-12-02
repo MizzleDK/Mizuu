@@ -305,6 +305,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
 		mBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
 		mBuilder.setTicker(getString(R.string.updatingMovies));
@@ -313,7 +314,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mBuilder.setContentIntent(contentIntent);
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sync_white_24dp));
 		mBuilder.addAction(R.drawable.ic_close_white_24dp, getString(android.R.string.cancel), contentIntent);
 
 		// Build notification
@@ -405,7 +405,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 	private void updateMovieScaningNotification(String filesource) {
 		mBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sync_white_24dp));
 		mBuilder.setContentTitle(getString(R.string.updatingMovies));
 		mBuilder.setContentText(getString(R.string.scanning) + ": " + filesource);
 
@@ -423,18 +422,17 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		if (!mStopUpdate) {
 			mBuilder.setSmallIcon(R.drawable.ic_done_white_24dp);
 			mBuilder.setTicker(getString(R.string.finishedMovieLibraryUpdate));
 			mBuilder.setContentTitle(getString(R.string.finishedMovieLibraryUpdate));
 			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + mCount + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, mCount, mCount));
-			mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_done_white_24dp));
 		} else {
 			mBuilder.setSmallIcon(R.drawable.ic_cancel_white_24dp);
 			mBuilder.setTicker(getString(R.string.stringUpdateCancelled));
 			mBuilder.setContentTitle(getString(R.string.stringUpdateCancelled));
 			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + mCount + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, mCount, mCount));
-			mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_cancel_white_24dp));
 		}
 		mBuilder.setContentIntent(contentIntent);
 		mBuilder.setAutoCancel(true);

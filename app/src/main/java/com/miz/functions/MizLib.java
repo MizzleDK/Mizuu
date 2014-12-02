@@ -74,6 +74,7 @@ import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
 import com.miz.utils.FileUtils;
 import com.miz.utils.ViewUtils;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -110,6 +111,7 @@ import java.util.regex.Pattern;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
+import okio.BufferedSink;
 
 import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
@@ -166,6 +168,13 @@ public class MizLib {
 			throw new RuntimeException("You need to add a YouTube API key!");
 		return key;
 	}
+
+    public static String getMizuuKey(Context context) {
+        String key = context.getString(R.string.mizuu_filename_key);
+        if (TextUtils.isEmpty(key) || key.equals("add_your_own"))
+            throw new RuntimeException("You need to add a Mizuu key!");
+        return key;
+    }
 
 	public static String[] getPrefixes(Context c) {
 		ArrayList<String> prefixesArray = new ArrayList<String>();
@@ -2159,5 +2168,32 @@ public class MizLib {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void shareFilenames(Context context, ArrayList<String> filenames, boolean movie) {
+
+        StringBuilder sb = new StringBuilder();
+        for (String s : filenames) {
+            sb.append(s);
+            sb.append(",");
+        }
+        sb.substring(0, sb.length() - 1);
+
+        final OkHttpClient client = MizuuApplication.getOkHttpClient();
+
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("filepaths", sb.toString())
+                .add("type", movie ? "0" : "1")
+                .add("key", getMizuuKey(context))
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://mizuu.tv/add_filepath.php")
+                .post(formBody)
+                .build();
+
+        try {
+            client.newCall(request).execute();
+        } catch (Exception e) {}
     }
 }

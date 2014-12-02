@@ -116,9 +116,14 @@ public class PaletteLoader extends AsyncTask<Void, Void, Palette> {
     }
 
     private void animate(View v) {
-        ObjectAnimator backgroundColorAnimator = ObjectAnimator.ofObject(v, "backgroundColor", new ArgbEvaluator(), 0xFF666666, getSwatchColor());
-        backgroundColorAnimator.setDuration(500);
-        backgroundColorAnimator.start();
+        try {
+            ObjectAnimator backgroundColorAnimator = ObjectAnimator.ofObject(v, "backgroundColor", new ArgbEvaluator(), 0xFF666666, getSwatchColor());
+            backgroundColorAnimator.setDuration(500);
+            backgroundColorAnimator.start();
+        } catch (Exception e) {
+            // Some devices crash at runtime when using the ObjectAnimator
+            v.setBackgroundColor(getSwatchColor());
+        }
     }
 
     public int getSwatchColor() {

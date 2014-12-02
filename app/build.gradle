@@ -40,6 +40,7 @@ dependencies {
     compile 'com.android.support:support-v4:21.0.0'
     compile 'com.google.guava:guava:16.0.1'
     compile 'com.android.support:support-v4:21.0.+'
+    compile 'com.android.support:support-v13:21.0.+'
     compile 'com.android.support:appcompat-v7:21.0.+'
     compile 'com.android.support:palette-v7:21.0.+'
     compile 'com.android.support:mediarouter-v7:21.0.+'

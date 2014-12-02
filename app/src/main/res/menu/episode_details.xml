@@ -2,12 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/play_video"
-        android:icon="@drawable/ic_play_arrow_white_24dp"
-        app:showAsAction="always"
-        android:title="@string/playVideo">
-    </item>
-    <item
         android:id="@+id/watched"
         app:showAsAction="never"
         android:title="@string/stringMarkAsWatched"/>

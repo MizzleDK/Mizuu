@@ -37,7 +37,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -60,7 +59,6 @@ import com.miz.db.DatabaseHelper;
 import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterSources;
-import com.miz.functions.ActionBarSpinnerViewHolder;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.CoverItem;
@@ -71,7 +69,6 @@ import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.MovieSortHelper;
 import com.miz.functions.SQLiteCursorLoader;
-import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
@@ -112,7 +109,7 @@ import static com.miz.functions.SortingKeys.UNWATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WATCHED_MOVIES;
 import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
 
-public class CollectionLibraryFragment extends Fragment implements ActionBar.OnNavigationListener, OnSharedPreferenceChangeListener {
+public class CollectionLibraryFragment extends Fragment implements OnSharedPreferenceChangeListener {
 
     private SharedPreferences mSharedPreferences;
     private int mImageThumbSize, mImageThumbSpacing, mResizedWidth, mResizedHeight, mCurrentSort;
@@ -122,13 +119,9 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
     private GridView mGridView = null;
     private ProgressBar mProgressBar;
     private boolean mIgnorePrefixes, mLoading, mShowTitles;
-    private ActionBar mActionBar;
-    private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
-    private ActionBarSpinner mSpinnerAdapter;
     private Picasso mPicasso;
     private Config mConfig;
     private MovieSectionLoader mMovieSectionLoader;
-    private SearchTask mSearch;
     private String mCollectionId;
 
     /**
@@ -158,8 +151,6 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
-        setupSpinnerItems();
-
         // Set OnSharedPreferenceChange listener
         PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
 
@@ -188,28 +179,7 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Setup ActionBar with the action list
-        setupActionBar();
-        mActionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
-
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
-    }
-
-    private void setupActionBar() {
-        mActionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        if (mSpinnerAdapter == null)
-            mSpinnerAdapter = new ActionBarSpinner();
-    }
-
-    private void setupSpinnerItems() {
-        mSpinnerItems.clear();
-        mSpinnerItems.add(new SpinnerItem(getArguments().getString("collectionTitle", getString(R.string.chooserMovies)), getString(R.string.choiceAllMovies)));
-        mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceFavorites), getString(R.string.choiceFavorites)));
-        mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceAvailableFiles), getString(R.string.choiceAvailableFiles)));
-        mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceWatchedMovies), getString(R.string.choiceWatchedMovies)));
-        mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceUnwatchedMovies), getString(R.string.choiceUnwatchedMovies)));
-        mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceOffline), getString(R.string.choiceOffline)));
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -276,7 +246,7 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
 
                 @Override
                 protected void onPostExecute(Void result) {
-                    showMovieSection(mActionBar.getSelectedNavigationIndex());
+                    showMovieSection(0);
 
                     mLoading = false;
                 }
@@ -463,17 +433,6 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
     private void notifyDataSetChanged() {
         if (mAdapter != null)
             mAdapter.setItems(mMovieKeys, mMovies);
-
-        if (mSpinnerAdapter != null)
-            mSpinnerAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        if (!mLoading)
-            showMovieSection(itemPosition);
-
-        return true;
     }
 
     private class MovieSectionLoader extends LibrarySectionAsyncTask<Void, Void, Boolean> {
@@ -500,102 +459,6 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
                     for (int i = 0; i < mMovies.size(); i++)
                         mTempKeys.add(i);
                     break;
-
-                case FAVORITES:
-                    for (int i = 0; i < mMovies.size(); i++)
-                        if (mMovies.get(i).isFavourite())
-                            mTempKeys.add(i);
-                    break;
-
-                case AVAILABLE_FILES:
-                    ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
-
-                    for (int i = 0; i < mMovies.size(); i++) {
-                        if (isCancelled())
-                            return false;
-
-                        for (Filepath path : mMovies.get(i).getFilepaths()) {
-                            if (path.isNetworkFile())
-                                if (mMovies.get(i).hasOfflineCopy(path)) {
-                                    mTempKeys.add(i);
-                                    break; // break inner loop to continue to the next movie
-                                } else {
-                                    if (path.getType() == FileSource.SMB) {
-
-
-                                        if (MizLib.isWifiConnected(getActivity())) {
-                                            FileSource source = null;
-
-                                            for (int j = 0; j < filesources.size(); j++)
-                                                if (path.getFilepath().contains(filesources.get(j).getFilepath())) {
-                                                    source = filesources.get(j);
-                                                    continue;
-                                                }
-
-                                            if (source == null)
-                                                continue;
-
-                                            try {
-                                                final SmbFile file = new SmbFile(
-                                                        MizLib.createSmbLoginString(
-                                                                source.getDomain(),
-                                                                source.getUser(),
-                                                                source.getPassword(),
-                                                                path.getFilepath(),
-                                                                false
-                                                        ));
-                                                if (file.exists()) {
-                                                    mTempKeys.add(i);
-                                                    break; // break inner loop to continue to the next movie
-                                                }
-                                            } catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
-                                        }
-                                    } else if (path.getType() == FileSource.UPNP) {
-                                        if (MizLib.exists(path.getFilepath())) {
-                                            mTempKeys.add(i);
-                                            break; // break inner loop to continue to the next movie
-                                        }
-                                    }
-                                } else {
-                                if (new File(path.getFilepath()).exists()) {
-                                    mTempKeys.add(i);
-                                    break; // break inner loop to continue to the next movie
-                                }
-                            }
-                        }
-                    }
-                    break;
-
-                case WATCHED_MOVIES:
-                    for (int i = 0; i < mMovies.size(); i++)
-                        if (mMovies.get(i).hasWatched())
-                            mTempKeys.add(i);
-                    break;
-
-                case UNWATCHED_MOVIES:
-                    for (int i = 0; i < mMovies.size(); i++)
-                        if (!mMovies.get(i).hasWatched())
-                            mTempKeys.add(i);
-                    break;
-
-                case OFFLINE_COPIES:
-                    // No point in running through all movies if the folder
-                    // doesn't contain any files at all - so let's check that first
-                    File offlineFolder = MizuuApplication.getAvailableOfflineFolder(getActivity());
-                    if (offlineFolder != null && offlineFolder.listFiles().length == 0)
-                        return true; // Return true in order to force the notifyDataSetChanged() call
-
-                    for (int i = 0; i < mMovies.size(); i++) {
-                        if (isCancelled())
-                            return false;
-
-                        for (Filepath path : mMovies.get(i).getFilepaths())
-                            if (mMovies.get(i).hasOfflineCopy(path)) {
-                                mTempKeys.add(i);
-                                break; // break inner loop to continue to the next movie
-                            }
-                    }
-                    break;
             }
 
             return true;
@@ -605,10 +468,9 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
         protected void onPostExecute(Boolean success) {
             // Make sure that the loading was successful, that the Fragment is still added and
             // that the currently selected navigation index is the same as when we started loading
-            if (success && isAdded() && mActionBar.getSelectedNavigationIndex() == mPosition) {
+            if (success && isAdded()) {
                 mMovieKeys.addAll(mTempKeys);
 
-                sortMovies();
                 notifyDataSetChanged();
                 setProgressBarVisible(false);
             }
@@ -616,9 +478,6 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
     }
 
     private void showMovieSection(int position) {
-        if (mSpinnerAdapter != null)
-            mSpinnerAdapter.notifyDataSetChanged(); // To show "0 movies" when loading
-
         if (mMovieSectionLoader != null)
             mMovieSectionLoader.cancel(true);
         mMovieSectionLoader = new MovieSectionLoader(position);
@@ -629,50 +488,15 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        setupActionBar();
         inflater.inflate(R.menu.menu, menu);
 
-        // Don't show the Update icon
         menu.removeItem(R.id.update);
-
-        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search_textbox), new OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                onSearchViewCollapsed();
-                return true;
-            }
-        });
-
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (newText.length() > 0) {
-                    search(newText);
-                } else {
-                    onSearchViewCollapsed();
-                }
-                return true;
-            }
-            @Override
-            public boolean onQueryTextSubmit(String query) { return false; }
-        });
+        menu.removeItem(R.id.search_textbox);
+        menu.removeItem(R.id.filters);
+        menu.removeItem(R.id.sort);
+        menu.removeItem(R.id.unidentifiedFiles);
 
         menu.findItem(R.id.view_collection_online).setVisible(true);
-    }
-
-    private void onSearchViewCollapsed() {
-        if (isAdded() && mActionBar != null) {
-            if (mActionBar.getSelectedNavigationIndex() == ALL_MOVIES)
-                showMovieSection(ALL_MOVIES);
-            else
-                mActionBar.setSelectedNavigationItem(ALL_MOVIES);
-        }
     }
 
     @Override
@@ -680,42 +504,6 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
         super.onOptionsItemSelected(item);
 
         switch (item.getItemId()) {
-            case R.id.menuSortAdded:
-                sortBy(DATE);
-                break;
-            case R.id.menuSortRating:
-                sortBy(RATING);
-                break;
-            case R.id.menuSortWeightedRating:
-                sortBy(WEIGHTED_RATING);
-                break;
-            case R.id.menuSortRelease:
-                sortBy(RELEASE);
-                break;
-            case R.id.menuSortTitle:
-                sortBy(TITLE);
-                break;
-            case R.id.menuSortDuration:
-                sortBy(DURATION);
-                break;
-            case R.id.genres:
-                showGenres();
-                break;
-            case R.id.certifications:
-                showCertifications();
-                break;
-            case R.id.folders:
-                showFolders();
-                break;
-            case R.id.fileSources:
-                showFileSources();
-                break;
-            case R.id.release_year:
-                showReleaseYear();
-                break;
-            case R.id.clear_filters:
-                showMovieSection(mActionBar.getSelectedNavigationIndex());
-                break;
             case R.id.random:
                 if (mMovieKeys.size() > 0) {
                     int random = new Random().nextInt(mMovieKeys.size());
@@ -732,357 +520,6 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
         return true;
     }
 
-    private void sortMovies() {
-        if (!isAdded())
-            return;
-
-        String SORT_TYPE = mSharedPreferences.getString(SORTING_MOVIES, "sortTitle");
-
-        if (SORT_TYPE.equals("sortRelease")) {
-            sortBy(RELEASE);
-        } else if (SORT_TYPE.equals("sortRating")) {
-            sortBy(RATING);
-        } else if (SORT_TYPE.equals("sortWeightedRating")) {
-            sortBy(WEIGHTED_RATING);
-        } else if (SORT_TYPE.equals("sortAdded")) {
-            sortBy(DATE);
-        } else if (SORT_TYPE.equals("sortDuration")) {
-            sortBy(DURATION);
-        } else { // if SORT_TYPE equals "sortTitle"
-            sortBy(TITLE);
-        }
-    }
-
-    public void sortBy(int sort) {
-        if (!isAdded())
-            return;
-
-        mCurrentSort = sort;
-
-        Editor editor = mSharedPreferences.edit();
-        switch (mCurrentSort) {
-            case TITLE:
-                editor.putString(SORTING_MOVIES, "sortTitle");
-                break;
-            case RELEASE:
-                editor.putString(SORTING_MOVIES, "sortRelease");
-                break;
-            case RATING:
-                editor.putString(SORTING_MOVIES, "sortRating");
-                break;
-            case WEIGHTED_RATING:
-                editor.putString(SORTING_MOVIES, "sortWeightedRating");
-                break;
-            case DATE:
-                editor.putString(SORTING_MOVIES, "sortAdded");
-                break;
-            case DURATION:
-                editor.putString(SORTING_MOVIES, "sortDuration");
-                break;
-        }
-        editor.apply();
-
-        ArrayList<MovieSortHelper> tempHelper = new ArrayList<MovieSortHelper>();
-        for (int i = 0; i < mMovieKeys.size(); i++) {
-            tempHelper.add(new MovieSortHelper(mMovies.get(mMovieKeys.get(i)), mMovieKeys.get(i), mCurrentSort, false));
-        }
-
-        Collections.sort(tempHelper);
-
-        mMovieKeys.clear();
-        for (int i = 0; i < tempHelper.size(); i++) {
-            mMovieKeys.add(tempHelper.get(i).getIndex());
-        }
-
-        tempHelper.clear();
-
-        setProgressBarVisible(false);
-        notifyDataSetChanged();
-    }
-
-    private void showGenres() {
-        final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-        String[] splitGenres;
-        for (int i = 0; i < mMovieKeys.size(); i++) {
-            if (!mMovies.get(mMovieKeys.get(i)).getGenres().isEmpty()) {
-                splitGenres = mMovies.get(mMovieKeys.get(i)).getGenres().split(",");
-                for (int j = 0; j < splitGenres.length; j++) {
-                    if (map.containsKey(splitGenres[j].trim())) {
-                        map.put(splitGenres[j].trim(), map.get(splitGenres[j].trim()) + 1);
-                    } else {
-                        map.put(splitGenres[j].trim(), 1);
-                    }
-                }
-            }
-        }
-
-        createAndShowAlertDialog(setupItemArray(map, R.string.allGenres), R.string.selectGenre, GENRES);
-    }
-
-    private void showCertifications() {
-        final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-        for (int i = 0; i < mMovieKeys.size(); i++) {
-            String certification = mMovies.get(mMovieKeys.get(i)).getCertification();
-            if (!TextUtils.isEmpty(certification)) {
-                if (map.containsKey(certification.trim())) {
-                    map.put(certification.trim(), map.get(certification.trim()) + 1);
-                } else {
-                    map.put(certification.trim(), 1);
-                }
-            }
-        }
-
-        createAndShowAlertDialog(setupItemArray(map, R.string.allCertifications), R.string.selectCertification, CERTIFICATION);
-    }
-
-    private void showFileSources() {
-        ArrayList<FileSource> sources = new ArrayList<FileSource>();
-
-        DbAdapterSources dbHelper = MizuuApplication.getSourcesAdapter();
-        Cursor cursor = dbHelper.fetchAllMovieSources();
-        while (cursor.moveToNext()) {
-            sources.add(new FileSource(
-                    cursor.getLong(cursor.getColumnIndex(DbAdapterSources.KEY_ROWID)),
-                    cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_FILEPATH)),
-                    cursor.getInt(cursor.getColumnIndex(DbAdapterSources.KEY_FILESOURCE_TYPE)),
-                    cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_USER)),
-                    cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_PASSWORD)),
-                    cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_DOMAIN)),
-                    cursor.getString(cursor.getColumnIndex(DbAdapterSources.KEY_TYPE))
-            ));
-        }
-        cursor.close();
-
-        final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-
-        for (int i = 0; i < mMovieKeys.size(); i++) {
-            for (Filepath path : mMovies.get(mMovieKeys.get(i)).getFilepaths()) {
-                for (int j = 0; j < sources.size(); j++) {
-                    String source = sources.get(j).getFilepath();
-
-                    if (!TextUtils.isEmpty(source) && !TextUtils.isEmpty(path.getFilepath()) && path.getFilepath().contains(source)) {
-                        if (map.containsKey(source.trim())) {
-                            map.put(source.trim(), map.get(source.trim()) + 1);
-                        } else {
-                            map.put(source.trim(), 1);
-                        }
-                    }
-                }
-            }
-        }
-
-        createAndShowAlertDialog(setupItemArray(map, R.string.allFileSources), R.string.selectFileSource, FILE_SOURCES);
-    }
-
-    private void showReleaseYear() {
-        final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-        for (int i = 0; i < mMovieKeys.size(); i++) {
-            String year = mMovies.get(mMovieKeys.get(i)).getReleaseYear().trim();
-            if (!TextUtils.isEmpty(year)) {
-                if (map.containsKey(year)) {
-                    map.put(year, map.get(year) + 1);
-                } else {
-                    map.put(year, 1);
-                }
-            }
-        }
-
-        createAndShowAlertDialog(setupItemArray(map, R.string.allReleaseYears), R.string.selectReleaseYear, RELEASE_YEAR);
-    }
-
-    private void showFolders() {
-        final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-        for (int i = 0; i < mMovieKeys.size(); i++) {
-            for (Filepath path : mMovies.get(mMovieKeys.get(i)).getFilepaths()) {
-                String folder = path.getFilepath();
-                if (!TextUtils.isEmpty(folder)) {
-                    if (map.containsKey(folder.trim())) {
-                        map.put(folder.trim(), map.get(folder.trim()) + 1);
-                    } else {
-                        map.put(folder.trim(), 1);
-                    }
-                }
-            }
-        }
-
-        createAndShowAlertDialog(setupItemArray(map, R.string.allFolders), R.string.selectFolder, FOLDERS);
-    }
-
-    private CharSequence[] setupItemArray(TreeMap<String, Integer> map, int stringId) {
-        final CharSequence[] tempArray = map.keySet().toArray(new CharSequence[map.keySet().size()]);
-        for (int i = 0; i < tempArray.length; i++)
-            tempArray[i] = tempArray[i] + " (" + map.get(tempArray[i]) +  ")";
-
-        final CharSequence[] temp = new CharSequence[tempArray.length + 1];
-        temp[0] = getString(stringId);
-
-        for (int i = 1; i < temp.length; i++)
-            temp[i] = tempArray[i-1];
-
-        return temp;
-    }
-
-    private void createAndShowAlertDialog(final CharSequence[] temp, int title, final int type) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(title)
-                .setItems(temp, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        handleDialogOnClick(dialog, which, type, temp);
-                    }
-                });
-        builder.show();
-    }
-
-    private void handleDialogOnClick(DialogInterface dialog, int which, int type, CharSequence[] temp) {
-        if (which > 0) {
-            ArrayList<Integer> currentlyShown = new ArrayList<Integer>(mMovieKeys);
-            mMovieKeys.clear();
-
-            String selected = temp[which].toString();
-            selected = selected.substring(0, selected.lastIndexOf("(")).trim();
-
-            boolean condition;
-            for (int i = 0; i < currentlyShown.size(); i++) {
-                condition = false;
-
-                switch (type) {
-                    case GENRES:
-                        if (mMovies.get(currentlyShown.get(i)).getGenres().contains(selected)) {
-                            String[] genres = mMovies.get(currentlyShown.get(i)).getGenres().split(",");
-                            for (String genre : genres) {
-                                if (genre.trim().equals(selected)) {
-                                    condition = true;
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    case CERTIFICATION:
-                        condition = mMovies.get(currentlyShown.get(i)).getCertification().trim().contains(selected);
-                        break;
-                    case FILE_SOURCES:
-                        for (Filepath path : mMovies.get(currentlyShown.get(i)).getFilepaths()) {
-                            condition = path.getFilepath().trim().contains(selected);
-                            if (condition)
-                                break;
-                        }
-                        break;
-                    case FOLDERS:
-                        for (Filepath path : mMovies.get(currentlyShown.get(i)).getFilepaths()) {
-                            condition = path.getFilepath().trim().startsWith(selected);
-                            if (condition)
-                                break;
-                        }
-                        break;
-                    case RELEASE_YEAR:
-                        condition = mMovies.get(currentlyShown.get(i)).getReleaseYear().trim().contains(selected);
-                        break;
-                }
-
-                if (condition)
-                    mMovieKeys.add(currentlyShown.get(i));
-            }
-
-            sortMovies();
-            notifyDataSetChanged();
-        }
-
-        dialog.dismiss();
-    }
-
-    private void search(String query) {
-        if (mSearch != null)
-            mSearch.cancel(true);
-        mSearch = new SearchTask(query);
-        mSearch.execute();
-    }
-
-    private class SearchTask extends AsyncTask<String, String, String> {
-
-        private String mSearchQuery = "";
-        private List<Integer> mTempKeys;
-
-        public SearchTask(String query) {
-            mSearchQuery = query.toLowerCase(Locale.ENGLISH);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarVisible(true);
-            mMovieKeys.clear();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            mTempKeys = new ArrayList<Integer>();
-
-            if (mSearchQuery.startsWith("actor:")) {
-                for (int i = 0; i < mMovies.size(); i++) {
-                    if (isCancelled())
-                        return null;
-
-                    if (mMovies.get(i).getCast().toLowerCase(Locale.ENGLISH).contains(mSearchQuery.replace("actor:", "").trim()))
-                        mTempKeys.add(i);
-                }
-            } else if (mSearchQuery.equalsIgnoreCase("missing_genres")) {
-                for (int i = 0; i < mMovies.size(); i++) {
-                    if (isCancelled())
-                        return null;
-
-                    if (TextUtils.isEmpty(mMovies.get(i).getGenres()))
-                        mTempKeys.add(i);
-                }
-            } else if (mSearchQuery.equalsIgnoreCase("multiple_versions")) {
-                DbAdapterMovieMappings db = MizuuApplication.getMovieMappingAdapter();
-
-                for (int i = 0; i < mMovies.size(); i++) {
-                    if (isCancelled())
-                        return null;
-
-                    if (db.hasMultipleFilepaths(mMovies.get(i).getTmdbId()))
-                        mTempKeys.add(i);
-                }
-            } else {
-                Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
-
-                for (int i = 0; i < mMovies.size(); i++) {
-                    if (isCancelled())
-                        return null;
-
-                    String lowerCaseTitle = mMovies.get(i).getTitle().toLowerCase(Locale.ENGLISH);
-
-                    boolean foundInTitle = false;
-
-                    if (lowerCaseTitle.indexOf(mSearchQuery) != -1 || p.matcher(lowerCaseTitle).replaceAll("").indexOf(mSearchQuery) != -1) {
-                        mTempKeys.add(i);
-                        foundInTitle = true;
-                    }
-
-                    if (!foundInTitle) {
-                        for (Filepath path : mMovies.get(i).getFilepaths()) {
-                            String filepath = path.getFilepath().toLowerCase(Locale.ENGLISH);
-                            if (filepath.indexOf(mSearchQuery) != -1) {
-                                mTempKeys.add(i);
-                                break; // Break the loop
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            mMovieKeys.addAll(mTempKeys);
-
-            sortMovies();
-            notifyDataSetChanged();
-            setProgressBarVisible(false);
-        }
-    }
-
     private void setProgressBarVisible(boolean visible) {
         mProgressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
         mGridView.setVisibility(visible ? View.GONE : View.VISIBLE);
@@ -1094,8 +531,6 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
 
         if (resultCode == 1) { // Update
             forceLoaderLoad();
-        } else if (resultCode == 2 && mActionBar.getSelectedNavigationIndex() == FAVORITES) { // Favourite removed
-            showMovieSection(FAVORITES);
         } else if (resultCode == 3) {
             notifyDataSetChanged();
         }
@@ -1136,66 +571,5 @@ public class CollectionLibraryFragment extends Fragment implements ActionBar.OnN
             } else {
                 getLoaderManager().restartLoader(0, null, loaderCallbacks);
             }
-    }
-
-    private class ActionBarSpinner extends BaseAdapter {
-
-        private LayoutInflater mInflater;
-
-        public ActionBarSpinner() {
-            mInflater = LayoutInflater.from(getActivity());
-        }
-
-        @Override
-        public int getCount() {
-            return mSpinnerItems.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            ActionBarSpinnerViewHolder holder;
-
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
-
-                holder = new ActionBarSpinnerViewHolder();
-                holder.title = (TextView) convertView.findViewById(R.id.title);
-                holder.subtitle = (TextView) convertView.findViewById(R.id.subtitle);
-
-                convertView.setTag(holder);
-            } else {
-                holder = (ActionBarSpinnerViewHolder) convertView.getTag();
-            }
-
-            holder.title.setText(mSpinnerItems.get(position).getTitle());
-
-            int size = mMovieKeys.size();
-            holder.subtitle.setText(size + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, size, size));
-
-            return convertView;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-
-            if (convertView == null) {
-                convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
-            }
-
-            ((TextView) convertView.findViewById(android.R.id.text1)).setText(mSpinnerItems.get(position).getSubtitle());
-
-            return convertView;
-        }
     }
 }

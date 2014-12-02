@@ -43,14 +43,6 @@
         android:padding="8dp"
         android:visibility="gone" >
 
-        <ImageView
-            android:id="@+id/empty_library_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:contentDescription="@string/content_description_no_content_icon"
-            android:src="@drawable/no_content_face" />
-
         <TextView
             android:id="@+id/empty_library_title"
             android:layout_width="wrap_content"
@@ -58,7 +50,6 @@
             android:layout_gravity="center"
             android:focusable="false"
             android:gravity="center_horizontal"
-            android:text="@string/empty_library_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="26sp" />
 
@@ -68,8 +59,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center_horizontal"
-            android:lineSpacingMultiplier="1.2"
-            android:text="@string/empty_library_description"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 

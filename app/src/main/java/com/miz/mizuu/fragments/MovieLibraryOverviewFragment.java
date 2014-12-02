@@ -26,7 +26,7 @@ import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.miz.functions.MizLib;
-import com.miz.functions.MovieLoader;
+import com.miz.loader.MovieLoader;
 import com.miz.mizuu.R;
 
 public class MovieLibraryOverviewFragment extends Fragment {
@@ -69,6 +69,9 @@ public class MovieLibraryOverviewFragment extends Fragment {
         mTabs.setViewPager(mViewPager);
         mTabs.setVisibility(View.VISIBLE);
 
+        // Work-around a bug that sometimes happens with the tabs
+        mViewPager.setCurrentItem(0);
+
         if (MizLib.hasLollipop())
             mTabs.setElevation(4);
 
@@ -78,7 +81,7 @@ public class MovieLibraryOverviewFragment extends Fragment {
     private class PagerAdapter extends FragmentPagerAdapter {
 
         private final String[] TITLES = {getString(R.string.choiceAllMovies), getString(R.string.choiceFavorites), getString(R.string.choiceNewReleases),
-                getString(R.string.choiceWatchedMovies), getString(R.string.choiceUnwatchedMovies), getString(R.string.choiceCollections)};
+                getString(R.string.chooserWatchList), getString(R.string.choiceWatchedMovies), getString(R.string.choiceUnwatchedMovies), getString(R.string.choiceCollections)};
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -99,10 +102,12 @@ public class MovieLibraryOverviewFragment extends Fragment {
                 case 2:
                     return NewMovieLibraryFragment.newInstance(MovieLoader.NEW_RELEASES);
                 case 3:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.WATCHED);
+                    return NewMovieLibraryFragment.newInstance(MovieLoader.WATCHLIST);
                 case 4:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.UNWATCHED);
+                    return NewMovieLibraryFragment.newInstance(MovieLoader.WATCHED);
                 case 5:
+                    return NewMovieLibraryFragment.newInstance(MovieLoader.UNWATCHED);
+                case 6:
                     return NewMovieLibraryFragment.newInstance(MovieLoader.COLLECTIONS);
                 default:
                     return null;

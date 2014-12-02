@@ -155,13 +155,13 @@ public class DownloadImageService extends IntentService {
 	private void showNotification() {
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		mBuilder.setSmallIcon(android.R.drawable.stat_sys_download);
 		mBuilder.setTicker(getString(R.string.addingCover));
 		mBuilder.setContentTitle(getString(R.string.addingCover));
 		mBuilder.setContentText(getString(R.string.few_moments));
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_file_download_white_24dp));
 
 		// Build notification
 		Notification updateNotification = mBuilder.build();

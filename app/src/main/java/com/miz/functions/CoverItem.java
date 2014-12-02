@@ -30,22 +30,32 @@ import com.squareup.picasso.Target;
 
 public class CoverItem implements Target {
 
-	public TextView text, subtext;
-	public ImageView cover, highlight;
-	public RelativeLayout layout;
-	public LinearLayout mLinearLayout;
-	private int animationDuration = 200;
+    public TextView text, subtext;
+    public ImageView cover, highlight;
+    public RelativeLayout layout;
+    public LinearLayout mLinearLayout;
+    private int animationDuration = 200;
 
-	@Override
-	public void onBitmapFailed(Drawable arg0) {
-		cover.setImageResource(R.drawable.loading_image);
-		ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(animationDuration).start();
-	}
-	@Override
-	public void onBitmapLoaded(Bitmap arg0, LoadedFrom arg1) {
-		cover.setImageBitmap(arg0);
-		ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(animationDuration).start();
-	}
-	@Override
-	public void onPrepareLoad(Drawable arg0) {}
+    @Override
+    public void onBitmapFailed(Drawable arg0) {
+        cover.setImageResource(R.drawable.loading_image);
+        try {
+            ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(animationDuration).start();
+        } catch (Exception e) {
+            // Some devices crash at runtime when using the ObjectAnimator
+            cover.setAlpha(1f);
+        }
+    }
+    @Override
+    public void onBitmapLoaded(Bitmap arg0, LoadedFrom arg1) {
+        cover.setImageBitmap(arg0);
+        try {
+            ObjectAnimator.ofFloat(cover, "alpha", 0f, 1f).setDuration(animationDuration).start();
+        } catch (Exception e) {
+            // Some devices crash at runtime when using the ObjectAnimator
+            cover.setAlpha(1f);
+        }
+    }
+    @Override
+    public void onPrepareLoad(Drawable arg0) {}
 }

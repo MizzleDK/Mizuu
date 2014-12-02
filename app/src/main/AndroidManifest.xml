@@ -222,7 +222,7 @@
             android:exported="false"
             android:hardwareAccelerated="false"
             android:label="@string/networkLogin"
-            android:theme="@android:style/Theme.Holo.Dialog" >
+            android:theme="@style/Mizuu.Theme.Dialog" >
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -234,7 +234,7 @@
             android:exported="false"
             android:hardwareAccelerated="false"
             android:label="@string/select_upnp_server"
-            android:theme="@android:style/Theme.Holo.Dialog" >
+            android:theme="@style/Mizuu.Theme.Dialog" >
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -246,7 +246,7 @@
             android:exported="false"
             android:hardwareAccelerated="false"
             android:label="@string/lookingForNetworkSources"
-            android:theme="@android:style/Theme.Holo.Dialog" >
+            android:theme="@style/Mizuu.Theme.Dialog" >
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

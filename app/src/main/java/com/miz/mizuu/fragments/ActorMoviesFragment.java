@@ -148,7 +148,7 @@ public class ActorMoviesFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), arg1.findViewById(R.id.cover), "cover");
-                ActivityCompat.startActivity(getActivity(), IntentUtils.getTmdbMovieDetails(mContext, mActor.getMovies().get(arg2)), options.toBundle());
+                ActivityCompat.startActivity(getActivity(), IntentUtils.getTmdbMovieDetails(mContext, mAdapter.getItem(arg2)), options.toBundle());
 			}
 		});
 
@@ -181,8 +181,8 @@ public class ActorMoviesFragment extends Fragment {
 		}
 
 		@Override
-		public Object getItem(int position) {
-			return null;
+		public WebMovie getItem(int position) {
+			return mMovies.get(position);
 		}
 
 		@Override
@@ -193,7 +193,7 @@ public class ActorMoviesFragment extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 
-			final WebMovie movie = mMovies.get(position);
+			final WebMovie movie = getItem(position);
 			
 			CoverItem holder;
 			if (convertView == null) {

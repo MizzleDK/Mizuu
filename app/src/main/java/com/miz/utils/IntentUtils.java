@@ -19,6 +19,7 @@ package com.miz.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.miz.functions.Actor;
 import com.miz.functions.IntentKeys;
@@ -32,9 +33,11 @@ import com.miz.mizuu.ActorPhotos;
 import com.miz.mizuu.ActorTaggedPhotos;
 import com.miz.mizuu.ActorTvShows;
 import com.miz.mizuu.ImageViewer;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.SimilarMovies;
 import com.miz.mizuu.TMDbMovieDetails;
+import com.miz.mizuu.TvShowDetails;
 import com.miz.mizuu.TvShowEpisodes;
 import com.miz.mizuu.TvShowSeasons;
 
@@ -122,9 +125,17 @@ public class IntentUtils {
 		return movieDetailsIntent;
 	}
 	
-	public static Intent getTmdbTvShowLink(WebMovie show) {
-		Intent showIntent = new Intent(Intent.ACTION_VIEW);
-		showIntent.setData(Uri.parse("http://www.themoviedb.org/tv/" + show.getId()));
+	public static Intent getTmdbTvShowLink(Context context, WebMovie show) {
+		Intent showIntent;
+
+        if (show.isInLibrary() && !TextUtils.isEmpty(MizuuApplication.getTvDbAdapter().getShowId(show.getTitle()))) {
+            showIntent = new Intent(context, TvShowDetails.class);
+            showIntent.putExtra("showId", MizuuApplication.getTvDbAdapter().getShowId(show.getTitle()));
+        } else {
+            showIntent = new Intent(Intent.ACTION_VIEW);
+            showIntent.setData(Uri.parse("http://www.themoviedb.org/tv/" + show.getId()));
+        }
+
 		return showIntent;
 	}
 

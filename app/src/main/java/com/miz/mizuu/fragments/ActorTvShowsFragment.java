@@ -144,7 +144,7 @@ public class ActorTvShowsFragment extends Fragment {
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				startActivity(IntentUtils.getTmdbTvShowLink(mActor.getTvShows().get(arg2)));
+				startActivity(IntentUtils.getTmdbTvShowLink(mContext, mAdapter.getItem(arg2)));
 			}
 		});
 
@@ -177,8 +177,8 @@ public class ActorTvShowsFragment extends Fragment {
 		}
 
 		@Override
-		public Object getItem(int position) {
-			return null;
+		public WebMovie getItem(int position) {
+			return mShows.get(position);
 		}
 
 		@Override
@@ -189,7 +189,7 @@ public class ActorTvShowsFragment extends Fragment {
 		@Override
 		public View getView(int position, View convertView, ViewGroup container) {
 
-			final WebMovie show = mShows.get(position);
+			final WebMovie show = getItem(position);
 			
 			CoverItem holder;
 			if (convertView == null) {

@@ -8,6 +8,7 @@
         android:title="@string/stringSearch">
     </item>
     <item
+        android:id="@+id/sort"
         android:icon="@drawable/ic_sort_white_24dp"
         app:showAsAction="ifRoom"
         android:title="@string/stringSort">
@@ -33,6 +34,7 @@
         </menu>
     </item>
     <item
+        android:id="@+id/filters"
         android:icon="@drawable/ic_filter_list_white_24dp"
         app:showAsAction="ifRoom"
         android:title="@string/filters">
@@ -57,6 +59,14 @@
                 android:id="@+id/release_year"
                 android:icon="@drawable/ic_today_white_24dp"
                 android:title="@string/release_year"/>
+            <item
+                android:id="@+id/available_files"
+                android:icon="@drawable/ic_done_white_24dp"
+                android:title="@string/choiceAvailableFiles"/>
+            <item
+                android:id="@+id/offline_files"
+                android:icon="@drawable/ic_cloud_download_white_24dp"
+                android:title="@string/choiceOffline"/>
             <item
                 android:id="@+id/clear_filters"
                 android:icon="@drawable/ic_close_white_24dp"

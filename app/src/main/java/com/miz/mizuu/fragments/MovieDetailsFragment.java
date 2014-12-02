@@ -306,7 +306,6 @@ public class MovieDetailsFragment extends Fragment {
         mTitle.setTypeface(mCondensedRegular);
 
         mPlot.setTypeface(mCondensedRegular);
-        mSrc.setTypeface(mLight);
 
         mRuntime.setTypeface(mMedium);
         mCertification.setTypeface(mMedium);

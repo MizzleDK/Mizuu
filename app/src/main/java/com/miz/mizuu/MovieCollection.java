@@ -42,7 +42,7 @@ public class MovieCollection extends MizActivity {
 			ft.commit();
 		}
 		
-		setTitle(null);
+		setTitle(getIntent().getExtras().getString("collectionTitle"));
 	}
 
 	@Override

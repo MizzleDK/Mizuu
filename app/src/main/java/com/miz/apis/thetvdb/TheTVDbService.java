@@ -278,9 +278,7 @@ public class TheTVDbService extends TvShowApiService {
                             element = (Element) list.item(0);
                             tag = element.getChildNodes();
                             episode.setEpisode(MizLib.getInteger(Double.valueOf(((Node) tag.item(0)).getNodeValue())));
-                        } catch (Exception e) {
-                            System.out.println("EXCEPTION: DVD_episodenumber");
-                        }
+                        } catch (Exception e) {}
                     }
 
                     if (episode.getEpisode() == -1) {
@@ -290,7 +288,6 @@ public class TheTVDbService extends TvShowApiService {
                             tag = element.getChildNodes();
                             episode.setEpisode(MizLib.getInteger(((Node) tag.item(0)).getNodeValue()));
                         } catch (Exception e) {
-                            System.out.println("EXCEPTION: EpisodeNumber");
                             episode.setEpisode(0);
                         }
                     }

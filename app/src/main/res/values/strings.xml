@@ -472,8 +472,11 @@
     <string name="contentLocation">Content location</string>
     <string name="contentLocationDescription">Where is the content located?</string>
     <string name="contentLocationDevice">On my device</string>
+    <string name="contentLocationDevice_Alternative">My device</string>
     <string name="contentLocationSMB">On a SMB network share</string>
+    <string name="contentLocationSMB_Alternative">SMB network share</string>
     <string name="contentLocationUPnP">On a DLNA/UPnP network share</string>
+    <string name="contentLocationUPnP_Alternative">DLNA/UPnP network share</string>
     <string name="continueString">Continue</string>
     <string name="couldnt_load_folder">Couldn\'t load folder!</string>
     <string name="no_content">No content</string>
@@ -501,7 +504,6 @@
     <string name="clear_filters">Clear filters</string>
     <string name="empty_library_title">There\'s nothing here!</string>
     <string name="empty_library_description">Press the <b>Update library</b> button to add some content.</string>
-    <string name="empty_watchlist_description">Press the <b>Watch later</b> button when viewing movie details to add new movies to your watchlist.</string>
     <string name="random_movie">Random movie</string>
     <string name="random_show">Random TV show</string>
     <string name="more">More</string>
@@ -518,7 +520,6 @@
     <string name="select_data_source_shows">Select source for TV show data</string>
     <string name="selectFile">Select a file</string>
     <string name="no_actors">No actors found!</string>
-    <string name="no_movies">No movies found!</string>
     <string name="no_tv_shows">No TV shows found!</string>
     <string name="no_photos">No photos found!</string>
     <string name="no_tagged_photos">No tagged photos found!</string>
@@ -552,5 +553,25 @@
     <string name="chromecast_title">Chromecast support (preview)</string>
     <string name="chromecast_description">Enable support for casting of SMB and UPnP files.</string>
     <string name="choiceNewReleases">New releases</string>
+    <string name="data_collection">Data collection</string>
+    <string name="improve_filename_recognition">Improve filename recognition</string>
+    <string name="improve_filename_recognition_description">Anonymously share filenames in order to improve filename recognition in future versions.</string>
+    <string name="no_movies">No movies</string>
+    <string name="no_movies_description">Select <b>Update library</b> from the menu to add movies.</string>
+    <string name="no_movies_description_tablet">Select the <b>Update icon</b> from the menu to add movies.</string>
+    <string name="no_search_results">Nothing found</string>
+    <string name="no_search_results_description">Please try again with a different query.</string>
+    <string name="no_favorites">No favorites</string>
+    <string name="no_favorites_description">Don\'t you like movies?</string>
+    <string name="no_new_releases">No new releases</string>
+    <string name="no_new_releases_description">Nothing has happened in the last 9 months.</string>
+    <string name="empty_watchlist">Nothing to watch</string>
+    <string name="empty_watchlist_description">Why not add some? It\'s easy to do.</string>
+    <string name="no_watched_movies">No watched movies</string>
+    <string name="no_watched_movies_description">What are you waiting for?</string>
+    <string name="no_unwatched_movies">You\'ve watched everything</string>
+    <string name="no_unwatched_movies_description">Good job! Check out the <b>Online Movies</b> section to discover new movies.</string>
+    <string name="no_movie_collections">No movie collections</string>
+    <string name="no_movie_collections_description">It happens to the best of us…</string>
 
 </resources>

@@ -97,11 +97,6 @@
         android:layout_marginRight="8dp"
         android:text="@string/loginAsGuest" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/dividerVertical" />
-
     <LinearLayout
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
@@ -119,6 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="cancel"
+            android:textColor="#fff"
             android:text="@android:string/cancel" />
 
         <Button
@@ -128,6 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="ok"
+            android:textColor="#fff"
             android:text="@android:string/ok" />
     </LinearLayout>
 

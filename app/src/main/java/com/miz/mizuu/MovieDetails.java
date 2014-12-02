@@ -24,18 +24,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.miz.base.MizActivity;
-import com.miz.functions.MediumMovie;
-import com.miz.functions.MizLib;
-import com.miz.functions.MovieLoader;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
 import com.miz.utils.ViewUtils;
 import com.miz.utils.WidgetUtils;
-
-import java.util.List;
 
 public class MovieDetails extends MizActivity {
 
@@ -66,17 +60,7 @@ public class MovieDetails extends MizActivity {
 			ft.add(android.R.id.content, MovieDetailsFragment.newInstance(mMovieId), TAG);
 			ft.commit();
 		}
-
-        MovieLoader loader = new MovieLoader(this, MovieLoader.MovieLibraryType.ALL_MOVIES, callback);
-        loader.load();
 	}
-
-    private MovieLoader.OnLoadCompletedCallback callback = new MovieLoader.OnLoadCompletedCallback() {
-        @Override
-        public void onLoadCompleted(List<MediumMovie> movieList) {
-            System.out.println("SIZE: " + movieList.size());
-        }
-    };
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

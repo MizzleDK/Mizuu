@@ -122,9 +122,13 @@ public class ContactDeveloperFragment extends Fragment {
 			}
 		} else {
 			// Animation
-			ObjectAnimator animation = ObjectAnimator.ofFloat(message, "translationX", -10f, -5f, 0f, 5f, 10f, 5f, 0f, -5f, -10f, -5f, 0f);
-			animation.setDuration(250);
-			animation.start();
+            try {
+                ObjectAnimator animation = ObjectAnimator.ofFloat(message, "translationX", -10f, -5f, 0f, 5f, 10f, 5f, 0f, -5f, -10f, -5f, 0f);
+                animation.setDuration(250);
+                animation.start();
+            } catch (Exception e) {
+                // Some devices crash at runtime when using the ObjectAnimator
+            }
 
 			Toast.makeText(getActivity(), getString(R.string.enterAMessage), Toast.LENGTH_SHORT).show();
 		}

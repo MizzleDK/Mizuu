@@ -28,6 +28,7 @@ import com.miz.db.DbAdapterMovies;
 import com.miz.functions.MizLib;
 import com.miz.functions.MovieLibraryUpdateCallback;
 import com.miz.functions.NfoMovie;
+import com.miz.functions.PreferenceKeys;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
@@ -121,6 +122,10 @@ public class MovieIdentification {
 	}
 
 	public void start() {
+
+        // Share filenames
+        shareFilenames();
+
 		// Go through all files
 		for (int i = 0; i < mMovieStructures.size(); i++) {
 			if (mCancel)
@@ -328,4 +333,16 @@ public class MovieIdentification {
 			smallSize = MizLib.getThumbnailNotificationSize(mContext);
 		return smallSize;
 	}
+
+    private void shareFilenames() {
+        if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(PreferenceKeys.FILENAME_RECOGNITION, false)) {
+            ArrayList<String> filenames = new ArrayList<String>();
+
+            for (int i = 0; i < mMovieStructures.size(); i++) {
+                filenames.add(mMovieStructures.get(i).getParentFolderName() + "/" + mMovieStructures.get(i).getFilename());
+            }
+
+            MizLib.shareFilenames(mContext, filenames, true);
+        }
+    }
 }

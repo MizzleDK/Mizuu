@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_tabs_height"
         app:pstsTabBackground="?android:attr/selectableItemBackground"
+        app:pstsTabPaddingLeftRight="16dp"
         android:background="?attr/colorPrimary" />
     <FrameLayout
         android:id="@+id/layout"

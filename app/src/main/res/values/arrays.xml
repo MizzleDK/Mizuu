@@ -25,17 +25,15 @@
     </string-array>
     <string-array name="startup_screen">
         <item>@string/welcomeScreen</item>
-        <item>@string/chooserMovies</item>
-        <item>@string/chooserTVShows</item>
-        <item>@string/chooserWatchList</item>
-        <item>@string/moviesWeb</item>
-        <item>@string/chooserWebVideos</item>
+        <item>@string/drawerMyMovies</item>
+        <item>@string/drawerMyTvShows</item>
+        <item>@string/drawerOnlineMovies</item>
+        <item>@string/drawerWebVideos</item>
     </string-array>
     <string-array name="startup_screen_codes">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-        <item>3</item>
         <item>4</item>
         <item>5</item>
     </string-array>

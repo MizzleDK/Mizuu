@@ -35,9 +35,6 @@ public class RemotePlayback extends MizActivity {
         final String id = extras.getString("id");
         final String type = extras.getString("type", "movie");
 
-        System.out.println("ID: " + title);
-
-
 		final FragmentManager fm = getSupportFragmentManager();
 		
 		if (fm.findFragmentById(android.R.id.content) == null) {

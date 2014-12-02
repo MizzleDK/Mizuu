@@ -130,6 +130,7 @@ public class MakeAvailableOffline extends IntentService {
 		mContentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		mBuilder = new NotificationCompat.Builder(mContext);
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
 		mBuilder.setSmallIcon(android.R.drawable.stat_sys_download);

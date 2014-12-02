@@ -16,6 +16,7 @@
 
 package com.miz.mizuu.fragments;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,12 +39,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
@@ -52,7 +55,6 @@ import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteLoader;
-import com.miz.functions.PaletteTransformation;
 import com.miz.mizuu.EditTvShowEpisode;
 import com.miz.mizuu.IdentifyTvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
@@ -65,6 +67,7 @@ import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TypefaceUtils;
 import com.miz.utils.VideoUtils;
+import com.miz.utils.ViewUtils;
 import com.miz.views.ObservableScrollView;
 import com.miz.views.ObservableScrollView.OnScrollChangedListener;
 import com.squareup.otto.Bus;
@@ -80,18 +83,21 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
 @SuppressLint("InflateParams") public class TvShowEpisodeDetailsFragment extends Fragment {
 
+    private Activity mContext;
     private TvShowEpisode mEpisode;
     private ImageView mBackdrop, mEpisodePhoto;
     private TextView mTitle, mDescription, mFileSource, mAirDate, mRating, mDirector, mWriter, mGuestStars, mSeasonEpisodeNumber;
     private View mDetailsArea;
     private Picasso mPicasso;
-    private Typeface mLight, mLightItalic, mMedium;
+    private Typeface mLight, mMediumItalic, mMedium, mBold, mCondensedRegular;
     private DbAdapterTvShowEpisodes mDatabaseHelper;
     private long mVideoPlaybackStarted, mVideoPlaybackEnded;
     private boolean mShowFileLocation;
     private Bus mBus;
     private int mToolbarColor = 000000;
+    private FloatingActionButton mFab;
     private PaletteLoader mPaletteLoader;
+    private ObservableScrollView mScrollView;
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -115,15 +121,19 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
+        mContext = getActivity();
+
         mBus = MizuuApplication.getBus();
 
         mShowFileLocation = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SHOW_FILE_LOCATION, true);
 
         mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
-        mLight = TypefaceUtils.getRobotoLight(getActivity());
-        mLightItalic = TypefaceUtils.getRobotoLightItalic(getActivity());
-        mMedium = TypefaceUtils.getRobotoMedium(getActivity());
+        mLight = TypefaceUtils.getRobotoLight(mContext);
+        mMediumItalic = TypefaceUtils.getRobotoMediumItalic(mContext);
+        mMedium = TypefaceUtils.getRobotoMedium(mContext);
+        mBold = TypefaceUtils.getRobotoBold(mContext);
+        mCondensedRegular = TypefaceUtils.getRobotoCondensedRegular(mContext);
 
         mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
 
@@ -182,35 +192,65 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
         mDirector = (TextView) view.findViewById(R.id.director);
         mWriter = (TextView) view.findViewById(R.id.writer);
         mGuestStars = (TextView) view.findViewById(R.id.guest_stars);
+        mScrollView = (ObservableScrollView) view.findViewById(R.id.observableScrollView);
+        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
 
-        if (MizLib.isPortrait(getActivity())) {
-            final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
-            final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
+        mFab.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewUtils.animateFabJump(v, new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        play();
+                    }
 
-            ObservableScrollView sv = (ObservableScrollView) view.findViewById(R.id.observableScrollView);
-            sv.setOnScrollChangedListener(new OnScrollChangedListener() {
-                @Override
-                public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-                    final int headerHeight = mEpisodePhoto.getHeight() - height;
-                    final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
-                    final int newAlpha = (int) (ratio * 255);
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
 
-                    mBus.post(new BusToolbarColorObject(mToolbarColor, newAlpha));
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
 
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+            }
+        });
+        if (MizLib.isTablet(mContext))
+            mFab.setType(FloatingActionButton.TYPE_NORMAL);
+
+        final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
+        final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
+
+        mScrollView = (ObservableScrollView) view.findViewById(R.id.observableScrollView);
+        mScrollView.setOnScrollChangedListener(new OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+                final int headerHeight = mEpisodePhoto.getHeight() - height;
+                final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+                final int newAlpha = (int) (ratio * 255);
+
+                mBus.post(new BusToolbarColorObject(mToolbarColor, newAlpha));
+
+                if (MizLib.isPortrait(mContext)) {
                     // Such parallax, much wow
                     mEpisodePhoto.setPadding(0, (int) (t / 1.5), 0, 0);
                 }
-            });
-        } else {
-            if (!MizuuApplication.isFullscreen(getActivity()))
-                MizLib.addActionBarAndStatusBarMargin(getActivity(), view.findViewById(R.id.episode_relative_layout));
-            else
-                MizLib.addActionBarMargin(getActivity(), view.findViewById(R.id.episode_relative_layout));
-        }
+            }
+        });
+        mScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                ViewUtils.setLayoutParamsForDetailsEmptyView(mContext, view,
+                        mBackdrop, mScrollView, this);
+            }
+        });
 
         loadData();
 
-        mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).config(MizuuApplication.getBitmapConfig()).transform(new PaletteTransformation(mEpisode.getEpisodePhoto().getAbsolutePath(), mDetailsArea)).into(mEpisodePhoto, new Callback() {
+        mPicasso.load(mEpisode.getEpisodePhoto()).placeholder(R.drawable.bg).config(MizuuApplication.getBitmapConfig()).into(mEpisodePhoto, new Callback() {
             @Override
             public void onError() {
                 if (!isAdded())
@@ -231,7 +271,7 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
                     });
 
                     mPaletteLoader.addView(mDetailsArea);
-                    //mPaletteLoader.setFab(mFab);
+                    mPaletteLoader.setFab(mFab);
 
                     mPaletteLoader.execute();
                 } else {
@@ -240,7 +280,7 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
                     // Add views after configuration change
                     mPaletteLoader.addView(mDetailsArea);
-                    //mPaletteLoader.setFab(mFab);
+                    mPaletteLoader.setFab(mFab);
 
                     // Re-color the views
                     mPaletteLoader.colorViews();
@@ -280,24 +320,18 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
         // Set the episode title
         mTitle.setVisibility(View.VISIBLE);
         mTitle.setText(mEpisode.getTitle());
-        mTitle.setTypeface(TypefaceUtils.getRobotoCondensedRegular(getActivity()));
-        mTitle.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        mTitle.setTypeface(mCondensedRegular);
 
-        mDescription.setTypeface(mLight);
-        mFileSource.setTypeface(mLight);
-        mDirector.setTypeface(mLight);
-        mWriter.setTypeface(mLight);
-        mGuestStars.setTypeface(mLight);
+        mDescription.setTypeface(mCondensedRegular);
+        mFileSource.setTypeface(mCondensedRegular);
+        mDirector.setTypeface(mCondensedRegular);
+        mWriter.setTypeface(mCondensedRegular);
+        mGuestStars.setTypeface(mCondensedRegular);
 
-        if (MizLib.isPortrait(getActivity())) {
-            mAirDate.setTypeface(mMedium);
-            mRating.setTypeface(mMedium);
-            mSeasonEpisodeNumber.setTypeface(mLightItalic);
-            mSeasonEpisodeNumber.setText(getString(R.string.showSeason) + " " + mEpisode.getSeason() + ", " + getString(R.string.showEpisode) + " " + mEpisode.getEpisode());
-        } else {
-            mAirDate.setTypeface(mLight);
-            mRating.setTypeface(mLight);
-        }
+        mAirDate.setTypeface(mMedium);
+        mRating.setTypeface(mMedium);
+        mSeasonEpisodeNumber.setTypeface(mMediumItalic);
+        mSeasonEpisodeNumber.setText(getString(R.string.showSeason) + " " + mEpisode.getSeason() + ", " + getString(R.string.showEpisode) + " " + mEpisode.getEpisode());
 
         // Set the movie plot
         if (!MizLib.isPortrait(getActivity())) {
@@ -509,9 +543,6 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.play_video:
-                play();
-                break;
             case R.id.menuDeleteEpisode:
                 deleteEpisode();
                 break;

@@ -310,6 +310,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		mBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
 		mBuilder.setTicker(getString(R.string.updatingTvShows));
 		mBuilder.setContentTitle(getString(R.string.updatingTvShows));
@@ -317,7 +318,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		mBuilder.setContentIntent(contentIntent);
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sync_white_24dp));
 		mBuilder.addAction(R.drawable.ic_close_white_24dp, getString(android.R.string.cancel), contentIntent);
 
 		// Build notification
@@ -447,7 +447,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 	private void updateTvShowScanningNotification(String filesource) {
 		mBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sync_white_24dp));
 		mBuilder.setContentTitle(getString(R.string.updatingTvShows));
 		mBuilder.setContentText(getString(R.string.scanning) + ": " + filesource);
 
@@ -457,7 +456,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 	private void showTvShowAnalyzingNotification() {
 		mBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sync_white_24dp));
 		mBuilder.setContentTitle(getString(R.string.updatingTvShows));
 		mBuilder.setContentText(getString(R.string.analyzing_files));
 
@@ -477,18 +475,17 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		if (!mStopUpdate) {
 			mBuilder.setSmallIcon(R.drawable.ic_done_white_24dp);
 			mBuilder.setTicker(getString(R.string.finishedTvShowsLibraryUpdate));
 			mBuilder.setContentTitle(getString(R.string.finishedTvShowsLibraryUpdate));
 			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + mShowCount + " " + getResources().getQuantityString(R.plurals.showsInLibrary, mShowCount, mShowCount) + " (" + mEpisodeCount + " " + getResources().getQuantityString(R.plurals.episodes, mEpisodeCount, mEpisodeCount) + ")");
-			mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_done_white_24dp));
 		} else {
 			mBuilder.setSmallIcon(R.drawable.ic_cancel_white_24dp);
 			mBuilder.setTicker(getString(R.string.stringUpdateCancelled));
 			mBuilder.setContentTitle(getString(R.string.stringUpdateCancelled));
 			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + mShowCount + " " + getResources().getQuantityString(R.plurals.showsInLibrary, mShowCount, mShowCount) + " (" + mEpisodeCount + " " + getResources().getQuantityString(R.plurals.episodes, mEpisodeCount, mEpisodeCount) + ")");
-			mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_cancel_white_24dp));
 		}
 		mBuilder.setContentIntent(contentIntent);
 		mBuilder.setAutoCancel(true);

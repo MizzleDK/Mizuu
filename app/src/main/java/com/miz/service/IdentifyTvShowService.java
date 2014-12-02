@@ -180,13 +180,13 @@ public class IdentifyTvShowService extends IntentService implements TvShowLibrar
 	private void setup() {
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		mBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
 		mBuilder.setTicker(getString(R.string.identifying_show));
 		mBuilder.setContentTitle(getString(R.string.identifying_show));
 		mBuilder.setContentText(getString(R.string.gettingReady));
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_sync_white_24dp));
 
 		// Build notification
 		Notification updateNotification = mBuilder.build();

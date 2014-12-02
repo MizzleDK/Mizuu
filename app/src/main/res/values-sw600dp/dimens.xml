@@ -79,5 +79,7 @@
     <dimen name="content_details_fab_negative_margin">-32dp</dimen>
     <dimen name="content_details_landscape_fab_margin_top">32dp</dimen>
     <dimen name="horizontal_card_layout_title_padding">16dp</dimen>
+    <dimen name="episode_details_thumb_width">400dp</dimen>
+    <dimen name="episode_details_thumb_height">280dp</dimen>
 
 </resources>

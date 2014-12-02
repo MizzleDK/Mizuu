@@ -369,8 +369,6 @@ public class RemotePlaybackFragment extends Fragment {
         protected void onPostExecute(String result) {
             if (!TextUtils.isEmpty(result))
                 mCoverUrl = result;
-
-            System.out.println("COVER: " + mCoverUrl);
         }
     }
 }

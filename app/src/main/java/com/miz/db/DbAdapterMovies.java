@@ -167,28 +167,32 @@ public class DbAdapterMovies extends AbstractDbAdapter {
     }
 
     public Cursor getAllMovies() {
-        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, null, null, null, null, null);
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, null, null, null, null, KEY_TITLE + " ASC");
     }
 
     public Cursor getCollections() {
-        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, "NOT(" + KEY_COLLECTION_ID + " = '')", null, KEY_COLLECTION_ID, null, null);
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, "NOT(" + KEY_COLLECTION_ID + " = '')", null, KEY_COLLECTION_ID, null, KEY_TITLE + " ASC");
     }
 
     public Cursor getFavorites() {
-        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_FAVOURITE + " = 1", null, null, null, null);
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_FAVOURITE + " = 1", null, null, null, KEY_TITLE + " ASC");
     }
 
     public Cursor getNewReleases() {
         return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_RELEASEDATE +
-                " >= date('now', '-9 months')", null, null, null, KEY_RELEASEDATE + " DESC", "50");
+                " >= date('now', '-9 months')", null, null, null, KEY_RELEASEDATE + " DESC");
     }
 
     public Cursor getWatched() {
-        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_HAS_WATCHED + " = 1", null, null, null, null);
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_HAS_WATCHED + " = 1", null, null, null, KEY_TITLE + " ASC");
     }
 
     public Cursor getUnwatched() {
-        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_HAS_WATCHED + " = 0", null, null, null, null);
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_HAS_WATCHED + " = 0", null, null, null, KEY_TITLE + " ASC");
+    }
+
+    public Cursor getWatchlist() {
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_TO_WATCH + " = 1", null, null, null, KEY_TITLE + " ASC");
     }
 
     public Cursor fetchMovie(String movieId) throws SQLException {

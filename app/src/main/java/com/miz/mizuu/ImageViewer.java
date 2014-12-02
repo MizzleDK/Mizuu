@@ -35,6 +35,7 @@ import android.view.View.OnSystemUiVisibilityChangeListener;
 import com.miz.base.MizActivity;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.ActorPhotoFragment;
+import com.miz.utils.ViewUtils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -55,29 +56,24 @@ public class ImageViewer extends MizActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
 		if (MizLib.hasKitKat()) {
-			if (isFullscreen())
-				setTheme(R.style.Mizuu_Theme_Translucent_FullScreen);
-			else
-				setTheme(R.style.Mizuu_Theme_Translucent);
+            setTheme(R.style.Mizuu_Theme_Translucent_FullScreen);
 		} else {
-			if (isFullscreen())
-				setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
-			else
-				setTheme(R.style.Mizuu_Theme_Transparent);
+            setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
 		}
 
-		super.onCreate(savedInstanceState);
+        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), isFullscreen(), true);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
+        ViewUtils.setProperToolbarSize(this, mToolbar);
+
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
 		
 		mBus = MizuuApplication.getBus();
-
-		//getSupportActionBar().setBackgroundDrawable(null);
 
 		mPortraitPhotos = getIntent().getBooleanExtra("portraitPhotos", true);
 		mPhotos = getIntent().getStringArrayExtra("photos");
@@ -141,6 +137,7 @@ public class ImageViewer extends MizActivity {
 
 	private void showSystemUi() {
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), isFullscreen(), true);
 
         getSupportActionBar().show();
 	}

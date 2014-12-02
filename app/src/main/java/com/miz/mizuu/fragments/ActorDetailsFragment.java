@@ -312,7 +312,7 @@ public class ActorDetailsFragment extends Fragment {
 	}
 
     private void loadImages() {
-        mPicasso.load(mActor.getProfilePhotoThumb()).placeholder(R.drawable.noactor).error(R.drawable.noactor).into(mPhoto, new Callback() {
+        mPicasso.load(mActor.getProfilePhoto()).placeholder(R.drawable.noactor).error(R.drawable.noactor).into(mPhoto, new Callback() {
             @Override
             public void onSuccess() {
                 if (mPaletteLoader == null) {

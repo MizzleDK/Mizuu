@@ -11,7 +11,6 @@
         <item name="android:colorControlActivated">#fff</item>
         <item name="android:colorControlHighlight">#fff</item>
         <item name="android:activatedBackgroundIndicator">@drawable/menu_selector</item>
-        <item name="android:textColor">#fff</item>
     </style>
 
     <style name="Button.RightAligned" parent="android:style/Widget.Material.Button" >
@@ -19,6 +18,18 @@
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
         <item name="android:layout_gravity">right</item>
+    </style>
+
+    <style name="Mizuu.Theme.Dialog" parent="android:style/Theme.Material.Dialog" />
+
+    <!-- Theme for cancel library update dialog and such -->
+    <style name="Mizuu.Theme.Transparent.Dialog" parent="android:Theme.Material">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
     </style>
 
 </resources>

@@ -137,13 +137,13 @@ public class TraktTvShowsSyncService extends IntentService {
 	private void setupNotification() {
 		// Setup up notification
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		mBuilder.setSmallIcon(R.drawable.ic_tv_white_24dp);
 		mBuilder.setTicker(getString(R.string.syncTvShows));
 		mBuilder.setContentTitle(getString(R.string.syncTvShows));
 		mBuilder.setContentText(getString(R.string.updatingShowInfo));
 		mBuilder.setOngoing(true);
 		mBuilder.setOnlyAlertOnce(true);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_tv_white_24dp));
 
 		// Build notification
 		Notification updateNotification = mBuilder.build();
@@ -405,10 +405,10 @@ public class TraktTvShowsSyncService extends IntentService {
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		mBuilder.setTicker(getString(R.string.finishedTraktTvShowSync));
 		mBuilder.setContentTitle(getString(R.string.finishedTraktTvShowSync));
 		mBuilder.setSmallIcon(R.drawable.ic_done_white_24dp);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_done_white_24dp));
 		mBuilder.setOngoing(false);
 		mBuilder.setAutoCancel(true);
 		mBuilder.setOnlyAlertOnce(true);
@@ -426,11 +426,11 @@ public class TraktTvShowsSyncService extends IntentService {
 		mNotificationManager.cancel(NOTIFICATION_ID);
 
 		mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder.setColor(getResources().getColor(R.color.color_primary));
 		mBuilder.setTicker(getString(R.string.traktSyncFailed));
 		mBuilder.setContentTitle(getString(R.string.traktSyncFailed));
 		mBuilder.setContentText(getString(R.string.noInternet));
 		mBuilder.setSmallIcon(R.drawable.ic_signal_wifi_statusbar_connected_no_internet_2_white_24dp);
-		mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_signal_wifi_statusbar_connected_no_internet_2_white_24dp));
 		mBuilder.setOngoing(false);
 		mBuilder.setAutoCancel(true);
 		mBuilder.setOnlyAlertOnce(true);

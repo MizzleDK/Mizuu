@@ -17,19 +17,22 @@
 package com.miz.mizuu.fragments;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap.Config;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.LayoutInflater;
@@ -38,51 +41,55 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.miz.functions.CoverItem;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
-import com.miz.functions.MovieLoader;
-import com.miz.functions.MovieLoader.MovieLibraryType;
-import com.miz.functions.MovieLoader.OnLoadCompletedCallback;
+import com.miz.loader.MovieFilter;
+import com.miz.loader.MovieLoader;
+import com.miz.loader.MovieLibraryType;
+import com.miz.loader.MovieSortType;
+import com.miz.loader.OnLoadCompletedCallback;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieCollection;
 import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
 import com.miz.mizuu.UnidentifiedMovies;
 import com.miz.mizuu.Update;
+import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TypefaceUtils;
+import com.miz.utils.ViewUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
+import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
 
-public class NewMovieLibraryFragment extends Fragment {
+public class NewMovieLibraryFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private Context mContext;
     private SharedPreferences mSharedPreferences;
     private int mImageThumbSize, mImageThumbSpacing;
     private LoaderAdapter mAdapter;
     private GridView mGridView;
     private ProgressBar mProgressBar;
-    private boolean mShowTitles, mLoading = true;
+    private boolean mShowTitles, mIgnorePrefixes, mLoading = true;
     private Picasso mPicasso;
     private Config mConfig;
+    private MovieLoader mMovieLoader;
+    private SearchView mSearchView;
     private View mEmptyLibraryLayout;
     private TextView mEmptyLibraryTitle, mEmptyLibraryDescription;
-    private MovieLoader mMovieLoader;
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -103,32 +110,56 @@ public class NewMovieLibraryFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
+        mContext = getActivity().getApplicationContext();
+
+        // Set OnSharedPreferenceChange listener
+        PreferenceManager.getDefaultSharedPreferences(mContext).registerOnSharedPreferenceChangeListener(this);
+
         // Initialize the PreferenceManager variable and preference variable(s)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
+        mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
         mShowTitles = mSharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
 
-        String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
-        if (thumbnailSize.equals(getString(R.string.large)))
-            mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
-        else if (thumbnailSize.equals(getString(R.string.normal)))
-            mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
-        else
-            mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
+        mImageThumbSize = ViewUtils.getGridViewThumbSize(mContext);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-        mPicasso = MizuuApplication.getPicasso(getActivity());
+        mPicasso = MizuuApplication.getPicasso(mContext);
         mConfig = MizuuApplication.getBitmapConfig();
 
-        mAdapter = new LoaderAdapter(getActivity().getApplicationContext());
+        mAdapter = new LoaderAdapter(mContext);
+
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_MOVIE_LIBRARY));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-movie-actor-search"));
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mMessageReceiver);
+        PreferenceManager.getDefaultSharedPreferences(mContext).unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mMovieLoader != null) {
+                if (intent.filterEquals(new Intent("mizuu-movie-actor-search"))) {
+                    mMovieLoader.search("actor: " + intent.getStringExtra("intent_extra_data_key"));
+                } else {
+                    mMovieLoader.load();
+                }
+                showProgressBar();
+            }
+        }
+    };
 
     private OnLoadCompletedCallback callback = new OnLoadCompletedCallback() {
         @Override
-        public void onLoadCompleted(List<MediumMovie> movieList) {
-            System.out.println("SIZE: " + movieList.size());
-            mLoading = false;
-            mAdapter.updateDataSet(movieList);
+        public void onLoadCompleted() {
+            mAdapter.notifyDataSetChanged();
         }
     };
 
@@ -140,33 +171,15 @@ public class NewMovieLibraryFragment extends Fragment {
 
         mEmptyLibraryLayout = v.findViewById(R.id.empty_library_layout);
         mEmptyLibraryTitle = (TextView) v.findViewById(R.id.empty_library_title);
-        mEmptyLibraryTitle.setTypeface(TypefaceUtils.getRobotoCondensedRegular(getActivity()));
+        mEmptyLibraryTitle.setTypeface(TypefaceUtils.getRobotoCondensedRegular(mContext));
         mEmptyLibraryDescription = (TextView) v.findViewById(R.id.empty_library_description);
+        mEmptyLibraryDescription.setTypeface(TypefaceUtils.getRobotoLight(mContext));
 
-        mEmptyLibraryDescription.setTypeface(TypefaceUtils.getRobotoLight(getActivity()));
-
-        mAdapter = new LoaderAdapter(getActivity());
+        mAdapter = new LoaderAdapter(mContext);
 
         mGridView = (GridView) v.findViewById(R.id.gridView);
         mGridView.setAdapter(mAdapter);
-        mGridView.setEmptyView(mEmptyLibraryLayout);
         mGridView.setColumnWidth(mImageThumbSize);
-
-        // Calculate the total column width to set item heights by factor 1.5
-        mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        if (mAdapter.getNumColumns() == 0) {
-                            final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-                            if (numColumns > 0) {
-                                mAdapter.setNumColumns(numColumns);
-                            }
-
-                            MizLib.removeViewTreeObserver(mGridView.getViewTreeObserver(), this);
-                        }
-                    }
-                });
         mGridView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -174,9 +187,13 @@ public class NewMovieLibraryFragment extends Fragment {
             }
         });
 
-        mMovieLoader = new MovieLoader(getActivity(), MovieLibraryType.fromInt(getArguments().getInt("type")), callback);
+        mMovieLoader = new MovieLoader(mContext, MovieLibraryType.fromInt(getArguments().getInt("type")), callback);
+        mMovieLoader.setIgnorePrefixes(mIgnorePrefixes);
+        if (mMovieLoader.getType() == MovieLibraryType.NEW_RELEASES) {
+            mMovieLoader.setSortType(MovieSortType.RELEASE);
+        }
         mMovieLoader.load();
-        mLoading = true;
+        showProgressBar();
 
         return v;
     }
@@ -186,14 +203,15 @@ public class NewMovieLibraryFragment extends Fragment {
         if (mMovieLoader.getType() == MovieLibraryType.COLLECTIONS) { // Collection
             intent.putExtra("collectionId", mAdapter.getItem(position).getCollectionId());
             intent.putExtra("collectionTitle", mAdapter.getItem(position).getCollection());
-            intent.setClass(getActivity(), MovieCollection.class);
+            intent.setClass(mContext, MovieCollection.class);
             startActivity(intent);
         } else {
             intent.putExtra("tmdbId", mAdapter.getItem(position).getTmdbId());
-            intent.setClass(getActivity(), MovieDetails.class);
+            intent.setClass(mContext, MovieDetails.class);
 
             if (view != null) {
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view.findViewById(R.id.cover), "cover");
+                Pair<View, String> pair = new Pair<>(view.findViewById(R.id.cover), "cover");
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair);
                 ActivityCompat.startActivityForResult(getActivity(), intent, 0, options.toBundle());
             } else {
                 startActivityForResult(intent, 0);
@@ -205,34 +223,29 @@ public class NewMovieLibraryFragment extends Fragment {
 
         private LayoutInflater mInflater;
         private final Context mContext;
-        private int mNumColumns = 0;
-        private ArrayList<MediumMovie> mMovies = new ArrayList<MediumMovie>();
+        private Typeface mTypeface;
 
         public LoaderAdapter(Context context) {
             mContext = context;
             mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        public void updateDataSet(List<MediumMovie> movies) {
-            mMovies.clear();
-            mMovies.addAll(movies);
-            notifyDataSetChanged();
-            mProgressBar.setVisibility(View.GONE);
+            mTypeface = TypefaceUtils.getRobotoMedium(mContext);
         }
 
         @Override
         public boolean isEmpty() {
-            return mMovies.size() == 0 && !mLoading;
+            return getCount() == 0 && !mLoading;
         }
 
         @Override
         public int getCount() {
-            return mMovies.size();
+            if (mMovieLoader != null)
+                return mMovieLoader.getResults().size();
+            return 0;
         }
 
         @Override
         public MediumMovie getItem(int position) {
-            return mMovies.get(position);
+            return mMovieLoader.getResults().get(position);
         }
 
         @Override
@@ -246,16 +259,12 @@ public class NewMovieLibraryFragment extends Fragment {
 
             CoverItem holder;
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.grid_item, container, false);
+                convertView = mInflater.inflate(R.layout.grid_cover, container, false);
                 holder = new CoverItem();
 
-                holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
                 holder.cover = (ImageView) convertView.findViewById(R.id.cover);
                 holder.text = (TextView) convertView.findViewById(R.id.text);
-                holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-                holder.subtext.setSingleLine(true);
-
-                holder.text.setTypeface(TypefaceUtils.getRobotoMedium(mContext));
+                holder.text.setTypeface(mTypeface);
 
                 convertView.setTag(holder);
             } else {
@@ -264,37 +273,38 @@ public class NewMovieLibraryFragment extends Fragment {
 
             if (!mShowTitles) {
                 holder.text.setVisibility(View.GONE);
-                holder.subtext.setVisibility(View.GONE);
             } else {
                 holder.text.setVisibility(View.VISIBLE);
-
                 holder.text.setText(mMovieLoader.getType() == MovieLibraryType.COLLECTIONS ?
                         movie.getCollection() : movie.getTitle());
-                holder.text.setSingleLine(true);
-                holder.text.setLines(1);
-                holder.text.setMaxLines(1);
-                holder.subtext.setVisibility(View.VISIBLE);
             }
 
             holder.cover.setImageResource(R.color.card_background_dark);
 
             mPicasso.load(mMovieLoader.getType() == MovieLibraryType.COLLECTIONS ?
-                    movie.getCollectionPoster() : movie.getThumbnail()).config(mConfig).into(holder);
+                    movie.getCollectionPoster() : movie.getThumbnail()).placeholder(R.drawable.bg).config(mConfig).into(holder);
 
             return convertView;
         }
 
-        public void setNumColumns(int numColumns) {
-            mNumColumns = numColumns;
-        }
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
 
-        public int getNumColumns() {
-            return mNumColumns;
+            // Hide the progress bar once the data set has been changed
+            hideProgressBar();
+
+            if (isEmpty()) {
+                showEmptyView();
+            } else {
+                hideEmptyView();
+            }
         }
     }
 
     private void onSearchViewCollapsed() {
         mMovieLoader.load();
+        showProgressBar();
     }
 
     @Override
@@ -302,6 +312,11 @@ public class NewMovieLibraryFragment extends Fragment {
         inflater.inflate(R.menu.menu, menu);
 
         menu.findItem(R.id.random).setVisible(mMovieLoader.getType() != MovieLibraryType.COLLECTIONS);
+
+        if (mMovieLoader.getType() == MovieLibraryType.COLLECTIONS) {
+            menu.findItem(R.id.sort).setVisible(false);
+            menu.findItem(R.id.filters).setVisible(false);
+        }
 
         MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search_textbox), new OnActionExpandListener() {
             @Override
@@ -316,14 +331,13 @@ public class NewMovieLibraryFragment extends Fragment {
             }
         });
 
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+        mSearchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
+        mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() > 0) {
                     mMovieLoader.search(newText);
+                    showProgressBar();
                 } else {
                     onSearchViewCollapsed();
                 }
@@ -332,6 +346,9 @@ public class NewMovieLibraryFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) { return false; }
         });
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -343,11 +360,69 @@ public class NewMovieLibraryFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.update:
                 Intent intent = new Intent();
-                intent.setClass(getActivity(), Update.class);
+                intent.setClass(mContext, Update.class);
                 intent.putExtra("isMovie", true);
                 startActivityForResult(intent, 0);
                 break;
+            case R.id.menuSortAdded:
+                mMovieLoader.setSortType(MovieSortType.DATE_ADDED);
+                mMovieLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortRating:
+                mMovieLoader.setSortType(MovieSortType.RATING);
+                mMovieLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortWeightedRating:
+                mMovieLoader.setSortType(MovieSortType.WEIGHTED_RATING);
+                mMovieLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortRelease:
+                mMovieLoader.setSortType(MovieSortType.RELEASE);
+                mMovieLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortTitle:
+                mMovieLoader.setSortType(MovieSortType.TITLE);
+                mMovieLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortDuration:
+                mMovieLoader.setSortType(MovieSortType.DURATION);
+                mMovieLoader.load();
+                showProgressBar();
+                break;
+            case R.id.genres:
+                mMovieLoader.showGenresFilterDialog(getActivity());
+                break;
+            case R.id.certifications:
+                mMovieLoader.showCertificationsFilterDialog(getActivity());
+                break;
+            case R.id.folders:
+                mMovieLoader.showFoldersFilterDialog(getActivity());
+                break;
+            case R.id.fileSources:
+                mMovieLoader.showFileSourcesFilterDialog(getActivity());
+                break;
+            case R.id.release_year:
+                mMovieLoader.showReleaseYearFilterDialog(getActivity());
+                break;
+            case R.id.offline_files:
+                mMovieLoader.addFilter(new MovieFilter(MovieFilter.OFFLINE_FILES));
+                mMovieLoader.load();
+                showProgressBar();
+                break;
+            case R.id.available_files:
+                mMovieLoader.addFilter(new MovieFilter(MovieFilter.AVAILABLE_FILES));
+                mMovieLoader.load();
+                showProgressBar();
+                break;
             case R.id.clear_filters:
+                mMovieLoader.clearFilters();
+                mMovieLoader.load();
+                showProgressBar();
                 break;
             case R.id.random:
                 if (mAdapter.getCount() > 0) {
@@ -356,10 +431,92 @@ public class NewMovieLibraryFragment extends Fragment {
                 }
                 break;
             case R.id.unidentifiedFiles:
-                startActivity(new Intent(getActivity(), UnidentifiedMovies.class));
+                startActivity(new Intent(mContext, UnidentifiedMovies.class));
                 break;
         }
 
         return true;
+    }
+
+    private void hideProgressBar() {
+        mGridView.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
+        mLoading = false;
+    }
+
+    private void showProgressBar() {
+        mGridView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mLoading = true;
+    }
+
+    private void showEmptyView() {
+        mGridView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
+        mEmptyLibraryLayout.setVisibility(View.VISIBLE);
+
+        if (mMovieLoader.isShowingSearchResults()) {
+            mEmptyLibraryTitle.setText(R.string.no_search_results);
+            mEmptyLibraryDescription.setText(R.string.no_search_results_description);
+        } else {
+            switch (mMovieLoader.getType()) {
+                case ALL_MOVIES:
+                    mEmptyLibraryTitle.setText(R.string.no_movies);
+                    mEmptyLibraryDescription.setText(MizLib.isTablet(mContext) ?
+                            R.string.no_movies_description_tablet : R.string.no_movies_description);
+                    break;
+                case FAVORITES:
+                    mEmptyLibraryTitle.setText(R.string.no_favorites);
+                    mEmptyLibraryDescription.setText(R.string.no_favorites_description);
+                    break;
+                case NEW_RELEASES:
+                    mEmptyLibraryTitle.setText(R.string.no_new_releases);
+                    mEmptyLibraryDescription.setText(R.string.no_new_releases_description);
+                    break;
+                case WATCHLIST:
+                    mEmptyLibraryTitle.setText(R.string.empty_watchlist);
+                    mEmptyLibraryDescription.setText(R.string.empty_watchlist_description);
+                    break;
+                case WATCHED:
+                    mEmptyLibraryTitle.setText(R.string.no_watched_movies);
+                    mEmptyLibraryDescription.setText(R.string.no_watched_movies_description);
+                    break;
+                case UNWATCHED:
+                    mEmptyLibraryTitle.setText(R.string.no_unwatched_movies);
+                    mEmptyLibraryDescription.setText(R.string.no_unwatched_movies_description);
+                    break;
+                case COLLECTIONS:
+                    mEmptyLibraryTitle.setText(R.string.no_movie_collections);
+                    mEmptyLibraryDescription.setText(R.string.no_movie_collections_description);
+                    break;
+            }
+        }
+    }
+
+    private void hideEmptyView() {
+        mEmptyLibraryLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(IGNORED_TITLE_PREFIXES)) {
+            mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
+
+            if (mMovieLoader != null) {
+                mMovieLoader.setIgnorePrefixes(mIgnorePrefixes);
+                mMovieLoader.load();
+            }
+
+        } else if (key.equals(GRID_ITEM_SIZE)) {
+            mImageThumbSize = ViewUtils.getGridViewThumbSize(mContext);
+
+            if (mGridView != null)
+                mGridView.setColumnWidth(mImageThumbSize);
+
+            mAdapter.notifyDataSetChanged();
+        } else if (key.equals(SHOW_TITLES_IN_GRID)) {
+            mShowTitles = sharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }

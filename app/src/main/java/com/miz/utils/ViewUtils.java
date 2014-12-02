@@ -27,6 +27,7 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.Toolbar;
@@ -56,109 +57,111 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
+
 public class ViewUtils {
 
-	private ViewUtils() {} // No instantiation
-	
-	/**
-	 * Returns a actor card with name, character, image and click listener.
-	 * @param context
-	 * @param picasso
-	 * @param actor
-	 * @return
-	 */
-	@SuppressLint("InflateParams")
-	public static View setupActorCard(final Activity context, Picasso picasso, final Actor actor) {
-		View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
+    private ViewUtils() {} // No instantiation
 
-		// Load image
-		picasso.load(actor.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+    /**
+     * Returns a actor card with name, character, image and click listener.
+     * @param context
+     * @param picasso
+     * @param actor
+     * @return
+     */
+    @SuppressLint("InflateParams")
+    public static View setupActorCard(final Activity context, Picasso picasso, final Actor actor) {
+        View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
 
-		// Set title
-		((TextView) v.findViewById(R.id.text)).setText(actor.getName());
-		((TextView) v.findViewById(R.id.text)).setTypeface(TypefaceUtils.getRobotoMedium(context));
+        // Load image
+        picasso.load(actor.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
 
-		// Set subtitle
-		((TextView) v.findViewById(R.id.gridCoverSubtitle)).setText(actor.getCharacter());
-		((TextView) v.findViewById(R.id.gridCoverSubtitle)).setSingleLine(true);
+        // Set title
+        ((TextView) v.findViewById(R.id.text)).setText(actor.getName());
+        ((TextView) v.findViewById(R.id.text)).setTypeface(TypefaceUtils.getRobotoMedium(context));
 
-		// Set click listener
-		v.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
+        // Set subtitle
+        ((TextView) v.findViewById(R.id.gridCoverSubtitle)).setText(actor.getCharacter());
+        ((TextView) v.findViewById(R.id.gridCoverSubtitle)).setSingleLine(true);
+
+        // Set click listener
+        v.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 context.startActivity(IntentUtils.getActorIntent(context, actor));
-			}
-		});
+            }
+        });
 
-		return v;
-	}
-	
-	/**
-	 * Returns a movie card with title, release date, image and click listener.
-	 * @param context
-	 * @param picasso
-	 * @param movie
-	 * @return
-	 */
-	@SuppressLint("InflateParams")
-	public static View setupMovieCard(final Activity context, Picasso picasso, final WebMovie movie) {
-		final View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
+        return v;
+    }
 
-		// Load image
-		picasso.load(movie.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+    /**
+     * Returns a movie card with title, release date, image and click listener.
+     * @param context
+     * @param picasso
+     * @param movie
+     * @return
+     */
+    @SuppressLint("InflateParams")
+    public static View setupMovieCard(final Activity context, Picasso picasso, final WebMovie movie) {
+        final View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
 
-		// Set title
-		((TextView) v.findViewById(R.id.text)).setText(movie.getTitle());
-		((TextView) v.findViewById(R.id.text)).setTypeface(TypefaceUtils.getRobotoMedium(context));
+        // Load image
+        picasso.load(movie.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
 
-		// Set subtitle
-		((TextView) v.findViewById(R.id.gridCoverSubtitle)).setText(movie.getSubtitle());
-		((TextView) v.findViewById(R.id.gridCoverSubtitle)).setSingleLine(true);
+        // Set title
+        ((TextView) v.findViewById(R.id.text)).setText(movie.getTitle());
+        ((TextView) v.findViewById(R.id.text)).setTypeface(TypefaceUtils.getRobotoMedium(context));
 
-		// Set click listener
-		v.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
+        // Set subtitle
+        ((TextView) v.findViewById(R.id.gridCoverSubtitle)).setText(movie.getSubtitle());
+        ((TextView) v.findViewById(R.id.gridCoverSubtitle)).setSingleLine(true);
+
+        // Set click listener
+        v.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(context, v.findViewById(R.id.cover), "cover");
                 ActivityCompat.startActivity(context, IntentUtils.getTmdbMovieDetails(context, movie), options.toBundle());
-			}
-		});
+            }
+        });
 
-		return v;
-	}
-	
-	/**
-	 * Returns a TV show card with title, release date, image and click listener.
-	 * @param context
-	 * @param picasso
-	 * @param show
-	 * @return
-	 */
-	@SuppressLint("InflateParams")
-	public static View setupTvShowCard(final Context context, Picasso picasso, final WebMovie show) {
-		View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
+        return v;
+    }
 
-		// Load image
-		picasso.load(show.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+    /**
+     * Returns a TV show card with title, release date, image and click listener.
+     * @param context
+     * @param picasso
+     * @param show
+     * @return
+     */
+    @SuppressLint("InflateParams")
+    public static View setupTvShowCard(final Context context, Picasso picasso, final WebMovie show) {
+        View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
 
-		// Set title
-		((TextView) v.findViewById(R.id.text)).setText(show.getTitle());
-		((TextView) v.findViewById(R.id.text)).setTypeface(TypefaceUtils.getRobotoMedium(context));
+        // Load image
+        picasso.load(show.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
 
-		// Set subtitle
-		((TextView) v.findViewById(R.id.gridCoverSubtitle)).setText(show.getSubtitle());
-		((TextView) v.findViewById(R.id.gridCoverSubtitle)).setSingleLine(true);
+        // Set title
+        ((TextView) v.findViewById(R.id.text)).setText(show.getTitle());
+        ((TextView) v.findViewById(R.id.text)).setTypeface(TypefaceUtils.getRobotoMedium(context));
 
-		// Set click listener
-		v.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				context.startActivity(IntentUtils.getTmdbTvShowLink(show));
-			}
-		});
+        // Set subtitle
+        ((TextView) v.findViewById(R.id.gridCoverSubtitle)).setText(show.getSubtitle());
+        ((TextView) v.findViewById(R.id.gridCoverSubtitle)).setSingleLine(true);
 
-		return v;
-	}
+        // Set click listener
+        v.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(IntentUtils.getTmdbTvShowLink(context, show));
+            }
+        });
+
+        return v;
+    }
 
     /**
      * Returns a TV show season card with title, release date, image and click listener.
@@ -192,131 +195,131 @@ public class ViewUtils {
 
         return v;
     }
-	
-	/**
-	 * Returns a photo card with image and click listener.
-	 * @param context
-	 * @param picasso
-	 * @param url
+
+    /**
+     * Returns a photo card with image and click listener.
+     * @param context
+     * @param picasso
+     * @param url
      * @param items
      * @param index
-	 * @return
-	 */
-	@SuppressLint("InflateParams")
-	public static View setupPhotoCard(final Context context, Picasso picasso, final String url, final List<String> items, final int index) {
-		final View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small_no_text, null);
+     * @return
+     */
+    @SuppressLint("InflateParams")
+    public static View setupPhotoCard(final Context context, Picasso picasso, final String url, final List<String> items, final int index) {
+        final View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small_no_text, null);
 
-		// Load image
-		picasso.load(url).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+        // Load image
+        picasso.load(url).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
 
-		// Set click listener
-		v.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				context.startActivity(IntentUtils.getActorPhotoIntent(context, items, index));
-			}
-		});
+        // Set click listener
+        v.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(IntentUtils.getActorPhotoIntent(context, items, index));
+            }
+        });
 
-		return v;
-	}
-	
-	/**
-	 * Returns a photo card with image and click listener.
-	 * @param context
-	 * @param picasso
-	 * @param url
+        return v;
+    }
+
+    /**
+     * Returns a photo card with image and click listener.
+     * @param context
+     * @param picasso
+     * @param url
      * @param items
      * @param index
-	 * @return
-	 */
-	@SuppressLint("InflateParams")
-	public static View setupTaggedPhotoCard(final Context context, Picasso picasso, final String url, final List<String> items, final int index) {
-		View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small_landscape_no_text, null);
+     * @return
+     */
+    @SuppressLint("InflateParams")
+    public static View setupTaggedPhotoCard(final Context context, Picasso picasso, final String url, final List<String> items, final int index) {
+        View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small_landscape_no_text, null);
 
-		// Load image
-		picasso.load(url).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+        // Load image
+        picasso.load(url).placeholder(R.color.card_background_dark).error(R.drawable.noactor).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
 
-		// Set click listener
-		v.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				context.startActivity(IntentUtils.getActorTaggedPhotoIntent(context, items, index));
-			}
-		});
+        // Set click listener
+        v.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(IntentUtils.getActorTaggedPhotoIntent(context, items, index));
+            }
+        });
 
-		return v;
-	}
-	
-	/**
-	 * Used to update the ActionBar for movie details view as the user scrolls.
-	 * @param context
-	 * @param actionBarBackgroundDrawable
-	 * @param actionBar
-	 * @param title
-	 * @param newAlpha
-	 * @param setBackground
-	 * @param showActionBar
-	 */
-	public static void updateActionBarDrawable(Context context, Drawable actionBarBackgroundDrawable,
-			ActionBar actionBar, String title, int newAlpha, boolean setBackground, boolean showActionBar) {
+        return v;
+    }
 
-		if (!MizLib.isPortrait(context)) {
-			newAlpha = 0;
-			setBackground = true;
-			showActionBar = true;
-		} else {
-			if (!MizLib.isTablet(context) && !MizLib.usesNavigationControl(context)) {
-				if (newAlpha == 0) {
-					actionBar.hide();
-				} else
-					actionBar.show();
-			}
-		}
+    /**
+     * Used to update the ActionBar for movie details view as the user scrolls.
+     * @param context
+     * @param actionBarBackgroundDrawable
+     * @param actionBar
+     * @param title
+     * @param newAlpha
+     * @param setBackground
+     * @param showActionBar
+     */
+    public static void updateActionBarDrawable(Context context, Drawable actionBarBackgroundDrawable,
+                                               ActionBar actionBar, String title, int newAlpha, boolean setBackground, boolean showActionBar) {
 
-		actionBar.setTitle(newAlpha > 127 ? title : null);
+        if (!MizLib.isPortrait(context)) {
+            newAlpha = 0;
+            setBackground = true;
+            showActionBar = true;
+        } else {
+            if (!MizLib.isTablet(context) && !MizLib.usesNavigationControl(context)) {
+                if (newAlpha == 0) {
+                    actionBar.hide();
+                } else
+                    actionBar.show();
+            }
+        }
 
-		if (setBackground) {
-			actionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
-			actionBar.setBackgroundDrawable(actionBarBackgroundDrawable);
-		}
+        actionBar.setTitle(newAlpha > 127 ? title : null);
 
-		if (showActionBar) {
-			actionBar.show();
-		}
-	}
-	
-	/**
-	 * Used to update the ActionBar for movie details view as the user scrolls.
-	 * @param context
-	 * @param actionBarBackgroundDrawable
-	 * @param actionBar
-	 * @param title
-	 * @param newAlpha
-	 * @param setBackground
-	 * @param showActionBar
-	 */
-	public static void updateActionBarDrawable(Context context, Drawable actionBarBackgroundDrawable,
-			android.support.v7.app.ActionBar actionBar, String title, int newAlpha, boolean setBackground, boolean showActionBar) {
+        if (setBackground) {
+            actionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
+            actionBar.setBackgroundDrawable(actionBarBackgroundDrawable);
+        }
 
-		if (!MizLib.isPortrait(context)) {
-			newAlpha = 0;
-			setBackground = true;
-			showActionBar = true;
-		} else {
-			if (!MizLib.isTablet(context) && !MizLib.usesNavigationControl(context)) {
-				if (newAlpha == 0) {
-					actionBar.hide();
-				} else
-					actionBar.show();
-			}
-		}
+        if (showActionBar) {
+            actionBar.show();
+        }
+    }
 
-		actionBar.setTitle(newAlpha > 127 ? title : null);
+    /**
+     * Used to update the ActionBar for movie details view as the user scrolls.
+     * @param context
+     * @param actionBarBackgroundDrawable
+     * @param actionBar
+     * @param title
+     * @param newAlpha
+     * @param setBackground
+     * @param showActionBar
+     */
+    public static void updateActionBarDrawable(Context context, Drawable actionBarBackgroundDrawable,
+                                               android.support.v7.app.ActionBar actionBar, String title, int newAlpha, boolean setBackground, boolean showActionBar) {
 
-		if (showActionBar) {
-			actionBar.show();
-		}
-	}
+        if (!MizLib.isPortrait(context)) {
+            newAlpha = 0;
+            setBackground = true;
+            showActionBar = true;
+        } else {
+            if (!MizLib.isTablet(context) && !MizLib.usesNavigationControl(context)) {
+                if (newAlpha == 0) {
+                    actionBar.hide();
+                } else
+                    actionBar.show();
+            }
+        }
+
+        actionBar.setTitle(newAlpha > 127 ? title : null);
+
+        if (showActionBar) {
+            actionBar.show();
+        }
+    }
 
     /**
      * Animates the transition when changing the maxLines
@@ -325,17 +328,26 @@ public class ViewUtils {
      * @param maxLines
      */
     public static void animateTextViewMaxLines(TextView text, int maxLines) {
-        ObjectAnimator animation = ObjectAnimator.ofInt(text, "maxLines", maxLines);
-        animation.setInterpolator(new AccelerateInterpolator());
-        animation.setDuration(200);
-        animation.start();
+        try {
+            ObjectAnimator animation = ObjectAnimator.ofInt(text, "maxLines", maxLines);
+            animation.setInterpolator(new AccelerateInterpolator());
+            animation.setDuration(200);
+            animation.start();
+        } catch (Exception e) {
+            // Some devices crash at runtime when using the ObjectAnimator
+            text.setMaxLines(maxLines);
+        }
     }
 
     public static void animateFabJump(View fab, Animator.AnimatorListener listener) {
-        ObjectAnimator animation = ObjectAnimator.ofFloat(fab, "translationY", -10f, -5f, 0f, 5f, 10f, 5f, 0f, -5f, -10f, -5f, 0f);
-        animation.setDuration(350);
-        animation.addListener(listener);
-        animation.start();
+        try {
+            ObjectAnimator animation = ObjectAnimator.ofFloat(fab, "translationY", -10f, -5f, 0f, 5f, 10f, 5f, 0f, -5f, -10f, -5f, 0f);
+            animation.setDuration(350);
+            animation.addListener(listener);
+            animation.start();
+        } catch (Exception e) {
+            // Some devices crash at runtime when using the ObjectAnimator
+        }
     }
 
     /**
@@ -458,6 +470,9 @@ public class ViewUtils {
             // Let's set the size of the empty view on the scroll container
             View empty = layout.findViewById(R.id.empty_view);
 
+            if (empty == null)
+                return;
+
             // First, we get the height of the background image, since that
             // fills the available screen estate in its entirety
             int fullHeight = background.getHeight();
@@ -505,5 +520,19 @@ public class ViewUtils {
             if (MizLib.hasLollipop())
                 window.setStatusBarColor(color);
         }
+    }
+
+    public static int getGridViewThumbSize(Context context) {
+        int thumbSize = 0;
+
+        String thumbnailSize = PreferenceManager.getDefaultSharedPreferences(context).getString(GRID_ITEM_SIZE, context.getString(R.string.normal));
+        if (thumbnailSize.equals(context.getString(R.string.large)))
+            thumbSize = (int) (context.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
+        else if (thumbnailSize.equals(context.getString(R.string.normal)))
+            thumbSize = (int) (context.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+        else
+            thumbSize = (int) (context.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
+
+        return thumbSize;
     }
 }

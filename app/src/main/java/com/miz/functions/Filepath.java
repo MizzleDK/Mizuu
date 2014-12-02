@@ -16,6 +16,10 @@
 
 package com.miz.functions;
 
+import android.content.Context;
+
+import com.miz.mizuu.R;
+
 public class Filepath {
 
 	private final String mFilepath;
@@ -33,6 +37,16 @@ public class Filepath {
 		return temp;
 	}
 
+    public String getFolder() {
+        String filepath = getFilepath();
+
+        if (filepath.contains("/")) {
+            return filepath.substring(0, filepath.lastIndexOf("/")).trim();
+        }
+
+        return filepath.trim();
+    }
+
 	public String getFullFilepath() {
 		return mFilepath;
 	}
@@ -46,6 +60,16 @@ public class Filepath {
 			return FileSource.FILE;
 		}
 	}
+
+    public String getTypeAsString(Context context) {
+        if (getType() == FileSource.SMB) {
+            return context.getString(R.string.contentLocationSMB_Alternative);
+        } else if (getType() == FileSource.UPNP) {
+            return context.getString(R.string.contentLocationUPnP_Alternative);
+        } else {
+            return context.getString(R.string.contentLocationDevice_Alternative);
+        }
+    }
 
 	public String getFilepathName() {
 		try {
