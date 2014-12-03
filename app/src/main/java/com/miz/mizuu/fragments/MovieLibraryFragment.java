@@ -188,9 +188,6 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
 
         mMovieLoader = new MovieLoader(mContext, MovieLibraryType.fromInt(getArguments().getInt("type")), callback);
         mMovieLoader.setIgnorePrefixes(mIgnorePrefixes);
-        if (mMovieLoader.getType() == MovieLibraryType.NEW_RELEASES) {
-            mMovieLoader.setSortType(MovieSortType.RELEASE);
-        }
         mMovieLoader.load();
         showProgressBar();
 

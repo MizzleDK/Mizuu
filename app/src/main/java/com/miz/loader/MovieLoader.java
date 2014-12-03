@@ -20,7 +20,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -34,6 +36,7 @@ import com.miz.functions.Filepath;
 import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
+import com.miz.functions.PreferenceKeys;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 
@@ -68,6 +71,14 @@ public class MovieLoader {
             DATE_ADDED = 6,
             COLLECTION_TITLE = 7;
 
+    // For saving the sorting type preference
+    public static final String SORT_TITLE = "sortTitle",
+            SORT_RELEASE = "sortRelease",
+            SORT_RATING = "sortRating",
+            SORT_WEIGHTED_RATING = "sortWeightedRating",
+            SORT_DATE_ADDED = "sortAdded",
+            SORT_DURATION = "sortDuration";
+
     private final Context mContext;
     private final MovieLibraryType mLibraryType;
     private final OnLoadCompletedCallback mCallback;
@@ -86,9 +97,7 @@ public class MovieLoader {
         mCallback = callback;
         mDatabase = MizuuApplication.getMovieAdapter();
 
-        // Sort by title by default
-        setSortType(mLibraryType != MovieLibraryType.COLLECTIONS ?
-                MovieSortType.TITLE : MovieSortType.COLLECTION_TITLE);
+        setupSortType();
     }
 
     /**
@@ -118,6 +127,34 @@ public class MovieLoader {
             getSortType().toggleSortOrder();
         } else {
             mSortType = type;
+
+            // If we're setting a sort type for the "All movies"
+            // section, we want to save the sort type as the
+            // default way of sorting that section.
+            if (getType() == MovieLibraryType.ALL_MOVIES) {
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+                switch (getSortType()) {
+                    case TITLE:
+                        editor.putString(PreferenceKeys.SORTING_MOVIES, SORT_TITLE);
+                        break;
+                    case RELEASE:
+                        editor.putString(PreferenceKeys.SORTING_MOVIES, SORT_RELEASE);
+                        break;
+                    case RATING:
+                        editor.putString(PreferenceKeys.SORTING_MOVIES, SORT_RATING);
+                        break;
+                    case WEIGHTED_RATING:
+                        editor.putString(PreferenceKeys.SORTING_MOVIES, SORT_WEIGHTED_RATING);
+                        break;
+                    case DATE_ADDED:
+                        editor.putString(PreferenceKeys.SORTING_MOVIES, SORT_DATE_ADDED);
+                        break;
+                    case DURATION:
+                        editor.putString(PreferenceKeys.SORTING_MOVIES, SORT_DURATION);
+                        break;
+                }
+                editor.apply();
+            }
         }
     }
 
@@ -684,5 +721,50 @@ public class MovieLoader {
                     }
                 });
         builder.show();
+    }
+
+    /**
+     * Sets the sort type depending on the movie
+     * library type. The collections library will
+     * always be sorted by collection title, the
+     * "New releases" library will be sorted by
+     * release date and the "All movies" library
+     * will be sorted by the user's preference, if
+     * such exists. If not, it'll sort by movie title
+     * like the other library types do by default.
+     */
+    private void setupSortType() {
+        if (getType() == MovieLibraryType.ALL_MOVIES) {
+
+            // Load the saved sort type and set it
+            String savedSortType = PreferenceManager.getDefaultSharedPreferences(mContext).getString(PreferenceKeys.SORTING_MOVIES, SORT_TITLE);
+
+            switch (savedSortType) {
+                case SORT_TITLE:
+                    setSortType(MovieSortType.TITLE);
+                    break;
+                case SORT_RELEASE:
+                    setSortType(MovieSortType.RELEASE);
+                    break;
+                case SORT_RATING:
+                    setSortType(MovieSortType.RATING);
+                    break;
+                case SORT_WEIGHTED_RATING:
+                    setSortType(MovieSortType.WEIGHTED_RATING);
+                    break;
+                case SORT_DATE_ADDED:
+                    setSortType(MovieSortType.DATE_ADDED);
+                    break;
+                case SORT_DURATION:
+                    setSortType(MovieSortType.DURATION);
+                    break;
+            }
+        } else if (getType() == MovieLibraryType.COLLECTIONS) {
+            setSortType(MovieSortType.COLLECTION_TITLE);
+        } else if (getType() == MovieLibraryType.NEW_RELEASES) {
+            setSortType(MovieSortType.RELEASE);
+        } else {
+            setSortType(MovieSortType.TITLE);
+        }
     }
 }
