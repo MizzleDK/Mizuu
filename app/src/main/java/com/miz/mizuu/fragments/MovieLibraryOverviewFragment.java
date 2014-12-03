@@ -96,19 +96,19 @@ public class MovieLibraryOverviewFragment extends Fragment {
         public Fragment getItem(int index) {
             switch (index) {
                 case 0:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.ALL_MOVIES);
+                    return MovieLibraryFragment.newInstance(MovieLoader.ALL_MOVIES);
                 case 1:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.FAVORITES);
+                    return MovieLibraryFragment.newInstance(MovieLoader.FAVORITES);
                 case 2:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.NEW_RELEASES);
+                    return MovieLibraryFragment.newInstance(MovieLoader.NEW_RELEASES);
                 case 3:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.WATCHLIST);
+                    return MovieLibraryFragment.newInstance(MovieLoader.WATCHLIST);
                 case 4:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.WATCHED);
+                    return MovieLibraryFragment.newInstance(MovieLoader.WATCHED);
                 case 5:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.UNWATCHED);
+                    return MovieLibraryFragment.newInstance(MovieLoader.UNWATCHED);
                 case 6:
-                    return NewMovieLibraryFragment.newInstance(MovieLoader.COLLECTIONS);
+                    return MovieLibraryFragment.newInstance(MovieLoader.COLLECTIONS);
                 default:
                     return null;
             }
