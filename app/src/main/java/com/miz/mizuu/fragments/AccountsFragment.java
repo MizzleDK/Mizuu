@@ -215,6 +215,7 @@ public class AccountsFragment extends Fragment {
 					traktUser.setEnabled(false);
 					traktPass.setEnabled(false);
 					syncTrakt.setVisibility(View.VISIBLE);;
+                    syncTrakt.setChecked(true);
 
 					traktLogIn.setVisibility(View.GONE);
 					traktSyncNow.setVisibility(View.VISIBLE);

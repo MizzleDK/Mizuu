@@ -251,6 +251,7 @@ public class Trakt {
 
 			Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/show/episode/" + (!watched ? "un" : "") + "seen/" + getApiKey(c), holder);
 			Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
+
 			return response.isSuccessful();
 		} catch (Exception e) {
 			return false;

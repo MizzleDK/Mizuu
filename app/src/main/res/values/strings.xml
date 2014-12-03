@@ -573,5 +573,7 @@
     <string name="no_unwatched_movies_description">Good job! Check out the <b>Online Movies</b> section to discover new movies.</string>
     <string name="no_movie_collections">No movie collections</string>
     <string name="no_movie_collections_description">It happens to the best of us…</string>
+    <string name="no_episodes_to_play">Sorry, no episodes to play!</string>
+    <string name="playing_season_episode">Playing %1$s (S%2$sE%3$s): %4$s</string>
 
 </resources>

@@ -53,7 +53,7 @@ public class VideoUtils {
 
 	private VideoUtils() {} // No instantiation
 	
-	public static boolean playVideo(Activity activity, String filepath, int filetype, Object videoObject) {		
+	public static boolean playVideo(Activity activity, String filepath, int filetype, Object videoObject) {
 		boolean videoWildcard = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
 		boolean playbackStarted = false;
 		

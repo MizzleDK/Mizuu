@@ -19,6 +19,7 @@ package com.miz.mizuu.fragments;
 import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -53,10 +54,13 @@ import com.melnykov.fab.FloatingActionButton;
 import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterTvShowEpisodeMappings;
+import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.Actor;
 import com.miz.functions.BlurTransformation;
 import com.miz.functions.EpisodeCounter;
+import com.miz.functions.FileSource;
+import com.miz.functions.Filepath;
 import com.miz.functions.GridSeason;
 import com.miz.functions.IntentKeys;
 import com.miz.functions.MizLib;
@@ -68,10 +72,12 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.ShowCoverFanartBrowser;
 import com.miz.mizuu.TvShow;
+import com.miz.mizuu.TvShowEpisode;
 import com.miz.utils.FileUtils;
 import com.miz.utils.IntentUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TypefaceUtils;
+import com.miz.utils.VideoUtils;
 import com.miz.utils.ViewUtils;
 import com.miz.views.HorizontalCardLayout;
 import com.miz.views.ObservableScrollView;
@@ -231,7 +237,7 @@ public class TvShowDetailsFragment extends Fragment {
                 ViewUtils.animateFabJump(v, new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        // TODO
+                        playFirstEpisode();
                     }
 
                     @Override
@@ -636,5 +642,139 @@ public class TvShowDetailsFragment extends Fragment {
                     }
                 })
                 .create().show();
+    }
+
+    private void playFirstEpisode() {
+
+        DbAdapterTvShowEpisodes dbAdapter = MizuuApplication.getTvEpisodeDbAdapter();
+        Cursor cursor = dbAdapter.getAllEpisodes(thisShow.getId(), DbAdapterTvShowEpisodes.OLDEST_FIRST);
+        TvShowEpisode episode = null;
+
+        if (cursor != null) {
+            try {
+                while (cursor.moveToNext()) {
+
+                    // We want to avoid specials
+                    if (MizLib.getInteger(cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON))) > 0) {
+
+                        // Set the initial episode as a fallback if all episodes have been watched
+                        if (episode == null) {
+                            episode = new TvShowEpisode(getActivity(),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_TITLE)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_PLOT)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_AIRDATE)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_DIRECTOR)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_WRITER)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_GUESTSTARS)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_RATING)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_HAS_WATCHED)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_FAVOURITE))
+                            );
+
+                            episode.setFilepaths(MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFilepathsForEpisode(
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE))
+                            ));
+                        }
+
+                        // Check if the episode has been watched - if not, add
+                        // it as our episode to watch, and break the while loop
+                        if (cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_HAS_WATCHED)).equals("0")) {
+                            episode = new TvShowEpisode(getActivity(),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_TITLE)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_PLOT)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_AIRDATE)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_DIRECTOR)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_WRITER)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_GUESTSTARS)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE_RATING)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_HAS_WATCHED)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_FAVOURITE))
+                            );
+
+                            episode.setFilepaths(MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFilepathsForEpisode(
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)),
+                                    cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE))
+                            ));
+
+                            break;
+                        }
+                    }
+
+                }
+            } catch (Exception e) {} finally {
+                cursor.close();
+            }
+
+            if (episode != null) {
+                play(episode);
+                Toast.makeText(mContext, String.format(mContext.getString(R.string.playing_season_episode),
+                        thisShow.getTitle(), episode.getSeason(), episode.getEpisode(), episode.getTitle()), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(mContext, R.string.no_episodes_to_play, Toast.LENGTH_SHORT).show();
+            }
+        };
+
+    }
+
+    private void play(final TvShowEpisode episode) {
+        ArrayList<Filepath> paths = episode.getFilepaths();
+        if (paths.size() == 1) {
+            Filepath path = paths.get(0);
+            if (episode.hasOfflineCopy(path)) {
+                boolean playbackStarted = VideoUtils.playVideo(getActivity(), episode.getOfflineCopyUri(path), FileSource.FILE, episode);
+                if (playbackStarted) {
+                    checkIn(episode);
+                }
+            } else {
+                boolean playbackStarted = VideoUtils.playVideo(getActivity(), path.getFilepath(), path.getType(), episode);
+                if (playbackStarted) {
+                    checkIn(episode);
+                }
+            }
+        } else {
+            boolean hasOfflineCopy = false;
+            for (Filepath path : paths) {
+                if (episode.hasOfflineCopy(path)) {
+                    boolean playbackStarted = VideoUtils.playVideo(getActivity(), episode.getOfflineCopyUri(path), FileSource.FILE, episode);
+                    if (playbackStarted) {
+                        checkIn(episode);
+                    }
+
+                    hasOfflineCopy = true;
+                    break;
+                }
+            }
+
+            if (!hasOfflineCopy) {
+                MizLib.showSelectFileDialog(getActivity(), episode.getFilepaths(), new Dialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Filepath path = episode.getFilepaths().get(which);
+                        boolean playbackStarted = VideoUtils.playVideo(getActivity(), path.getFilepath(), path.getType(), episode);
+                        if (playbackStarted) {
+                            checkIn(episode);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    private void checkIn(final TvShowEpisode episode) {
+        new Thread() {
+            @Override
+            public void run() {
+                Trakt.performEpisodeCheckin(episode, getActivity());
+            }
+        }.start();
     }
 }
