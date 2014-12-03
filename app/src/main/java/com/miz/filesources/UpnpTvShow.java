@@ -63,290 +63,289 @@ import java.util.concurrent.TimeUnit;
 
 public class UpnpTvShow extends TvShowFileSource<String> {
 
-	private TreeSet<String> results = new TreeSet<String>();
-	private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
-	private CountDownLatch mLatch = new CountDownLatch(1);
-	private AndroidUpnpService mUpnpService;
+    private TreeSet<String> results = new TreeSet<String>();
+    private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
+    private CountDownLatch mLatch = new CountDownLatch(1);
+    private AndroidUpnpService mUpnpService;
 
-	public UpnpTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
-		super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
-	}
+    public UpnpTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
+        super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
+    }
 
-	@Override
-	public void removeUnidentifiedFiles() {
-		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
-		List<DbEpisode> dbEpisodes = getDbEpisodes();
+    @Override
+    public void removeUnidentifiedFiles() {
+        DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
+        List<DbEpisode> dbEpisodes = getDbEpisodes();
 
-		int count = dbEpisodes.size();
-		for (int i = 0; i < count; i++) {
-			if (dbEpisodes.get(i).isUpnpFile() && dbEpisodes.get(i).isUnidentified() && MizLib.exists(dbEpisodes.get(i).getFilepath())) {
-				db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
-			}
-		}
-	}
+        int count = dbEpisodes.size();
+        for (int i = 0; i < count; i++) {
+            if (dbEpisodes.get(i).isUpnpFile() && dbEpisodes.get(i).isUnidentified() && MizLib.exists(dbEpisodes.get(i).getFilepath())) {
+                db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
+            }
+        }
+    }
 
-	@Override
-	public void removeUnavailableFiles() {
-		ArrayList<DbEpisode> dbEpisodes = new ArrayList<DbEpisode>(), removedEpisodes = new ArrayList<DbEpisode>();
+    @Override
+    public void removeUnavailableFiles() {
+        ArrayList<DbEpisode> dbEpisodes = new ArrayList<DbEpisode>(), removedEpisodes = new ArrayList<DbEpisode>();
 
-		// Fetch all the episodes from the database
-		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
+        // Fetch all the episodes from the database
+        DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
-		ColumnIndexCache cache = new ColumnIndexCache();
-		Cursor tempCursor = db.getAllEpisodesInDatabase(false);
-		if (tempCursor == null)
-			return;
-		
-		while (tempCursor.moveToNext()) {
-			try {
-				dbEpisodes.add(new DbEpisode(getContext(),
-						MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFirstFilepath(tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))
-						)
-						);
-			} catch (NullPointerException e) {
-			} finally {
-				tempCursor.close();
-				cache.clear();
-			}
-		}
+        ColumnIndexCache cache = new ColumnIndexCache();
+        Cursor tempCursor = db.getAllEpisodesInDatabase(false);
+        if (tempCursor == null)
+            return;
 
-		int count = dbEpisodes.size();
-		for (int i = 0; i < dbEpisodes.size(); i++) {
-			if (dbEpisodes.get(i).isUpnpFile() && !MizLib.exists(dbEpisodes.get(i).getFilepath())) {
-				boolean deleted = db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
-				if (deleted)
-					removedEpisodes.add(dbEpisodes.get(i));
-			}
-		}
+        try {
+            while (tempCursor.moveToNext())
+                dbEpisodes.add(new DbEpisode(getContext(),
+                                MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFirstFilepath(tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))),
+                                tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+                                tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)),
+                                tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))
+                        )
+                );
+        } catch (NullPointerException e) {
+        } finally{
+            tempCursor.close();
+            cache.clear();
+        }
 
-		count = removedEpisodes.size();
-		for (int i = 0; i < count; i++) {
-			if (db.getEpisodeCount(removedEpisodes.get(i).getShowId()) == 0) { // No more episodes for this show
-				DbAdapterTvShows dbShow = MizuuApplication.getTvDbAdapter();
-				boolean deleted = dbShow.deleteShow(removedEpisodes.get(i).getShowId());
+        int count = dbEpisodes.size();
+        for (int i = 0; i < dbEpisodes.size(); i++) {
+            if (dbEpisodes.get(i).isUpnpFile() && !MizLib.exists(dbEpisodes.get(i).getFilepath())) {
+                boolean deleted = db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
+                if (deleted)
+                    removedEpisodes.add(dbEpisodes.get(i));
+            }
+        }
 
-				if (deleted) {
-					MizLib.deleteFile(new File(removedEpisodes.get(i).getThumbnail()));
-					MizLib.deleteFile(new File(removedEpisodes.get(i).getBackdrop()));
-				}
-			}
+        count = removedEpisodes.size();
+        for (int i = 0; i < count; i++) {
+            if (db.getEpisodeCount(removedEpisodes.get(i).getShowId()) == 0) { // No more episodes for this show
+                DbAdapterTvShows dbShow = MizuuApplication.getTvDbAdapter();
+                boolean deleted = dbShow.deleteShow(removedEpisodes.get(i).getShowId());
 
-			MizLib.deleteFile(new File(removedEpisodes.get(i).getEpisodeCoverPath()));
-		}
+                if (deleted) {
+                    MizLib.deleteFile(new File(removedEpisodes.get(i).getThumbnail()));
+                    MizLib.deleteFile(new File(removedEpisodes.get(i).getBackdrop()));
+                }
+            }
 
-		// Clean up
-		dbEpisodes.clear();
-		removedEpisodes.clear();
-	}
+            MizLib.deleteFile(new File(removedEpisodes.get(i).getEpisodeCoverPath()));
+        }
 
-	@Override
-	public List<String> searchFolder() {
-		Cursor cursor = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getAllFilepaths();
-		ColumnIndexCache cache = new ColumnIndexCache();
-		
-		try {
-			while (cursor.moveToNext()) // Add all show episodes in cursor to ArrayList of all existing episodes
-				existingEpisodes.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShowEpisodeMappings.KEY_FILEPATH)), "");
-		} catch (Exception e) {
-		} finally {
-			cursor.close(); // Close cursor
-			cache.clear();
-		}
+        // Clean up
+        dbEpisodes.clear();
+        removedEpisodes.clear();
+    }
 
-		// Do a recursive search in the file source folder
-		recursiveSearch(getFolder(), results);
+    @Override
+    public List<String> searchFolder() {
+        Cursor cursor = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getAllFilepaths();
+        ColumnIndexCache cache = new ColumnIndexCache();
 
-		List<String> list = new ArrayList<String>();
+        try {
+            while (cursor.moveToNext()) // Add all show episodes in cursor to ArrayList of all existing episodes
+                existingEpisodes.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShowEpisodeMappings.KEY_FILEPATH)), "");
+        } catch (Exception e) {
+        } finally {
+            cursor.close(); // Close cursor
+            cache.clear();
+        }
 
-		Iterator<String> it = results.iterator();
-		while (it.hasNext())
-			list.add(it.next());
+        // Do a recursive search in the file source folder
+        recursiveSearch(getFolder(), results);
 
-		return list;
-	}
+        List<String> list = new ArrayList<String>();
 
-	@Override
-	public void recursiveSearch(String folder, TreeSet<String> results) {
-		mContext.bindService(new Intent(mContext, WireUpnpService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        Iterator<String> it = results.iterator();
+        while (it.hasNext())
+            list.add(it.next());
 
-		try {
-			mLatch.await(10, TimeUnit.MINUTES);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+        return list;
+    }
 
-	public void addToResults(String file, long size, TreeSet<String> results) {
-		if (MizLib.checkFileTypes(file)) {			
-			if (size < getFileSizeLimit())
-				return;
+    @Override
+    public void recursiveSearch(String folder, TreeSet<String> results) {
+        mContext.bindService(new Intent(mContext, WireUpnpService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
-			if (!clearLibrary())
-				if (existingEpisodes.get(file.split("<MiZ>")[1]) != null || existingEpisodes.get(file) != null) return;
+        try {
+            mLatch.await(10, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-			//Add the file if it reaches this point
-			results.add(file);
-		}
-	}
+    public void addToResults(String file, long size, TreeSet<String> results) {
+        if (MizLib.checkFileTypes(file)) {
+            if (size < getFileSizeLimit())
+                return;
 
-	@Override
-	public String getRootFolder() {
-		return mFileSource.getUpnpFolderId();
-	}
+            if (!clearLibrary())
+                if (existingEpisodes.get(file.split("<MiZ>")[1]) != null || existingEpisodes.get(file) != null) return;
 
-	@Override
-	public String toString() {
-		return mFileSource.getFilepath();
-	}
+            //Add the file if it reaches this point
+            results.add(file);
+        }
+    }
 
-	private ServiceConnection serviceConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			mUpnpService = (AndroidUpnpService) service;
+    @Override
+    public String getRootFolder() {
+        return mFileSource.getUpnpFolderId();
+    }
 
-			boolean found = false;
+    @Override
+    public String toString() {
+        return mFileSource.getFilepath();
+    }
 
-			for (Device<?, ?, ?> device : mUpnpService.getRegistry().getDevices()) {
-				try {
-					if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
-						if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-							startBrowse(device);
-							found = true;
-						}
-					} else {
-						if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
-							startBrowse(device);
-							found = true;
-						}
-					}
-				} catch (Exception e) {}
-			}
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mUpnpService = (AndroidUpnpService) service;
 
-			if (!found) {
-				mUpnpService.getRegistry().addListener(new DeviceListRegistryListener());
-				mUpnpService.getControlPoint().search();
-			}
-		}
+            boolean found = false;
 
-		public void onServiceDisconnected(ComponentName className) {
-			mUpnpService = null;
-		}
+            for (Device<?, ?, ?> device : mUpnpService.getRegistry().getDevices()) {
+                try {
+                    if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
+                        if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+                            startBrowse(device);
+                            found = true;
+                        }
+                    } else {
+                        if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
+                            startBrowse(device);
+                            found = true;
+                        }
+                    }
+                } catch (Exception e) {}
+            }
 
-		private void startBrowse(Device<?, ?, ?> device) {
-			Service<?, ?> service = device.findService(new UDAServiceType("ContentDirectory"));
-			browse(service, getRootFolder(), mFileSource.getUpnpName());
-		}
-	};
+            if (!found) {
+                mUpnpService.getRegistry().addListener(new DeviceListRegistryListener());
+                mUpnpService.getControlPoint().search();
+            }
+        }
 
-	private int mFolderCount = 0, mScannedCount = 0;
+        public void onServiceDisconnected(ComponentName className) {
+            mUpnpService = null;
+        }
 
-	private class BrowseCallback extends Browse {
+        private void startBrowse(Device<?, ?, ?> device) {
+            Service<?, ?> service = device.findService(new UDAServiceType("ContentDirectory"));
+            browse(service, getRootFolder(), mFileSource.getUpnpName());
+        }
+    };
 
-		private Service<?, ?> mService;
-		private String mPrefix = "";
+    private int mFolderCount = 0, mScannedCount = 0;
 
-		public BrowseCallback(String prefix, Service<?, ?> service, String containerId) {
-			super(service, containerId, BrowseFlag.DIRECT_CHILDREN, "*", 0, null, new SortCriterion(true, "dc:title"));
-			mService = service;
-			mPrefix = mPrefix + prefix + "/";
-		}
+    private class BrowseCallback extends Browse {
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public void received(ActionInvocation arg0, DIDLContent didl) {
-			try {
-				for (Container childContainer : didl.getContainers()) {
-					mFolderCount++;
-					mUpnpService.getControlPoint().execute(new BrowseCallback((mPrefix.startsWith("/") ? mPrefix : "/" + mPrefix) + childContainer.getTitle(), mService, childContainer.getId()));
-				}
+        private Service<?, ?> mService;
+        private String mPrefix = "";
 
-				for (Item childItem : didl.getItems()) {
-					addToResults(mPrefix + childItem.getTitle() + "<MiZ>" + childItem.getFirstResource().getValue(), childItem.getFirstResource().getSize(), results);
-				}
+        public BrowseCallback(String prefix, Service<?, ?> service, String containerId) {
+            super(service, containerId, BrowseFlag.DIRECT_CHILDREN, "*", 0, null, new SortCriterion(true, "dc:title"));
+            mService = service;
+            mPrefix = mPrefix + prefix + "/";
+        }
 
-				mScannedCount++;
+        @SuppressWarnings("rawtypes")
+        @Override
+        public void received(ActionInvocation arg0, DIDLContent didl) {
+            try {
+                for (Container childContainer : didl.getContainers()) {
+                    mFolderCount++;
+                    mUpnpService.getControlPoint().execute(new BrowseCallback((mPrefix.startsWith("/") ? mPrefix : "/" + mPrefix) + childContainer.getTitle(), mService, childContainer.getId()));
+                }
 
-				if (mFolderCount == mScannedCount) {
-					mLatch.countDown();
-					mContext.unbindService(serviceConnection);
-				}
+                for (Item childItem : didl.getItems()) {
+                    addToResults(mPrefix + childItem.getTitle() + "<MiZ>" + childItem.getFirstResource().getValue(), childItem.getFirstResource().getSize(), results);
+                }
 
-			} catch (Exception e) {}
-		}
+                mScannedCount++;
 
-		@Override
-		public void updateStatus(Status arg0) {}
+                if (mFolderCount == mScannedCount) {
+                    mLatch.countDown();
+                    mContext.unbindService(serviceConnection);
+                }
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public void failure(ActionInvocation arg0, UpnpResponse arg1, String arg2) {}
-	}
+            } catch (Exception e) {}
+        }
 
-	public class DeviceListRegistryListener extends DefaultRegistryListener {
+        @Override
+        public void updateStatus(Status arg0) {}
 
-		private boolean found = false;
+        @SuppressWarnings("rawtypes")
+        @Override
+        public void failure(ActionInvocation arg0, UpnpResponse arg1, String arg2) {}
+    }
 
-		@Override
-		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
-			if (device.getType().getNamespace().equals("schemas-upnp-org")
-					&& device.getType().getType().equals("MediaServer")) {
-				if (!found) {
-					try {
-						if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
-							if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-								startBrowse(device);
-								found = true;
-							}
-						} else {
-							if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
-								startBrowse(device);
-								found = true;
-							}
-						}
-					} catch (Exception e) {}
-				}
-			}
-		}
+    public class DeviceListRegistryListener extends DefaultRegistryListener {
 
-		@Override
-		public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {}
+        private boolean found = false;
 
-		@Override
-		public void localDeviceAdded(Registry registry, LocalDevice device) {
-			if (!found) {
-				try {
-					if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
-						if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
-							startBrowse(device);
-							found = true;
-						}
-					} else {
-						if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
-							startBrowse(device);
-							found = true;
-						}
-					}
-				} catch (Exception e) {}
-			}
-		}
+        @Override
+        public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
+            if (device.getType().getNamespace().equals("schemas-upnp-org")
+                    && device.getType().getType().equals("MediaServer")) {
+                if (!found) {
+                    try {
+                        if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
+                            if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+                                startBrowse(device);
+                                found = true;
+                            }
+                        } else {
+                            if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
+                                startBrowse(device);
+                                found = true;
+                            }
+                        }
+                    } catch (Exception e) {}
+                }
+            }
+        }
 
-		@Override
-		public void localDeviceRemoved(Registry registry, LocalDevice device) {}
+        @Override
+        public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {}
 
-		private void startBrowse(Device<?, ?, ?> device) {
-			mFolderCount++;
+        @Override
+        public void localDeviceAdded(Registry registry, LocalDevice device) {
+            if (!found) {
+                try {
+                    if (!TextUtils.isEmpty(device.getDetails().getSerialNumber())) {
+                        if (device.getDetails().getSerialNumber().equals(mFileSource.getUpnpSerialNumber())) {
+                            startBrowse(device);
+                            found = true;
+                        }
+                    } else {
+                        if (device.getIdentity().getUdn().toString().equals(mFileSource.getUpnpSerialNumber())) {
+                            startBrowse(device);
+                            found = true;
+                        }
+                    }
+                } catch (Exception e) {}
+            }
+        }
 
-			Service<?, ?> service = device.findService(new UDAServiceType("ContentDirectory"));
-			browse(service, getRootFolder(), mFileSource.getFilepath().substring(mFileSource.getFilepath().lastIndexOf("/") + 1, mFileSource.getFilepath().length()));
-		}
-	}
+        @Override
+        public void localDeviceRemoved(Registry registry, LocalDevice device) {}
 
-	private void browse(Service<?, ?> service, String containerId, String title) {		
-		mUpnpService.getControlPoint().execute(new BrowseCallback(title, service, containerId));
-	}
+        private void startBrowse(Device<?, ?, ?> device) {
+            mFolderCount++;
 
-	@Override
-	public void addToResults(String folder, TreeSet<String> results) {}
+            Service<?, ?> service = device.findService(new UDAServiceType("ContentDirectory"));
+            browse(service, getRootFolder(), mFileSource.getFilepath().substring(mFileSource.getFilepath().lastIndexOf("/") + 1, mFileSource.getFilepath().length()));
+        }
+    }
+
+    private void browse(Service<?, ?> service, String containerId, String title) {
+        mUpnpService.getControlPoint().execute(new BrowseCallback(title, service, containerId));
+    }
+
+    @Override
+    public void addToResults(String folder, TreeSet<String> results) {}
 }

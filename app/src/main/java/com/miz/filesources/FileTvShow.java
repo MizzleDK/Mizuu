@@ -38,157 +38,156 @@ import java.util.TreeSet;
 
 public class FileTvShow extends TvShowFileSource<File> {
 
-	private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
-	private File tempFile;
+    private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
+    private File tempFile;
 
-	public FileTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
-		super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
-	}
+    public FileTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
+        super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
+    }
 
-	@Override
-	public void removeUnidentifiedFiles() {
-		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
-		List<DbEpisode> dbEpisodes = getDbEpisodes();
+    @Override
+    public void removeUnidentifiedFiles() {
+        DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
+        List<DbEpisode> dbEpisodes = getDbEpisodes();
 
-		File temp;
-		int count = dbEpisodes.size();
-		for (int i = 0; i < count; i++) {
-			if (!dbEpisodes.get(i).isNetworkFile() && !dbEpisodes.get(i).isUpnpFile() && dbEpisodes.get(i).isUnidentified()) {
-				temp = new File(dbEpisodes.get(i).getFilepath());
-				if (temp.exists())
-					db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
-			}
-		}
-	}
+        File temp;
+        int count = dbEpisodes.size();
+        for (int i = 0; i < count; i++) {
+            if (!dbEpisodes.get(i).isNetworkFile() && !dbEpisodes.get(i).isUpnpFile() && dbEpisodes.get(i).isUnidentified()) {
+                temp = new File(dbEpisodes.get(i).getFilepath());
+                if (temp.exists())
+                    db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
+            }
+        }
+    }
 
-	@Override
-	public void removeUnavailableFiles() {
-		ArrayList<DbEpisode> dbEpisodes = new ArrayList<DbEpisode>(), removedEpisodes = new ArrayList<DbEpisode>();
+    @Override
+    public void removeUnavailableFiles() {
+        ArrayList<DbEpisode> dbEpisodes = new ArrayList<DbEpisode>(), removedEpisodes = new ArrayList<DbEpisode>();
 
-		// Fetch all the episodes from the database
-		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
+        // Fetch all the episodes from the database
+        DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
-		ColumnIndexCache cache = new ColumnIndexCache();
-		Cursor tempCursor = db.getAllEpisodesInDatabase(false);
-		if (tempCursor == null)
-			return;
-		
-		while (tempCursor.moveToNext()) {
-			try {
-				dbEpisodes.add(new DbEpisode(getContext(),
-						MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFirstFilepath(tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)),
-						tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))
-						)
-						);
-			} catch (NullPointerException e) {
-			} finally {
-				tempCursor.close();
-				cache.clear();
-			}
-		}
+        ColumnIndexCache cache = new ColumnIndexCache();
+        Cursor tempCursor = db.getAllEpisodesInDatabase(false);
+        if (tempCursor == null)
+            return;
 
-		int count = dbEpisodes.size();
-		for (int i = 0; i < dbEpisodes.size(); i++) {
-			if (!new File(dbEpisodes.get(i).getFilepath()).exists()) {
-				boolean deleted = db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
-				if (deleted)
-					removedEpisodes.add(dbEpisodes.get(i));
-			}
-		}
+        try {
+            while (tempCursor.moveToNext())
+                dbEpisodes.add(new DbEpisode(getContext(),
+                                MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFirstFilepath(tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)), tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))),
+                                tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SHOW_ID)),
+                                tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_SEASON)),
+                                tempCursor.getString(cache.getColumnIndex(tempCursor, DbAdapterTvShowEpisodes.KEY_EPISODE))
+                        )
+                );
+        } catch (NullPointerException e) {
+        } finally {
+            tempCursor.close();
+            cache.clear();
+        }
 
-		count = removedEpisodes.size();
-		for (int i = 0; i < count; i++) {
-			if (db.getEpisodeCount(removedEpisodes.get(i).getShowId()) == 0) { // No more episodes for this show
-				DbAdapterTvShows dbShow = MizuuApplication.getTvDbAdapter();
-				boolean deleted = dbShow.deleteShow(removedEpisodes.get(i).getShowId());
+        int count = dbEpisodes.size();
+        for (int i = 0; i < dbEpisodes.size(); i++) {
+            if (!new File(dbEpisodes.get(i).getFilepath()).exists()) {
+                boolean deleted = db.deleteEpisode(dbEpisodes.get(i).getShowId(), MizLib.getInteger(dbEpisodes.get(i).getSeason()), MizLib.getInteger(dbEpisodes.get(i).getEpisode()));
+                if (deleted)
+                    removedEpisodes.add(dbEpisodes.get(i));
+            }
+        }
 
-				if (deleted) {
-					MizLib.deleteFile(new File(removedEpisodes.get(i).getThumbnail()));
-					MizLib.deleteFile(new File(removedEpisodes.get(i).getBackdrop()));
-				}
-			}
+        count = removedEpisodes.size();
+        for (int i = 0; i < count; i++) {
+            if (db.getEpisodeCount(removedEpisodes.get(i).getShowId()) == 0) { // No more episodes for this show
+                DbAdapterTvShows dbShow = MizuuApplication.getTvDbAdapter();
+                boolean deleted = dbShow.deleteShow(removedEpisodes.get(i).getShowId());
 
-			MizLib.deleteFile(new File(removedEpisodes.get(i).getEpisodeCoverPath()));
-		}
+                if (deleted) {
+                    MizLib.deleteFile(new File(removedEpisodes.get(i).getThumbnail()));
+                    MizLib.deleteFile(new File(removedEpisodes.get(i).getBackdrop()));
+                }
+            }
 
-		// Clean up
-		dbEpisodes.clear();
-		removedEpisodes.clear();
-	}
+            MizLib.deleteFile(new File(removedEpisodes.get(i).getEpisodeCoverPath()));
+        }
 
-	@Override
-	public List<String> searchFolder() {
-		
-		Cursor cursor = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getAllFilepaths();
-		ColumnIndexCache cache = new ColumnIndexCache();
-		
-		try {
-			while (cursor.moveToNext()) // Add all show episodes in cursor to ArrayList of all existing episodes
-				existingEpisodes.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShowEpisodeMappings.KEY_FILEPATH)), "");
-		} catch (Exception e) {
-		} finally {
-			cursor.close(); // Close cursor
-			cache.clear();
-		}
+        // Clean up
+        dbEpisodes.clear();
+        removedEpisodes.clear();
+    }
 
-		TreeSet<String> results = new TreeSet<String>();
+    @Override
+    public List<String> searchFolder() {
 
-		// Do a recursive search in the file source folder
-		recursiveSearch(getFolder(), results);
+        Cursor cursor = MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getAllFilepaths();
+        ColumnIndexCache cache = new ColumnIndexCache();
 
-		List<String> list = new ArrayList<String>();
+        try {
+            while (cursor.moveToNext()) // Add all show episodes in cursor to ArrayList of all existing episodes
+                existingEpisodes.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShowEpisodeMappings.KEY_FILEPATH)), "");
+        } catch (Exception e) {
+        } finally {
+            cursor.close(); // Close cursor
+            cache.clear();
+        }
 
-		Iterator<String> it = results.iterator();
-		while (it.hasNext())
-			list.add(it.next());
+        TreeSet<String> results = new TreeSet<String>();
 
-		return list;
-	}
+        // Do a recursive search in the file source folder
+        recursiveSearch(getFolder(), results);
 
-	@Override
-	public void recursiveSearch(File folder, TreeSet<String> results) {
-		try {
-			if (searchSubFolders()) {
-				if (folder.isDirectory()) {
-					String[] childs = folder.list();				
-					for (int i = 0; i < childs.length; i++) {
-						tempFile = new File(folder.getAbsolutePath() + "/" + childs[i]);
-						recursiveSearch(tempFile, results);
-					}
-				} else {
-					addToResults(folder, results);
-				}
-			} else {
-				File[] children = folder.listFiles();
-				for (int i = 0; i < children.length; i++)
-					addToResults(children[i], results);
-			}
-		} catch (Exception e) {}
-	}
+        List<String> list = new ArrayList<String>();
 
-	@Override
-	public void addToResults(File file, TreeSet<String> results) {
-		if (MizLib.checkFileTypes(file.getAbsolutePath())) {
-			if (file.length() < getFileSizeLimit())
-				return;
+        Iterator<String> it = results.iterator();
+        while (it.hasNext())
+            list.add(it.next());
 
-			if (!clearLibrary())
-				if (existingEpisodes.get(file.getAbsolutePath()) != null) return;
+        return list;
+    }
 
-			//Add the file if it reaches this point
-			results.add(file.getAbsolutePath());
-		}
-	}
+    @Override
+    public void recursiveSearch(File folder, TreeSet<String> results) {
+        try {
+            if (searchSubFolders()) {
+                if (folder.isDirectory()) {
+                    String[] childs = folder.list();
+                    for (int i = 0; i < childs.length; i++) {
+                        tempFile = new File(folder.getAbsolutePath() + "/" + childs[i]);
+                        recursiveSearch(tempFile, results);
+                    }
+                } else {
+                    addToResults(folder, results);
+                }
+            } else {
+                File[] children = folder.listFiles();
+                for (int i = 0; i < children.length; i++)
+                    addToResults(children[i], results);
+            }
+        } catch (Exception e) {}
+    }
 
-	@Override
-	public File getRootFolder() {
-		return new File(getFileSource().getFilepath());
-	}
+    @Override
+    public void addToResults(File file, TreeSet<String> results) {
+        if (MizLib.checkFileTypes(file.getAbsolutePath())) {
+            if (file.length() < getFileSizeLimit())
+                return;
 
-	@Override
-	public String toString() {
-		return getRootFolder().getAbsolutePath();
-	}
+            if (!clearLibrary())
+                if (existingEpisodes.get(file.getAbsolutePath()) != null) return;
+
+            //Add the file if it reaches this point
+            results.add(file.getAbsolutePath());
+        }
+    }
+
+    @Override
+    public File getRootFolder() {
+        return new File(getFileSource().getFilepath());
+    }
+
+    @Override
+    public String toString() {
+        return getRootFolder().getAbsolutePath();
+    }
 }
