@@ -172,23 +172,25 @@ public class OkHttpDownloader implements Downloader {
 
 				if (path.getType() == FileSource.SMB) {
 
-					if (!TextUtils.isEmpty(filename)) {
-						SmbFile s = null;
+                    if (MizLib.isOnline(mContext)) {
+                        if (!TextUtils.isEmpty(filename)) {
+                            SmbFile s = null;
 
-						// Determine if this is a movie path or TV show path
-						if (imageUri.contains("movie")) {
-							if (imageUri.contains("movie-thumbs")) {
-								// Movie thumb
-								s = MizLib.getCustomCoverArt(filename, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, imageUri), MizLib.COVER);
-							} else {
-								// Movie backdrop
-								s = MizLib.getCustomCoverArt(filename, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, imageUri), MizLib.BACKDROP);
-							}
+                            // Determine if this is a movie path or TV show path
+                            if (imageUri.contains("movie")) {
+                                if (imageUri.contains("movie-thumbs")) {
+                                    // Movie thumb
+                                    s = MizLib.getCustomCoverArt(filename, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, imageUri), MizLib.COVER);
+                                } else {
+                                    // Movie backdrop
+                                    s = MizLib.getCustomCoverArt(filename, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, imageUri), MizLib.BACKDROP);
+                                }
 
-							if (s != null)
-								return new Response(s.getInputStream(), localCacheOnly, s.getContentLength());
-						}
-					}
+                                if (s != null)
+                                    return new Response(s.getInputStream(), localCacheOnly, s.getContentLength());
+                            }
+                        }
+                    }
 
 				} else if (path.getType() == FileSource.FILE) {
 

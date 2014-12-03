@@ -51,6 +51,7 @@ import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -1058,6 +1059,7 @@ public class MizLib {
 		String filename = filepath.substring(0, filepath.lastIndexOf(".")).replaceAll("part[1-9]|cd[1-9]", "").trim();
 
 		String[] list = MizuuApplication.getCifsFilesList(parentPath);
+
 		if (list == null) {
 			SmbFile s = new SmbFile(createSmbLoginString(
 					auth.getDomain(),
@@ -1066,9 +1068,12 @@ public class MizLib {
 					parentPath,
 					false));
 
-			list = s.list();
-			s = null;
-			MizuuApplication.putCifsFilesList(parentPath, list);
+            try {
+                list = s.list();
+                MizuuApplication.putCifsFilesList(parentPath, list);
+            } catch (Exception e) {
+                return null;
+            }
 		}
 
 		String name = "", absolutePath = "", customCoverArt = "";
@@ -1130,8 +1135,6 @@ public class MizLib {
 			}
 		}
 
-		list = null;
-
 		if (!TextUtils.isEmpty(customCoverArt))
 			return new SmbFile(createSmbLoginString(
 					auth.getDomain(),
@@ -1170,28 +1173,6 @@ public class MizLib {
 					filepath.replace(fileType, subtitleFormats[i]),
 					false)));
 		}
-
-		return subs;
-	}
-
-	public static List<SmbFile> getDVDFiles(String filepath, NtlmPasswordAuthentication auth) throws MalformedURLException {
-		ArrayList<SmbFile> subs = new ArrayList<SmbFile>();
-
-		try {
-			String s = filepath.substring(0, filepath.lastIndexOf("/"));
-			SmbFile dir = new SmbFile(createSmbLoginString(
-					auth.getDomain(),
-					auth.getUsername(),
-					auth.getPassword(),
-					s,
-					true));
-			SmbFile[] listFiles = dir.listFiles();
-			int count = listFiles.length;
-			for (int i = 0; i < count; i++) {
-				if (!listFiles[i].getName().equalsIgnoreCase("video_ts.ifo"))
-					subs.add(listFiles[i]);
-			}
-		} catch (Exception e) {}
 
 		return subs;
 	}

@@ -110,8 +110,6 @@ public class MizuuApplication extends Application {
 		getAvailableOfflineFolder(this);
 
 		transitionLocalizationPreference();
-
-        MizLib.copyDatabase(this);
     }
 
 	@Override
@@ -405,10 +403,6 @@ public class MizuuApplication extends Application {
 	 */
 	public static void setMovieFilepaths(ArrayListMultimap<String, String> filepaths) {
 		mMovieFilepaths = filepaths;
-	}
-	
-	public static void clearMovieFilepaths() {
-		mMovieFilepaths.clear();
 	}
 	
 	public static List<String> getMovieFilepaths(String id) {
