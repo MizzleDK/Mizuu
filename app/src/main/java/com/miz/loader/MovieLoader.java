@@ -91,6 +91,12 @@ public class MovieLoader {
                 MovieSortType.TITLE : MovieSortType.COLLECTION_TITLE);
     }
 
+    /**
+     * Get movie library type. Can be either <code>ALL_MOVIES</code>,
+     * <code>FAVORITES</code>, <code>NEW_RELEASES</code>, <code>WATCHLIST</code>,
+     * <code>WATCHED</code>, <code>UNWATCHED</code> or <code>COLLECTIONS</code>.
+     * @return Movie library type
+     */
     public MovieLibraryType getType() {
         return mLibraryType;
     }
@@ -103,6 +109,10 @@ public class MovieLoader {
         mIgnorePrefixes = ignore;
     }
 
+    /**
+     * Set the movie sort type.
+     * @param type
+     */
     public void setSortType(MovieSortType type) {
         if (getSortType() == type) {
             getSortType().toggleSortOrder();
@@ -111,35 +121,73 @@ public class MovieLoader {
         }
     }
 
+    /**
+     * Get the movie sort type. Can be either <code>TITLE</code>,
+     * <code>RELEASE</code>, <code>DURATION</code>, <code>RATING</code>,
+     * <code>WEIGHTED_RATING</code>, <code>DATE_ADDED</code> or <code>COLLECTION_TITLE</code>.
+     * @return Movie sort type
+     */
     public MovieSortType getSortType() {
         return mSortType;
     }
 
+    /**
+     * Used to know if the MovieLoader is currently
+     * showing search results.
+     * @return True if showing search results, false otherwise.
+     */
     public boolean isShowingSearchResults() {
         return mShowingSearchResults;
     }
 
+    /**
+     * Add a movie filter. Filters are unique and only one
+     * can be present at a time. It is, however, possible to
+     * have multiple filters for different filter types, i.e.
+     * two filters for genres.
+     * @param filter
+     */
     public void addFilter(MovieFilter filter) {
         mFilters.remove(filter);
         mFilters.add(filter);
     }
 
+    /**
+     * Clears all filters.
+     */
     public void clearFilters() {
         mFilters.clear();
     }
 
+    /**
+     * Get all movie filters.
+     * @return Set of all currently added movie filters.
+     */
     public HashSet<MovieFilter> getFilters() {
         return mFilters;
     }
 
+    /**
+     * Starts loading movies using any active filters,
+     * sorting types and settings, i.e. prefix ignoring.
+     */
     public void load() {
         load("");
     }
 
+    /**
+     * Similar to <code>load()</code>, but filters the results
+     * based on the search query.
+     * @param query
+     */
     public void search(String query) {
         load(query);
     }
 
+    /**
+     * Starts loading movies.
+     * @param query
+     */
     private void load(String query) {
         if (mAsyncTask != null) {
             mAsyncTask.cancel(true);
@@ -154,7 +202,7 @@ public class MovieLoader {
     /**
      * Creates movie objects from a Cursor and adds them to a list.
      * @param cursor
-     * @return
+     * @return List of movie objects from the supplied Cursor.
      */
     private ArrayList<MediumMovie> listFromCursor(Cursor cursor) {
 
@@ -213,10 +261,18 @@ public class MovieLoader {
         return list;
     }
 
+    /**
+     * Get the results of the most recently loaded movies.
+     * @return List of movie objects.
+     */
     public ArrayList<MediumMovie> getResults() {
         return mResults;
     }
 
+    /**
+     * Handles everything related to loading, filtering, sorting
+     * and delivering the callback when everything is finished.
+     */
     private class MovieLoaderAsyncTask extends LibrarySectionAsyncTask<Void, Void, Void> {
 
         private final ArrayList<MediumMovie> mMovieList;
@@ -264,6 +320,9 @@ public class MovieLoader {
 
             for (MovieFilter filter : getFilters()) {
                 for (int i = 0; i < totalSize; i++) {
+
+                    if (isCancelled())
+                        return null;
 
                     boolean condition = false;
 
@@ -477,6 +536,10 @@ public class MovieLoader {
         }
     }
 
+    /**
+     * Show genres filter dialog.
+     * @param activity
+     */
     public void showGenresFilterDialog(Activity activity) {
         final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
         String[] splitGenres;
@@ -496,6 +559,10 @@ public class MovieLoader {
         createAndShowAlertDialog(activity, setupItemArray(map), R.string.selectGenre, MovieFilter.GENRE);
     }
 
+    /**
+     * Show certifications filter dialog.
+     * @param activity
+     */
     public void showCertificationsFilterDialog(Activity activity) {
         final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
         for (int i = 0; i < mResults.size(); i++) {
@@ -512,6 +579,10 @@ public class MovieLoader {
         createAndShowAlertDialog(activity, setupItemArray(map), R.string.selectCertification, MovieFilter.CERTIFICATION);
     }
 
+    /**
+     * Show release year filter dialog.
+     * @param activity
+     */
     public void showReleaseYearFilterDialog(Activity activity) {
         final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
         for (int i = 0; i < mResults.size(); i++) {
@@ -528,6 +599,10 @@ public class MovieLoader {
         createAndShowAlertDialog(activity, setupItemArray(map), R.string.selectReleaseYear, MovieFilter.RELEASE_YEAR);
     }
 
+    /**
+     * Show file sources filter dialog.
+     * @param activity
+     */
     public void showFileSourcesFilterDialog(Activity activity) {
         final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
 
@@ -545,6 +620,10 @@ public class MovieLoader {
         createAndShowAlertDialog(activity, setupItemArray(map), R.string.selectFileSource, MovieFilter.FILE_SOURCE);
     }
 
+    /**
+     * Show folders filter dialog.
+     * @param activity
+     */
     public void showFoldersFilterDialog(Activity activity) {
         final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
         for (int i = 0; i < mResults.size(); i++) {
@@ -563,6 +642,11 @@ public class MovieLoader {
         createAndShowAlertDialog(activity, setupItemArray(map), R.string.selectFolder, MovieFilter.FOLDER);
     }
 
+    /**
+     * Used to set up an array of items for the alert dialog.
+     * @param map
+     * @return List of dialog options.
+     */
     private CharSequence[] setupItemArray(TreeMap<String, Integer> map) {
         final CharSequence[] tempArray = map.keySet().toArray(new CharSequence[map.keySet().size()]);
         for (int i = 0; i < tempArray.length; i++)
@@ -571,6 +655,13 @@ public class MovieLoader {
         return tempArray;
     }
 
+    /**
+     * Shows an alert dialog and handles the user selection.
+     * @param activity
+     * @param temp
+     * @param title
+     * @param type
+     */
     private void createAndShowAlertDialog(Activity activity, final CharSequence[] temp, int title, final int type) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title)
