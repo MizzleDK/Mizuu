@@ -80,7 +80,7 @@ import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
 @SuppressLint("NewApi")
 public class Main extends MizActivity {
 
-    public static final int MOVIES = 1, SHOWS = 2, WEB_MOVIES = 4, WEB_VIDEOS = 5;
+    public static final int MOVIES = 1, SHOWS = 2, WEB_MOVIES = 3, WEB_VIDEOS = 4;
     private int mNumMovies, mNumShows, selectedIndex, mStartup;
     private Typeface mTfMedium, mTfRegular;
     private DrawerLayout mDrawerLayout;

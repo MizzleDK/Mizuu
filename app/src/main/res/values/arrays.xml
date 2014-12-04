@@ -34,8 +34,8 @@
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
         <item>4</item>
-        <item>5</item>
     </string-array>
     <string-array name="filesource_picker">
         <item>@string/chooserMovies</item>
