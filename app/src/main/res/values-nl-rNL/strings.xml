@@ -14,14 +14,12 @@
     <string name="noInternet">Niet verbonden met internet</string>
     <string name="errorOccured">Er is een fout opgetreden</string>
     <string name="updatingMovieInfo">Filminformatie aan het bijwerken&#8230;</string>
-    <string name="updatingEpisodeInfo">Afleveringsinformatie aan het bijwerken&#8230;</string>
     <string name="updatingShowInfo">Informatie TV-serie aan het bijwerken&#8230;</string>
     <string name="stringNA">N/A</string>
     <string name="minutes">minuten</string>
     <string name="removeMovie">Verwijder film</string>
     <string name="removeEpisode">Verwijder aflevering</string>
     <string name="removeShow">Verwijder serie</string>
-    <string name="failedToRemoveMovie">Kan film niet verwijderen! </string>
     <string name="failedToRemoveShow">Kan TV-serie niet verwijderen!</string>
     <string name="failedToRemoveEpisode">Kan aflevering niet verwijderen!</string>
     <string name="identifyMovieTitle">Film identificeren</string>
@@ -53,14 +51,8 @@
     <string name="menuRemoveTitle">Verwijderen</string>
     <string name="menuUpdateTitle">Bijwerken</string>
     <string name="menuAboutContact">Contact met de ontwikkelaar</string>
-    <string name="noParentFolder">Geen bovenliggende map!</string>
     <string name="prefsFileSourcesDescription">Stel de bestandsbronnen in om bij te werken in de bibliotheek.</string>
-    <string name="mainUpdateBt">Werk filmbibliotheek bij</string>
-    <string name="mainUpdateBtTv">Werk bibliotheek TV-series bij</string>
-    <string name="prefsUseLocalDataTitle">Bij voorkeur lokaal opgeslagen video info gebruiken</string>
-    <string name="prefsUseLocalDataDescription">Zoek film- en TV-seriegegevens in de ingestelde systeemtaal. Kiest vanzelf Engels als die gegevens niet beschikbaar zijn.</string>
     <string name="actorsShowAllPhotos">Foto\'s</string>
-    <string name="actorBiography">Biografie</string>
     <string name="detailsActors">Acteurs</string>
     <string name="chooserMovies">Films</string>
     <string name="chooserTVShows">TV-series</string>
@@ -78,7 +70,6 @@
     <string name="options">Opties</string>
     <string name="cancel">Afbreken</string>
     <string name="selectGenre">Selecteer genre</string>
-    <string name="trailersTitle">Trailers</string>
     <string name="prefsShowGridTitlesTitle">Toon titels in overzicht</string>
     <string name="prefsShowGridTitles">Laat titels zien in bibliotheekoverzichten van films en TV-series.</string>
     <string name="prefsCredits">Gegevensbronnen</string>
@@ -92,7 +83,6 @@
     <string name="updatedMovie">Film bijwerken gelukt!</string>
     <string name="updatingMovies">Films aan het bijwerken</string>
     <string name="updatingTvShows">TV-series aan het bijwerken</string>
-    <string name="updateLookingForFiles">Bestanden aan het zoeken&#8230;</string>
     <string name="editMovieTitle">Titel</string>
     <string name="editMovieTagline">Slogan</string>
     <string name="editMoviePlot">Beschrijving</string>
@@ -126,16 +116,10 @@
     <string name="choiceCollections">Collecties</string>
     <string name="choiceAvailableFiles">Beschikbare bestanden</string>
     <string name="choiceAllShows">Alle TV-series</string>
-    <string name="choiceUnknown">Onbekend</string>
-    <string name="choiceAllEpisodes">Alle afleveringen</string>
-    <string name="choiceUnidentifiedMovies">Niet-geïdentificeerde films</string>
-    <string name="watchedEpisodes">Bekeken afleveringen</string>
-    <string name="unwatchedEpisodes">Niet-bekeken afleveringen</string>
     <string name="stringJustAdded">Toegevoegd</string>
     <string name="stringCancelUpdate">Stoppen met bijwerken</string>
     <string name="stringUpdateCancelled">Bijwerken gestopt!</string>
     <string name="areYouSure">Weet je het zeker?</string>
-    <string name="detailsFile">Bestand</string>
     <string name="stringShowAllLanguages">Alle talen tonen</string>
     <string name="stringMarkAsWatched">Als bekeken markeren</string>
     <string name="markedAsWatched">Als bekeken gemarkeerd!</string>
@@ -152,10 +136,7 @@
     <string name="stringNowPlaying">In bioscopen</string>
     <string name="stringPopular">Populair</string>
     <string name="addFileSource">Mapinhoud</string>
-    <string name="fileSourceLocal">Lokale map</string>
-    <string name="fileSourceNetwork">Netwerkmap</string>
     <string name="done">Gereed</string>
-    <string name="discard">Verwijderen</string>
     <string name="send">Versturen</string>
     <string name="enterAMessage">Voer een bericht in!</string>
     <string name="launchingGmail">Gmail openen&#8230;</string>
@@ -163,15 +144,11 @@
     <string name="problem">Probleem</string>
     <string name="other">Overig</string>
     <string name="suggestion">Suggestie</string>
-    <string name="unknownLicense">Onbekende rechtenovereenkomst</string>
     <string name="message">Boodschap</string>
     <string name="subject">Onderwerp</string>
     <string name="ignorenfotitle">Negeer eigen filmgegevensbestanden</string>
     <string name="ignorenfo">Zet inlezen uit van lokaal opgeslagen .nfo-bestanden en eigen afbeeldingen.</string>
     <string name="noVideoPlayerFound">Geen compatible videospeler gevonden!</string>
-    <string name="originalTitle">Originele titel</string>
-    <string name="searchIn">Zoek in</string>
-    <string name="overview">Overzicht</string>
     <string name="ignoreMoviePrefixes">Negeer voorvoegsels in titels</string>
     <string name="ignoreMoviePrefixesDescription">Negeer voorvoegsels zoals \"De\" and \"Het\".</string>
     <string name="loginAsAnonymous">Log anoniem in</string>
@@ -193,7 +170,6 @@
     <string name="searching">Aan het zoeken&#8230;</string>
     <string name="scanForSources">Scannen naar netwerkbronnen</string>
     <string name="detailsFirstAired">Eerste uitzenddatum</string>
-    <string name="episodes">Afleveringen</string>
     <string name="openInBrowser">Open met browser</string>
     <string name="deviceNotSupported">Niet-ondersteund apparaat!</string>
     <string name="choiceWatchedMovies">Bekeken films</string>
@@ -215,10 +191,6 @@
     <string name="removedAccount">Accountdetails verwijderd!</string>
     <string name="removeAccount">Account verwijderen</string>
     <string name="automaticallyShareSocialUpdates">Automatisch je sociale updates bijwerken als je een film of TV-serie bekijkt.</string>
-    <string name="updatingLibraryDescription">Bibliotheek aan het bijwerken&#8230;</string>
-    <string name="noMoviesInLibrary">Geen films in bibliotheek.</string>
-    <string name="noShowsInLibrary">Geen TV-series in bibliotheek.</string>
-    <string name="noMoviesOnWatchlist">Geen films op watchlist.</string>
     <string name="confirmBackPressTitle">Bevestig terugtoets voordat de app afsluit.</string>
     <string name="confirmBackPressDescription">Twee keer Terug-drukken nodig om af te sluiten.</string>
     <string name="pressBackToExit">Druk nogmaals op Terug om af te sluiten.</string>
@@ -260,11 +232,8 @@
     <string name="social">Sociaal</string>
     <string name="syncTvShows">TV-series aan het synchroniseren met Trakt</string>
     <string name="syncMovies">Films aan het synchroniseren met Trakt</string>
-    <string name="calendar">Kalender</string>
     <string name="folders">Mappen</string>
-    <string name="allFolders">Alle mappen</string>
     <string name="selectFolder">Kies map</string>
-    <string name="allFileSources">Alle bestandsbronnen</string>
     <string name="selectFileSource">Kies bestandsbron</string>
     <string name="scheduledUpdates">Bijwerken op vaste tijden</string>
     <string name="enableScheduledLibraryUpdates">Stel bijwerken bibliotheek op vaste tijden in</string>
@@ -282,7 +251,6 @@
     <string name="identify">Identificeer</string>
     <string name="drawer_open">Open navigatiemenu</string>
     <string name="drawer_close">Sluit navigatiemenu</string>
-    <string name="moviesWeb">Films (internet)</string>
     <string name="of">van</string>
     <string name="includeAdultContent">Inhoud voor volwassenen opnemen</string>
     <string name="includeAdultContentDescription">Doorzoek ook filmtitels voor volwassenen.</string>
@@ -315,11 +283,8 @@
     <string name="drawerMyTvShows">Mijn TV-series</string>
     <string name="drawerOnlineMovies">Films op internet</string>
     <string name="drawerWebVideos">Webvideo\'s</string>
-    <string name="myLibraries">Mijn Bibliotheken</string>
     <string name="greeting">Welkom</string>
     <string name="thirdPartyLibraries">Libraries van derden</string>
-    <string name="fileToIdentify">Selecteer bestand om te identificeren</string>
-    <string name="fileToPlay">Selecteer bestand om af te spelen</string>
     <string name="actor">Acteur</string>
     <string name="overviewGridItemSizeTitle">Grootte posters in overzicht instellen</string>
     <string name="overviewGridItemSizeDescription">Wijzig de grootte van film- en TV-serieposters in de overzichten.</string>
@@ -367,10 +332,6 @@
     <plurals name="moviesInLibrary">
         <item quantity="one">film</item>
         <item quantity="other">films</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="one">collectie</item>
-        <item quantity="other">collecties</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="one">TV-serie</item>

@@ -14,14 +14,12 @@
     <string name="noInternet">لا يوجد اتصال إنترنت نشط</string>
     <string name="errorOccured">حدث خطأ</string>
     <string name="updatingMovieInfo">تحديث معلومات الفيلم…</string>
-    <string name="updatingEpisodeInfo">تحديث معلومات الحلقة…</string>
     <string name="updatingShowInfo">تحديث معلومات البرنامج…</string>
     <string name="stringNA">غ/م</string>
     <string name="minutes">دقائق</string>
     <string name="removeMovie">إزالة الفيلم</string>
     <string name="removeEpisode">إزالة الحلقة</string>
     <string name="removeShow">إزالة البرنامج التلفزيوني</string>
-    <string name="failedToRemoveMovie">تعذر إزالة الفيلم!</string>
     <string name="failedToRemoveShow">تعذر إزالة البرنامج!</string>
     <string name="failedToRemoveEpisode">تعذر إزالة الحلقة!</string>
     <string name="identifyMovieTitle">التعرف على الفيلم</string>
@@ -53,14 +51,8 @@
     <string name="menuRemoveTitle">إزالة</string>
     <string name="menuUpdateTitle">تحديث المكتبة</string>
     <string name="menuAboutContact">اتصل بالمطور</string>
-    <string name="noParentFolder">لا يوجد مجلد أصل!</string>
     <string name="prefsFileSourcesDescription">تكوين مصادر الملفات لتضمينها في تحديثات المكتبة.</string>
-    <string name="mainUpdateBt">تحديث مكتبة الأفلام</string>
-    <string name="mainUpdateBtTv">تحديث مكتبة برامج التلفاز</string>
-    <string name="prefsUseLocalDataTitle">تفضيل معلومات الفيديو المترجمة</string>
-    <string name="prefsUseLocalDataDescription">البحث عن بيانات الأفلام وبرامج التلفاز بلغة النظام الحالية، وإذا لم تتوفر بيانات فإن الافتراضية هي الإنجليزية.</string>
     <string name="actorsShowAllPhotos">صور</string>
-    <string name="actorBiography">السيرة</string>
     <string name="detailsActors">الممثلون</string>
     <string name="chooserMovies">أفلام</string>
     <string name="chooserTVShows">برامج تلفاز</string>
@@ -78,7 +70,6 @@
     <string name="options">خيارات</string>
     <string name="cancel">إلغاء</string>
     <string name="selectGenre">تحديد النوع</string>
-    <string name="trailersTitle">العروض الدعائية</string>
     <string name="prefsShowGridTitlesTitle">إظهار العناوين في النظرة العامة</string>
     <string name="prefsShowGridTitles">تمكين إظهار عناوين الأفلام والبرامج في النظرة العامة للمكتبة.</string>
     <string name="prefsCredits">مصادر البيانات</string>
@@ -91,7 +82,6 @@
     <string name="errorSomethingWentWrong">حدث خطأ - الرجاء المحاولة مرة أخرى!</string>
     <string name="updatedMovie">تم تحديث الفيلم بنجاح!</string>
     <string name="updatingTvShows">تحديث برامج التلفاز</string>
-    <string name="updateLookingForFiles">البحث عن ملفات…</string>
     <string name="editMovieTitle">العنوان</string>
     <string name="editMovieTagline">العبارة البارزة</string>
     <string name="editMoviePlot">القصة</string>
@@ -125,16 +115,10 @@
     <string name="choiceCollections">مجموعات</string>
     <string name="choiceAvailableFiles">الملفات المتاحة</string>
     <string name="choiceAllShows">كل البرامج</string>
-    <string name="choiceUnknown">غير معروف</string>
-    <string name="choiceAllEpisodes">كل الحلقات</string>
-    <string name="choiceUnidentifiedMovies">أفلام غير معرّفة</string>
-    <string name="watchedEpisodes">الحلقات المشاهدة</string>
-    <string name="unwatchedEpisodes">الحلقات الغير مشاهدة</string>
     <string name="stringJustAdded">أضيف</string>
     <string name="stringCancelUpdate">إيقاف التحديث</string>
     <string name="stringUpdateCancelled">تم إيقاف التحديث!</string>
     <string name="areYouSure">هل أنت متأكد؟</string>
-    <string name="detailsFile">الملف</string>
     <string name="stringShowAllLanguages">إظهار جميع اللغات</string>
     <string name="stringMarkAsWatched">وضع علامة \"مشاهد\"</string>
     <string name="markedAsWatched">تم وضع علامة \"مشاهد\"!</string>
@@ -151,10 +135,7 @@
     <string name="stringNowPlaying">في السينما</string>
     <string name="stringPopular">شائع</string>
     <string name="addFileSource">محتوى المجلد</string>
-    <string name="fileSourceLocal">مجلد محلي</string>
-    <string name="fileSourceNetwork">مجلد شبكة</string>
     <string name="done">تم</string>
-    <string name="discard">تجاهل</string>
     <string name="send">إرسال</string>
     <string name="enterAMessage">أدخل رسالة!</string>
     <string name="launchingGmail">فتح Gmail…</string>
@@ -162,15 +143,11 @@
     <string name="problem">مشكلة</string>
     <string name="other">أخرى</string>
     <string name="suggestion">اقتراح</string>
-    <string name="unknownLicense">ترخيص غير معروف</string>
     <string name="message">رسالة</string>
     <string name="subject">الموضوع</string>
     <string name="ignorenfotitle">تجاهل ملفات بيانات الفيلم المخصصة</string>
     <string name="ignorenfo">تعطيل قراءة ملفات .nfo المحلية وصور الأغلفة المخصصة.</string>
     <string name="noVideoPlayerFound">لم يعثر على مشغل فيديو متوافق!</string>
-    <string name="originalTitle">العنوان الأصلي</string>
-    <string name="searchIn">بحث في</string>
-    <string name="overview">نظرة عامة</string>
     <string name="ignoreMoviePrefixes">تجاهل بادئات العنوان</string>
     <string name="ignoreMoviePrefixesDescription">تجاهل البادئات مثل \"A\" و \"The\".</string>
     <string name="loginAsAnonymous">تسجيل الدخول كمجهول</string>
@@ -192,7 +169,6 @@
     <string name="searching">بحث…</string>
     <string name="scanForSources">المسح بحثًا عن مصادر الشبكة</string>
     <string name="detailsFirstAired">أول بث</string>
-    <string name="episodes">الحلقات</string>
     <string name="openInBrowser">فتح في المتصفح</string>
     <string name="deviceNotSupported">الجهاز غير مدعوم!</string>
     <string name="choiceWatchedMovies">أفلام مشاهدة</string>
@@ -214,10 +190,6 @@
     <string name="removedAccount">تمت إزالة تفاصيل الحساب!</string>
     <string name="removeAccount">إزالة الحساب</string>
     <string name="automaticallyShareSocialUpdates">مشاركة تحديثات اجتماعية تلقائيًا عند مشاهدة فيلم أو برنامج تلفازي.</string>
-    <string name="updatingLibraryDescription">تحديث المكتبة…</string>
-    <string name="noMoviesInLibrary">لا يوجد أفلام في المكتبة.</string>
-    <string name="noShowsInLibrary">لا يوجد برامج تلفازية في المكتبة.</string>
-    <string name="noMoviesOnWatchlist">لا يوجد أفلام على قائمة المشاهدة.</string>
     <string name="confirmBackPressTitle">تأكيد زر الرجوع مرة أخرى قبل الخروج</string>
     <string name="confirmBackPressDescription">يتطلب هذا ضغتين على زر الرجوع للخروج.</string>
     <string name="pressBackToExit">اضغط زر الرجوع مرة أخرى للخروج</string>
@@ -258,11 +230,8 @@
     <string name="social">اجتماعي</string>
     <string name="syncTvShows">مزامنة برامج التلفاز مع Trakt</string>
     <string name="syncMovies">مزامنة الأفلام مع Trakt</string>
-    <string name="calendar">التقويم</string>
     <string name="folders">المجلدات</string>
-    <string name="allFolders">كل المجلدات</string>
     <string name="selectFolder">تحديد مجلد</string>
-    <string name="allFileSources">كل مصادر الملفات</string>
     <string name="selectFileSource">تحديد مصدر ملفات</string>
     <string name="scheduledUpdates">التحديثات المجدولة</string>
     <string name="enableScheduledLibraryUpdates">تمكين تحديثات المكتبة المجدولة</string>
@@ -280,7 +249,6 @@
     <string name="identify">التعرف</string>
     <string name="drawer_open">فتح سحاب التنقل</string>
     <string name="drawer_close">إغلاق سحاب التنقل</string>
-    <string name="moviesWeb">أفلام (ويب)</string>
     <string name="of">من</string>
     <string name="includeAdultContent">تضمين محتوى البالغين</string>
     <string name="includeAdultContentDescription">تضمين عناوين البالغين عند البحث عن الأفلام.</string>
@@ -313,11 +281,8 @@
     <string name="drawerMyTvShows">برامجي التلفازية</string>
     <string name="drawerOnlineMovies">أفلام على الإنترنت</string>
     <string name="drawerWebVideos">مقاطع على الإنترنت</string>
-    <string name="myLibraries">مكتباتي</string>
     <string name="greeting">مرحبًا</string>
     <string name="thirdPartyLibraries">مكتبات طرف ثالث</string>
-    <string name="fileToIdentify">اختيار ملف للتعريف</string>
-    <string name="fileToPlay">اختيار ملف للتشغيل</string>
     <string name="actor">ممثل</string>
     <string name="overviewGridItemSizeTitle">تعيين حجم غلاف المصغرات</string>
     <string name="overviewGridItemSizeDescription">تغيير حجم أغلفة الأفلام وبرامج التلفاز عند استعراضها بشكل عام.</string>
@@ -345,14 +310,6 @@
         <item quantity="few">أفلام</item>
         <item quantity="many">أفلام</item>
         <item quantity="other">أفلام</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="zero">مجموعات</item>
-        <item quantity="one">مجموعة</item>
-        <item quantity="two">مجموعتين</item>
-        <item quantity="few">مجموعات</item>
-        <item quantity="many">مجموعات</item>
-        <item quantity="other">مجموعات</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="zero">برامج تلفاز</item>

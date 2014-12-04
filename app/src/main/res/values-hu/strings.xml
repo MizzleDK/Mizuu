@@ -14,14 +14,12 @@
     <string name="noInternet">Nincs aktív internetkapcsolat</string>
     <string name="errorOccured">Hiba történt</string>
     <string name="updatingMovieInfo">Film adatainak frissítése…</string>
-    <string name="updatingEpisodeInfo">Az epizód adatainak frissítése…</string>
     <string name="updatingShowInfo">A sorozat adatainak frissítése…</string>
     <string name="stringNA">NINCS ADAT</string>
     <string name="minutes">perc</string>
     <string name="removeMovie">Film eltávolítása</string>
     <string name="removeEpisode">Epizód eltávolítása</string>
     <string name="removeShow">TV sorozat eltávolítása</string>
-    <string name="failedToRemoveMovie">A film eltávolítása nem sikerült!</string>
     <string name="failedToRemoveShow">A sorozat eltávolitása nem sikerült!</string>
     <string name="failedToRemoveEpisode">Az epizód eltávolítása nem sikerült!</string>
     <string name="identifyMovieTitle">Film azonosítása</string>
@@ -53,14 +51,8 @@
     <string name="menuRemoveTitle">Eltávolítás</string>
     <string name="menuUpdateTitle">Könyvtár frissítése</string>
     <string name="menuAboutContact">Kapcsolat a fejlesztővel</string>
-    <string name="noParentFolder">Nincs szülő mappa!</string>
     <string name="prefsFileSourcesDescription">A könyvtár frissítések fájl forrásainak beállítása.</string>
-    <string name="mainUpdateBt">Film könyvtár frissítése</string>
-    <string name="mainUpdateBtTv">TV sorozat könyvtár frissítése</string>
-    <string name="prefsUseLocalDataTitle">Honosított video információ előnyben részesítése</string>
-    <string name="prefsUseLocalDataDescription">A filmek és sorozatok adatainak a rendszer beállított nyelvén történő keresése. Alap beállítás angol, ha nincs az adott nyelven elérhető adat.</string>
     <string name="actorsShowAllPhotos">Fényképek</string>
-    <string name="actorBiography">Életrajz</string>
     <string name="detailsActors">Szereplők</string>
     <string name="chooserMovies">Filmek</string>
     <string name="chooserTVShows">Sorozatok</string>
@@ -78,7 +70,6 @@
     <string name="options">Beállítások</string>
     <string name="cancel">Mégse</string>
     <string name="selectGenre">Műfaj választása</string>
-    <string name="trailersTitle">Előzetesek</string>
     <string name="prefsShowGridTitlesTitle">Filmcímek mutatása az áttekintő oldalon</string>
     <string name="prefsShowGridTitles">A filmek és sorozatok címeinek mutatása a könyvtár áttekintő nézetében.</string>
     <string name="prefsCredits">Adatforrások</string>
@@ -91,7 +82,6 @@
     <string name="errorSomethingWentWrong">Valami nem sikerült - próbáld meg újra!</string>
     <string name="updatedMovie">A film sikeresen frissítve!</string>
     <string name="updatingTvShows">TV sorozatok frissítése</string>
-    <string name="updateLookingForFiles">Fájlok keresése…</string>
     <string name="editMovieTitle">Cím</string>
     <string name="editMovieTagline">Címsor</string>
     <string name="editMoviePlot">Cselekmény</string>
@@ -125,14 +115,8 @@
     <string name="choiceCollections">Gyűjtemények</string>
     <string name="choiceAvailableFiles">Rendelkezésre álló fájlok</string>
     <string name="choiceAllShows">Minden sorozat</string>
-    <string name="choiceUnknown">Ismeretlen</string>
-    <string name="choiceAllEpisodes">Minden epizód</string>
-    <string name="choiceUnidentifiedMovies">Be nem azonosított filmek</string>
-    <string name="watchedEpisodes">Korábban látott epizódok</string>
-    <string name="unwatchedEpisodes">Még nem látott epizódok</string>
     <string name="stringJustAdded">Hozzáadva</string>
     <string name="areYouSure">Biztos vagy benne?</string>
-    <string name="detailsFile">Fájl</string>
     <string name="stringShowAllLanguages">Minden nyelv mutatása</string>
     <string name="stringMarkAsWatched">Megjelölés megnézettként</string>
     <string name="markedAsWatched">Megnézettként megjelölve!</string>
@@ -149,10 +133,7 @@
     <string name="stringNowPlaying">A mozikban</string>
     <string name="stringPopular">Népszerű</string>
     <string name="addFileSource">Mappa tartalma</string>
-    <string name="fileSourceLocal">Helyi mappa</string>
-    <string name="fileSourceNetwork">Hálózati mappa</string>
     <string name="done">Kész</string>
-    <string name="discard">Elvetés</string>
     <string name="send">Küldés</string>
     <string name="enterAMessage">Adjon meg egy üzenetet!</string>
     <string name="launchingGmail">GMail megnyitása…</string>
@@ -160,15 +141,11 @@
     <string name="problem">Probléma</string>
     <string name="other">Egyéb</string>
     <string name="suggestion">Javaslat</string>
-    <string name="unknownLicense">Ismeretlen engedély</string>
     <string name="message">Üzenet</string>
     <string name="subject">Tárgy</string>
     <string name="ignorenfotitle">Egyéni film info fájlokat figyelmen kívül hagyja</string>
     <string name="ignorenfo">A helyi .nfo fájlok és képek beolvasásának tiltása.</string>
     <string name="noVideoPlayerFound">Nem található kompatibilis videó lejátszó!</string>
-    <string name="originalTitle">Eredeti cím</string>
-    <string name="searchIn">Keresés:</string>
-    <string name="overview">Áttekintés</string>
     <string name="ignoreMoviePrefixes">Névelők figyelmen kívül hagyása a címben</string>
     <string name="ignoreMoviePrefixesDescription">Az \"A\" és a \"The\" névelők figyelmen kívül hagyása.</string>
     <string name="loginAsAnonymous">Bejelentkezés Névtelenként</string>
@@ -189,7 +166,6 @@
     <string name="searching">Keresés…</string>
     <string name="scanForSources">Hálózati források keresése</string>
     <string name="detailsFirstAired">Első vetítési idő</string>
-    <string name="episodes">Epizódok</string>
     <string name="openInBrowser">Megnyitás böngészőben</string>
     <string name="deviceNotSupported">Nem támogatott eszköz!</string>
     <string name="choiceWatchedMovies">Már látott filmek</string>
@@ -211,10 +187,6 @@
     <string name="removedAccount">A fiók adatai eltávolítva!</string>
     <string name="removeAccount">Fiók eltávolítása</string>
     <string name="automaticallyShareSocialUpdates">Film vagy TV sorozat nézésekor automatikus állapotfirssítés a közösségi oldalakon.</string>
-    <string name="updatingLibraryDescription">Könyvtár frissítése…</string>
-    <string name="noMoviesInLibrary">Nincs film a könyvtárban.</string>
-    <string name="noShowsInLibrary">Nincs TV sorozat a könyvtárban.</string>
-    <string name="noMoviesOnWatchlist">Nincs film a lejátszási listában.</string>
     <string name="confirmBackPressTitle">Megerősítés  vissza gombbal való kilépéskor</string>
     <string name="confirmBackPressDescription">A vissza gomb kétszeri megnyomása szükséges a kilépéshez.</string>
     <string name="pressBackToExit">Nyomd meg újra a vissza gombot a kilépéshez</string>
@@ -255,11 +227,8 @@
     <string name="social">Közösségi</string>
     <string name="syncTvShows">A sorozatok szinkronizálása a Trakt-tal</string>
     <string name="syncMovies">A filmek szinkronizálása a Trakt-tal</string>
-    <string name="calendar">Naptár</string>
     <string name="folders">Mappák</string>
-    <string name="allFolders">Minden mappa</string>
     <string name="selectFolder">Mappa kijelölése</string>
-    <string name="allFileSources">Az összes fájl forrás</string>
     <string name="selectFileSource">Fájl forrás kiválasztása</string>
     <string name="scheduledUpdates">Ütemezett frissítések</string>
     <string name="enableScheduledLibraryUpdates">Ütemezett könyvtárfrissítések engedélyezése</string>
@@ -274,7 +243,6 @@
     <string name="identify">Azonosítás</string>
     <string name="drawer_open">Navigációs sáv megnyitása</string>
     <string name="drawer_close">Navigációs sáv bezárása</string>
-    <string name="moviesWeb">Filmek (web)</string>
     <string name="of">/</string>
     <string name="includeAdultContent">Felnőtt tartalom hozzáadása</string>
     <string name="includeAdultContentDescription">Felnőtt tartalmak figyelembe vétele a filmek keresésekor.</string>
@@ -307,17 +275,11 @@
     <string name="drawerMyTvShows">A sorozataim</string>
     <string name="drawerOnlineMovies">Online filmek</string>
     <string name="drawerWebVideos">Web videók</string>
-    <string name="myLibraries">A könyvtáram</string>
     <string name="greeting">Üdvözöllek</string>
     <string name="thirdPartyLibraries">Más cégek könyvtárai</string>
-    <string name="fileToIdentify">Fájl kiválasztása azonosításra</string>
-    <string name="fileToPlay">Fájl kiválasztása lejátszásra</string>
 
     <plurals name="moviesInLibrary">
         <item quantity="other">film</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="other">gyűjtemény</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="other">sorozat</item>

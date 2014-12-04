@@ -14,14 +14,12 @@
     <string name="noInternet">Nici o conexiune activă la Internet</string>
     <string name="errorOccured">A apărut o eroare</string>
     <string name="updatingMovieInfo">Actualizarea informaţiilor despre film&#8230;</string>
-    <string name="updatingEpisodeInfo">Actualizarea informaţiilor despre episod&#8230;</string>
     <string name="updatingShowInfo">Actualizarea informaţiilor despre serial&#8230;</string>
     <string name="stringNA">Indisponibil</string>
     <string name="minutes">minute</string>
     <string name="removeMovie">Elimină film</string>
     <string name="removeEpisode">Elimină episod</string>
     <string name="removeShow">Elimină serial</string>
-    <string name="failedToRemoveMovie">Nu se poate elimina filmul!</string>
     <string name="failedToRemoveShow">Nu se poate elimina serialul!</string>
     <string name="failedToRemoveEpisode">Nu se poate elimina episodul!</string>
     <string name="identifyMovieTitle">Identifică film</string>
@@ -53,14 +51,8 @@
     <string name="menuRemoveTitle">Elimină</string>
     <string name="menuUpdateTitle">Actualizează biblioteca</string>
     <string name="menuAboutContact">Contactează dezvoltatorul</string>
-    <string name="noParentFolder">Nici un dosar părinte!</string>
     <string name="prefsFileSourcesDescription">Configurează sursele de fişiere ce vor fi incluse în actualizările de bibliotecă.</string>
-    <string name="mainUpdateBt">Actualizează biblioteca de filme</string>
-    <string name="mainUpdateBtTv">Actualizează biblioteca de seriale</string>
-    <string name="prefsUseLocalDataTitle">Prefer informații video localizate</string>
-    <string name="prefsUseLocalDataDescription">Caută date despre filme și seriale în limba curentă a sistemului. Implicit în engleză dacă nu sunt disponibile date.</string>
     <string name="actorsShowAllPhotos">Fotografii</string>
-    <string name="actorBiography">Biografie</string>
     <string name="detailsActors">Actori</string>
     <string name="chooserMovies">Filme</string>
     <string name="chooserTVShows">Seriale</string>
@@ -78,7 +70,6 @@
     <string name="options">Opţiuni</string>
     <string name="cancel">Anulare</string>
     <string name="selectGenre">Selectează gen</string>
-    <string name="trailersTitle">Trailere</string>
     <string name="prefsShowGridTitlesTitle">Arată titlurile în ecranul de ansamblu</string>
     <string name="prefsShowGridTitles">Activeză titlurile pentru filme și seriale în pagina de ansamblu a bibliotecii.</string>
     <string name="prefsCredits">Surse de date</string>
@@ -91,7 +82,6 @@
     <string name="errorSomethingWentWrong">Ceva a mers greşit - încearcă din nou!</string>
     <string name="updatedMovie">Film actualizat cu succes!</string>
     <string name="updatingTvShows">Actualizare Seriale</string>
-    <string name="updateLookingForFiles">Căutare fişiere&#8230;</string>
     <string name="editMovieTitle">Titlu</string>
     <string name="editMovieTagline">Motto</string>
     <string name="editMoviePlot">Intriga</string>
@@ -125,16 +115,10 @@
     <string name="choiceCollections">Colecţii</string>
     <string name="choiceAvailableFiles">Fişiere disponibile</string>
     <string name="choiceAllShows">Toate serialele</string>
-    <string name="choiceUnknown">Necunoscut</string>
-    <string name="choiceAllEpisodes">Toate episoadele</string>
-    <string name="choiceUnidentifiedMovies">Filme neidentificate</string>
-    <string name="watchedEpisodes">Episoade văzute</string>
-    <string name="unwatchedEpisodes">Episoade nevăzute</string>
     <string name="stringJustAdded">Adăugat</string>
     <string name="stringCancelUpdate">Oprire actualizare</string>
     <string name="stringUpdateCancelled">Actualizare oprită!</string>
     <string name="areYouSure">Eşti sigur?</string>
-    <string name="detailsFile">Fişier</string>
     <string name="stringShowAllLanguages">Arată toate limbile</string>
     <string name="stringMarkAsWatched">Marchează ca văzut</string>
     <string name="markedAsWatched">Marcat ca văzut!</string>
@@ -151,10 +135,7 @@
     <string name="stringNowPlaying">În cinematografe</string>
     <string name="stringPopular">Popular</string>
     <string name="addFileSource">Conținut dosar</string>
-    <string name="fileSourceLocal">Dosar local</string>
-    <string name="fileSourceNetwork">Dosar în rețea</string>
     <string name="done">Gata</string>
-    <string name="discard">Renunță</string>
     <string name="send">Trimite</string>
     <string name="enterAMessage">Introdu un mesaj!</string>
     <string name="launchingGmail">Deschidere Gmail&#8230;</string>
@@ -162,15 +143,11 @@
     <string name="problem">Problemă</string>
     <string name="other">Altele</string>
     <string name="suggestion">Sugestie</string>
-    <string name="unknownLicense">Licență necunoscută</string>
     <string name="message">Mesaj</string>
     <string name="subject">Subiect</string>
     <string name="ignorenfotitle">Ignoră fişierele de date particularizate pentru film</string>
     <string name="ignorenfo">Dezactivează citirea fișierelor .nfo locale și a imaginilor personalizate.</string>
     <string name="noVideoPlayerFound">Niciun player video compatibil găsit!</string>
-    <string name="originalTitle">Titlu original</string>
-    <string name="searchIn">Caută în</string>
-    <string name="overview">Privire de ansamblu</string>
     <string name="ignoreMoviePrefixes">Ignoră prefixe din titlu</string>
     <string name="ignoreMoviePrefixesDescription">Ignoră prefixe precum \"A\" and \"The\".</string>
     <string name="loginAsAnonymous">Autentificare ca anonim</string>
@@ -192,7 +169,6 @@
     <string name="searching">Căutare&#8230;</string>
     <string name="scanForSources">Scanează pentru surse de rețea</string>
     <string name="detailsFirstAired">Prima difuzare</string>
-    <string name="episodes">Episoade</string>
     <string name="openInBrowser">Deschide în browser</string>
     <string name="deviceNotSupported">Dispozitiv nesuportat!</string>
     <string name="choiceWatchedMovies">Filme văzute</string>
@@ -214,10 +190,6 @@
     <string name="removedAccount">Detaliile contului au fost eliminate!</string>
     <string name="removeAccount">Elimină cont</string>
     <string name="automaticallyShareSocialUpdates">Distribuie automat actualizări sociale când te uiți la un film sau la un serial.</string>
-    <string name="updatingLibraryDescription">Actualizarea bibliotecii&#8230;</string>
-    <string name="noMoviesInLibrary">Nu sunt filme în bibliotecă.</string>
-    <string name="noShowsInLibrary">Nu sunt seriale în bibliotecă.</string>
-    <string name="noMoviesOnWatchlist">Nu sunt filme în lista de văzut.</string>
     <string name="confirmBackPressTitle">Confirmă apăsarea butonului înapoi la ieșire</string>
     <string name="confirmBackPressDescription">Cere două apăsări pe butonul Înapoi pentru ieșire.</string>
     <string name="pressBackToExit">Apasă butonul Înapoi din nou pentru a ieși</string>
@@ -258,11 +230,8 @@
     <string name="social">Social</string>
     <string name="syncTvShows">Sincronizarea serialelor cu Trakt</string>
     <string name="syncMovies">Sincronizarea filmelor cu Trakt</string>
-    <string name="calendar">Calendar</string>
     <string name="folders">Dosare</string>
-    <string name="allFolders">Toate dosarele</string>
     <string name="selectFolder">Selectează dosar</string>
-    <string name="allFileSources">Toate sursele de fișiere</string>
     <string name="selectFileSource">Selectează sursa de fișiere</string>
     <string name="scheduledUpdates">Actualizări programate</string>
     <string name="enableScheduledLibraryUpdates">Activează actualizări programate ale bibliotecii</string>
@@ -280,7 +249,6 @@
     <string name="identify">Identifică</string>
     <string name="drawer_open">Deschide sertarul de navigare</string>
     <string name="drawer_close">Închide sertarul de navigare</string>
-    <string name="moviesWeb">Filme (web)</string>
     <string name="of">din</string>
     <string name="includeAdultContent">Include conţinut pentru adulţi</string>
     <string name="includeAdultContentDescription">Include titluri pentru adulţi atunci când se caută filmele.</string>
@@ -313,11 +281,8 @@
     <string name="drawerMyTvShows">Serialele mele</string>
     <string name="drawerOnlineMovies">Filme online</string>
     <string name="drawerWebVideos">Videoclipuri web</string>
-    <string name="myLibraries">Bibliotecile mele</string>
     <string name="greeting">Bun venit</string>
     <string name="thirdPartyLibraries">Biblioteci terţe părţi</string>
-    <string name="fileToIdentify">Selectează fişierul pentru identificare</string>
-    <string name="fileToPlay">Selectează fișierul pentru rulare</string>
     <string name="actor">Actor</string>
     <string name="overviewGridItemSizeTitle">Setează dimensiunea posterului de ansamblu</string>
     <string name="overviewGridItemSizeDescription">Modifică dimensiunea posterelor pentru filme si seriale în paginile de ansamblu.</string>
@@ -342,11 +307,6 @@
         <item quantity="one">film</item>
         <item quantity="few">filme</item>
         <item quantity="other">filme</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="one">colecție</item>
-        <item quantity="few">colecții</item>
-        <item quantity="other">colecţii</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="one">serial</item>

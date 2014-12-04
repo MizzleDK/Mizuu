@@ -14,14 +14,12 @@
     <string name="noInternet">Žádné aktivní připojení k internetu</string>
     <string name="errorOccured">Došlo k chybě</string>
     <string name="updatingMovieInfo">Aktualizace informací o filmu&#8230;</string>
-    <string name="updatingEpisodeInfo">Aktualizace informací o epizodě&#8230;</string>
     <string name="updatingShowInfo">Aktualizace informací o seriálu&#8230;</string>
     <string name="stringNA">---</string>
     <string name="minutes">minut</string>
     <string name="removeMovie">Odstranit film</string>
     <string name="removeEpisode">Odstranit epizodu</string>
     <string name="removeShow">Odstranit TV seriál</string>
-    <string name="failedToRemoveMovie">Nelze odstranit film!</string>
     <string name="failedToRemoveShow">Nelze odstranit seriál!</string>
     <string name="failedToRemoveEpisode">Nelze odstranit epizodu!</string>
     <string name="identifyMovieTitle">Rozpoznat film</string>
@@ -52,14 +50,8 @@
     <string name="menuRemoveTitle">Odstranit</string>
     <string name="menuUpdateTitle">Aktualizovat knihovnu</string>
     <string name="menuAboutContact">Obraťte se na vývojáře</string>
-    <string name="noParentFolder">Žádná nadřazená složka!</string>
     <string name="prefsFileSourcesDescription">Nastavení složek, které budou zahrnuty do aktualizace knihovny.</string>
-    <string name="mainUpdateBt">Aktualizovat knihovnu filmů</string>
-    <string name="mainUpdateBtTv">Aktualizovat knihovnu TV seriálů</string>
-    <string name="prefsUseLocalDataTitle">Stahovat informace o filmu/seriálu v češtině</string>
-    <string name="prefsUseLocalDataDescription">Stahovat informace o filmu či TV seriálu podle jazyka zařízení (čeština). Pokud tento jazyk není k dispozici, stáhnou se informace v angličtině.</string>
     <string name="actorsShowAllPhotos">Fotografie</string>
-    <string name="actorBiography">Životopis</string>
     <string name="detailsActors">Herci</string>
     <string name="chooserMovies">Filmy</string>
     <string name="chooserTVShows">TV seriály</string>
@@ -77,7 +69,6 @@
     <string name="options">Možnosti</string>
     <string name="cancel">Zrušit</string>
     <string name="selectGenre">Vybrat žánr</string>
-    <string name="trailersTitle">Trailery</string>
     <string name="prefsShowGridTitlesTitle">V přehledu zobrazit názvy</string>
     <string name="prefsShowGridTitles">Zobrazí názvy filmů a seriálů v přehledu knihovny.</string>
     <string name="prefsCredits">Zdrojové složky</string>
@@ -90,7 +81,6 @@
     <string name="errorSomethingWentWrong">Něco se pokazilo - opakujte akci!</string>
     <string name="updatedMovie">Film úspěšně aktualizován!</string>
     <string name="updatingTvShows">Aktualizace TV seriálů</string>
-    <string name="updateLookingForFiles">Vyhledávání souborů&#8230;</string>
     <string name="editMovieTitle">Název</string>
     <string name="editMovieTagline">Doplňující text</string>
     <string name="editMoviePlot">Děj</string>
@@ -124,16 +114,10 @@
     <string name="choiceCollections">Sbírky</string>
     <string name="choiceAvailableFiles">Dostupné soubory</string>
     <string name="choiceAllShows">Všechny seriály</string>
-    <string name="choiceUnknown">Neznámý</string>
-    <string name="choiceAllEpisodes">Všechny epizody</string>
-    <string name="choiceUnidentifiedMovies">Nerozpoznané filmy</string>
-    <string name="watchedEpisodes">Shlédnuté epizody</string>
-    <string name="unwatchedEpisodes">Neshlédnuté epizody</string>
     <string name="stringJustAdded">Přidáno</string>
     <string name="stringCancelUpdate">Zastavit aktualizaci</string>
     <string name="stringUpdateCancelled">Aktualizace zastavena!</string>
     <string name="areYouSure">Opravdu?</string>
-    <string name="detailsFile">Soubor</string>
     <string name="stringShowAllLanguages">Zobrazit všechny jazyky</string>
     <string name="stringMarkAsWatched">Označit jako shlédnuté</string>
     <string name="markedAsWatched">Označeno jako shlédnuté!</string>
@@ -150,10 +134,7 @@
     <string name="stringNowPlaying">V kinech</string>
     <string name="stringPopular">Populární</string>
     <string name="addFileSource">Obsah složky</string>
-    <string name="fileSourceLocal">Místní složka</string>
-    <string name="fileSourceNetwork">Síťová složka</string>
     <string name="done">Hotovo</string>
-    <string name="discard">Zahodit</string>
     <string name="send">Odeslat</string>
     <string name="enterAMessage">Zadejte zprávu!</string>
     <string name="launchingGmail">Otevírání Gmail&#8230;</string>
@@ -161,15 +142,11 @@
     <string name="problem">Problém</string>
     <string name="other">Ostatní</string>
     <string name="suggestion">Návrh</string>
-    <string name="unknownLicense">Neznámá licence</string>
     <string name="message">Zpráva</string>
     <string name="subject">Předmět</string>
     <string name="ignorenfotitle">Ignorovat vlastní soubory s informacemi</string>
     <string name="ignorenfo">Zakáže čtení místních .nfo souborů a vlastních obrázků obalů.</string>
     <string name="noVideoPlayerFound">Nebyl nalezen žádný kompatibilní přehrávač videa!</string>
-    <string name="originalTitle">Původní název</string>
-    <string name="searchIn">Vyhledávat v</string>
-    <string name="overview">Přehled</string>
     <string name="ignoreMoviePrefixes">Ignorovat členy v názvu</string>
     <string name="ignoreMoviePrefixesDescription">Ignorovat členy jako \"A\" a \"The\".</string>
     <string name="loginAsAnonymous">Přihlásit se jako anonymní</string>
@@ -191,7 +168,6 @@
     <string name="searching">Vyhledávání&#8230;</string>
     <string name="scanForSources">Skenovat síťové zdroje</string>
     <string name="detailsFirstAired">Poprvé vysíláno</string>
-    <string name="episodes">Epizody</string>
     <string name="openInBrowser">Otevřít v prohlížeči</string>
     <string name="deviceNotSupported">Nepodporované zařízení!</string>
     <string name="choiceWatchedMovies">Shlédnuté filmy</string>
@@ -213,10 +189,6 @@
     <string name="removedAccount">Detaily účtu odstraněny!</string>
     <string name="removeAccount">Odstranit účet</string>
     <string name="automaticallyShareSocialUpdates">Automaticky sdílejte na sociálních sítích, když se díváte na film nebo TV seriál.</string>
-    <string name="updatingLibraryDescription">Aktualizace knihovny&#8230;</string>
-    <string name="noMoviesInLibrary">Žádné filmy v knihovně.</string>
-    <string name="noShowsInLibrary">V knihovně nejsou žádné TV seriály.</string>
-    <string name="noMoviesOnWatchlist">V seznamu k přehrání nejsou žádné filmy.</string>
     <string name="confirmBackPressTitle">Opakovaně stisknout ZPĚT před ukončením</string>
     <string name="confirmBackPressDescription">Pro ukončení jsou vyžadována dvě stisknutí tlačítka ZPĚT.</string>
     <string name="pressBackToExit">Pro ukončení stiskněte ještě jednou tlačítko ZPĚT</string>
@@ -257,11 +229,8 @@
     <string name="social">Sociální</string>
     <string name="syncTvShows">Synchronizace TV seriálů s Trakt</string>
     <string name="syncMovies">Synchronizace filmů s Trakt</string>
-    <string name="calendar">Kalendář</string>
     <string name="folders">Složky</string>
-    <string name="allFolders">Všechny složky</string>
     <string name="selectFolder">Vyberte složku</string>
-    <string name="allFileSources">Všechny zdrojové složky</string>
     <string name="selectFileSource">Vyberte zdrojovou složku</string>
     <string name="scheduledUpdates">Plánované aktualizace</string>
     <string name="enableScheduledLibraryUpdates">Povolit plánované aktualizace knihovny</string>
@@ -279,7 +248,6 @@
     <string name="identify">Rozpoznat</string>
     <string name="drawer_open">Otevřít navigační lištu</string>
     <string name="drawer_close">Zavřít navigační lištu</string>
-    <string name="moviesWeb">Filmy (web)</string>
     <string name="of">z</string>
     <string name="includeAdultContent">Zahrnout obsah jen pro dospělé</string>
     <string name="includeAdultContentDescription">Při rozpoznávání filmů vyhledávat i filmy pro dospělé.</string>
@@ -311,11 +279,8 @@
     <string name="drawerMyTvShows">Moje seriály</string>
     <string name="drawerOnlineMovies">Online filmy</string>
     <string name="drawerWebVideos">Webová videa</string>
-    <string name="myLibraries">Moje knihovny</string>
     <string name="greeting">Vítejte</string>
     <string name="thirdPartyLibraries">Knihovny třetích stran</string>
-    <string name="fileToIdentify">Vyberte soubor k identifikaci</string>
-    <string name="fileToPlay">Vyberte soubor k přehrání</string>
     <string name="actor">Herec</string>
     <string name="overviewGridItemSizeTitle">Nastavit velikost přebalu v přehledu</string>
     <string name="overviewGridItemSizeDescription">Změnit velikost přebalů filmů a seriálů v přehledech.</string>
@@ -334,11 +299,6 @@
         <item quantity="one">film</item>
         <item quantity="few">filmy</item>
         <item quantity="other">filmů</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="one">sbírka</item>
-        <item quantity="few">sbírky</item>
-        <item quantity="other">sbírek</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="one">seriál</item>

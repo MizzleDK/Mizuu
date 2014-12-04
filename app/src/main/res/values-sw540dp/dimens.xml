@@ -5,27 +5,15 @@
     <dimen name="image_thumbnail_height">218dp</dimen>
     <dimen name="backdrop_thumbnail_width">195dp</dimen>
     <dimen name="image_thumbnail_spacing">8dp</dimen>
-    <dimen name="actor_details_width">255dp</dimen>
-    <dimen name="actor_details_height">375dp</dimen>
     <dimen name="details_text_size">22sp</dimen>
     <dimen name="tagline_text_size">26sp</dimen>
     <dimen name="large_text_size">26sp</dimen>
-    <dimen name="large_text_headline_details">40sp</dimen>
-    <dimen name="large_text_headline_details_tv">@dimen/large_text_headline_details</dimen>
     <dimen name="movie_details_padding">16dp</dimen>
     <dimen name="widgetColumnWidth">200dip</dimen>
     <dimen name="widgetThumbnailHeight">140dip</dimen>
     <dimen name="widgetCoverHeight">250dip</dimen>
     <dimen name="widgetCoverColumnWidth">160dip</dimen>
-    <dimen name="large_padding">60dp</dimen>
-    <dimen name="episode_grid_padding">8dp</dimen>
-    <dimen name="menu_width">320dp</dimen>
-    <dimen name="spinner_title_size">16sp</dimen>
-    <dimen name="spinner_subtitle_size">12sp</dimen>
-    <dimen name="action_bar_subtitle_top_margin">0dp</dimen>
-    <dimen name="cover_photo_width">192dp</dimen>
     <dimen name="details_padding">24dp</dimen>
-    <dimen name="details_background_gradient_height">144dp</dimen>
     <dimen name="empty_library_message_width">400dp</dimen>
     <dimen name="backdrop_portrait_height">440dp</dimen>
     

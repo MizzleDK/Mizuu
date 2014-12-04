@@ -4,39 +4,17 @@
     <dimen name="image_thumbnail_size">180dp</dimen>
     <dimen name="image_thumbnail_height">291dp</dimen>
     <dimen name="backdrop_thumbnail_width">260dp</dimen>
-    <dimen name="actor_details_width">340dp</dimen>
-    <dimen name="actor_details_height">500dp</dimen>
     <dimen name="details_text_size">22sp</dimen>
     <dimen name="tagline_text_size">26sp</dimen>
-    <dimen name="large_text_headline_details">48sp</dimen>
-    <dimen name="large_text_headline_details_tv">40sp</dimen>
     <dimen name="movie_details_padding">16dp</dimen>
-    <dimen name="cover_photo_width">240dp</dimen>
     <dimen name="details_padding">32dp</dimen>
-    <dimen name="details_padding_large_negative">-96dp</dimen>
-    <dimen name="details_background_gradient_height">160dp</dimen>
     <dimen name="episode_details_background_overlay_height">360dp</dimen>
     <dimen name="episode_details_background_overlay_width">612dp</dimen>
-    <dimen name="episode_details_large_margin">64dp</dimen>
-    <dimen name="actor_backdrop_height">600dp</dimen>
 
     <!-- Movie / show details -->
     <dimen name="backdrop_portrait_height">528dp</dimen>
-    <dimen name="movie_details_landscape_width">1000dp</dimen>
-    <dimen name="movie_details_landscape_height">466dp</dimen>
-    <dimen name="cover_width">300dp</dimen>
-    <dimen name="cover_height">450dp</dimen>
-    <dimen name="details_large_font_size">42sp</dimen>
-    <dimen name="details_medium_font_size">24sp</dimen>
-    <dimen name="details_small_font_size">18sp</dimen>
-    <dimen name="details_description_font_size">22sp</dimen>
     <dimen name="details_very_small_padding">4dp</dimen>
-    <dimen name="details_small_padding">8dp</dimen>
-    <dimen name="details_between_padding">12dp</dimen>
     <dimen name="details_medium_padding">16dp</dimen>
-    <dimen name="details_large_padding">24dp</dimen>
-    <dimen name="details_top_margin">48dp</dimen>
-    <dimen name="details_left_padding_large">316dp</dimen>
     
     <dimen name="horizontal_grid_item_width">140dp</dimen>
     <dimen name="horizontal_grid_item_backdrop_width">210dp</dimen>

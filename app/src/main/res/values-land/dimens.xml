@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <dimen name="spinner_title_size">14sp</dimen>
-    <dimen name="spinner_subtitle_size">12sp</dimen>
-
-</resources>

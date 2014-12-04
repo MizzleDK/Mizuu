@@ -14,14 +14,12 @@
     <string name="noInternet">Nema aktivne internetske veze</string>
     <string name="errorOccured">Došlo je do pogreške</string>
     <string name="updatingMovieInfo">Ažuriranje informacija o filmu&#8230;</string>
-    <string name="updatingEpisodeInfo">Ažuriranje informacija o epizodi&#8230;</string>
     <string name="updatingShowInfo">Ažuriranje informacija o seriji&#8230;</string>
     <string name="stringNA">Nedostupno</string>
     <string name="minutes">minute</string>
     <string name="removeMovie">Uklonite film</string>
     <string name="removeEpisode">Uklonite epizodu</string>
     <string name="removeShow">Uklonite seriju</string>
-    <string name="failedToRemoveMovie">Film se ne može ukloniti!</string>
     <string name="failedToRemoveShow">Serija se ne može ukloniti!</string>
     <string name="failedToRemoveEpisode">Epizoda se ne može ukloniti!</string>
     <string name="identifyMovieTitle">Prepoznati film</string>
@@ -53,14 +51,8 @@
     <string name="menuRemoveTitle">Ukloni</string>
     <string name="menuUpdateTitle">Ažuriraj zbirku</string>
     <string name="menuAboutContact">Kontaktirajte razvojnog programera</string>
-    <string name="noParentFolder">Nije matični direktorij!</string>
     <string name="prefsFileSourcesDescription">Konfigurirajte izvore datoteka za uvrstiti prilikom ažuriranja zbirke.</string>
-    <string name="mainUpdateBt">Ažuriraj zbirku filmova</string>
-    <string name="mainUpdateBtTv">Ažuriraj zbirku serija</string>
-    <string name="prefsUseLocalDataTitle">Preferirati lokalizirane informacije o videu</string>
-    <string name="prefsUseLocalDataDescription">Traženje podataka o filmovima i serijama u trenutnom jeziku sustava. Postavljeno na engleski ako nema dostupnih podataka.</string>
     <string name="actorsShowAllPhotos">Slike</string>
-    <string name="actorBiography">Biografija</string>
     <string name="detailsActors">Glumci</string>
     <string name="chooserMovies">Filmovi</string>
     <string name="chooserTVShows">Serije</string>
@@ -78,7 +70,6 @@
     <string name="options">Mogućnosti</string>
     <string name="cancel">Otkaži</string>
     <string name="selectGenre">Izaberite žanr</string>
-    <string name="trailersTitle">Trailer</string>
     <string name="prefsShowGridTitlesTitle">Prikaži naslove u pregledu</string>
     <string name="prefsShowGridTitles">Omogući naslove filmova i serija u pregledu zbirke.</string>
     <string name="prefsCredits">Izvori podataka</string>
@@ -91,7 +82,6 @@
     <string name="errorSomethingWentWrong">Nešto je pošlo po zlu - pokušajte ponovo!</string>
     <string name="updatedMovie">Film je uspješno ažuriran!</string>
     <string name="updatingTvShows">Ažuriranje serija</string>
-    <string name="updateLookingForFiles">Traženje datoteka&#8230;</string>
     <string name="editMovieTitle">Naziv</string>
     <string name="editMovieTagline">Slogan</string>
     <string name="editMoviePlot">Radnja</string>
@@ -125,16 +115,10 @@
     <string name="choiceCollections">Zbirke</string>
     <string name="choiceAvailableFiles">Dostupne datoteke</string>
     <string name="choiceAllShows">Sve serije</string>
-    <string name="choiceUnknown">Nepoznato</string>
-    <string name="choiceAllEpisodes">Sve epizode</string>
-    <string name="choiceUnidentifiedMovies">Neprepoznati filmovi</string>
-    <string name="watchedEpisodes">Pregledane epizode</string>
-    <string name="unwatchedEpisodes">Nepregledane epizode</string>
     <string name="stringJustAdded">Dodano</string>
     <string name="stringCancelUpdate">Zaustavi ažuriranje</string>
     <string name="stringUpdateCancelled">Ažuriranje zaustavljeno!</string>
     <string name="areYouSure">Da li ste sigurni?</string>
-    <string name="detailsFile">Datoteka</string>
     <string name="stringShowAllLanguages">Prikaži sve jezike</string>
     <string name="stringMarkAsWatched">Označi kao pregledano</string>
     <string name="markedAsWatched">Označeno kao pregledano!</string>
@@ -151,10 +135,7 @@
     <string name="stringNowPlaying">U kinima</string>
     <string name="stringPopular">Popularno</string>
     <string name="addFileSource">Sadržaj mape</string>
-    <string name="fileSourceLocal">Lokalna mapa</string>
-    <string name="fileSourceNetwork">Mrežna mapa</string>
     <string name="done">Gotovo</string>
-    <string name="discard">Odbaci</string>
     <string name="send">Pošalji</string>
     <string name="enterAMessage">Unesite poruku!</string>
     <string name="launchingGmail">Pokretanje Gmail-a&#8230;</string>
@@ -162,15 +143,11 @@
     <string name="problem">Problem</string>
     <string name="other">Ostalo</string>
     <string name="suggestion">Prijedlog</string>
-    <string name="unknownLicense">Nepoznata licenca</string>
     <string name="message">Poruka</string>
     <string name="subject">Predmet</string>
     <string name="ignorenfotitle">Zanemari prilagođene filmske datoteke</string>
     <string name="ignorenfo">Onemogući čitanje lokalnih .nfo datoteka i prilagođenih slika omota.</string>
     <string name="noVideoPlayerFound">nije pronađen kompatibilni video player!</string>
-    <string name="originalTitle">Originalni naziv</string>
-    <string name="searchIn">Traži u</string>
-    <string name="overview">Pregled</string>
     <string name="ignoreMoviePrefixes">Zanemari prefikse naziva</string>
     <string name="ignoreMoviePrefixesDescription">Zanemari prefikse kao što su \"A\" i \"The\".</string>
     <string name="loginAsAnonymous">Prijavi se kao anonymus</string>
@@ -192,7 +169,6 @@
     <string name="searching">Pretraživanje&#8230;</string>
     <string name="scanForSources">Traženje mrežnih izvora</string>
     <string name="detailsFirstAired">Prvo prikazivanje</string>
-    <string name="episodes">Epizode</string>
     <string name="openInBrowser">Otvori u pregledniku</string>
     <string name="deviceNotSupported">Nepodržan uređaj!</string>
     <string name="choiceWatchedMovies">Pregledani filmovi</string>
@@ -214,10 +190,6 @@
     <string name="removedAccount">Pojedinosti uklonjenog računa!</string>
     <string name="removeAccount">Ukloni račun</string>
     <string name="automaticallyShareSocialUpdates">Automatski dijeli društvena ažuriranja kada gledate film ili seriju.</string>
-    <string name="updatingLibraryDescription">Ažuriranje zbirke&#8230;</string>
-    <string name="noMoviesInLibrary">Nema filmova u zbirci.</string>
-    <string name="noShowsInLibrary">Nema serija u zbirci.</string>
-    <string name="noMoviesOnWatchlist">Nema filmova na listi gledanja.</string>
     <string name="confirmBackPressTitle">Potvrda tipkom Nazad prije izlaska</string>
     <string name="confirmBackPressDescription">Zahtijeva dva pritiska Nazad-tipke za izlaz.</string>
     <string name="pressBackToExit">Ponovno pritisnite Nazad za izlaz</string>
@@ -258,11 +230,8 @@
     <string name="social">Društvene usluge</string>
     <string name="syncTvShows">Usklađivanje serija sa Trakt-om</string>
     <string name="syncMovies">Usklađivanje filmova s Trakt</string>
-    <string name="calendar">Kalendar</string>
     <string name="folders">Mape</string>
-    <string name="allFolders">Sve mape</string>
     <string name="selectFolder">Odaberite mapu</string>
-    <string name="allFileSources">Svi izvori datoteka</string>
     <string name="selectFileSource">Odaberite izvor datoteka</string>
     <string name="scheduledUpdates">Redovita ažuriranja</string>
     <string name="enableScheduledLibraryUpdates">Omogući redovito ažuriranje zbirki</string>
@@ -280,7 +249,6 @@
     <string name="identify">Prepoznavanje</string>
     <string name="drawer_open">Otvori navigacijsku traku</string>
     <string name="drawer_close">Zatvori navigacijsku traku</string>
-    <string name="moviesWeb">Filmovi (web)</string>
     <string name="of">od</string>
     <string name="includeAdultContent">Uključiti sadržaj za odrasle</string>
     <string name="includeAdultContentDescription">Uključiti naslove za odrasle prilikom pretraživanja filmova.</string>
@@ -312,11 +280,8 @@
     <string name="drawerMyTvShows">Moje Serije</string>
     <string name="drawerOnlineMovies">Online Filmovi</string>
     <string name="drawerWebVideos">Web Video</string>
-    <string name="myLibraries">Moje Zbirke</string>
     <string name="greeting">Dobrodošli</string>
     <string name="thirdPartyLibraries">Biblioteke treće strane</string>
-    <string name="fileToIdentify">Odaberite datoteku za prepoznavanje</string>
-    <string name="fileToPlay">Odaberite datoteku za reprodukciju</string>
     <string name="actor">Glumac</string>
     <string name="overviewGridItemSizeTitle">Postavi veličinu pregleda omota</string>
     <string name="overviewGridItemSizeDescription">Promijeni veličinu omota filmova i serija u pregledima.</string>
@@ -341,43 +306,31 @@
         <item quantity="one">film</item>
         <item quantity="few">filmovi</item>
         <item quantity="other">filmova</item>
-        <item quantity="many">filmova</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="one">zbirka</item>
-        <item quantity="few">zbirke</item>
-        <item quantity="other">zbirki</item>
-        <item quantity="many">zbirki</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="one">serija</item>
         <item quantity="few">serije</item>
         <item quantity="other">serija</item>
-        <item quantity="many">serija</item>
     </plurals>
     <plurals name="episodes">
         <item quantity="one">epizoda</item>
         <item quantity="few">epizode</item>
         <item quantity="other">epizoda</item>
-        <item quantity="many">epizoda</item>
     </plurals>
     <plurals name="day">
         <item quantity="one">dan</item>
         <item quantity="few">dani</item>
         <item quantity="other">dana</item>
-        <item quantity="many">dana</item>
     </plurals>
     <plurals name="hour">
         <item quantity="one">sat</item>
         <item quantity="few">sati</item>
         <item quantity="other">sata</item>
-        <item quantity="many">sata</item>
     </plurals>
     <plurals name="minute">
         <item quantity="one">minuta</item>
         <item quantity="few">minute</item>
         <item quantity="other">minuta</item>
-        <item quantity="many">minuta</item>
     </plurals>
 
 </resources>

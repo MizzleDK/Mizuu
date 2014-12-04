@@ -6,7 +6,6 @@
     <color name="dark_background">#181818</color>
     <color name="card_background_dark">#292929</color>
     <color name="gridview_highlight">#88336699</color>
-    <color name="apptheme_color">#ffffff</color>
     <color name="fab_default">#666</color>
     <color name="fab_light">#777</color>
     <color name="color_primary">#3f51b5</color>

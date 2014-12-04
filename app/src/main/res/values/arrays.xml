@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="actionlist_episodes">
-        <item>@string/choiceAllEpisodes</item>
-        <item>@string/choiceAvailableFiles</item>
-        <item>@string/watchedEpisodes</item>
-        <item>@string/unwatchedEpisodes</item>
-    </string-array>
-    <string-array name="certifications">
-        <item>G</item>
-        <item>PG</item>
-        <item>PG-13</item>
-        <item>R</item>
-        <item>NC-17</item>
-        <item>X</item>
-        <item>@string/choiceUnknown</item>
-    </string-array>
     <string-array name="startup_screen">
         <item>@string/welcomeScreen</item>
         <item>@string/drawerMyMovies</item>
@@ -29,10 +14,6 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
-    </string-array>
-    <string-array name="filesource_picker">
-        <item>@string/chooserMovies</item>
-        <item>@string/chooserTVShows</item>
     </string-array>
     <string-array name="subjects">
         <item>@string/problem</item>
@@ -96,10 +77,6 @@
         <item>@string/large</item>
         <item>@string/normal</item>
         <item>@string/small</item>
-    </string-array>
-    <string-array name="upnp_play_dialog">
-        <item>@string/play_remotely</item>
-        <item>@string/play_locally</item>
     </string-array>
 
 </resources>

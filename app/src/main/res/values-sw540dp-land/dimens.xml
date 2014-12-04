@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <dimen name="spinner_title_size">14sp</dimen>
-    <dimen name="spinner_subtitle_size">12sp</dimen>
-    <dimen name="action_bar_subtitle_top_margin">-1dp</dimen>
-
-</resources>

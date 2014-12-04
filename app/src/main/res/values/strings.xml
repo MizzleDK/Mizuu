@@ -5,10 +5,6 @@
         <item quantity="one">movie</item>
         <item quantity="other">movies</item>
     </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="one">collection</item>
-        <item quantity="other">collections</item>
-    </plurals>
     <plurals name="showsInLibrary">
         <item quantity="one">show</item>
         <item quantity="other">shows</item>
@@ -49,15 +45,6 @@
         <item quantity="one">episode selected</item>
         <item quantity="other">episodes selected</item>
     </plurals>
-    <plurals name="file_location">
-        <item quantity="one">File location</item>
-        <item quantity="other">File locations</item>
-    </plurals>
-
-    <!-- CONTENT DESCRIPTION STRINGS -->
-    <string name="content_description_image_backdrop">Background image</string>
-    <string name="content_description_cover_image">Cover image</string>
-    <string name="content_description_no_content_icon">No content icon</string>
 
     <!-- APP STRINGS -->
     <string name="app_name">Mizuu</string>
@@ -73,14 +60,12 @@
     <string name="noInternet">No active Internet connection</string>
     <string name="errorOccured">An error occurred</string>
     <string name="updatingMovieInfo">Updating movie information…</string>
-    <string name="updatingEpisodeInfo">Updating episode information…</string>
     <string name="updatingShowInfo">Updating show information…</string>
     <string name="stringNA">N/A</string>
     <string name="minutes">minutes</string>
     <string name="removeMovie">Remove movie</string>
     <string name="removeEpisode">Remove episode</string>
     <string name="removeShow">Remove TV show</string>
-    <string name="failedToRemoveMovie">Could not remove movie!</string>
     <string name="failedToRemoveShow">Could not remove show!</string>
     <string name="failedToRemoveEpisode">Could not remove episode!</string>
     <string name="identifyMovieTitle">Identify movie</string>
@@ -112,15 +97,9 @@
     <string name="menuRemoveTitle">Remove</string>
     <string name="menuUpdateTitle">Update library</string>
     <string name="menuAboutContact">Contact developer</string>
-    <string name="noParentFolder">No parent folder!</string>
     <string name="prefsFileSourcesDescription">Configure the file sources to include in library updates.</string>
-    <string name="mainUpdateBt">Update movie library</string>
-    <string name="mainUpdateBtTv">Update TV show library</string>
-    <string name="prefsUseLocalDataTitle">Prefer localized video info</string>
-    <string name="prefsUseLocalDataDescription">Look for movie and TV show data in the current system language. Defaults to English if no data is available.</string>
     <string name="actorsShowAllPhotos">Photos</string>
     <string name="actorsTaggedPhotos">Tagged photos</string>
-    <string name="actorBiography">Biography</string>
     <string name="detailsActors">Actors</string>
     <string name="chooserMovies">Movies</string>
     <string name="chooserTVShows">TV shows</string>
@@ -138,7 +117,6 @@
     <string name="options">Options</string>
     <string name="cancel">Cancel</string>
     <string name="selectGenre">Select genre</string>
-    <string name="trailersTitle">Trailers</string>
     <string name="prefsShowGridTitlesTitle">Show titles in overview</string>
     <string name="prefsShowGridTitles">Enable movie and show titles in library overview.</string>
     <string name="prefsCredits">Data sources</string>
@@ -164,7 +142,6 @@
     <string name="updatingMovies">Updating Movies</string>
     <string name="updatingTvShows">Updating TV Shows</string>
     <string name="analyzing_files">Analyzing files…</string>
-    <string name="updateLookingForFiles">Looking for files…</string>
     <string name="editMovieTitle">Title</string>
     <string name="editMovieTagline">Tagline</string>
     <string name="editMoviePlot">Description</string>
@@ -202,16 +179,10 @@
     <string name="choiceYouTube">YouTube</string>
     <string name="choiceReddit">Reddit</string>
     <string name="choiceTedTalks">TED Talks</string>
-    <string name="choiceUnknown">Unknown</string>
-    <string name="choiceAllEpisodes">All episodes</string>
-    <string name="choiceUnidentifiedMovies">Unidentified movies</string>
-    <string name="watchedEpisodes">Watched episodes</string>
-    <string name="unwatchedEpisodes">Unwatched episodes</string>
     <string name="stringJustAdded">Added</string>
     <string name="stringCancelUpdate">Stop update</string>
     <string name="stringUpdateCancelled">Update stopped!</string>
     <string name="areYouSure">Are you sure?</string>
-    <string name="detailsFile">File</string>
     <string name="stringShowAllLanguages">Show all languages</string>
     <string name="stringMarkAsWatched">Mark as watched</string>
     <string name="markedAsWatched">Marked as watched!</string>
@@ -230,10 +201,7 @@
     <string name="stringNowPlaying">In theaters</string>
     <string name="stringPopular">Popular</string>
     <string name="addFileSource">Add file source</string>
-    <string name="fileSourceLocal">Local folder</string>
-    <string name="fileSourceNetwork">Network folder</string>
     <string name="done">Done</string>
-    <string name="discard">Discard</string>
     <string name="send">Send</string>
     <string name="enterAMessage">Enter a message!</string>
     <string name="launchingGmail">Opening Gmail…</string>
@@ -241,15 +209,11 @@
     <string name="problem">Problem</string>
     <string name="other">Other</string>
     <string name="suggestion">Suggestion</string>
-    <string name="unknownLicense">Unknown license</string>
     <string name="message">Message</string>
     <string name="subject">Subject</string>
     <string name="ignorenfotitle">Ignore custom movie data files</string>
     <string name="ignorenfo">Disable reading of local .nfo files and custom image art.</string>
     <string name="noVideoPlayerFound">No compatible video player found!</string>
-    <string name="originalTitle">Original title</string>
-    <string name="searchIn">Search in</string>
-    <string name="overview">Overview</string>
     <string name="ignoreMoviePrefixes">Ignore title prefixes</string>
     <string name="ignoreMoviePrefixesDescription">Ignore prefixes like "A" and "The".</string>
     <string name="loginAsAnonymous">Log in as anonymous</string>
@@ -273,7 +237,6 @@
     <string name="searching">Searching…</string>
     <string name="scanForSources">Scan for network sources</string>
     <string name="detailsFirstAired">First aired</string>
-    <string name="episodes">Episodes</string>
     <string name="openInBrowser">Open in browser</string>
     <string name="deviceNotSupported">Unsupported device!</string>
     <string name="choiceWatchedMovies">Watched movies</string>
@@ -295,10 +258,6 @@
     <string name="removedAccount">Removed account details!</string>
     <string name="removeAccount">Remove account</string>
     <string name="automaticallyShareSocialUpdates">Automatically share social updates when you watch a movie or TV show.</string>
-    <string name="updatingLibraryDescription">Updating library…</string>
-    <string name="noMoviesInLibrary">No movies in library.</string>
-    <string name="noShowsInLibrary">No TV shows in library.</string>
-    <string name="noMoviesOnWatchlist">No movies on watchlist.</string>
     <string name="confirmBackPressTitle">Confirm back press before exiting</string>
     <string name="confirmBackPressDescription">Require two presses of the Back-button to exit.</string>
     <string name="pressBackToExit">Press Back-button again to exit</string>
@@ -352,11 +311,8 @@
     <string name="social">Social</string>
     <string name="syncTvShows">Synchronizing TV shows with Trakt</string>
     <string name="syncMovies">Synchronizing movies with Trakt</string>
-    <string name="calendar">Calendar</string>
     <string name="folders">Folders</string>
-    <string name="allFolders">All folders</string>
     <string name="selectFolder">Select folder</string>
-    <string name="allFileSources">All file sources</string>
     <string name="selectFileSource">Select file source</string>
     <string name="scheduledUpdates">Scheduled updates</string>
     <string name="enableScheduledLibraryUpdates">Enable scheduled library updates</string>
@@ -375,14 +331,9 @@
     <string name="identify">Identify</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="moviesWeb">Movies (web)</string>
-
-    <!-- Used in the image viewer, i.e. "1 of 6" -->
     <string name="of">of</string>
     <string name="includeAdultContent">Include adult content</string>
     <string name="includeAdultContentDescription">Include adult titles when searching for movies.</string>
-
-    <!-- Used as the sub-text in some grid view items, so keep it short -->
     <string name="inLibrary">In library</string>
     <string name="tvShowEpisodesOrderType">TV show episodes order type</string>
     <string name="tvShowEpisodesOrderTypeDescription">Show newest or oldest episodes first.</string>
@@ -416,11 +367,8 @@
     <string name="drawerMyTvShows">My TV Shows</string>
     <string name="drawerOnlineMovies">Online Movies</string>
     <string name="drawerWebVideos">Web Videos</string>
-    <string name="myLibraries">My Libraries</string>
     <string name="greeting">Welcome</string>
     <string name="thirdPartyLibraries">Third party libraries</string>
-    <string name="fileToIdentify">Select file to identify</string>
-    <string name="fileToPlay">Select file to play</string>
     <string name="actor">Actor</string>
     <string name="overviewGridItemSizeTitle">Set overview cover size</string>
     <string name="overviewGridItemSizeDescription">Change the size of movie and TV show covers in the overviews.</string>
@@ -483,7 +431,6 @@
     <string name="folder_has_no_files_folders">This folder has no files or folders.</string>
     <string name="no_parent_folder">No parent folder</string>
     <string name="select_upnp_server">Select UPnP server</string>
-    <string name="playVideo">Play video</string>
     <string name="browser_help_message">Press the Back-button to navigate up the file system</string>
     <string name="unknown_size">Unknown size</string>
     <string name="compatibility">compatibility</string>
@@ -502,11 +449,8 @@
     <string name="setEpisodeLayout">TV show episodes layout</string>
     <string name="no_biography">No biography available.</string>
     <string name="clear_filters">Clear filters</string>
-    <string name="empty_library_title">There\'s nothing here!</string>
-    <string name="empty_library_description">Press the <b>Update library</b> button to add some content.</string>
     <string name="random_movie">Random movie</string>
     <string name="random_show">Random TV show</string>
-    <string name="more">More</string>
     <string name="show_file_location">Show file location(s)</string>
     <string name="show_file_location_description">Make file location(s) visible in the movie and TV show details view.</string>
     <string name="set_pref_language_title">Set preferred language</string>
@@ -520,31 +464,21 @@
     <string name="select_data_source_shows">Select source for TV show data</string>
     <string name="selectFile">Select a file</string>
     <string name="no_actors">No actors found!</string>
-    <string name="no_tv_shows">No TV shows found!</string>
-    <string name="no_photos">No photos found!</string>
-    <string name="no_tagged_photos">No tagged photos found!</string>
     <string name="no_actors_description">"It seems like there aren't any actors…"</string>
     <string name="release_year">Release year</string>
     <string name="identifying_movie">Identifying movie…</string>
     <string name="remove_selected_seasons">Remove selected seasons</string>
     <string name="remove_selected_episodes">Remove selected episodes</string>
-    <string name="remote_playback">Remote playback</string>
-    <string name="where_to_play">Where to play?</string>
-    <string name="play_remotely">Play remotely</string>
-    <string name="play_locally">Play locally</string>
     <string name="set_runtime">Set runtime</string>
     <string name="set_rating">Set rating</string>
     <string name="set_certification">Set certification</string>
     <string name="set">Set</string>
     <string name="create_new_certification">Create new certification</string>
     <string name="see_more">See more</string>
-    <string name="no_similar_movies">No similar movies found!</string>
     <string name="birthday">Birthday</string>
     <string name="actor_known_credits">Known credits</string>
     <string name="blur_backdrops_description">Background images for movies and TV shows will be blurry in landscape mode.</string>
     <string name="blur_backdrops">Blur background images</string>
-    <string name="panning_backdrop_title">Enable panning background image</string>
-    <string name="panning_backdrop_description">Animates the background image in portrait mode.</string>
     <string name="sign_in_with_trakt">Sign in with Trakt.tv</string>
     <string name="logged_in_as">Logged in as %s</string>
     <string name="use_dvd_order">Use DVD ordering</string>
@@ -573,6 +507,13 @@
     <string name="no_unwatched_movies_description">Good job! Check out the <b>Online Movies</b> section to discover new movies.</string>
     <string name="no_movie_collections">No movie collections</string>
     <string name="no_movie_collections_description">It happens to the best of us…</string>
+    <string name="no_tv_shows">No TV shows</string>
+    <string name="no_tv_shows_description">Select <b>Update library</b> from the menu to add TV shows.</string>
+    <string name="no_favorites_description_tv">Don\'t you like TV shows?</string>
+    <string name="recently_aired">Recently aired</string>
+    <string name="recently_aired_description">Nothing has aired in the last 3 months.</string>
+    <string name="no_watched_tv_shows">No watched TV shows</string>
+    <string name="no_unwatched_tv_shows_descriptions">Goob job!</string>"
     <string name="no_episodes_to_play">Sorry, no episodes to play!</string>
     <string name="playing_season_episode">Playing %1$s (S%2$sE%3$s): %4$s</string>
     <string name="play">Play</string>

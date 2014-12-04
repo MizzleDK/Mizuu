@@ -12,14 +12,12 @@
     <string name="noInternet">Nenhuma ligação à Internet ativa</string>
     <string name="errorOccured">Ocorreu um erro</string>
     <string name="updatingMovieInfo">A atualizar informação de filme&#8230;</string>
-    <string name="updatingEpisodeInfo">A atualizar informação de episódio&#8230;</string>
     <string name="updatingShowInfo">A atualizar informação de série&#8230;</string>
     <string name="stringNA">N/D</string>
     <string name="minutes">minutos</string>
     <string name="removeMovie">Remover filme</string>
     <string name="removeEpisode">Remover episodio</string>
     <string name="removeShow">Remover série</string>
-    <string name="failedToRemoveMovie">Não foi possível remover o filme!</string>
     <string name="failedToRemoveShow">Não foi possível remover a série!</string>
     <string name="failedToRemoveEpisode">Não foi possível remover o episódio!</string>
     <string name="identifyMovieTitle">Identificar filme</string>
@@ -51,14 +49,7 @@
     <string name="menuRemoveTitle">Remover</string>
     <string name="menuUpdateTitle">Atualizar</string>
     <string name="menuAboutContact">Contactar autor</string>
-    <string name="noParentFolder">Sem pasta superior!</string>
-    <string name="prefsFileSourcesDescription">Configure as fontes de ficheiros a incluir nas atualizações da biblioteca.</string>
-    <string name="mainUpdateBt">Atualizar biblioteca de filmes</string>
-    <string name="mainUpdateBtTv">Atualizar biblioteca de séries</string>
-    <string name="prefsUseLocalDataTitle">Preferir informação de vídeos localizada</string>
-    <string name="prefsUseLocalDataDescription">Procurar por dados de filmes e séries na língua do sistema. No caso de não haver dados disponíveis, é considerada a língua Inglesa.</string>
     <string name="actorsShowAllPhotos">Fotos</string>
-    <string name="actorBiography">Biografia</string>
     <string name="detailsActors">Atores</string>
     <string name="chooserMovies">Filmes</string>
     <string name="chooserTVShows">Séries</string>
@@ -76,7 +67,6 @@
     <string name="options">Opções</string>
     <string name="cancel">Cancelar</string>
     <string name="selectGenre">Selecionar género</string>
-    <string name="trailersTitle">Trailers</string>
     <string name="prefsShowGridTitlesTitle">Mostrar títulos na vista geral</string>
     <string name="prefsShowGridTitles">Ativar títulos de filmes e séries na vista geral da biblioteca.</string>
     <string name="prefsCredits">Fontes de dados</string>
@@ -89,7 +79,6 @@
     <string name="updatedMovie">Filme atualizado com sucesso!</string>
     <string name="updatingMovies">A atualizar filmes</string>
     <string name="updatingTvShows">A atualizar séries</string>
-    <string name="updateLookingForFiles">A procurar ficheiros&#8230;</string>
     <string name="editMovieTitle">Título</string>
     <string name="editMovieTagline">Sub-título</string>
     <string name="editMoviePlot">Sinopse</string>
@@ -123,13 +112,8 @@
     <string name="choiceCollections">Coleções</string>
     <string name="choiceAvailableFiles">Ficheiros disponíveis</string>
     <string name="choiceAllShows">Todas as séries</string>
-    <string name="choiceUnknown">Desconhecido</string>
-    <string name="choiceAllEpisodes">Todos os episódios</string>
-    <string name="watchedEpisodes">Episódios vistos</string>
-    <string name="unwatchedEpisodes">Episódios por ver</string>
     <string name="stringJustAdded">Adicionado</string>
     <string name="areYouSure">Tem a certeza?</string>
-    <string name="detailsFile">Ficheiro</string>
     <string name="stringShowAllLanguages">Mostrar todas as línguas</string>
     <string name="stringMarkAsWatched">Marcar como visto</string>
     <string name="markedAsWatched">Marcado como visto!</string>
@@ -146,10 +130,7 @@
     <string name="stringNowPlaying">Nos cinemas</string>
     <string name="stringPopular">Popular</string>
     <string name="addFileSource">Conteúdo da pasta</string>
-    <string name="fileSourceLocal">Pasta local</string>
-    <string name="fileSourceNetwork">Pasta remota</string>
     <string name="done">Terminado</string>
-    <string name="discard">Descartar</string>
     <string name="send">Enviar</string>
     <string name="enterAMessage">Introduza uma mensagem!</string>
     <string name="launchingGmail">A abrir Gmail&#8230;</string>
@@ -157,13 +138,9 @@
     <string name="problem">Problema</string>
     <string name="other">Outros</string>
     <string name="suggestion">Sugestão</string>
-    <string name="unknownLicense">Licença desconhecida</string>
     <string name="message">Mensagem</string>
     <string name="subject">Assunto</string>
     <string name="noVideoPlayerFound">Nenhum reprodutor de vídeo compatível encontrado!</string>
-    <string name="originalTitle">Título original</string>
-    <string name="searchIn">Procurar em</string>
-    <string name="overview">Vista geral</string>
     <string name="ignoreMoviePrefixes">Ignorar prefixos dos títulos</string>
     <string name="ignoreMoviePrefixesDescription">Ignorar prefixos como \"O\", ou \"A\".</string>
     <string name="loginAsAnonymous">Entrar como anónimo</string>
@@ -184,7 +161,6 @@
     <string name="searching">À procura&#8230;</string>
     <string name="scanForSources">Procurar fontes de rede</string>
     <string name="detailsFirstAired">Primeira emissão</string>
-    <string name="episodes">Episódios</string>
     <string name="openInBrowser">Abrir no browser</string>
     <string name="deviceNotSupported">Dispositivo não suportado!</string>
     <string name="choiceWatchedMovies">Filmes vistos</string>
@@ -206,10 +182,6 @@
     <string name="removedAccount">Detalhes de conta removidos!</string>
     <string name="removeAccount">Remover conta</string>
     <string name="automaticallyShareSocialUpdates">Partilhar automaticamente nas redes sociais quando vê um filme ou série.</string>
-    <string name="updatingLibraryDescription">A atualizar biblioteca&#8230;</string>
-    <string name="noMoviesInLibrary">Nenhum filme na bibliteca.</string>
-    <string name="noShowsInLibrary">Nenhuma série na biblioteca.</string>
-    <string name="noMoviesOnWatchlist">Nenhum filme na watchlist.</string>
     <string name="confirmBackPressTitle">Confirmar toque de voltar antes de sair</string>
     <string name="confirmBackPressDescription">Requerer dois toques do botão voltar antes de sair.</string>
     <string name="pressBackToExit">Toque no botão voltar novamente para sair</string>
@@ -251,9 +223,7 @@
     <string name="social">Social</string>
     <string name="syncTvShows">Sincronizar séries com o Trakt</string>
     <string name="syncMovies">Sincronizar filmes com o Trakt</string>
-    <string name="calendar">Calendário</string>
     <string name="folders">Pastas</string>
-    <string name="allFolders">Todas as pastas</string>
     <string name="selectFolder">Selecionar pasta</string>
     <string name="scheduledAtLaunch">No arranque da aplicação</string>
     <string name="scheduledEvery6Hours">A cada 6 horas</string>
@@ -264,7 +234,6 @@
     <string name="IMDb">Abrir no IMDb</string>
     <string name="enterTitle">Introduzir título</string>
     <string name="identify">Identificar</string>
-    <string name="moviesWeb">Filmes (web)</string>
     <string name="of">de</string>
     <string name="includeAdultContent">Incluir conteúdo adulto</string>
     <string name="inLibrary">Na biblioteca</string>
@@ -280,10 +249,6 @@
     <plurals name="moviesInLibrary">
         <item quantity="one">filme</item>
         <item quantity="other">filmes</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="one">coleção</item>
-        <item quantity="other">coleções</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="one">série</item>

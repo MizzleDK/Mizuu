@@ -5,54 +5,24 @@
     <dimen name="image_thumbnail_height">218dp</dimen>
     <dimen name="backdrop_thumbnail_width">195dp</dimen>
     <dimen name="image_thumbnail_spacing">8dp</dimen>
-    <dimen name="actor_details_width">255dp</dimen>
-    <dimen name="actor_details_height">375dp</dimen>
     <dimen name="details_text_size">22sp</dimen>
     <dimen name="tagline_text_size">26sp</dimen>
     <dimen name="large_text_size">26sp</dimen>
-    <dimen name="large_text_headline_details">40sp</dimen>
-    <dimen name="large_text_headline_details_tv">@dimen/large_text_headline_details</dimen>
     <dimen name="movie_details_padding">16dp</dimen>
-    <dimen name="details_padding_large_negative">-72dp</dimen>
     <dimen name="widgetColumnWidth">200dip</dimen>
     <dimen name="widgetThumbnailHeight">140dip</dimen>
     <dimen name="widgetCoverHeight">250dip</dimen>
     <dimen name="widgetCoverColumnWidth">160dip</dimen>
-    <dimen name="large_padding">60dp</dimen>
-    <dimen name="episode_grid_padding">8dp</dimen>
-    <dimen name="menu_width">320dp</dimen>
-    <dimen name="spinner_title_size">18sp</dimen>
-    <dimen name="spinner_subtitle_size">14sp</dimen>
-    <dimen name="action_bar_subtitle_top_margin">0dp</dimen>
-    <dimen name="cover_photo_width">192dp</dimen>
     <dimen name="details_padding">24dp</dimen>
-    <dimen name="details_background_gradient_height">144dp</dimen>
     <dimen name="episode_details_background_overlay_height">300dp</dimen>
     <dimen name="episode_details_background_overlay_width">510dp</dimen>
-    <dimen name="episode_details_small_margin">32dp</dimen>
-    <dimen name="episode_details_large_margin">48dp</dimen>
     <dimen name="empty_library_message_width">480dp</dimen>
-    <dimen name="actor_backdrop_height">480dp</dimen>
     
     
     <!-- Movie / show details -->
     <dimen name="backdrop_portrait_height">448dp</dimen>
-    <dimen name="movie_details_landscape_width">800dp</dimen>
-    <dimen name="movie_details_landscape_height">372dp</dimen>
-    <dimen name="cover_width">240dp</dimen>
-    <dimen name="cover_height">360dp</dimen>
-    <dimen name="details_large_font_size">36sp</dimen>
-    <dimen name="details_medium_font_size">22sp</dimen>
-    <dimen name="details_small_font_size">16sp</dimen>
-    <dimen name="details_area_header">18sp</dimen>
-    <dimen name="details_description_font_size">20sp</dimen>
     <dimen name="details_very_small_padding">4dp</dimen>
-    <dimen name="details_small_padding">8dp</dimen>
-    <dimen name="details_between_padding">10dp</dimen>
     <dimen name="details_medium_padding">14dp</dimen>
-    <dimen name="details_large_padding">20dp</dimen>
-    <dimen name="details_top_margin">48dp</dimen>
-    <dimen name="details_left_padding_large">252dp</dimen>
     
     <dimen name="horizontal_grid_item_width">120dp</dimen>
     <dimen name="horizontal_grid_item_backdrop_width">180dp</dimen>
@@ -67,7 +37,6 @@
     <dimen name="content_details_subheader">22sp</dimen>
     <dimen name="content_details_title_margin_top">0dp</dimen>
     <dimen name="content_details_area_margin">24dp</dimen>
-    <dimen name="content_details_area_left_padding">40dp</dimen>
     <dimen name="content_details_area_right_padding">136dp</dimen>
     <dimen name="content_details_area_subheader">16sp</dimen>
     <dimen name="content_details_area_header">20sp</dimen>

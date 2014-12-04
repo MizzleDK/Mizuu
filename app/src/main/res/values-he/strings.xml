@@ -14,14 +14,12 @@
     <string name="noInternet">אין חיבור פעיל לאינטרנט</string>
     <string name="errorOccured">אירעה שגיאה</string>
     <string name="updatingMovieInfo">מעדכן מידע סרט…</string>
-    <string name="updatingEpisodeInfo">מעדכן מידע פרק…</string>
     <string name="updatingShowInfo">מעדכן מידע תוכנית…</string>
     <string name="stringNA">N/A</string>
     <string name="minutes">דקות</string>
     <string name="removeMovie">הסר סרט</string>
     <string name="removeEpisode">הסר פרק</string>
     <string name="removeShow">הסר תוכנית טלוויזיה</string>
-    <string name="failedToRemoveMovie">לא ניתן היה להסיר את הסרט!</string>
     <string name="failedToRemoveShow">לא ניתן היה להסיר את התוכנית!</string>
     <string name="failedToRemoveEpisode">לא ניתן היה להסיר את הפרק!</string>
     <string name="identifyMovieTitle">זהה סרט</string>
@@ -53,14 +51,8 @@
     <string name="menuRemoveTitle">הסר</string>
     <string name="menuUpdateTitle">עדכן ספרייה</string>
     <string name="menuAboutContact">צור קשר עם מפתח</string>
-    <string name="noParentFolder">אין תיקייה אב!</string>
     <string name="prefsFileSourcesDescription">הגדר שמקורות הקובץ יכללו בעדכוני ספרייה.</string>
-    <string name="mainUpdateBt">עדכן ספריית סרטים</string>
-    <string name="mainUpdateBtTv">עדכן ספריית תוכנית טלוויזיה</string>
-    <string name="prefsUseLocalDataTitle">העדף שפרטי הסרט יהיו באותה שפה של שפת המערכת</string>
-    <string name="prefsUseLocalDataDescription">חפש עבור נתוני סרט או תוכנית טלוויזיה בשפת המערכת הנוכחית. השתמש בברירת מחדל אנגלית אם אין נתונים זמינים.</string>
     <string name="actorsShowAllPhotos">תמונות</string>
-    <string name="actorBiography">ביוגרפיה</string>
     <string name="detailsActors">שחקנים</string>
     <string name="chooserMovies">סרטים</string>
     <string name="chooserTVShows">תוכניות טלוויזיה</string>
@@ -78,7 +70,6 @@
     <string name="options">אפשרויות</string>
     <string name="cancel">ביטול</string>
     <string name="selectGenre">בחר ז\'אנר</string>
-    <string name="trailersTitle">טריילרים</string>
     <string name="prefsShowGridTitlesTitle">הצג כותרות בסקירה הכללית</string>
     <string name="prefsShowGridTitles">אפשר הצגת כותרות סרטים ותוכניות בסקירה הכללית של הספרייה.</string>
     <string name="prefsCredits">מקורות נתונים</string>
@@ -91,7 +82,6 @@
     <string name="errorSomethingWentWrong">משהו השתבש-אנא נסה שנית!</string>
     <string name="updatedMovie">הסרט עודכן בהצלחה!</string>
     <string name="updatingTvShows">עדכן תוכניות טלוויזיה</string>
-    <string name="updateLookingForFiles">מחפש קבצים…</string>
     <string name="editMovieTitle">כותרת</string>
     <string name="editMovieTagline">סלוגן</string>
     <string name="editMoviePlot">תקציר</string>
@@ -125,14 +115,8 @@
     <string name="choiceCollections">אוספים</string>
     <string name="choiceAvailableFiles">קבצים זמינים</string>
     <string name="choiceAllShows">כל התוכניות</string>
-    <string name="choiceUnknown">לא ידוע</string>
-    <string name="choiceAllEpisodes">כל הפרקים</string>
-    <string name="choiceUnidentifiedMovies">סרטים לא מזוהים</string>
-    <string name="watchedEpisodes">פרקים שנצפו</string>
-    <string name="unwatchedEpisodes">פרקים שלא נצפו</string>
     <string name="stringJustAdded">נוסף</string>
     <string name="areYouSure">האם אתה בטוח?</string>
-    <string name="detailsFile">קובץ</string>
     <string name="stringShowAllLanguages">הצג את כל השפות</string>
     <string name="stringMarkAsWatched">סמן כנצפה</string>
     <string name="markedAsWatched">סומן כנצפה!</string>
@@ -149,10 +133,7 @@
     <string name="stringNowPlaying">בבתי הקולנוע</string>
     <string name="stringPopular">פופולרי</string>
     <string name="addFileSource">תוכן התיקיה</string>
-    <string name="fileSourceLocal">תיקייה מקומית</string>
-    <string name="fileSourceNetwork">תיקיית רשת</string>
     <string name="done">בוצע</string>
-    <string name="discard">ביטול</string>
     <string name="send">שלח</string>
     <string name="enterAMessage">הקלד הודעה!</string>
     <string name="launchingGmail">פותח את Gmail…</string>
@@ -160,15 +141,11 @@
     <string name="problem">בעיה</string>
     <string name="other">אחר</string>
     <string name="suggestion">הצעה</string>
-    <string name="unknownLicense">רישיון לא ידוע</string>
     <string name="message">הודעה</string>
     <string name="subject">נושא</string>
     <string name="ignorenfotitle">התעלם מקבצי נתונים מותאמים אישית של סרט</string>
     <string name="ignorenfo">בטל קריאה של קבצי מידע מקומי ועטיפות מותאמות אישית.</string>
     <string name="noVideoPlayerFound">לא נמצא נגן וידאו נתמך!</string>
-    <string name="originalTitle">כותרת מקורית</string>
-    <string name="searchIn">חפש ב</string>
-    <string name="overview">סקירה כללית</string>
     <string name="ignoreMoviePrefixes">התעלם מקידומות של כותרת</string>
     <string name="ignoreMoviePrefixesDescription">התעלם מקידומות כמו \"A\" ו-\"The\".</string>
     <string name="loginAsAnonymous">כניסה באופן אנונימי</string>
@@ -189,7 +166,6 @@
     <string name="searching">מחפש…</string>
     <string name="scanForSources">סרוק עבור מקורות ברשת</string>
     <string name="detailsFirstAired">שודר לראשונה</string>
-    <string name="episodes">פרקים</string>
     <string name="openInBrowser">פתח בדפדפן</string>
     <string name="deviceNotSupported">התקן לא נתמך!</string>
     <string name="choiceWatchedMovies">סרטים שנצפו</string>
@@ -211,10 +187,6 @@
     <string name="removedAccount">פרטי חשבון הוסרו!</string>
     <string name="removeAccount">הסר חשבון</string>
     <string name="automaticallyShareSocialUpdates">שתף באופן אוטומטי עדכונים חברתיים כאשר אתה צופה בסרט או תוכנית טלוויזיה.</string>
-    <string name="updatingLibraryDescription">מעדכן ספרייה…</string>
-    <string name="noMoviesInLibrary">אין סרטים בספרייה.</string>
-    <string name="noShowsInLibrary">אין תוכניות טלוויזיה בספריה.</string>
-    <string name="noMoviesOnWatchlist">אין סרטים ברשימת המעקב.</string>
     <string name="confirmBackPressTitle">אשר יציאה בעת לחיצה על לחצן חזרה</string>
     <string name="confirmBackPressDescription">דרוש שתי לחיצות על לחצן החזרה על מנת לצאת.</string>
     <string name="pressBackToExit">לחץ על \'חזור\' פעם נוספת כדי לצאת</string>
@@ -255,11 +227,8 @@
     <string name="social">חברתי</string>
     <string name="syncTvShows">סינכרון תוכניות טלוויזיה עם Trakt</string>
     <string name="syncMovies">סינכרון סרטים עם Trakt</string>
-    <string name="calendar">לוח שנה</string>
     <string name="folders">תיקיות</string>
-    <string name="allFolders">כל התיקיות</string>
     <string name="selectFolder">בחר תיקייה</string>
-    <string name="allFileSources">כל מקורות הקובץ</string>
     <string name="selectFileSource">בחר מקור קובץ</string>
     <string name="scheduledUpdates">עדכונים מתוזמנים</string>
     <string name="enableScheduledLibraryUpdates">אפשר הפעלת עדכוני ספרייה מתוזמנים</string>
@@ -274,7 +243,6 @@
     <string name="identify">זהה</string>
     <string name="drawer_open">פתח מגירת ניווט</string>
     <string name="drawer_close">סגור מגירת ניווט</string>
-    <string name="moviesWeb">סרטים (אינטרנט)</string>
     <string name="of">של</string>
     <string name="includeAdultContent">כלול תוכן למבוגרים</string>
     <string name="includeAdultContentDescription">כלול סרטי מבוגרים בחיפוש אחר סרטים.</string>
@@ -296,15 +264,10 @@
     <string name="tv_shows_start_page_description">הצג פרטים או פרקים קודם בעת הצגת תוכנית טלוויזיה.</string>
     <string name="installed_media_apps">ישומיי מדיה</string>
     <string name="thirdPartyLibraries">ספריות צד שלישי</string>
-    <string name="fileToPlay">בחר קובץ לניגון</string>
 
     <plurals name="moviesInLibrary">
         <item quantity="one">סרט אחד</item>
         <item quantity="other">סרטים</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="one">אוסף אחד</item>
-        <item quantity="other">אוספים</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="one">תוכנית אחת</item>

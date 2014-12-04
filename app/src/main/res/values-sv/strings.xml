@@ -14,14 +14,12 @@
     <string name="noInternet">Ingen internetanslutning</string>
     <string name="errorOccured">Ett fel uppstod</string>
     <string name="updatingMovieInfo">Uppdaterar filminformation…</string>
-    <string name="updatingEpisodeInfo">Uppdaterar avsnittsinformation…</string>
     <string name="updatingShowInfo">Uppdaterar serieinformation…</string>
     <string name="stringNA">Inte tillgängligt</string>
     <string name="minutes">minuter</string>
     <string name="removeMovie">Ta bort film</string>
     <string name="removeEpisode">Ta bort avsnitt</string>
     <string name="removeShow">Ta bort TV-serie</string>
-    <string name="failedToRemoveMovie">Filmen kunde inte tas bort!</string>
     <string name="failedToRemoveShow">Serien kunde inte tas bort!</string>
     <string name="failedToRemoveEpisode">Avsnittet kunde inte tas bort!</string>
     <string name="identifyMovieTitle">Identifiera film</string>
@@ -53,14 +51,8 @@
     <string name="menuRemoveTitle">Ta bort</string>
     <string name="menuUpdateTitle">Uppdatera bibliotek</string>
     <string name="menuAboutContact">Kontakta utvecklaren</string>
-    <string name="noParentFolder">Ingen överordnad mapp!</string>
     <string name="prefsFileSourcesDescription">Välj vilka filkällor som ska inkluderas i biblioteksuppdateringar.</string>
-    <string name="mainUpdateBt">Uppdatera filmbibliotek</string>
-    <string name="mainUpdateBtTv">Uppdatera TV-seriebibliotek</string>
-    <string name="prefsUseLocalDataTitle">Föredra information på svenska</string>
-    <string name="prefsUseLocalDataDescription">Sök efter film- och TV-serieinformation på systemspråket. Om ingen info hittas används engelska.</string>
     <string name="actorsShowAllPhotos">Foton</string>
-    <string name="actorBiography">Biografi</string>
     <string name="detailsActors">Skådespelare</string>
     <string name="chooserMovies">Filmer</string>
     <string name="chooserTVShows">TV-serier</string>
@@ -78,7 +70,6 @@
     <string name="options">Alternativ</string>
     <string name="cancel">Avbryt</string>
     <string name="selectGenre">Välj genre</string>
-    <string name="trailersTitle">Trailers</string>
     <string name="prefsShowGridTitlesTitle">Visa titlar i översiktsvyn</string>
     <string name="prefsShowGridTitles">Aktivera film- och TV-serietitlar i biblioteket.</string>
     <string name="prefsCredits">Källor</string>
@@ -91,7 +82,6 @@
     <string name="errorSomethingWentWrong">Något gick fel - försök igen!</string>
     <string name="updatedMovie">Uppdateringen av filmen lyckades!</string>
     <string name="updatingTvShows">Uppdaterar TV-serier</string>
-    <string name="updateLookingForFiles">Letar efter filer&#8230;</string>
     <string name="editMovieTitle">Titel</string>
     <string name="editMovieTagline">Slogan</string>
     <string name="editMoviePlot">Handling</string>
@@ -125,14 +115,8 @@
     <string name="choiceCollections">Samlingar</string>
     <string name="choiceAvailableFiles">Tillgängliga filer</string>
     <string name="choiceAllShows">Alla serier</string>
-    <string name="choiceUnknown">Okänd</string>
-    <string name="choiceAllEpisodes">Alla avsnitt</string>
-    <string name="choiceUnidentifiedMovies">Oidentifierade filmer</string>
-    <string name="watchedEpisodes">Sedda avsnitt</string>
-    <string name="unwatchedEpisodes">Osedda avsnitt</string>
     <string name="stringJustAdded">Tillagd</string>
     <string name="areYouSure">Är du säker?</string>
-    <string name="detailsFile">Fil</string>
     <string name="stringShowAllLanguages">Visa alla språk</string>
     <string name="stringMarkAsWatched">Markera som sedda</string>
     <string name="markedAsWatched">Markerade som sedda!</string>
@@ -149,10 +133,7 @@
     <string name="stringNowPlaying">På bio</string>
     <string name="stringPopular">Populära</string>
     <string name="addFileSource">Mappinnehåll</string>
-    <string name="fileSourceLocal">Lokal mapp</string>
-    <string name="fileSourceNetwork">Nätverksmapp</string>
     <string name="done">Färdig</string>
-    <string name="discard">Släng</string>
     <string name="send">Skicka</string>
     <string name="enterAMessage">Skriv ett meddelande!</string>
     <string name="launchingGmail">Öppnar Gmail…</string>
@@ -160,15 +141,11 @@
     <string name="problem">Problem</string>
     <string name="other">Övrigt</string>
     <string name="suggestion">Förslag</string>
-    <string name="unknownLicense">Okänd licens</string>
     <string name="message">Meddelande</string>
     <string name="subject">Ämne</string>
     <string name="ignorenfotitle">Ignorera användardefinierade filer för filminformation</string>
     <string name="ignorenfo">Stäng av läsning av lokala .nfo-filer och egna bilder.</string>
     <string name="noVideoPlayerFound">Hittade ingen kompatibel videospelare!</string>
-    <string name="originalTitle">Orginaltitel</string>
-    <string name="searchIn">Sök i</string>
-    <string name="overview">Översikt</string>
     <string name="ignoreMoviePrefixes">Ignorera titelprefix</string>
     <string name="ignoreMoviePrefixesDescription">Ignorera titelprefix som \"A\" och \"The\".</string>
     <string name="loginAsAnonymous">Logga in som anonym</string>
@@ -189,7 +166,6 @@
     <string name="searching">Letar…</string>
     <string name="scanForSources">Leta efter nätverksdiskar</string>
     <string name="detailsFirstAired">Sändes första gången</string>
-    <string name="episodes">Avsnitt</string>
     <string name="openInBrowser">Öppna i webbläsaren</string>
     <string name="deviceNotSupported">Enheter stöds inte!</string>
     <string name="choiceWatchedMovies">Sedda filmer</string>
@@ -211,10 +187,6 @@
     <string name="removedAccount">Tog bort kontouppgifter!</string>
     <string name="removeAccount">Ta bort konto</string>
     <string name="automaticallyShareSocialUpdates">Dela sociala uppdateringar automatiskt när du tittar på en film eller serie.</string>
-    <string name="updatingLibraryDescription">Uppdaterar biblioteket…</string>
-    <string name="noMoviesInLibrary">Inga filmer i biblioteket.</string>
-    <string name="noShowsInLibrary">Inga serier i biblioteket.</string>
-    <string name="noMoviesOnWatchlist">Inga filmer att se senare.</string>
     <string name="confirmBackPressTitle">Avsluta appen med ett tryck på tillbakaknappen</string>
     <string name="confirmBackPressDescription">Kräv två tryck på tillbakaknappen för att avsluta appen.</string>
     <string name="pressBackToExit">Tryck en gång till på tillbakaknappen för att avsluta</string>
@@ -255,11 +227,8 @@
     <string name="social">Socialt</string>
     <string name="syncTvShows">Synkronisera serier med Trakt</string>
     <string name="syncMovies">Synkronisera filmer med Trakt</string>
-    <string name="calendar">Kalender</string>
     <string name="folders">Mappar</string>
-    <string name="allFolders">Alla mappar</string>
     <string name="selectFolder">Välj mapp</string>
-    <string name="allFileSources">Alla filkällor</string>
     <string name="selectFileSource">Välj filkälla</string>
     <string name="scheduledUpdates">Planerade uppdateringar</string>
     <string name="enableScheduledLibraryUpdates">Aktivera planerade biblioteksuppdateringar</string>
@@ -274,7 +243,6 @@
     <string name="identify">Identifiera</string>
     <string name="drawer_open">Öppna menyn</string>
     <string name="drawer_close">Stäng menyn</string>
-    <string name="moviesWeb">Filmer (webb)</string>
     <string name="of">av</string>
     <string name="includeAdultContent">Inkludera pornografiskt innehåll</string>
     <string name="includeAdultContentDescription">Inkludera pornografiska titlar vid sökning efter filmer.</string>
@@ -307,19 +275,12 @@
     <string name="drawerMyTvShows">Mina TV-serier</string>
     <string name="drawerOnlineMovies">Onlinefilmer</string>
     <string name="drawerWebVideos">Webbvideor</string>
-    <string name="myLibraries">Mina Samlingar</string>
     <string name="greeting">Välkommen</string>
     <string name="thirdPartyLibraries">Tredje-partsamlingar</string>
-    <string name="fileToIdentify">Välj fil att identifiera</string>
-    <string name="fileToPlay">Välj fil att spela</string>
 
     <plurals name="moviesInLibrary">
         <item quantity="one">film</item>
         <item quantity="other">filmer</item>
-    </plurals>
-    <plurals name="collectionsInLibrary">
-        <item quantity="one">samling</item>
-        <item quantity="other">samlingar</item>
     </plurals>
     <plurals name="showsInLibrary">
         <item quantity="one">serie</item>
