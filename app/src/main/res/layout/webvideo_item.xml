@@ -1,32 +1,35 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/card_layout"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    app:cardBackgroundColor="@color/card_background_dark" >
 
-    <com.miz.views.LargeGridItemImageView
-        android:id="@+id/cover"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:cropToPadding="true"
-        android:scaleType="centerCrop" />
-
-    <TextView
-        android:id="@+id/text"
+    <LinearLayout
+        android:id="@+id/card_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/card_background_dark"
-        android:ellipsize="end"
-        android:lines="2"
-        android:maxLines="2"
-        android:paddingBottom="2dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="2dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/card_title_color"
-        android:textIsSelectable="false"
-        android:textStyle="bold" />
+        android:orientation="vertical" >
 
-</LinearLayout>
+        <com.miz.views.LargeGridItemImageView
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:padding="4dp"
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:lines="2"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/card_title_color"
+            android:textIsSelectable="false"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
