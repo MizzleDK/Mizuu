@@ -78,9 +78,8 @@ public class SearchWebMoviesFragment extends Fragment {
 	 */
 	public SearchWebMoviesFragment() {}
 
-	public static SearchWebMoviesFragment newInstance() { 
-		SearchWebMoviesFragment pageFragment = new SearchWebMoviesFragment();
-		return pageFragment;
+	public static SearchWebMoviesFragment newInstance() {
+		return new SearchWebMoviesFragment();
 	}
 
 	@Override

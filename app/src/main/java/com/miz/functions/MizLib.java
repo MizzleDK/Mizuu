@@ -1435,8 +1435,7 @@ public class MizLib {
 
 	public static String getTraktUserName(Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
-		String username = settings.getString(TRAKT_USERNAME, "").trim();
-		return username;
+		return settings.getString(TRAKT_USERNAME, "").trim();
 	}
 
 	public static String removeWikipediaNotes(String original) {
@@ -1451,8 +1450,7 @@ public class MizLib {
 
 	public static String getParentFolder(String filepath) {
 		try {
-			String pathWithoutEnding = filepath.substring(0, filepath.lastIndexOf("/"));
-			return pathWithoutEnding;
+			return filepath.substring(0, filepath.lastIndexOf("/"));
 		} catch (Exception e) {
 			return "";
 		}

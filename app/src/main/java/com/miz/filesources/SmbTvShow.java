@@ -259,7 +259,7 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
     public SmbFile getRootFolder() {
         try {
             FileSource fs = getFileSource();
-            SmbFile root = new SmbFile(
+            return new SmbFile(
                     MizLib.createSmbLoginString(
                             fs.getDomain(),
                             fs.getUser(),
@@ -267,7 +267,6 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
                             fs.getFilepath(),
                             true
                     ));
-            return root;
         } catch (Exception e) {}
         return null;
     }

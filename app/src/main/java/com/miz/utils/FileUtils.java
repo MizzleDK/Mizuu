@@ -72,8 +72,7 @@ public class FileUtils {
 	}
 	
 	public static File getOldDataFolder() {
-		File dataFolder = new File(Environment.getExternalStorageDirectory().toString() + "/data/com.miz.mizuu");
-		return dataFolder;
+		return new File(Environment.getExternalStorageDirectory().toString() + "/data/com.miz.mizuu");
 	}
 
 	public static boolean oldDataFolderExists() {
