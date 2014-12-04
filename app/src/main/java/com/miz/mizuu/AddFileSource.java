@@ -37,46 +37,43 @@ import static com.miz.functions.MizLib.TYPE;
 
 public class AddFileSource extends MizActivity {
 
-	private Button mContinue;
-	private TextView mContentType, mContentLocation;
-	private RadioGroup mContent, mFilesource;
-	private Typeface mTypeface;
+    private RadioGroup mContent, mFilesource;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setTitle(R.string.addFileSourceTitle);
 
-		mTypeface = TypefaceUtils.getRobotoCondensedRegular(this);
+        Typeface mTypeface = TypefaceUtils.getRobotoCondensedRegular(this);
 
-		mContentType = (TextView) findViewById(R.id.contentType);
+        TextView mContentType = (TextView) findViewById(R.id.contentType);
 		mContentType.setTypeface(mTypeface);
 
 		mContent = (RadioGroup) findViewById(R.id.content_type);
 		mFilesource = (RadioGroup) findViewById(R.id.filesource_type);
 
-		mContentLocation = (TextView) findViewById(R.id.contentLocation);
+        TextView mContentLocation = (TextView) findViewById(R.id.contentLocation);
 		mContentLocation.setTypeface(mTypeface);
 
-		mContinue = (Button) findViewById(R.id.continue_button);
+        Button mContinue = (Button) findViewById(R.id.continue_button);
 		mContinue.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent();
-				i.putExtra(TYPE, mContent.getCheckedRadioButtonId() == R.id.content_movie ? MOVIE : TV_SHOW);
-				if (mFilesource.getCheckedRadioButtonId() == R.id.source_smb) {
-					i.setClass(getApplicationContext(), AddNetworkFilesourceDialog.class);
-				} else if (mFilesource.getCheckedRadioButtonId() == R.id.source_upnp) {
-					i.setClass(getApplicationContext(), AddUpnpFilesourceDialog.class);
-				} else {
-					i.setClass(getApplicationContext(), FileSourceBrowser.class);
-					i.putExtra(FILESOURCE, mFilesource.getCheckedRadioButtonId() == R.id.source_device ? FileSource.FILE : FileSource.UPNP);
-				}
-				startActivity(i);
-				finish();
-			}
-		});
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.putExtra(TYPE, mContent.getCheckedRadioButtonId() == R.id.content_movie ? MOVIE : TV_SHOW);
+                if (mFilesource.getCheckedRadioButtonId() == R.id.source_smb) {
+                    i.setClass(getApplicationContext(), AddNetworkFilesourceDialog.class);
+                } else if (mFilesource.getCheckedRadioButtonId() == R.id.source_upnp) {
+                    i.setClass(getApplicationContext(), AddUpnpFilesourceDialog.class);
+                } else {
+                    i.setClass(getApplicationContext(), FileSourceBrowser.class);
+                    i.putExtra(FILESOURCE, mFilesource.getCheckedRadioButtonId() == R.id.source_device ? FileSource.FILE : FileSource.UPNP);
+                }
+                startActivity(i);
+                finish();
+            }
+        });
 	}
 	
 	@Override

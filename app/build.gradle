@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.0.2"
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "com.miz.mizuu"
@@ -37,8 +37,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.0'
-    compile 'com.google.guava:guava:16.0.1'
+    compile 'com.android.support:support-v4:21.0.2'
+    compile 'com.google.guava:guava:18.0'
     compile 'com.android.support:support-v4:21.0.+'
     compile 'com.android.support:support-v13:21.0.+'
     compile 'com.android.support:appcompat-v7:21.0.+'

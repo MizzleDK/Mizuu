@@ -57,7 +57,6 @@ public class ScheduledUpdatesFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		editor = settings.edit();
 	}
 
 	@Override
@@ -160,7 +159,7 @@ public class ScheduledUpdatesFragment extends Fragment {
 	private void saveMovieSchedule(boolean isDisabled) {
 		editor = settings.edit();
 		editor.putInt(SCHEDULED_UPDATES_MOVIE, isDisabled ? NOT_ENABLED : moviesSpinner.getSelectedItemPosition() + 1);
-		editor.commit();
+		editor.apply();
 
 		if (isAdded()) {
 			if ((moviesSpinner.getSelectedItemPosition() + 1) > AT_LAUNCH) {
@@ -176,7 +175,7 @@ public class ScheduledUpdatesFragment extends Fragment {
 	private void saveShowsSchedule(boolean isDisabled) {
 		editor = settings.edit();
 		editor.putInt(SCHEDULED_UPDATES_TVSHOWS, isDisabled ? NOT_ENABLED : showsSpinner.getSelectedItemPosition() + 1);
-		editor.commit();
+		editor.apply();
 
 		if (isAdded()) {
 			if ((showsSpinner.getSelectedItemPosition() + 1) > AT_LAUNCH) {

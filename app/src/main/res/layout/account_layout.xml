@@ -36,11 +36,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:paddingRight="@dimen/movie_details_padding"
                         android:src="@drawable/ic_tv_white_24dp" />
                 </FrameLayout>
 
                 <LinearLayout
+                    android:layout_marginLeft="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:baselineAligned="false"

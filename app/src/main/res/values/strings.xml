@@ -575,5 +575,9 @@
     <string name="no_movie_collections_description">It happens to the best of us…</string>
     <string name="no_episodes_to_play">Sorry, no episodes to play!</string>
     <string name="playing_season_episode">Playing %1$s (S%2$sE%3$s): %4$s</string>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+    <string name="pause">Pause</string>
+    <string name="connect">Connect</string>
 
 </resources>

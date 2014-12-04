@@ -48,7 +48,7 @@ public class ScheduledUpdatesAlarmManager {
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 			Editor editor = settings.edit();
 			editor.putLong((type == MOVIES) ? NEXT_SCHEDULED_MOVIE_UPDATE : NEXT_SCHEDULED_TVSHOWS_UPDATE, 0);
-			editor.commit();				
+			editor.apply();
 		} catch (Exception ignored) {}
 	}
 
@@ -74,7 +74,7 @@ public class ScheduledUpdatesAlarmManager {
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 			Editor editor = settings.edit();
 			editor.putLong((type == MOVIES) ? NEXT_SCHEDULED_MOVIE_UPDATE : NEXT_SCHEDULED_TVSHOWS_UPDATE, System.currentTimeMillis() + when);
-			editor.commit();
+			editor.apply();
 		}
 	}
 }

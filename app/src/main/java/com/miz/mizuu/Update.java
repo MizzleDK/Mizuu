@@ -70,7 +70,6 @@ public class Update extends ActionBarActivity {
 			setTitle(getString(R.string.updateTvShowsTitle));
 
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		mEditor = mSharedPreferences.edit();
 
 		mClearLibrary = (CheckBox) findViewById(R.id.checkBox);
 		mClearLibrary.setTypeface(mTypeface);
@@ -97,11 +96,12 @@ public class Update extends ActionBarActivity {
 		return new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (clearLibrary)
+                mEditor = mSharedPreferences.edit();
+                if (clearLibrary)
 					mEditor.putBoolean(mIsMovie ? CLEAR_LIBRARY_MOVIES : CLEAR_LIBRARY_TVSHOWS, isChecked);
 				else
 					mEditor.putBoolean(mIsMovie ? REMOVE_UNAVAILABLE_FILES_MOVIES : REMOVE_UNAVAILABLE_FILES_TVSHOWS, isChecked);
-				mEditor.commit();
+				mEditor.apply();
 			}
 		};
 	}

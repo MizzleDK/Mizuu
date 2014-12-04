@@ -26,7 +26,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Actor name"
                 android:maxLines="3"
                 android:ellipsize="end"
                 android:textColor="#FFFFFF"
@@ -39,7 +38,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Place of birth"
                 android:id="@+id/place_of_birth"
                 android:layout_marginTop="@dimen/content_details_small_margin"
                 android:paddingLeft="@dimen/content_details_baseline_margin"
@@ -49,6 +47,7 @@
                 android:textSize="@dimen/content_details_subheader" />
 
             <LinearLayout
+                android:baselineAligned="false"
                 android:id="@+id/details_area"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -123,7 +122,6 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/details_area"
                 android:padding="@dimen/content_details_baseline_margin" >
 
                 <TextView
@@ -131,7 +129,6 @@
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFF"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Biography"
                     android:textSize="@dimen/content_details_body_text"
                     android:id="@+id/actor_biography"
                     android:layout_marginBottom="12dp" />

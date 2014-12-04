@@ -92,7 +92,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:text="A Million Ways to Die in the West"
                             android:maxLines="3"
                             android:ellipsize="end"
                             android:textColor="#FFFFFF"
@@ -102,7 +101,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:text="Season ##, episode ##"
                             android:id="@+id/textView7"
                             android:layout_marginTop="@dimen/content_details_very_small_margin"
                             android:layout_marginBottom="@dimen/content_details_baseline_margin"
@@ -112,6 +110,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:baselineAligned="false"
                         android:id="@+id/details_area"
                         android:orientation="horizontal"
                         android:layout_width="fill_parent"
@@ -151,7 +150,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?android:attr/textAppearanceMedium"
-                                android:text="1 hr 56 mins"
                                 android:id="@+id/textReleaseDate"
                                 android:textSize="@dimen/content_details_area_header"
                                 android:textColor="#FFFFFF"
@@ -183,7 +181,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAppearance="?android:attr/textAppearanceMedium"
-                                android:text="61 %"
                                 android:id="@+id/textView12"
                                 android:textSize="@dimen/content_details_area_header"
                                 android:textColor="#FFFFFF"
@@ -206,7 +203,6 @@
                             android:layout_height="wrap_content"
                             android:textColor="#FFFFFF"
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:text="Medium Text"
                             android:textSize="@dimen/content_details_body_text"
                             android:id="@+id/textView2"
                             android:layout_marginBottom="@dimen/content_details_baseline_margin" />
@@ -216,7 +212,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="12dp"
-                            android:drawableLeft="@drawable/ic_movie_creation_white_24dp"
+                            android:drawableLeft="@drawable/ic_movie_white_24dp"
                             android:drawablePadding="@dimen/movie_details_padding"
                             android:focusable="false"
                             android:gravity="center_vertical"

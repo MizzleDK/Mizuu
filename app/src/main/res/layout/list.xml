@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- FOR AT TILFØJE REKLAMER: xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads" -->
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@android:id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    android:background="@drawable/menu_bg_drawable"
     android:divider="#00000000"
     tools:listitem="@layout/row" />

@@ -18,8 +18,6 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:text="Test"
         android:layout_marginLeft="32dp"
         android:layout_gravity="center_vertical"
         android:textSize="14sp"

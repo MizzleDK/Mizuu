@@ -4,25 +4,25 @@
 
     <item
         android:id="@+id/route_provider"
-        android:title="Connect"
+        android:title="@string/connect"
         app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
         app:showAsAction="always"/>
     <item
         android:id="@+id/play"
         android:icon="@drawable/ic_play_arrow_white_24dp"
-        android:title="Play"
+        android:title="@string/play"
         android:visible="false"
         app:showAsAction="always"/>
     <item
         android:id="@+id/pause"
         android:icon="@drawable/ic_pause_white_24dp"
-        android:title="Pause"
+        android:title="@string/pause"
         android:visible="false"
         app:showAsAction="always"/>
     <item
         android:id="@+id/stop"
         android:icon="@drawable/ic_stop_white_24dp"
-        android:title="Stop"
+        android:title="@string/stop"
         android:visible="false"
         app:showAsAction="always"/>
 

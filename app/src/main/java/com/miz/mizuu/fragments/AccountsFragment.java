@@ -118,7 +118,7 @@ public class AccountsFragment extends Fragment {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				Editor editor = settings.edit();
 				editor.putBoolean(SYNC_WITH_TRAKT, isChecked);
-				editor.commit();
+				editor.apply();
 			}
 		});
 
@@ -179,7 +179,7 @@ public class AccountsFragment extends Fragment {
 				Editor editor = settings.edit();
 				editor.putString(TRAKT_USERNAME, username);
 				editor.putString(TRAKT_PASSWORD, MizLib.SHA1(password));
-				editor.commit();
+				editor.apply();
 
 				try {
 					Request request = MizLib.getTraktAuthenticationRequest("http://api.trakt.tv/user/profile.json/" + mTraktApiKey + "/" + username, username, MizLib.SHA1(password));
@@ -193,7 +193,7 @@ public class AccountsFragment extends Fragment {
 						String avatar = jObject.getString("avatar");
 
 						editor.putString(TRAKT_FULL_NAME, name);
-						editor.commit();
+						editor.apply();
 
 						if (isAdded() && (avatar.contains("gravatar") || (avatar.contains("trakt") && !avatar.contains("avatar-large.jpg"))))
 							MizLib.downloadFile(avatar, new File(MizuuApplication.getCacheFolder(getActivity()), "avatar.jpg").getAbsolutePath());
@@ -240,7 +240,7 @@ public class AccountsFragment extends Fragment {
 		editor.putString(TRAKT_USERNAME, "");
 		editor.putString(TRAKT_PASSWORD, "");
 		editor.putString(TRAKT_FULL_NAME, "");
-		editor.commit();
+		editor.apply();
 		
 		new File(MizuuApplication.getCacheFolder(getActivity()), "avatar.jpg").delete();
 

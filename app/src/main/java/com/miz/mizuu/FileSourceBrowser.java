@@ -80,7 +80,7 @@ public class FileSourceBrowser extends MizActivity {
 			
 			Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 			editor.putBoolean(HAS_SHOWN_FILEBROWSER_MESSAGE, true);
-			editor.commit();
+			editor.apply();
 		}
 		
 	}

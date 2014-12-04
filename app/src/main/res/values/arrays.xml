@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="actionlist_collections">
-        <item>@string/choiceAllMovies</item>
-        <item>@string/choiceFavorites</item>
-        <item>@string/choiceAvailableFiles</item>
-        <item>@string/choiceWatchedMovies</item>
-        <item>@string/choiceUnwatchedMovies</item>
-    </string-array>
     <string-array name="actionlist_episodes">
         <item>@string/choiceAllEpisodes</item>
         <item>@string/choiceAvailableFiles</item>

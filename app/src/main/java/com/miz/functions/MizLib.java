@@ -605,7 +605,7 @@ public class MizLib {
                 actionBarHeight + statusBarHeight : actionBarHeight;
 	}
 
-	public static final String md5(final String s) {
+	public static String md5(final String s) {
 		try {
 			// Create MD5 Hash
 			MessageDigest digest = java.security.MessageDigest

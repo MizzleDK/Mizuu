@@ -89,7 +89,7 @@ public class CustomTagsFragment extends Fragment {
 
 				Editor editor = settings.edit();
 				editor.putString(IGNORED_FILENAME_TAGS, items_string);
-				editor.commit();
+				editor.apply();
 
 				items.clear();
 				String[] split = items_string.split("<MiZ>");
@@ -182,7 +182,7 @@ public class CustomTagsFragment extends Fragment {
 
 		Editor editor = settings.edit();
 		editor.putString(IGNORED_FILENAME_TAGS, items_string);
-		editor.commit();
+		editor.apply();
 
 		((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
 	}

@@ -362,6 +362,7 @@
     <string name="downloadingTvShowFavorites">Henter TV-serie-favoritter&#8230;</string>
     <string name="updatingTvShowFavorites">Opdaterer TV-serie-favoritter&#8230;</string>
     <string name="traktSyncFailed">Trakt-synkronisering mislykkedes</string>
+    <string name="choiceNewReleases">Nye udgivelser</string>
 
     <plurals name="moviesInLibrary">
         <item quantity="one">film</item>

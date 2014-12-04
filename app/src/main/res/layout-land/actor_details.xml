@@ -94,6 +94,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:baselineAligned="false"
                         android:id="@+id/details_area"
                         android:orientation="horizontal"
                         android:layout_width="fill_parent"
@@ -196,7 +197,6 @@
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_below="@+id/details_area"
                 android:paddingBottom="@dimen/content_details_baseline_margin"
                 android:paddingLeft="@dimen/content_details_baseline_margin"
                 android:paddingRight="@dimen/content_details_baseline_margin" >
