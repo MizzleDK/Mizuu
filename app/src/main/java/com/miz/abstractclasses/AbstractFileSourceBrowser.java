@@ -86,10 +86,8 @@ public abstract class AbstractFileSourceBrowser<T> {
 	}
 
 	public boolean goUp() {
-		if (mParentFolder != null)
-			return browse(mParentFolder);
-		return false;
-	}
+        return mParentFolder != null && browse(mParentFolder);
+    }
 
 	public boolean browse(int index, boolean fromParent) {
 		return browse(fromParent ? getCurrentParentFiles()[index] : getCurrentFiles()[index]);

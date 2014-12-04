@@ -148,35 +148,35 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("SeriesName");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setTitle(((Node) tag.item(0)).getNodeValue());
+						show.setTitle((tag.item(0)).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("Overview");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setDescription(((Node) tag.item(0)).getNodeValue());
+						show.setDescription((tag.item(0)).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("Actors");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setActors(((Node) tag.item(0)).getNodeValue());
+						show.setActors((tag.item(0)).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("Genre");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setGenres(((Node) tag.item(0)).getNodeValue());
+						show.setGenres((tag.item(0)).getNodeValue());
 					} catch (Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("Rating");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setRating(((Node) tag.item(0)).getNodeValue());
+						show.setRating((tag.item(0)).getNodeValue());
 					} catch(Exception e) {
 						show.setRating("0");
 					}
@@ -185,42 +185,42 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("poster");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setCoverUrl("http://thetvdb.com/banners/" + ((Node) tag.item(0)).getNodeValue());
+						show.setCoverUrl("http://thetvdb.com/banners/" + tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("fanart");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setBackdropUrl("http://thetvdb.com/banners/" + ((Node) tag.item(0)).getNodeValue());
+						show.setBackdropUrl("http://thetvdb.com/banners/" + tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("ContentRating");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setCertification(((Node) tag.item(0)).getNodeValue());
+						show.setCertification(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("Runtime");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setRuntime(((Node) tag.item(0)).getNodeValue());
+						show.setRuntime(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("FirstAired");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setFirstAired(((Node) tag.item(0)).getNodeValue());
+						show.setFirstAired(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("IMDB_ID");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setIMDbId(((Node) tag.item(0)).getNodeValue());
+						show.setIMDbId(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 				}
 			}
@@ -277,7 +277,7 @@ public class TheTVDbService extends TvShowApiService {
                             list = firstElement.getElementsByTagName("DVD_episodenumber");
                             element = (Element) list.item(0);
                             tag = element.getChildNodes();
-                            episode.setEpisode(MizLib.getInteger(Double.valueOf(((Node) tag.item(0)).getNodeValue())));
+                            episode.setEpisode(MizLib.getInteger(Double.valueOf(tag.item(0).getNodeValue())));
                         } catch (Exception e) {}
                     }
 
@@ -286,7 +286,7 @@ public class TheTVDbService extends TvShowApiService {
                             list = firstElement.getElementsByTagName("EpisodeNumber");
                             element = (Element) list.item(0);
                             tag = element.getChildNodes();
-                            episode.setEpisode(MizLib.getInteger(((Node) tag.item(0)).getNodeValue()));
+                            episode.setEpisode(MizLib.getInteger(tag.item(0).getNodeValue()));
                         } catch (Exception e) {
                             episode.setEpisode(0);
                         }
@@ -297,7 +297,7 @@ public class TheTVDbService extends TvShowApiService {
                             list = firstElement.getElementsByTagName("DVD_season");
                             element = (Element) list.item(0);
                             tag = element.getChildNodes();
-                            episode.setSeason(MizLib.getInteger(((Node) tag.item(0)).getNodeValue()));
+                            episode.setSeason(MizLib.getInteger(tag.item(0).getNodeValue()));
                         } catch (Exception e) {}
                     }
 
@@ -306,7 +306,7 @@ public class TheTVDbService extends TvShowApiService {
                             list = firstElement.getElementsByTagName("SeasonNumber");
                             element = (Element) list.item(0);
                             tag = element.getChildNodes();
-                            episode.setSeason(MizLib.getInteger(((Node) tag.item(0)).getNodeValue()));
+                            episode.setSeason(MizLib.getInteger(tag.item(0).getNodeValue()));
                         } catch (Exception e) {
                             episode.setSeason(0);
                         }
@@ -316,35 +316,35 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("EpisodeName");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setTitle(((Node) tag.item(0)).getNodeValue());
+						episode.setTitle(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("FirstAired");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setAirdate(((Node) tag.item(0)).getNodeValue());
+						episode.setAirdate(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("Overview");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setDescription(((Node) tag.item(0)).getNodeValue());
+						episode.setDescription(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("filename");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setScreenshotUrl("http://thetvdb.com/banners/" + ((Node) tag.item(0)).getNodeValue());
+						episode.setScreenshotUrl("http://thetvdb.com/banners/" + tag.item(0).getNodeValue());
 					} catch (Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("Rating");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setRating(((Node) tag.item(0)).getNodeValue());
+						episode.setRating(tag.item(0).getNodeValue());
 					} catch(Exception e) {
 						episode.setRating("0");
 					}
@@ -353,21 +353,21 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("Director");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setDirector(((Node) tag.item(0)).getNodeValue());
+						episode.setDirector(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("Writer");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setWriter(((Node) tag.item(0)).getNodeValue());
+						episode.setWriter(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					try {
 						list = firstElement.getElementsByTagName("GuestStars");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						episode.setGueststars(((Node) tag.item(0)).getNodeValue());
+						episode.setGueststars(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					show.addEpisode(episode);
@@ -406,7 +406,7 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("BannerType");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						bannerType = ((Node) tag.item(0)).getNodeValue();
+						bannerType = tag.item(0).getNodeValue();
 					} catch(Exception e) {}
 
 					if (!bannerType.equals("season"))
@@ -416,7 +416,7 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("Season");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						seasonNumber = Integer.valueOf(((Node) tag.item(0)).getNodeValue());
+						seasonNumber = Integer.valueOf(tag.item(0).getNodeValue());
 					} catch(Exception e) {}
 
 					if (seasonNumber >= 0 && !show.hasSeason(seasonNumber)) {
@@ -426,7 +426,7 @@ public class TheTVDbService extends TvShowApiService {
 							list = firstElement.getElementsByTagName("BannerPath");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							season.setCoverPath("http://thetvdb.com/banners/" + ((Node) tag.item(0)).getNodeValue());
+							season.setCoverPath("http://thetvdb.com/banners/" + tag.item(0).getNodeValue());
 						} catch (Exception e) {
 							season.setCoverPath("");
 						}
@@ -475,7 +475,7 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("SeriesName");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setTitle(((Node) tag.item(0)).getNodeValue());
+						show.setTitle(tag.item(0).getNodeValue());
 					} catch(Exception e) {
 						show.setTitle(mContext.getString(R.string.stringNA));
 					}
@@ -484,7 +484,7 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("Overview");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setDescription(((Node) tag.item(0)).getNodeValue());
+						show.setDescription(tag.item(0).getNodeValue());
 					} catch(Exception e) {
 						show.setDescription(mContext.getString(R.string.stringNA));
 					}
@@ -493,7 +493,7 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("id");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setId(((Node) tag.item(0)).getNodeValue());
+						show.setId(tag.item(0).getNodeValue());
 					} catch(Exception e) {
 						show.setId(DbAdapterTvShows.UNIDENTIFIED_ID);
 					}
@@ -502,7 +502,7 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("id");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setCoverUrl("http://thetvdb.com/banners/posters/" + ((Node) tag.item(0)).getNodeValue() + "-1.jpg");
+						show.setCoverUrl("http://thetvdb.com/banners/posters/" + tag.item(0).getNodeValue() + "-1.jpg");
 					} catch(Exception e) {
 						show.setCoverUrl("");
 					}
@@ -511,7 +511,7 @@ public class TheTVDbService extends TvShowApiService {
 						list = firstElement.getElementsByTagName("FirstAired");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						show.setFirstAired(((Node) tag.item(0)).getNodeValue());
+						show.setFirstAired(tag.item(0).getNodeValue());
 					} catch(Exception e) {
 						show.setFirstAired(mContext.getString(R.string.stringNA));
 					}
@@ -552,7 +552,7 @@ public class TheTVDbService extends TvShowApiService {
 							for (int i = 0; i < list.getLength(); i++) {
 								element = (Element) list.item(i);
 								if (element.getTextContent().equals("poster"))
-									covers.add("http://thetvdb.com/banners/_cache/" + ((Element) list2.item(i)).getTextContent());
+									covers.add("http://thetvdb.com/banners/_cache/" + list2.item(i).getTextContent());
 							}
 						} catch (Exception e) {}
 					}
@@ -592,7 +592,7 @@ public class TheTVDbService extends TvShowApiService {
 							for (int i = 0; i < list.getLength(); i++) {
 								element = (Element) list.item(i);
 								if (element.getTextContent().equals("fanart"))
-									backdrops.add("http://thetvdb.com/banners/_cache/" + ((Element) list2.item(i)).getTextContent());
+									backdrops.add("http://thetvdb.com/banners/_cache/" + list2.item(i).getTextContent());
 							}
 						} catch (Exception e) {} // No such tag
 					}

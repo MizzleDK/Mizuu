@@ -222,12 +222,12 @@ public class FileSources extends MizActivity {
 				((TextView) convertView.findViewById(R.id.txtListPlot)).setText(mItems.get(position).getFileSource().getFilepath());
                 ((TextView) convertView.findViewById(R.id.txtListPlot)).setTypeface(TypefaceUtils.getRobotoLight(getApplicationContext()));
 				((ImageView) convertView.findViewById(R.id.traktIcon)).setImageResource(mItems.get(position).getFileSource().isMovie() ? R.drawable.ic_movie_white_24dp : R.drawable.ic_tv_white_24dp);
-				((ImageView)convertView.findViewById(R.id.imageView2)).setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						removeSelectedSource(position);
-					}
-				});
+				convertView.findViewById(R.id.imageView2).setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        removeSelectedSource(position);
+                    }
+                });
 			}
 
 			return convertView;

@@ -246,7 +246,7 @@ public class TMDbMovieService extends MovieApiService {
 			if (getRatingsProvider().equals(mContext.getString(R.string.ratings_option_2)) && json == null) {
 				try {
 					com.miz.apis.trakt.Movie movieSummary = Trakt.getMovieSummary(mContext, id);
-					double rating = Double.valueOf(movieSummary.getRating()) / 10;
+					double rating = (double) movieSummary.getRating() / 10;
 
 					if (rating > 0 || movie.getRating().equals("0.0"))
 						movie.setRating(String.valueOf(rating));	

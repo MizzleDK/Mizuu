@@ -103,7 +103,7 @@ public class GridEpisode implements Comparable<GridEpisode> {
 		if (getEpisode() < another.getEpisode())
 			return -1 * multiplier;
 		if (getEpisode() > another.getEpisode())
-			return 1 * multiplier;
+			return multiplier;
 		return 0;
 	}
 }

@@ -84,7 +84,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 
 		confirmExit = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(CONFIRM_BACK_PRESS, false);
 
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE); // This works on API level 13 as well

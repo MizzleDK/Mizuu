@@ -35,6 +35,27 @@ public class TvShowDatabaseUtils {
 
 	private TvShowDatabaseUtils() {} // No instantiation
 
+    /**
+     * Delete all TV shows in the various database tables and remove all related image files.
+     * @param context
+     */
+    public static void deleteAllTvShows(Context context) {
+        // Delete all movies
+        MizuuApplication.getTvDbAdapter().deleteAllShowsInDatabase();
+
+        // Delete all episodes
+        MizuuApplication.getTvEpisodeDbAdapter().deleteAllEpisodesInDatabase();
+
+        // Delete all episode filepath mappings
+        MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllFilepaths();
+
+        // Delete all downloaded image files from the device
+        FileUtils.deleteRecursive(MizuuApplication.getTvShowThumbFolder(context), false);
+        FileUtils.deleteRecursive(MizuuApplication.getTvShowBackdropFolder(context), false);
+        FileUtils.deleteRecursive(MizuuApplication.getTvShowSeasonFolder(context), false);
+        FileUtils.deleteRecursive(MizuuApplication.getTvShowEpisodeFolder(context), false);
+    }
+
 	/**
 	 * Remove all database entries and related images for a given TV show season.
 	 * This also checks if the TV show has any other seasons - if not, it'll remove

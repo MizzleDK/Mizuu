@@ -164,7 +164,7 @@ public class CollectionLibraryFragment extends Fragment implements OnSharedPrefe
         if (thumbnailSize.equals(getString(R.string.large)))
             mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
         else if (thumbnailSize.equals(getString(R.string.normal)))
-            mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+            mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1;
         else
             mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -546,7 +546,7 @@ public class CollectionLibraryFragment extends Fragment implements OnSharedPrefe
             if (thumbnailSize.equals(getString(R.string.large)))
                 mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
             else if (thumbnailSize.equals(getString(R.string.normal)))
-                mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+                mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1;
             else
                 mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 

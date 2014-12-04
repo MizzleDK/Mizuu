@@ -340,11 +340,11 @@ public class TvShowIdentification {
         }
 
         // Download season cover if it hasn't already been downloaded
-        if (thisShow.hasSeason(Integer.valueOf(thisEpisode.getSeason()))) {
+        if (thisShow.hasSeason(thisEpisode.getSeason())) {
             File seasonFile = FileUtils.getTvShowSeason(mContext, thisShow.getId(), season);
             if (!seasonFile.exists()) {
-                if (!MizLib.downloadFile(thisShow.getSeason(Integer.valueOf(thisEpisode.getSeason())).getCoverPath(), seasonFile.getAbsolutePath()))
-                    MizLib.downloadFile(thisShow.getSeason(Integer.valueOf(thisEpisode.getSeason())).getCoverPath(), seasonFile.getAbsolutePath());
+                if (!MizLib.downloadFile(thisShow.getSeason(thisEpisode.getSeason()).getCoverPath(), seasonFile.getAbsolutePath()))
+                    MizLib.downloadFile(thisShow.getSeason(thisEpisode.getSeason()).getCoverPath(), seasonFile.getAbsolutePath());
             }
         }
 

@@ -21,20 +21,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.miz.functions.ActionBarSpinner;
 import com.miz.functions.MizLib;
-import com.miz.functions.SpinnerItem;
 import com.miz.mizuu.R;
-
-import java.util.ArrayList;
 
 public class WebVideosViewPagerFragment extends Fragment {
 

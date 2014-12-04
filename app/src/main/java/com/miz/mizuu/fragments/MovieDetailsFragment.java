@@ -116,7 +116,7 @@ public class MovieDetailsFragment extends Fragment {
     private ImageView mBackground, mCover;
     private Picasso mPicasso;
     private Typeface mLight, mMediumItalic, mMedium, mBold, mCondensedRegular;
-    private int mImageThumbSize, mImageThumbSpacing, mToolbarColor = 000000;
+    private int mImageThumbSize, mImageThumbSpacing, mToolbarColor = 0;
     private long mVideoPlaybackStarted, mVideoPlaybackEnded;
     private Toolbar mToolbar;
     private FloatingActionButton mFab;

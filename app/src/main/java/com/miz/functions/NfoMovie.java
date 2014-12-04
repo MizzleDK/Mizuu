@@ -83,7 +83,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("title");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setTitle(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setTitle(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setTitle("");
 					}
@@ -92,7 +92,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("originaltitle");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setOriginalTitle(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setOriginalTitle(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setOriginalTitle("");
 					}
@@ -101,8 +101,8 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("set");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setCollectionTitle(((Node) tag.item(0)).getNodeValue().trim());
-						mMovie.setCollectionId(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setCollectionTitle(tag.item(0).getNodeValue().trim());
+						mMovie.setCollectionId(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setCollectionTitle("");
 					}
@@ -111,7 +111,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("rating");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setRating(((Node) tag.item(0)).getNodeValue().trim().replace(",", "."));
+						mMovie.setRating(tag.item(0).getNodeValue().trim().replace(",", "."));
 					} catch(Exception e) {
 						mMovie.setRating("0.0");
 					}
@@ -121,7 +121,7 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("premiered");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							mMovie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setReleasedate(tag.item(0).getNodeValue().trim());
 						} catch(Exception e) {
 							mMovie.setReleasedate("");
 						}
@@ -130,7 +130,7 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("releasedate");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							mMovie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setReleasedate(tag.item(0).getNodeValue().trim());
 						} catch(Exception e) {
 							mMovie.setReleasedate("");
 						}
@@ -139,7 +139,7 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("year");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							mMovie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setReleasedate(tag.item(0).getNodeValue().trim());
 						} catch(Exception e) {
 							mMovie.setReleasedate("");
 						}
@@ -150,7 +150,7 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("year");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							mMovie.setReleasedate(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setReleasedate(tag.item(0).getNodeValue().trim());
 						} catch(Exception e) {
 							mMovie.setReleasedate("");
 						}
@@ -160,7 +160,7 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("outline");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							mMovie.setTagline(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setTagline(tag.item(0).getNodeValue().trim());
 						} catch(Exception e) {
 							mMovie.setTagline("");
 						}
@@ -169,7 +169,7 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("tagline");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							mMovie.setTagline(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setTagline(tag.item(0).getNodeValue().trim());
 						} catch(Exception e) {
 							mMovie.setTagline("");
 						}
@@ -179,7 +179,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("plot");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setPlot(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setPlot(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setPlot("");
 					}
@@ -188,7 +188,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("runtime");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setRuntime(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setRuntime(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setRuntime("0");
 					}
@@ -197,7 +197,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("thumb");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setCover(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setCover(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setCover("");
 					}
@@ -207,7 +207,7 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("mpaa");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							mMovie.setCertification(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setCertification(tag.item(0).getNodeValue().trim());
 						} catch(Exception e) {
 							mMovie.setCertification("");
 						}
@@ -216,7 +216,7 @@ public class NfoMovie {
 							list = firstElement.getElementsByTagName("certification");
 							element = (Element) list.item(0);
 							tag = element.getChildNodes();
-							mMovie.setCertification(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setCertification(tag.item(0).getNodeValue().trim());
 						} catch(Exception e) {
 							mMovie.setCertification("");
 						}
@@ -226,7 +226,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("id");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setImdbId(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setImdbId(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setImdbId("");
 					}
@@ -235,7 +235,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("tmdbid");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setId(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setId(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setId(DbAdapterMovies.UNIDENTIFIED_ID);
 					}
@@ -244,7 +244,7 @@ public class NfoMovie {
 						list = firstElement.getElementsByTagName("trailer");
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
-						mMovie.setTrailer(((Node) tag.item(0)).getNodeValue().trim());
+						mMovie.setTrailer(tag.item(0).getNodeValue().trim());
 					} catch(Exception e) {
 						mMovie.setTrailer("");
 					}
@@ -254,7 +254,7 @@ public class NfoMovie {
 						element = (Element) list.item(0);
 						tag = element.getChildNodes();
 						try {
-							String genres = ((Node) tag.item(0)).getNodeValue().trim();
+							String genres = tag.item(0).getNodeValue().trim();
 							String[] genresArray = genres.split(",");
 							StringBuilder sb = new StringBuilder();
 							for (int k = 0; k < genresArray.length; k++) {
@@ -263,7 +263,7 @@ public class NfoMovie {
 							genres = sb.substring(0, sb.length() - 2);
 							mMovie.setGenres(genres);
 						} catch (Exception e) {
-							mMovie.setGenres(((Node) tag.item(0)).getNodeValue().trim());
+							mMovie.setGenres(tag.item(0).getNodeValue().trim());
 						}
 					} catch(Exception e) {
 						mMovie.setGenres("");
@@ -284,7 +284,7 @@ public class NfoMovie {
 									actorList = firstActorElement.getElementsByTagName("name");
 									actorElement = (Element) actorList.item(0);
 									actorTag = actorElement.getChildNodes();
-									sbActor.append(((Node) actorTag.item(0)).getNodeValue().trim());
+									sbActor.append(actorTag.item(0).getNodeValue().trim());
 									sbActor.append("|");
 								} catch(Exception e) {}
 

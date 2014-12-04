@@ -71,7 +71,7 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 		try {
 			List<MediumMovie> list = getSearchResults(query);
 			for (int i = 0; i < list.size(); i++) {
-				cursor.addRow(createRow(Integer.valueOf(i), list.get(i).getTitle(), list.get(i).getReleaseYear().replace("(", "").replace(")", ""), Uri.fromFile(list.get(i).getThumbnail()).toString(), list.get(i).getTmdbId()));
+				cursor.addRow(createRow(i, list.get(i).getTitle(), list.get(i).getReleaseYear().replace("(", "").replace(")", ""), Uri.fromFile(list.get(i).getThumbnail()).toString(), list.get(i).getTmdbId()));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to lookup " + query, e);

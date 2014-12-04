@@ -75,7 +75,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
     private Typeface mMediumItalic, mMedium, mBold, mCondensedRegular;
     private TMDbMovieService mMovieApiService;
     private HorizontalCardLayout mActorsLayout, mSimilarMoviesLayout;
-    private int mImageThumbSize, mImageThumbSpacing, mToolbarColor = 000000;
+    private int mImageThumbSize, mImageThumbSpacing, mToolbarColor = 0;
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
     private PaletteLoader mPaletteLoader;

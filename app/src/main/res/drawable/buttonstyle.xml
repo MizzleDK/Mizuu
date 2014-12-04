@@ -3,12 +3,12 @@
 
     <!-- pressed -->
     <item android:state_pressed="true"><shape>
-            <solid android:color="#40336699"></solid>
+            <solid android:color="#40336699"/>
         </shape></item>
 
     <!-- focused -->
     <item android:state_focused="true"><shape>
-            <solid android:color="#40336699"></solid>
+            <solid android:color="#40336699"/>
         </shape></item>
 
     <!-- default -->

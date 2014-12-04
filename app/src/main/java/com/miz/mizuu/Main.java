@@ -215,7 +215,7 @@ public class Main extends MizActivity {
         super.onNewIntent(newIntent);
 
         if (!newIntent.hasExtra("fromUpdate")) {
-            Intent i = null;
+            Intent i;
             if (selectedIndex == MOVIES)
                 i = new Intent("mizuu-movie-actor-search");
             else // TV shows

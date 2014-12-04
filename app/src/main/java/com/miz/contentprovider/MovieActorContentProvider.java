@@ -74,7 +74,7 @@ public class MovieActorContentProvider extends SearchRecentSuggestionsProvider {
 		try {
 			List<String> list = getSearchResults(query);
 			for (int i = 0; i < list.size(); i++) {
-				cursor.addRow(createRow(Integer.valueOf(i), list.get(i), mActor, ContentResolver.SCHEME_ANDROID_RESOURCE + "://com.miz.mizuu/drawable/ic_person_white_24dp", list.get(i)));
+				cursor.addRow(createRow(i, list.get(i), mActor, ContentResolver.SCHEME_ANDROID_RESOURCE + "://com.miz.mizuu/drawable/ic_person_white_24dp", list.get(i)));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to lookup " + query, e);

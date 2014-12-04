@@ -563,7 +563,7 @@ public class IdentifyTvShowFragment extends Fragment {
 		public View getView(int position, View convertView, ViewGroup parent) {
 
 			if (convertView == null) {
-				convertView = (TextView) mInflater.inflate(android.R.layout.simple_spinner_item, parent, false);
+				convertView = mInflater.inflate(android.R.layout.simple_spinner_item, parent, false);
 			}
 
 			((TextView) convertView).setText(mLocales.get(position).getDisplayLanguage(Locale.getDefault()));
@@ -590,7 +590,7 @@ public class IdentifyTvShowFragment extends Fragment {
 		public View getDropDownView(int position, View convertView, ViewGroup parent) {
 
 			if (convertView == null) {
-				convertView = (TextView) mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+				convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
 			}
 
 			((TextView) convertView).setText(mLocales.get(position).getDisplayLanguage(Locale.getDefault()));

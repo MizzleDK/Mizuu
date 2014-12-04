@@ -99,9 +99,6 @@ public class SplashScreen extends Activity {
 	}
 
 	private boolean isDeviceCompatible() {
-		if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_SMALL)
-			return false;
-
-        return MizLib.hasICSMR1();
+        return (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) != Configuration.SCREENLAYOUT_SIZE_SMALL && MizLib.hasICSMR1();
     }
 }

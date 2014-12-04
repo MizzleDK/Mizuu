@@ -71,7 +71,7 @@ public class TvShowContentProvider extends SearchRecentSuggestionsProvider {
 		try {
 			List<TvShow> list = getSearchResults(query);
 			for (int i = 0; i < list.size(); i++) {
-				cursor.addRow(createRow(Integer.valueOf(i), list.get(i).getTitle(), list.get(i).getFirstAirdateYear(), "'" + Uri.fromFile(list.get(i).getThumbnail()) + "' AS " + SearchManager.SUGGEST_COLUMN_ICON_1, list.get(i).getId()));
+				cursor.addRow(createRow(i, list.get(i).getTitle(), list.get(i).getFirstAirdateYear(), "'" + Uri.fromFile(list.get(i).getThumbnail()) + "' AS " + SearchManager.SUGGEST_COLUMN_ICON_1, list.get(i).getId()));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to lookup " + query, e);

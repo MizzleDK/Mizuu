@@ -306,9 +306,8 @@ public class MizLib {
 	 * @return True if portrait mode, false if landscape mode
 	 */
 	public static boolean isPortrait(Context c) {
-		if (c == null) return false;
-		return (c.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
-	}
+        return c != null && (c.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
+    }
 
 	/**
 	 * Determines if the device is currently connected to a network

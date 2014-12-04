@@ -94,7 +94,7 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
     private long mVideoPlaybackStarted, mVideoPlaybackEnded;
     private boolean mShowFileLocation;
     private Bus mBus;
-    private int mToolbarColor = 000000;
+    private int mToolbarColor = 0;
     private FloatingActionButton mFab;
     private PaletteLoader mPaletteLoader;
     private ObservableScrollView mScrollView;

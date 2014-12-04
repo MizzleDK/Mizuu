@@ -133,7 +133,7 @@ public class GridSeason implements Comparable<GridSeason> {
 		if (getSeason() < another.getSeason())
 			return -1 * multiplier;
 		if (getSeason() > another.getSeason())
-			return 1 * multiplier;
+			return multiplier;
 		return 0;
 	}
 }

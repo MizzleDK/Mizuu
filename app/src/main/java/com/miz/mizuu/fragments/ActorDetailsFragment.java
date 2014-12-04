@@ -63,7 +63,7 @@ public class ActorDetailsFragment extends Fragment {
 	private ImageView mPhoto, mBackdrop;
     private ObservableScrollView mScrollView;
 	private HorizontalCardLayout mMovieCards, mTvCards, mPhotoCards, mTaggedPhotoCards;
-	private int mImageThumbSize, mImageThumbBackdropSize, mImageThumbSpacing, mToolbarColor = 000000;
+	private int mImageThumbSize, mImageThumbBackdropSize, mImageThumbSpacing, mToolbarColor = 0;
     private Typeface mMedium, mBold, mCondensedRegular;
 	private View mProgressLayout, mDetailsLayout;
 	private Picasso mPicasso;

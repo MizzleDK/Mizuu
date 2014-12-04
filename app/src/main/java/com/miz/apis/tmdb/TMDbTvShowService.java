@@ -184,7 +184,7 @@ public class TMDbTvShowService extends TvShowApiService {
 		if (getRatingsProvider().equals(mContext.getString(R.string.ratings_option_2))) {
 			try {
 				com.miz.apis.trakt.Movie movieSummary = Trakt.getMovieSummary(mContext, id);
-				double rating = Double.valueOf(movieSummary.getRating() / 10);
+				double rating = (double) (movieSummary.getRating() / 10);
 
 				if (rating > 0 || show.getRating().equals("0.0"))
 					show.setRating(String.valueOf(rating));	

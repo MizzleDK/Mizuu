@@ -49,10 +49,8 @@ public class MovieFilter {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof MovieFilter))
-            return false;
-
-        return getEqualsComparison().equals(((MovieFilter) obj).getEqualsComparison());
+        return !(obj == null || !(obj instanceof MovieFilter)) &&
+                getEqualsComparison().equals(((MovieFilter) obj).getEqualsComparison());
     }
 
     @Override

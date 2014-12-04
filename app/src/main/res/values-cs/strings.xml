@@ -45,7 +45,6 @@
     <string name="coverSearchFailed">Stahování obalu se nezdařilo!</string>
     <string name="updateCheckBox">Před aktualizací vymazat knihovnu</string>
     <string name="stringSearch">Hledat</string>
-    <string name="stringNoPlot"></string>
     <string name="txtSelectFileSources">Vyberte složky</string>
     <string name="menuFavouriteTitle">Přidat k oblíbeným</string>
     <string name="menuFavouriteTitleRemove">Odebrat z oblíbených</string>

@@ -63,7 +63,6 @@ import android.widget.TextView;
 import com.miz.db.DatabaseHelper;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
-import com.miz.functions.ActionBarSpinnerViewHolder;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.CoverItem;
@@ -121,7 +120,6 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 	private ActionBar mActionBar;
 	private Picasso mPicasso;
 	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
-	private ActionBarSpinner mSpinnerAdapter;
 	private SearchTask mSearch;
 	private Config mConfig;
 	private TvShowSectionLoader mTvShowSectionLoader;
@@ -159,7 +157,7 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 		if (thumbnailSize.equals(getString(R.string.large))) 
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
 		else if (thumbnailSize.equals(getString(R.string.normal))) 
-			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+			mImageThumbSize = (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 		else
 			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -185,8 +183,6 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 
 	private void setupActionBar() {
         mActionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-		if (mSpinnerAdapter == null)
-			mSpinnerAdapter = new ActionBarSpinner();
 	}
 
 	private void setupSpinnerItems() {
@@ -461,9 +457,6 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 	private void notifyDataSetChanged() {
 		if (mAdapter != null)
 			mAdapter.setItems(mTvShows, mTvShowKeys);
-
-		if (mSpinnerAdapter != null)
-			mSpinnerAdapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -475,9 +468,6 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 	}
 
 	private void showTvShowSection(int position) {
-		if (mSpinnerAdapter != null)
-			mSpinnerAdapter.notifyDataSetChanged(); // To show "0 shows" when loading
-
 		if (mTvShowSectionLoader != null)
 			mTvShowSectionLoader.cancel(true);
 		mTvShowSectionLoader = new TvShowSectionLoader(position);
@@ -928,7 +918,7 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 			if (thumbnailSize.equals(getString(R.string.large))) 
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
 			else if (thumbnailSize.equals(getString(R.string.normal))) 
-				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
+				mImageThumbSize = (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
 			else
 				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 
@@ -952,66 +942,5 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 				getLoaderManager().initLoader(0, null, loaderCallbacks);
 			else
 				getLoaderManager().restartLoader(0, null, loaderCallbacks);
-	}
-
-	private class ActionBarSpinner extends BaseAdapter {
-
-		private LayoutInflater mInflater;
-
-		public ActionBarSpinner() {
-			mInflater = LayoutInflater.from(getActivity());
-		}
-
-		@Override
-		public int getCount() {
-			return mSpinnerItems.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return 0;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			
-			ActionBarSpinnerViewHolder holder;
-			
-			if (convertView == null) {
-				convertView = mInflater.inflate(R.layout.spinner_header, parent, false);
-				
-				holder = new ActionBarSpinnerViewHolder();
-				holder.title = (TextView) convertView.findViewById(R.id.title);
-				holder.subtitle = (TextView) convertView.findViewById(R.id.subtitle);
-				
-				convertView.setTag(holder);
-			} else {
-				holder = (ActionBarSpinnerViewHolder) convertView.getTag();
-			}
-			
-			holder.title.setText(mSpinnerItems.get(position).getTitle());
-
-			int size = mTvShowKeys.size();
-			holder.subtitle.setText(size + " " + getResources().getQuantityString(R.plurals.showsInLibrary, size, size));
-
-			return convertView;
-		}
-
-		@Override
-		public View getDropDownView(int position, View convertView, ViewGroup parent) {
-			
-			if (convertView == null) {
-				convertView = mInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
-			}
-			
-			((TextView) convertView.findViewById(android.R.id.text1)).setText(mSpinnerItems.get(position).getSubtitle());
-			
-			return convertView;
-		}
 	}
 }
