@@ -26,9 +26,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterTvShowEpisodeMappings;
-import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;

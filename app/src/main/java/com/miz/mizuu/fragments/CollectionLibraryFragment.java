@@ -16,14 +16,11 @@
 
 package com.miz.mizuu.fragments;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.graphics.Bitmap.Config;
@@ -34,10 +31,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,18 +49,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.miz.db.DatabaseHelper;
-import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterMovies;
-import com.miz.db.DbAdapterSources;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.CoverItem;
-import com.miz.functions.FileSource;
-import com.miz.functions.Filepath;
 import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
-import com.miz.functions.MovieSortHelper;
 import com.miz.functions.SQLiteCursorLoader;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieDetails;
@@ -76,38 +64,13 @@ import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TypefaceUtils;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import java.util.Random;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
-
-import jcifs.smb.SmbFile;
 
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
-import static com.miz.functions.PreferenceKeys.SORTING_MOVIES;
 import static com.miz.functions.SortingKeys.ALL_MOVIES;
-import static com.miz.functions.SortingKeys.AVAILABLE_FILES;
-import static com.miz.functions.SortingKeys.CERTIFICATION;
-import static com.miz.functions.SortingKeys.DATE;
-import static com.miz.functions.SortingKeys.DURATION;
-import static com.miz.functions.SortingKeys.FAVORITES;
-import static com.miz.functions.SortingKeys.FILE_SOURCES;
-import static com.miz.functions.SortingKeys.FOLDERS;
-import static com.miz.functions.SortingKeys.GENRES;
-import static com.miz.functions.SortingKeys.OFFLINE_COPIES;
-import static com.miz.functions.SortingKeys.RATING;
-import static com.miz.functions.SortingKeys.RELEASE;
-import static com.miz.functions.SortingKeys.RELEASE_YEAR;
-import static com.miz.functions.SortingKeys.TITLE;
-import static com.miz.functions.SortingKeys.UNWATCHED_MOVIES;
-import static com.miz.functions.SortingKeys.WATCHED_MOVIES;
-import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
 
 public class CollectionLibraryFragment extends Fragment implements OnSharedPreferenceChangeListener {
 

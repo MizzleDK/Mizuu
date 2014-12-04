@@ -16,16 +16,13 @@
 
 package com.miz.mizuu;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 
 import com.miz.base.MizActivity;
 import com.miz.functions.IntentKeys;
-import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.ActorBrowserFragment;
 import com.miz.utils.ViewUtils;
 

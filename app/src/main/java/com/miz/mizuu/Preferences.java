@@ -19,18 +19,12 @@ package com.miz.mizuu;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.google.common.collect.Lists;
 import com.miz.functions.MizLib;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Preferences extends PreferenceActivity {

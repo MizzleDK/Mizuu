@@ -20,18 +20,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.widget.ImageView;
 
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterTvShowEpisodes;

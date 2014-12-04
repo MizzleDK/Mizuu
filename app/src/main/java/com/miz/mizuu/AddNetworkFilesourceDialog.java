@@ -27,7 +27,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -55,7 +54,6 @@ import static com.miz.functions.MizLib.SERVER;
 import static com.miz.functions.MizLib.TV_SHOW;
 import static com.miz.functions.MizLib.TYPE;
 import static com.miz.functions.MizLib.USER;
-import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 
 public class AddNetworkFilesourceDialog extends Activity {
 
