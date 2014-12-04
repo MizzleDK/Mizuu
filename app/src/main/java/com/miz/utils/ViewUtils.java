@@ -22,6 +22,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -31,6 +32,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +45,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.miz.functions.Actor;
@@ -175,7 +176,8 @@ public class ViewUtils {
         final View v = LayoutInflater.from(context).inflate(R.layout.horizontal_grid_item_small, null);
 
         // Load image
-        picasso.load(season.getCover()).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
+        picasso.load(season.getCover()).placeholder(R.color.card_background_dark).error(R.drawable.loading_image).config(
+            MizuuApplication.getBitmapConfig()).into(((ImageView) v.findViewById(R.id.cover)));
 
         // Set title
         ((TextView) v.findViewById(R.id.text)).setText(season.getHeaderText());
@@ -350,6 +352,8 @@ public class ViewUtils {
         }
     }
 
+    private static int defaultTitleTextColor = -1;
+
     /**
      * Update the Toolbar background color and title.
      * @param activity
@@ -358,16 +362,29 @@ public class ViewUtils {
      * @param title
      * @param color
      */
-    public static void updateToolbarBackground(Activity activity, Toolbar toolbar, int alpha, String title, int color) {
-        if (alpha < 127) {
-            toolbar.setTitle(null);
-            toolbar.setBackgroundResource(R.drawable.transparent_actionbar);
-
-            if (MizLib.hasLollipop())
+    public static void updateToolbarBackground(Activity activity, Toolbar toolbar, int alpha, String title,
+                                               int color) {
+        if (defaultTitleTextColor == -1) {
+            int[] textColorAttr = new int[]{R.attr.actionMenuTextColor};
+            TypedValue typedValue = new TypedValue();
+            int indexOfAttrTextColor = 0;
+            TypedArray a = activity.obtainStyledAttributes(typedValue.data, textColorAttr);
+            defaultTitleTextColor = a.getColor(indexOfAttrTextColor, -1);
+            a.recycle();
+        }
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(adjustAlpha(defaultTitleTextColor, alpha));
+        int toolbarColor = adjustAlpha(color, alpha);
+        if (MizLib.hasLollipop()) {
+            if(alpha < 127){
                 activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            }
+            int topColor = darkenColor(color, alpha / 255f);
+            topColor = adjustAlpha(topColor, Math.max(125, alpha));
+            int[] colors = {topColor, toolbarColor};
+            toolbar.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors));
         } else {
-            toolbar.setTitle(title);
-            toolbar.setBackgroundColor(adjustAlpha(color, alpha));
+            toolbar.setBackgroundColor(toolbarColor);
         }
     }
 
@@ -376,6 +393,13 @@ public class ViewUtils {
         int green = Color.green(color);
         int blue = Color.blue(color);
         return Color.argb(alpha, red, green, blue);
+    }
+
+    public static int darkenColor(int color, float factor) {
+        final float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        hsv[2] *= factor;
+        return Color.HSVToColor(hsv);
     }
 
     public static boolean isTranslucentDecorAvailable(Context context) {
