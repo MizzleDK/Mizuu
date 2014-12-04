@@ -711,7 +711,6 @@ public class MovieDetailsFragment extends Fragment {
 
                         notifyDatasetChanges();
                         getActivity().finish();
-                        return;
                     }
                 })
                 .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
@@ -890,7 +889,6 @@ public class MovieDetailsFragment extends Fragment {
                             if (!success)
                                 mMovie.getOfflineCopyFile(path).delete();
                             getActivity().invalidateOptionsMenu();
-                            return;
                         }
                     })
                     .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
@@ -915,7 +913,6 @@ public class MovieDetailsFragment extends Fragment {
                             i.putExtra("thumb", mMovie.getThumbnail().getAbsolutePath());
                             i.putExtra("backdrop", mMovie.getBackdrop().getAbsolutePath());
                             mContext.startService(i);
-                            return;
                         }
                     })
                     .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {

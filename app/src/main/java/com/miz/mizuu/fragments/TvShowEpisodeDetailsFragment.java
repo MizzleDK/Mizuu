@@ -599,7 +599,6 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
                             if (!success)
                                 mEpisode.getOfflineCopyFile(path).delete();
                             getActivity().invalidateOptionsMenu();
-                            return;
                         }
                     })
                     .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
@@ -624,7 +623,6 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
                             i.putExtra("thumb", mEpisode.getThumbnail().getAbsolutePath());
                             i.putExtra("backdrop", mEpisode.getEpisodePhoto().getAbsolutePath());
                             getActivity().startService(i);
-                            return;
                         }
                     })
                     .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
@@ -713,7 +711,6 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
                             notifyDatasetChanges();
                             getActivity().finish();
-                            return;
                         } else {
                             Toast.makeText(getActivity(), getString(R.string.failedToRemoveEpisode), Toast.LENGTH_SHORT).show();
                         }

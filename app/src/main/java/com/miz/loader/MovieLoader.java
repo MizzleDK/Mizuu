@@ -439,7 +439,7 @@ public class MovieLoader {
                                                 for (int j = 0; j < filesources.size(); j++)
                                                     if (path.getFilepath().contains(filesources.get(j).getFilepath())) {
                                                         source = filesources.get(j);
-                                                        continue;
+                                                        break;
                                                     }
 
                                                 if (source == null)

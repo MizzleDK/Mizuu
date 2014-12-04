@@ -379,7 +379,7 @@ public class ViewUtils {
 
     public static boolean isTranslucentDecorAvailable(Context context) {
         int id = context.getResources().getIdentifier("config_enableTranslucentDecor", "bool", "android");
-        return (id == 0) ? false : context.getResources().getBoolean(id);
+        return (id == 0) && context.getResources().getBoolean(id);
     }
 
     public static int getStatusBarHeight(Context context) {

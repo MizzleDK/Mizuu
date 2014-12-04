@@ -117,7 +117,7 @@ public class TvShowEpisodeDetails extends MizActivity {
 			for (int i = 0; i < mEpisodes.size(); i++) {
 				if (mEpisodes.get(i).getSeason().equals(MizLib.addIndexZero(mSeason)) && mEpisodes.get(i).getEpisode().equals(MizLib.addIndexZero(mEpisode))) {
 					mViewPager.setCurrentItem(i);
-					continue;
+                    break;
 				}
 			}
 		}

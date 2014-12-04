@@ -101,7 +101,6 @@ public class TvShowDetails extends MizActivity {
                 startActivity(intent);
 
                 finish();
-                return;
             }
         }
     }

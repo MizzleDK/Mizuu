@@ -307,7 +307,7 @@ public class MizLib {
 	 */
 	public static boolean isPortrait(Context c) {
 		if (c == null) return false;
-		return (c.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) ? true : false;
+		return (c.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
 	}
 
 	/**
@@ -1042,7 +1042,7 @@ public class MizLib {
 		for (int i = 0; i < filesources.size(); i++) {
 			if (filepath.contains(filesources.get(i).getFilepath())) {
 				source = filesources.get(i);
-				continue;
+				break;
 			}
 		}
 
@@ -1104,7 +1104,7 @@ public class MizLib {
 						absolutePath.equalsIgnoreCase(filename + ".jpeg") ||
 						absolutePath.equalsIgnoreCase(filename + ".tbn")) {
 					customCoverArt = absolutePath;
-					continue;
+					break;
 				}
 			}
 		} else {
@@ -1130,7 +1130,7 @@ public class MizLib {
 						absolutePath.equalsIgnoreCase(filename + "-backdrop.jpeg") ||
 						absolutePath.equalsIgnoreCase(filename + "-backdrop.tbn")) {
 					customCoverArt = absolutePath;
-					continue;
+					break;
 				}
 			}
 		}

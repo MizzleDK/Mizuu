@@ -69,14 +69,11 @@ public class DbMovie {
 	}
 
 	public boolean isUnidentified() {
-		if (getRuntime().equals("0")
-				&& TextUtils.isEmpty(getReleaseYear())
-				&& TextUtils.isEmpty(getGenres())
-				&& TextUtils.isEmpty(getTitle()))
-			return true;
-
-		return false;
-	}
+        return getRuntime().equals("0")
+                && TextUtils.isEmpty(getReleaseYear())
+                && TextUtils.isEmpty(getGenres())
+                && TextUtils.isEmpty(getTitle());
+    }
 
 	public boolean isNetworkFile() {
 		return getFilepath().contains("smb:/");

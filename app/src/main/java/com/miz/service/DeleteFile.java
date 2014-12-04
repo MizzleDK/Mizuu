@@ -50,7 +50,7 @@ public class DeleteFile extends IntentService {
 				for (int j = 0; j < filesources.size(); j++)
 					if (file.contains(filesources.get(j).getFilepath())) {
 						source = filesources.get(j);
-						continue;
+						break;
 					}
 
 				if (source == null)

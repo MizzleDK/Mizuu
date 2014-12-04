@@ -633,7 +633,6 @@ public class TvShowDetailsFragment extends Fragment {
                         MizLib.deleteShow(getActivity().getApplicationContext(), thisShow, true);
                         LocalBroadcastUtils.updateTvShowLibrary(getActivity().getApplicationContext());
                         getActivity().finish();
-                        return;
                     }
                 })
                 .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {

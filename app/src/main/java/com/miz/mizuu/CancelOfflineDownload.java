@@ -40,7 +40,6 @@ public class CancelOfflineDownload extends Activity {
 				
 				Toast.makeText(CancelOfflineDownload.this, getString(R.string.stringDownloadCancelled), Toast.LENGTH_LONG).show();
 				finish();
-				return;
 			}
 		})
 		.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {

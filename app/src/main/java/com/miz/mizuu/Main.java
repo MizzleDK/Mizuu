@@ -415,10 +415,8 @@ public class Main extends MizActivity {
         @Override
         public boolean isEnabled(int position) {
             int type = mMenuItems.get(position).getType();
-            if (type == MenuItem.SEPARATOR || type == MenuItem.SEPARATOR_EXTRA_PADDING ||
-                    type == MenuItem.HEADER || type == MenuItem.SUB_HEADER)
-                return false;
-            return true;
+            return !(type == MenuItem.SEPARATOR || type == MenuItem.SEPARATOR_EXTRA_PADDING ||
+                    type == MenuItem.HEADER || type == MenuItem.SUB_HEADER);
         }
 
         @Override

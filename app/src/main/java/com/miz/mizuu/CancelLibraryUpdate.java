@@ -49,7 +49,6 @@ public class CancelLibraryUpdate extends Activity {
 				
 				Toast.makeText(CancelLibraryUpdate.this, getString(R.string.stoppingUpdate), Toast.LENGTH_LONG).show();
 				finish();
-				return;
 			}
 		})
 		.setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {

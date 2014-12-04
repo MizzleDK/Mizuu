@@ -82,8 +82,6 @@ public class FileSource {
 	}
 
 	public boolean isMovie() {
-		if (mType.equals(DbAdapterSources.KEY_TYPE_MOVIE))
-			return true;
-		return false;
-	}
+        return mType.equals(DbAdapterSources.KEY_TYPE_MOVIE);
+    }
 }

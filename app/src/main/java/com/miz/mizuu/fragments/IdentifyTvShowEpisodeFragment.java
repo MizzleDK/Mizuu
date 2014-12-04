@@ -295,11 +295,9 @@ public class IdentifyTvShowEpisodeFragment extends Fragment {
 					}
 				}
 
-				if (isCancelled())
-					return false;
+                return !isCancelled();
 
-				return true;
-			} catch (Exception e) {}
+            } catch (Exception e) {}
 
 			return false;
 		}

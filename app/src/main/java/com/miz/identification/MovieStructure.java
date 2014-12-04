@@ -63,7 +63,6 @@ public class MovieStructure {
 		temp = MizLib.decryptImdbId(getParentFolderName());
 		if (null != temp) {
 			mImdbId = temp;
-			return;
 		}
 	}
 	
@@ -114,9 +113,9 @@ public class MovieStructure {
 
 		// Check if there's a release year in the parent folder name
 		matcher = pattern.matcher(getParentFolderName());
-		
-		while (matcher.find())
-			return MizLib.getInteger(matcher.group(1));
+
+        while (matcher.find())
+            result = MizLib.getInteger(matcher.group(1));
 		
 		if (result >= 0)
 			return result;

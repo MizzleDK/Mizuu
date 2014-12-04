@@ -61,10 +61,10 @@ public class YoutubeTrailerSearch extends AsyncTask<Void, Void, String> {
 
 				for (int j = 0; j < access.length(); j++) {
 					if (access.getJSONObject(i).getString("action").equals("embed"))
-						embedding = access.getJSONObject(i).getString("permission").equals("allowed") ? true : false;
+						embedding = access.getJSONObject(i).getString("permission").equals("allowed");
 
 					if (access.getJSONObject(i).getString("action").equals("syndicate"))
-						mobile = access.getJSONObject(i).getString("permission").equals("allowed") ? true : false;
+						mobile = access.getJSONObject(i).getString("permission").equals("allowed");
 				}
 
 				// Add the video ID if it's accessible from a mobile device

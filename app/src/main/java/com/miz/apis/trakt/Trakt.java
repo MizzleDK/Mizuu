@@ -398,11 +398,8 @@ public class Trakt {
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
 		String password = settings.getString(TRAKT_PASSWORD, "");
 
-		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password))
-			return false;
-
-		return true;
-	}
+        return !(TextUtils.isEmpty(username) || TextUtils.isEmpty(password));
+    }
 
 	public static boolean addTvShowToLibrary(TraktTvShow show, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);

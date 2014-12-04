@@ -84,7 +84,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public boolean toWatch() {
-		return (TO_WATCH.equals("0")) ? false : true;
+		return (!TO_WATCH.equals("0"));
 	}
 	
 	public String getCollection() {
@@ -127,10 +127,8 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public boolean isFavourite() {
-		if (FAVOURITE.equals("1"))
-			return true;
-		return false;
-	}
+        return FAVOURITE.equals("1");
+    }
 	
 	public void setRuntime(int runtime) {
 		RUNTIME = String.valueOf(runtime);

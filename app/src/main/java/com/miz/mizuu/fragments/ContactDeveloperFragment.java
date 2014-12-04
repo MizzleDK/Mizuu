@@ -116,7 +116,6 @@ public class ContactDeveloperFragment extends Fragment {
 				emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(emailIntent);
 				Toast.makeText(getActivity(), getString(R.string.launchingGmail), Toast.LENGTH_SHORT).show();
-				return;
 			} catch (Exception e) {
 				Toast.makeText(getActivity(), getString(R.string.failedGmailLaunch), Toast.LENGTH_SHORT).show();
 			}

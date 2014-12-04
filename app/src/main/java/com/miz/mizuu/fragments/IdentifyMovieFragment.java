@@ -286,11 +286,8 @@ public class IdentifyMovieFragment extends Fragment {
 							);
 				}
 
-				if (isCancelled())
-					return false;
-
-				return true;
-			} catch (Exception e) {}
+                return !isCancelled();
+            } catch (Exception e) {}
 
 			return false;
 		}

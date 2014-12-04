@@ -105,7 +105,6 @@ public class MovieDetails extends MizActivity {
 			startActivity(intent);
 
 			finish();
-			return;
 		}
 	}
 

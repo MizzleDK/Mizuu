@@ -68,7 +68,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 						for (int j = 0; j < filesources.size(); j++)
 							if (dbMovies.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
 								source = filesources.get(j);
-								continue;
+								break;
 							}
 
 						if (source == null) {
@@ -113,7 +113,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 						for (int j = 0; j < filesources.size(); j++)
 							if (dbMovies.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
 								source = filesources.get(j);
-								continue;
+								break;
 							}
 
 						if (source == null) {

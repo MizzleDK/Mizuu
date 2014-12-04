@@ -323,7 +323,7 @@ public class TvShowIdentification {
         for (int i = 0; i < count; i++) {
             if (episodes.get(i).getSeason() == season && episodes.get(i).getEpisode() == episode) {
                 thisEpisode = episodes.get(i);
-                continue;
+                break;
             }
         }
 

@@ -312,10 +312,7 @@ public class Welcome extends MizActivity implements ViewFactory {
 
 		@Override
 		public boolean isEnabled(int position) {
-			if (position == 0 || position == 4)
-				return false;
-			else
-				return true;
+            return !(position == 0 || position == 4);
 		}
 
 		@Override

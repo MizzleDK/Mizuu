@@ -66,7 +66,7 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
                     for (int j = 0; j < filesources.size(); j++) {
                         if (dbEpisodes.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
                             source = filesources.get(j);
-                            continue;
+                            break;
                         }
                     }
 
@@ -129,7 +129,7 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
                 for (int j = 0; j < filesources.size(); j++)
                     if (dbEpisodes.get(i).getFilepath().contains(filesources.get(j).getFilepath())) {
                         source = filesources.get(j);
-                        continue;
+                        break;
                     }
 
                 if (source == null) {

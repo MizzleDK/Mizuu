@@ -96,16 +96,12 @@ public class SplashScreen extends Activity {
 		startActivity(i);
 		
 		finish();
-		return;
 	}
 
 	private boolean isDeviceCompatible() {
 		if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_SMALL)
 			return false;
 
-		if (!MizLib.hasICSMR1())
-			return false;
-
-		return true;
-	}
+        return MizLib.hasICSMR1();
+    }
 }

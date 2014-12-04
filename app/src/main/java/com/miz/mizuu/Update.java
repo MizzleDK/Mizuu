@@ -122,7 +122,6 @@ public class Update extends ActionBarActivity {
 		setResult(1); // end activity and reload Main activity
 
 		finish(); // Leave the Update screen once the update has been started
-		return;
 	}
 
 	@Override
