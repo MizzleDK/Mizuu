@@ -26,7 +26,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.widget.TextView;
 
 import com.miz.mizuu.R;
 

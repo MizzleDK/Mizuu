@@ -21,7 +21,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 
 import com.miz.mizuu.MizuuApplication;

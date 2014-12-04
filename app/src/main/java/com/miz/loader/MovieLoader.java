@@ -29,7 +29,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterMovies;
-import com.miz.db.DbAdapterSources;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;

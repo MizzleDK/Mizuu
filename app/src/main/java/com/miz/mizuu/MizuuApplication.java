@@ -38,7 +38,6 @@ import com.miz.db.DbAdapterTvShowEpisodeMappings;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.FileRequestTransformer;
-import com.miz.functions.MizLib;
 import com.miz.functions.OkHttpDownloader;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
