@@ -50,8 +50,7 @@ public class BrowserSmb extends AbstractFileSourceBrowser<SmbFile> {
 			if (listFiles == null)
 				return false;
 
-			for (SmbFile f : listFiles)
-				orderedArray.add(f);
+            Collections.addAll(orderedArray, listFiles);
 
 			Collections.sort(orderedArray, new Comparator<SmbFile>() {
 				@Override

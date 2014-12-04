@@ -46,8 +46,7 @@ public class BrowserFile extends AbstractFileSourceBrowser<File> {
 			if (listFiles == null)
 				return false;
 
-			for (File f : listFiles)
-				orderedArray.add(f);
+            Collections.addAll(orderedArray, listFiles);
 
 			Collections.sort(orderedArray, new Comparator<File>() {
 				@Override

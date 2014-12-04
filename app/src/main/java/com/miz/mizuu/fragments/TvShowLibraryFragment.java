@@ -788,8 +788,7 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 		final CharSequence[] temp = new CharSequence[tempArray.length + 1];
 		temp[0] = getString(stringId);
 
-		for (int i = 1; i < temp.length; i++)
-			temp[i] = tempArray[i-1];
+        System.arraycopy(tempArray, 0, temp, 0, tempArray.length);
 
 		return temp;
 	}

@@ -53,12 +53,19 @@ public class GridSeason implements Comparable<GridSeason> {
 		
 		// Change the text depending on the available space
 		if (getUnwatchedCount() > 0) {
-			if (MizLib.isXlargeTablet(mContext) || !mUseGridView) // Large tablets or list view: (23 unwatched)
-				sb.append(" (" + String.format(mContext.getString(R.string.unwatchedEpisodesCount), getUnwatchedCount()) + ")");
-			else if (MizLib.isTablet(mContext)) // Small tablets (23 left)
-				sb.append(" (" + String.format(mContext.getString(R.string.leftEpisodesCount), getUnwatchedCount()) + ")");
-			else // Phones (23)
-				sb.append(" (" + getUnwatchedCount() + ")");
+			if (MizLib.isXlargeTablet(mContext) || !mUseGridView) { // Large tablets or list view: (23 unwatched)
+                sb.append(" (");
+                sb.append(String.format(mContext.getString(R.string.unwatchedEpisodesCount), getUnwatchedCount()));
+                sb.append(")");
+            } else if (MizLib.isTablet(mContext)) { // Small tablets (23 left)
+                sb.append(" (");
+                sb.append(String.format(mContext.getString(R.string.leftEpisodesCount), getUnwatchedCount()));
+                sb.append(")");
+            } else { // Phones (23)
+                sb.append(" (");
+                sb.append(getUnwatchedCount());
+                sb.append(")");
+            }
 		}
 
 		mSubtitleText = sb.toString();

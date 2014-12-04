@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.miz.mizuu.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 
@@ -65,8 +66,7 @@ public class CustomTagsFragment extends Fragment {
 
 		if (!items_string.isEmpty()) {
 			String[] split = items_string.split("<MiZ>");
-			for (int i = 0; i < split.length; i++)
-				items.add(split[i]);
+            Collections.addAll(items, split);
 		}
 	}
 
@@ -93,8 +93,7 @@ public class CustomTagsFragment extends Fragment {
 
 				items.clear();
 				String[] split = items_string.split("<MiZ>");
-				for (int i = 0; i < split.length; i++)
-					items.add(split[i]);
+                Collections.addAll(items, split);
 				((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
 
 				tagText.setText("");
@@ -168,8 +167,10 @@ public class CustomTagsFragment extends Fragment {
 		items.remove(position);
 
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < items.size(); i++)
-			sb.append("<MiZ>" + items.get(i));
+		for (int i = 0; i < items.size(); i++) {
+            sb.append("<MiZ>");
+            sb.append(items.get(i));
+        }
 
 
 		String result = sb.toString();

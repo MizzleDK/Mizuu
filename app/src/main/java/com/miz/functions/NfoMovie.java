@@ -260,7 +260,7 @@ public class NfoMovie {
 							for (int k = 0; k < genresArray.length; k++) {
 								sb.append(MizLib.toCapitalWords(genresArray[k].toLowerCase(Locale.getDefault()))).append(", ");
 							}
-							genres = sb.substring(0, sb.length() - 2).toString();
+							genres = sb.substring(0, sb.length() - 2);
 							mMovie.setGenres(genres);
 						} catch (Exception e) {
 							mMovie.setGenres(((Node) tag.item(0)).getNodeValue().trim());

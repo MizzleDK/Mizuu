@@ -101,7 +101,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -183,14 +185,12 @@ public class MizLib {
 
 		String[] split = prefix.split(",");
 		int count = split.length;
-		for (int i = 0; i < count; i++)
-			prefixesArray.add(split[i]);
+        prefixesArray.addAll(Arrays.asList(split).subList(0, count));
 
 		count = prefixes.length;
-		for (int i = 0; i < count; i++)
-			prefixesArray.add(prefixes[i]);
+        prefixesArray.addAll(Arrays.asList(prefixes).subList(0, count));
 
-		return prefixesArray.toArray(new String[]{});
+		return prefixesArray.toArray(new String[prefixesArray.size()]);
 	}
 
 	public static boolean isVideoFile(String s) {
@@ -1859,15 +1859,11 @@ public class MizLib {
 
 		File[] f = MizuuApplication.getMovieBackdropFolder(c).listFiles();
 		if (f != null)
-			for (File file : f) {
-				files.add(file);
-			}
+            Collections.addAll(files, f);
 
 		f = MizuuApplication.getTvShowBackdropFolder(c).listFiles();
 		if (f != null)
-			for (File file : f) {
-				files.add(file);
-			}
+            Collections.addAll(files, f);
 
 		if (files.size() > 0) {
 			Random rndm = new Random();

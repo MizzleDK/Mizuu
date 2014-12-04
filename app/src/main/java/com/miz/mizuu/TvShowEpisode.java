@@ -62,8 +62,10 @@ public class TvShowEpisode implements Comparable<TvShowEpisode> {
 		sb.append(mContext.getString(R.string.showEpisode));
 		sb.append(" ");
 		sb.append(getEpisode());
-		if (!hasWatched())
-			sb.append(" " + mContext.getString(R.string.unwatched));
+		if (!hasWatched()) {
+            sb.append(" ");
+            sb.append(mContext.getString(R.string.unwatched));
+        }
 
 		mSubtitleText = sb.toString();
 	}

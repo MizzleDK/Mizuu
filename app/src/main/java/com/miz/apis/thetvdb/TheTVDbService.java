@@ -592,7 +592,7 @@ public class TheTVDbService extends TvShowApiService {
 							for (int i = 0; i < list.getLength(); i++) {
 								element = (Element) list.item(i);
 								if (element.getTextContent().equals("fanart"))
-									backdrops.add("http://thetvdb.com/banners/_cache/" + ((Element) list2.item(i)).getTextContent().toString());
+									backdrops.add("http://thetvdb.com/banners/_cache/" + ((Element) list2.item(i)).getTextContent());
 							}
 						} catch (Exception e) {} // No such tag
 					}
