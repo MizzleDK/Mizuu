@@ -19,6 +19,7 @@ package com.miz.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 
@@ -169,6 +170,9 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
      * @return
      */
 	public ArrayList<String> getMovieFilepaths(String tmdbId) {
+        if (TextUtils.isEmpty(tmdbId))
+            return new ArrayList<>();
+
 		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_TMDB_ID + " = ? AND " + KEY_IGNORED + " = '0'", new String[]{tmdbId}, null, null, null);
 		ArrayList<String> paths = new ArrayList<String>();
 

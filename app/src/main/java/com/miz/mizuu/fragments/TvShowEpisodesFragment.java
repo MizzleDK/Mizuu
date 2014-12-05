@@ -333,7 +333,7 @@ public class TvShowEpisodesFragment extends Fragment {
 			public void onClick(DialogInterface dialog, int which) {
 				// Go through all episodes and remove the selected ones
 				for (int episode : selectedEpisodes) {
-					TvShowDatabaseUtils.removeEpisode(activityContext, mShowId, mSeason, episode);
+					TvShowDatabaseUtils.deleteEpisode(activityContext, mShowId, mSeason, episode);
 				}
 
 				// Check if we've removed all TV show episodes for the specific season

@@ -125,7 +125,7 @@ public class IdentifyTvShowEpisodeService extends IntentService implements TvSho
 	private void removeOldDatabaseEntries() {
 		// Remove all old database mappings
 		for (String path : mFilepaths) {
-			TvShowDatabaseUtils.removeEpisode(this, mOldShowId, path);
+			TvShowDatabaseUtils.deleteEpisode(this, mOldShowId, path);
 		}
 		
 		LocalBroadcastUtils.updateTvShowLibrary(this);

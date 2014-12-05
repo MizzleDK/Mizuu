@@ -252,7 +252,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		db.deleteAllShowsInDatabase();
 
 		DbAdapterTvShowEpisodes dbEpisodes = MizuuApplication.getTvEpisodeDbAdapter();
-		dbEpisodes.deleteAllEpisodesInDatabase();
+		dbEpisodes.deleteAllEpisodes();
 		
 		MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllFilepaths();
 

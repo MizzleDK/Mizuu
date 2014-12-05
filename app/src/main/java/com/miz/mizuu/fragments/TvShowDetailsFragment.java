@@ -646,7 +646,7 @@ public class TvShowDetailsFragment extends Fragment {
     private void playFirstEpisode() {
 
         DbAdapterTvShowEpisodes dbAdapter = MizuuApplication.getTvEpisodeDbAdapter();
-        Cursor cursor = dbAdapter.getAllEpisodes(thisShow.getId(), DbAdapterTvShowEpisodes.OLDEST_FIRST);
+        Cursor cursor = dbAdapter.getEpisodes(thisShow.getId());
         TvShowEpisode episode = null;
 
         if (cursor != null) {

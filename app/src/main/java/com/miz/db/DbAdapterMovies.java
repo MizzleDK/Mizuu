@@ -259,23 +259,6 @@ public class DbAdapterMovies extends AbstractDbAdapter {
         return values;
     }
 
-    private ContentValues createEditContentValues(String title, String plot, String rating, String tagline,
-                                                  String release, String certification, String runtime, String genres, String toWatch, String hasWatched, String date) {
-        ContentValues values = new ContentValues();
-        values.put(KEY_TITLE, title);
-        values.put(KEY_PLOT, plot);
-        values.put(KEY_RATING, rating);
-        values.put(KEY_TAGLINE, tagline);
-        values.put(KEY_RELEASEDATE, release);
-        values.put(KEY_CERTIFICATION, certification);
-        values.put(KEY_RUNTIME, runtime);
-        values.put(KEY_GENRES, genres);
-        values.put(KEY_TO_WATCH, toWatch);
-        values.put(KEY_HAS_WATCHED, hasWatched);
-        values.put(KEY_DATE_ADDED, date);
-        return values;
-    }
-
     public int count() {
         Cursor c = mDatabase.query(DATABASE_TABLE, new String[]{KEY_TITLE, KEY_TMDB_ID}, "NOT(" + KEY_TMDB_ID + " = '" + UNIDENTIFIED_ID + "')", null, null, null, null);
         int count = c.getCount();

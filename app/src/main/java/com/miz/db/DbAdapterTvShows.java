@@ -19,6 +19,7 @@ package com.miz.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -47,18 +48,19 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 		super(context);
 	}
 
-	public long createShow(String showId, String showTitle, String showPlot, String showActors, String showGenres, String showRating, String showCertification,
+	public void createShow(String showId, String showTitle, String showPlot, String showActors, String showGenres, String showRating, String showCertification,
 			String showRuntime, String showFirstAirdate, String isFavorite) {
-		if (getShow(showId).getCount() == 0) {
+
+        if (showId.equals(UNIDENTIFIED_ID))
+            return; // We're not interesting in adding this to the TV show database
+
+        if (getShow(showId).getCount() == 0) {
 			ContentValues initialValues = createContentValues(showId, showTitle, showPlot, showActors, showGenres, showRating, showCertification, showRuntime, showFirstAirdate, isFavorite);
-			return mDatabase.insert(DATABASE_TABLE, null, initialValues);
-		} else {
-			return -1;
+			mDatabase.insert(DATABASE_TABLE, null, initialValues);
 		}
 	}
 
 	public boolean showExists(String id, String showTitle) {
-		
 		// Test against TVDb ID's
 		String[] selectionArgs = new String[]{id};
 		Cursor cursor1 = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_ID + " = ?", selectionArgs, KEY_SHOW_ID, null, null, null);
@@ -103,6 +105,20 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 
 		return false;
 	}
+
+    public String getSingleItem(String showId, String column) {
+        String singleItem = "";
+        Cursor c = mDatabase.query(DATABASE_TABLE, new String[]{column}, KEY_SHOW_ID + " = ?", new String[]{showId}, null, null, null);
+        if (c != null) {
+            try {
+                if (c.moveToFirst())
+                    singleItem = c.getString(c.getColumnIndex(column));
+            } catch (SQLException e) {} finally {
+                c.close();
+            }
+        }
+        return singleItem;
+    }
 
 	public String getShowId(String showTitle) {
 		String[] selectionArgs = new String[]{showTitle};

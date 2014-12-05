@@ -19,6 +19,7 @@ package com.miz.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.EpisodeCounter;
@@ -63,20 +64,18 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		super(context);
 	}
 
-	public long createEpisode(String filepath, String season, String episode, String showId, String episodeTitle, String episodePlot,
+	public void createEpisode(String filepath, String season, String episode, String showId, String episodeTitle, String episodePlot,
 			String episodeAirdate, String episodeRating, String episodeDirector, String episodeWriter, String episodeGuestStars, String hasWatched, String favorite) {
+
+        if (getEpisode(showId, MizLib.getInteger(season), MizLib.getInteger(episode)).getCount() > 0)
+            return;
+
 		ContentValues initialValues = createContentValues(season, episode, showId, episodeTitle,
 				episodePlot, episodeAirdate, episodeRating, episodeDirector, episodeWriter, episodeGuestStars, hasWatched, favorite);
 
 		MizuuApplication.getTvShowEpisodeMappingsDbAdapter().createFilepathMapping(filepath, showId, season, episode);
-		return mDatabase.insert(DATABASE_TABLE, null, initialValues);
-	}
 
-	public boolean updateEpisode(String filepath, String season, String episode, String showId, String episodeTitle, String episodePlot,
-			String episodeAirdate, String episodeRating, String episodeDirector, String episodeWriter, String episodeGuestStars, String hasWatched, String favorite) {
-		ContentValues initialValues = createContentValues(season,episode, showId, episodeTitle,
-				episodePlot, episodeAirdate, episodeRating, episodeDirector, episodeWriter, episodeGuestStars, hasWatched, favorite);
-		return mDatabase.update(DATABASE_TABLE, initialValues, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
+        mDatabase.insert(DATABASE_TABLE, null, initialValues);
 	}
 
 	public boolean updateEpisode(String showId, String season, String episode, String table, String value) {
@@ -91,43 +90,31 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 				new String[]{showId, MizLib.addIndexZero(season), MizLib.addIndexZero(episode)}, null, null, null);
 	}
 
-	public static int OLDEST_FIRST = 0, NEWEST_FIRST = 1;
-	public Cursor getAllEpisodes(String showId, int type) {
-		if (type == OLDEST_FIRST)
-			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", new String[]{showId}, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
-		else
-			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", new String[]{showId}, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " desc, " + KEY_EPISODE + " desc");
+	public Cursor getEpisodes(String showId) {
+		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND NOT(" + KEY_EPISODE_TITLE +
+                " = 'MIZ_REMOVED_EPISODE')", new String[]{showId}, KEY_SEASON + "," + KEY_EPISODE, null, KEY_SEASON + " asc, " + KEY_EPISODE + " asc");
 	}
 
-	public Cursor getAllEpisodesInDatabase(boolean includeRemoved) {
-		if (includeRemoved)
-			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, null, null, null, null, null);
-		else
-			return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, "NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, null, null, null);
+	public Cursor getAllEpisodes() {
+		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, "NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')", null, null, null, null);
 	}
 
 	public boolean deleteEpisode(String showId, int season, int episode) {
-		boolean result = true;
-		if (getEpisodeCount(showId) == 1)
-			result = MizuuApplication.getTvDbAdapter().deleteShow(showId);
-
-		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
 				new String[]{showId, MizLib.addIndexZero(season), MizLib.addIndexZero(episode)}) > 0;
 	}
 
 	public boolean deleteAllEpisodes(String showId) {
-		boolean result = MizuuApplication.getTvDbAdapter().deleteShow(showId);
-		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
 	}
 
-	public boolean removeSeason(String showId, int season) {
+	public boolean deleteSeason(String showId, int season) {
 		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ? and " + KEY_SEASON + " = ?",
 				new String[]{showId, MizLib.addIndexZero(season)}) > 0;
 	}
 
-	public boolean deleteAllEpisodesInDatabase() {
-		return mDatabase.delete(DATABASE_TABLE, null, null) > 0 &&
-				MizuuApplication.getTvDbAdapter().deleteAllShowsInDatabase();
+	public boolean deleteAllEpisodes() {
+		return mDatabase.delete(DATABASE_TABLE, null, null) > 0;
 	}
 
 	public int getEpisodeCount(String showId) {
@@ -222,6 +209,21 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		return episodes;
 	}
 
+    public String getSingleItem(String showId, String season, String episode, String column) {
+        String singleItem = "";
+        Cursor c = mDatabase.query(DATABASE_TABLE, new String[]{column}, KEY_SHOW_ID + " = ? AND " +
+                KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?", new String[]{showId, season, episode}, null, null, null);
+        if (c != null) {
+            try {
+                if (c.moveToFirst())
+                    singleItem = c.getString(c.getColumnIndex(column));
+            } catch (SQLException e) {} finally {
+                c.close();
+            }
+        }
+        return singleItem;
+    }
+
 	public String getLatestEpisodeAirdate(String showId) {
 		String s = "";
 		Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ? AND " + KEY_EPISODE_AIRDATE + " LIKE '%-%'",
@@ -283,4 +285,16 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		return mDatabase.update(DATABASE_TABLE, cv, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ? AND " + KEY_EPISODE + " = ?",
 				new String[]{showId, MizLib.addIndexZero(season), MizLib.addIndexZero(episode)}) > 0;
 	}
+
+    /**
+     * Used for unit testing
+     * @return
+     */
+    public int count() {
+        Cursor c = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, "NOT(" + KEY_EPISODE_TITLE + " = 'MIZ_REMOVED_EPISODE')",
+                null, KEY_SEASON + "," + KEY_EPISODE, null, null);
+        int count = c.getCount();
+        c.close();
+        return count;
+    }
 }

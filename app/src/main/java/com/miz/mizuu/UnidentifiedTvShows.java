@@ -200,7 +200,7 @@ public class UnidentifiedTvShows extends MizActivity {
 			.setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					
-					TvShowDatabaseUtils.removeAllUnidentifiedFiles();
+					TvShowDatabaseUtils.deleteAllUnidentifiedFiles();
 
 					mFilepaths.clear();
 					

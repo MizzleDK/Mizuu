@@ -71,7 +71,7 @@ public class TvShowEpisodeDetails extends MizActivity {
 
 		mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
 
-		Cursor cursor = mDatabaseHelper.getAllEpisodes(mShowId, DbAdapterTvShowEpisodes.OLDEST_FIRST);	
+		Cursor cursor = mDatabaseHelper.getEpisodes(mShowId);
 		try {
 			while (cursor.moveToNext()) {
 				mEpisodes.add(new TvShowEpisode(this, mShowId,

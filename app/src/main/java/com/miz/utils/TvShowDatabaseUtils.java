@@ -44,7 +44,7 @@ public class TvShowDatabaseUtils {
         MizuuApplication.getTvDbAdapter().deleteAllShowsInDatabase();
 
         // Delete all episodes
-        MizuuApplication.getTvEpisodeDbAdapter().deleteAllEpisodesInDatabase();
+        MizuuApplication.getTvEpisodeDbAdapter().deleteAllEpisodes();
 
         // Delete all episode filepath mappings
         MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllFilepaths();
@@ -61,7 +61,7 @@ public class TvShowDatabaseUtils {
 	 * This also checks if the TV show has any other seasons - if not, it'll remove
 	 * the TV show database entry as well.
 	 */
-	public static void removeSeason(Context context, String showId, int season) {
+	public static void deleteSeason(Context context, String showId, int season) {
 		// Should filepaths be removed completely or ignored in future library updates?
 		boolean ignoreFiles = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PreferenceKeys.IGNORED_FILES_ENABLED, false);
 
@@ -74,7 +74,7 @@ public class TvShowDatabaseUtils {
 		List<GridEpisode> episodesInSeason = episodeAdapter.getEpisodesInSeason(context, showId, season);
 
 		// Remove all episodes from the season
-		episodeAdapter.removeSeason(showId, season);
+		episodeAdapter.deleteSeason(showId, season);
 
 		// Remove / ignore all filepath mappings to the season
 		if (ignoreFiles)
@@ -103,7 +103,7 @@ public class TvShowDatabaseUtils {
 		}
 	}
 
-	public static void removeEpisode(Context context, String showId, String filepath) {
+	public static void deleteEpisode(Context context, String showId, String filepath) {
 		// Should filepaths be removed completely or ignored in future library updates?
 		boolean ignoreFiles = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PreferenceKeys.IGNORED_FILES_ENABLED, false);
 
@@ -161,7 +161,7 @@ public class TvShowDatabaseUtils {
 		}	
 	}
 
-	public static void removeEpisode(Context context, String showId, int season, int episode) {
+	public static void deleteEpisode(Context context, String showId, int season, int episode) {
 		// Should filepaths be removed completely or ignored in future library updates?
 		boolean ignoreFiles = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PreferenceKeys.IGNORED_FILES_ENABLED, false);
 
@@ -179,22 +179,20 @@ public class TvShowDatabaseUtils {
 				episodeMappingsAdapter.ignoreFilepath(filepath);
 			else
 				episodeMappingsAdapter.deleteFilepath(filepath);
-
-			// Check if there are any more filepaths mapped to the season / episode
-			if (i == (filepaths.size() - 1)) {
-				episodeAdapter.deleteEpisode(showId, season, episode);
-
-				// Delete the episode photo
-				FileUtils.getTvShowEpisode(context, showId, season, episode).delete();
-
-				// Check if the season contains any more mapped filepaths
-				if (episodeAdapter.getEpisodesInSeason(context, showId, season).size() == 0) {
-
-					// Remove season image
-					FileUtils.getTvShowSeason(context, showId, season).delete();
-				}
-			}
 		}
+
+        // Delete the episode
+        episodeAdapter.deleteEpisode(showId, season, episode);
+
+        // Delete the episode photo
+        FileUtils.getTvShowEpisode(context, showId, season, episode).delete();
+
+        // Check if the season contains any more mapped filepaths
+        if (episodeAdapter.getEpisodesInSeason(context, showId, season).size() == 0) {
+
+            // Remove season image
+            FileUtils.getTvShowSeason(context, showId, season).delete();
+        }
 
 		// Check if we've removed all episodes for the given TV show
 		if (episodeAdapter.getEpisodeCount(showId) == 0) {
@@ -210,7 +208,7 @@ public class TvShowDatabaseUtils {
 		}	
 	}
 	
-	public static void removeAllUnidentifiedFiles() {
+	public static void deleteAllUnidentifiedFiles() {
 		MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllUnidentifiedFilepaths();
 	}
 }

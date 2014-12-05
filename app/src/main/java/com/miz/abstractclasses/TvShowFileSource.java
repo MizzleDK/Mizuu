@@ -50,7 +50,7 @@ public abstract class TvShowFileSource<T> extends AbstractFileSource<T> {
 		DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
 		ColumnIndexCache cache = new ColumnIndexCache();
-		Cursor tempCursor = db.getAllEpisodesInDatabase(false);
+		Cursor tempCursor = db.getAllEpisodes();
 		try {
 			while (tempCursor.moveToNext()) {
 				mDbEpisode.add(new DbEpisode(getContext(),

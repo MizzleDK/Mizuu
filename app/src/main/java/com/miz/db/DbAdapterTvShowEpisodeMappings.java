@@ -223,4 +223,15 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ?",
 				new String[]{showId, MizLib.addIndexZero(season)}) > 0;
 	}
+
+    /**
+     * Used for unit testing
+     * @return
+     */
+    public int count() {
+        Cursor c = mDatabase.query(DATABASE_TABLE, new String[]{KEY_FILEPATH}, null, null, null, null, null);
+        int count = c.getCount();
+        c.close();
+        return count;
+    }
 }

@@ -69,7 +69,7 @@ public class FileTvShow extends TvShowFileSource<File> {
         DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
 
         ColumnIndexCache cache = new ColumnIndexCache();
-        Cursor tempCursor = db.getAllEpisodesInDatabase(false);
+        Cursor tempCursor = db.getAllEpisodes();
         if (tempCursor == null)
             return;
 

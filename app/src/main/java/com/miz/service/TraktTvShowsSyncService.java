@@ -196,7 +196,7 @@ public class TraktTvShowsSyncService extends IntentService {
 			TraktTvShow collectionShow = new TraktTvShow(mShows.get(i).getId(), mShows.get(i).getTitle());
 			TraktTvShow watchedShow = new TraktTvShow(mShows.get(i).getId(), mShows.get(i).getTitle());
 
-			Cursor c = mEpisodeDatabase.getAllEpisodes(mShows.get(i).getId(), DbAdapterTvShowEpisodes.OLDEST_FIRST);
+			Cursor c = mEpisodeDatabase.getEpisodes(mShows.get(i).getId());
 			try {
 				while (c.moveToNext()) {
 					collectionShow.addEpisode(c.getString(cache.getColumnIndex(c, DbAdapterTvShowEpisodes.KEY_SEASON)),
