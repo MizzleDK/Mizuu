@@ -172,8 +172,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
         // Get rid of these...
         v.findViewById(R.id.textView3).setVisibility(View.GONE); // File
 
-        final boolean fullscreen = MizuuApplication.isFullscreen(mContext);
-        final int height = fullscreen ? MizLib.getActionBarHeight(mContext) : MizLib.getActionBarAndStatusBarHeight(mContext);
+        final int height = MizLib.getActionBarAndStatusBarHeight(mContext);
 
         mScrollView.setOnScrollChangedListener(new OnScrollChangedListener() {
             @Override

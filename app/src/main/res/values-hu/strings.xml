@@ -261,16 +261,12 @@
     <string name="syncLibraries">Könyvtárak szinkronizálása</string>
     <string name="showDetails">A sorozat információs oldala</string>
     <string name="episodeDetails">Epizódok</string>
-    <string name="tv_shows_start_page_title">Sorozatok kezdőoldala</string>
-    <string name="tv_shows_start_page_description">A sorozat információi vagy az epizódjai jelenjenek meg először, ha egy sorozatot megnyitunk.</string>
     <string name="installed_media_apps">Médialejátszók</string>
     <string name="searchMoviesFromMizuu">Filmek keresése a Mizuu-ból</string>
     <string name="searchTvShowsFromMizuu">Sorozat keresése a Mizuu-ból</string>
     <string name="tvShowsWithUnwatchedEpisodes">Sorozatok nem látott részekkel</string>
     <string name="loading_movie_parts">Film részeinek betöltése</string>
     <string name="few_moments">Ez eltarthat néhány másodpercig…</string>
-    <string name="fullscreenMode">Teljes képernyős mód</string>
-    <string name="fullscreenModeDescription">Az alkalmazás teljes képernyős módban való futtatásának kényszerítése. Az alkalmazás újraindítását igényli.</string>
     <string name="drawerMyMovies">A filmjeim</string>
     <string name="drawerMyTvShows">A sorozataim</string>
     <string name="drawerOnlineMovies">Online filmek</string>

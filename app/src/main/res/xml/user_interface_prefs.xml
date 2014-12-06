@@ -7,18 +7,13 @@
             android:key="prefsShowGridTitles"
             android:summary="@string/prefsShowGridTitles"
             android:title="@string/prefsShowGridTitlesTitle" />
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_format_clear_white_24dp"
             android:key="prefsIgnorePrefixesInTitles"
             android:summary="@string/ignoreMoviePrefixesDescription"
             android:title="@string/ignoreMoviePrefixes" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_fullscreen_white_24dp"
-            android:key="prefsFullscreen"
-            android:summary="@string/fullscreenModeDescription"
-            android:title="@string/fullscreenMode" />
 
         <ListPreference
             android:defaultValue="@string/normal"
@@ -52,6 +47,7 @@
             android:key="prefsSeasonsLayout"
             android:summary="@string/setEpisodesLayoutDescription"
             android:title="@string/setEpisodeLayout" />
+
         <ListPreference
             android:defaultValue="@string/oldestFirst"
             android:dialogTitle="@string/tvShowEpisodesOrderType"
@@ -61,6 +57,7 @@
             android:key="prefsEpisodesOrder"
             android:summary="@string/tvShowEpisodesOrderTypeDescription"
             android:title="@string/tvShowEpisodesOrderType" />
+
         <ListPreference
             android:defaultValue="@string/oldestFirst"
             android:dialogTitle="@string/tvShowSeasonsOrderType"
@@ -70,15 +67,6 @@
             android:key="prefsSeasonsOrder"
             android:summary="@string/tvShowSeasonsOrderTypeDescription"
             android:title="@string/tvShowSeasonsOrderType" />
-        <ListPreference
-            android:defaultValue="@string/showDetails"
-            android:dialogTitle="@string/tv_shows_start_page_title"
-            android:entries="@array/tv_shows_start_page"
-            android:entryValues="@array/tv_shows_start_page"
-            android:icon="@drawable/ic_settings_white_24dp"
-            android:key="prefsTvShowsStartPage"
-            android:summary="@string/tv_shows_start_page_description"
-            android:title="@string/tv_shows_start_page_title" />
     </PreferenceCategory>
 
 </PreferenceScreen>

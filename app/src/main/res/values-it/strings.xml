@@ -268,16 +268,12 @@
     <string name="syncLibraries">Sincronizza librerie</string>
     <string name="showDetails">Pagina di dettagli sulla serie TV</string>
     <string name="episodeDetails">Pagina episodi</string>
-    <string name="tv_shows_start_page_title">Pagina iniziale delle serie TV</string>
-    <string name="tv_shows_start_page_description">Mostra per prima dettagli o episodi quando si guarda una serie TV.</string>
     <string name="installed_media_apps">Applicazioni multimediali</string>
     <string name="searchMoviesFromMizuu">Cerca film da Mizuu</string>
     <string name="searchTvShowsFromMizuu">Cerca serie TV da Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Serie non guardate</string>
     <string name="loading_movie_parts">Caricamento parti del film</string>
     <string name="few_moments">Questo potrebbe richiedere qualche istante&#8230;</string>
-    <string name="fullscreenMode">Modalità a schermo intero</string>
-    <string name="fullscreenModeDescription">Forza l\'applicazione a rimanere a schermo intero. Richiede un riavvio dell\'applicazione.</string>
     <string name="drawerMyMovies">I Miei Film</string>
     <string name="drawerMyTvShows">Le Mie Serie TV</string>
     <string name="drawerOnlineMovies">Film Online</string>

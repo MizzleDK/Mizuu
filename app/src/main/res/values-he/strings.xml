@@ -260,8 +260,6 @@
     <string name="syncLibraries">סינכרון ספריות</string>
     <string name="showDetails">דף פרטי סדרות</string>
     <string name="episodeDetails">דף פרטי פרקים</string>
-    <string name="tv_shows_start_page_title">דף ראשי של סדרות</string>
-    <string name="tv_shows_start_page_description">הצג פרטים או פרקים קודם בעת הצגת תוכנית טלוויזיה.</string>
     <string name="installed_media_apps">ישומיי מדיה</string>
     <string name="thirdPartyLibraries">ספריות צד שלישי</string>
 

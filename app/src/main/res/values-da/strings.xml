@@ -268,16 +268,12 @@
     <string name="syncLibraries">Synkroniser biblioteker</string>
     <string name="showDetails">TV-serie detaljevisning</string>
     <string name="episodeDetails">Afsnit oversigt</string>
-    <string name="tv_shows_start_page_title">Første side for TV-serier</string>
-    <string name="tv_shows_start_page_description">Vis detaljer eller oversigt over afsnit først, når man åbner en TV-serie.</string>
     <string name="installed_media_apps">Medie-apps</string>
     <string name="searchMoviesFromMizuu">Søg film fra Mizuu</string>
     <string name="searchTvShowsFromMizuu">Søg TV-serier fra Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Ufuldstændige serier</string>
     <string name="loading_movie_parts">Indlæser dele af filmen</string>
     <string name="few_moments">Dette kan tage et øjeblik&#8230;</string>
-    <string name="fullscreenMode">Fuldskærmstilstand</string>
-    <string name="fullscreenModeDescription">Vis programmet i fuldskærmstilstand. Kræver genstart af programmet.</string>
     <string name="drawerMyMovies">Mine Film</string>
     <string name="drawerMyTvShows">Mine TV-serier</string>
     <string name="drawerOnlineMovies">Online Film</string>

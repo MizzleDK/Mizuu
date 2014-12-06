@@ -174,8 +174,7 @@ public class ActorDetailsFragment extends Fragment {
 
         mScrollView = (ObservableScrollView) view.findViewById(R.id.observableScrollView);
 
-        final boolean fullscreen = MizuuApplication.isFullscreen(mContext);
-        final int height = fullscreen ? MizLib.getActionBarHeight(mContext) : MizLib.getActionBarAndStatusBarHeight(mContext);
+        final int height = MizLib.getActionBarAndStatusBarHeight(mContext);
 
         mScrollView.setOnScrollChangedListener(new OnScrollChangedListener() {
             @Override

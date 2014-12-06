@@ -266,16 +266,12 @@
     <string name="syncLibraries">Synkronoi kirjastot</string>
     <string name="showDetails">TV-ohjelman tietosivu</string>
     <string name="episodeDetails">Jaksot-sivu</string>
-    <string name="tv_shows_start_page_title">TV-ohjelmien aloitussivu</string>
-    <string name="tv_shows_start_page_description">Näytä tiedot tai jaksot ensin katseltaessa TV-ohjelmaa.</string>
     <string name="installed_media_apps">Mediasovellukset</string>
     <string name="searchMoviesFromMizuu">Etsi elokuvia Mizuussa</string>
     <string name="searchTvShowsFromMizuu">Etsi TV-ohjelmia Mizuussa</string>
     <string name="tvShowsWithUnwatchedEpisodes">Katsomattomat ohjelmat</string>
     <string name="loading_movie_parts">Ladataan elokuvan osat</string>
     <string name="few_moments">Tämä saattaa kestää hetken&#8230;</string>
-    <string name="fullscreenMode">Koko näytön tila</string>
-    <string name="fullscreenModeDescription">Pakota sovellus koko näytön tilaan. Vaatii sovelluksen uudelleenkäynnistyksen.</string>
     <string name="drawerMyMovies">Elokuvani</string>
     <string name="drawerMyTvShows">TV-ohjelmani</string>
     <string name="drawerOnlineMovies">Verkkoelokuvat</string>

@@ -39,10 +39,7 @@ public class TvShowSeasons extends MizActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (isFullscreen())
-            setTheme(R.style.Mizuu_Theme_NoBackground_FullScreen);
-        else
-            setTheme(R.style.Mizuu_Theme_NoBackground);
+        setTheme(R.style.Mizuu_Theme_NoBackground);
 
         if (MizLib.isPortrait(this)) {
             getWindow().setBackgroundDrawableResource(R.drawable.bg);

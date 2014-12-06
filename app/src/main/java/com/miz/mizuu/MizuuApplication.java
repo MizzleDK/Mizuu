@@ -56,7 +56,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 import static com.miz.functions.PreferenceKeys.TV_SHOW_DATA_SOURCE;
 
@@ -268,15 +267,8 @@ public class MizuuApplication extends Application {
 		sPalettes.put(key, palette);
 	}
 
-	public static boolean isFullscreen(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FULLSCREEN_TAG, false);
-	}
-
 	public static void setupTheme(Context context) {
-		if (isFullscreen(context))
-			context.setTheme(R.style.Mizuu_Theme_FullScreen);
-		else
-			context.setTheme(R.style.Mizuu_Theme);
+		context.setTheme(R.style.Mizuu_Theme);
 	}
 
 	public static Bus getBus() {

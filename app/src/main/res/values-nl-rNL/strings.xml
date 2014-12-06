@@ -269,16 +269,12 @@
     <string name="syncLibraries">Synchroniseer bibliotheken</string>
     <string name="showDetails">TV-serie detailpagina</string>
     <string name="episodeDetails">Afleveringspagina</string>
-    <string name="tv_shows_start_page_title">TV-series startpagina</string>
-    <string name="tv_shows_start_page_description">Toon details of afleveringen eerst bij het bekijken van een TV-serie.</string>
     <string name="installed_media_apps">Media apps</string>
     <string name="searchMoviesFromMizuu">Zoek films in Mizuu</string>
     <string name="searchTvShowsFromMizuu">Zoek TV-series in Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Niet-bekeken TV-series</string>
     <string name="loading_movie_parts">Filmdelen aan het laden</string>
     <string name="few_moments">Dit kan eventjes duren&#8230;</string>
-    <string name="fullscreenMode">Volledig scherm modus</string>
-    <string name="fullscreenModeDescription">Dwing de app in volledig scherm modus. Herstart van de app vereist.</string>
     <string name="drawerMyMovies">Mijn films</string>
     <string name="drawerMyTvShows">Mijn TV-series</string>
     <string name="drawerOnlineMovies">Films op internet</string>

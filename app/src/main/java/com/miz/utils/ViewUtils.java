@@ -435,11 +435,7 @@ public class ViewUtils {
                 MizLib.hasKitKat() ? MizLib.getActionBarAndStatusBarHeight(context) : MizLib.getActionBarHeight(context)));
     }
 
-    public static void setupWindowFlagsForStatusbarOverlay(Window window, boolean fullscreen, boolean setBackgroundResource) {
-        // If requested, make it fullscreen
-        if (fullscreen)
-            window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    public static void setupWindowFlagsForStatusbarOverlay(Window window, boolean setBackgroundResource) {
 
         if (MizLib.isKitKat()) {
             // If we're running on KitKat, we want to enable

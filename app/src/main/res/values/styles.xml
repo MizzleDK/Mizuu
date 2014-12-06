@@ -6,10 +6,6 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="Mizuu.Theme.NoBackground.FullScreen" parent="@style/Mizuu.Theme.NoBackground">
-        <item name="android:windowFullscreen">true</item>
-    </style>
-
     <style name="Mizuu.Theme.Transparent" parent="@style/Mizuu.Theme">
     </style>
 
@@ -44,10 +40,6 @@
 
     <style name="Mizuu.Theme.ActionButton.Overflow" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_more_vert_white_24dp</item>
-    </style>
-
-    <style name="Mizuu.Theme.FullScreen" parent="@style/Mizuu.Theme">
-        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">

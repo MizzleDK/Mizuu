@@ -353,16 +353,12 @@
     <string name="syncLibraries">Synchronize libraries</string>
     <string name="showDetails">TV show details page</string>
     <string name="episodeDetails">Episodes page</string>
-    <string name="tv_shows_start_page_title">TV shows initial page</string>
-    <string name="tv_shows_start_page_description">Show details or episodes first when viewing a TV show.</string>
     <string name="installed_media_apps">Media apps</string>
     <string name="searchMoviesFromMizuu">Search movies from Mizuu</string>
     <string name="searchTvShowsFromMizuu">Search TV shows from Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Unwatched shows</string>
     <string name="loading_movie_parts">Loading movie parts</string>
     <string name="few_moments">This may take a few moments…</string>
-    <string name="fullscreenMode">Full screen mode</string>
-    <string name="fullscreenModeDescription">Force the application to be in full screen mode. Requires application restart.</string>
     <string name="drawerMyMovies">My Movies</string>
     <string name="drawerMyTvShows">My TV Shows</string>
     <string name="drawerOnlineMovies">Online Movies</string>

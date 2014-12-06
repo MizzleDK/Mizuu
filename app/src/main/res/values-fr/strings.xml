@@ -268,16 +268,12 @@
     <string name="syncLibraries">Synchronisation des bibliothèques</string>
     <string name="showDetails">Page détails de la série</string>
     <string name="episodeDetails">Page des épisodes</string>
-    <string name="tv_shows_start_page_title">Page d\'accueil des séries TV</string>
-    <string name="tv_shows_start_page_description">Montrer les détails ou les épisodes de la série TV comme page d\'accueil.</string>
     <string name="installed_media_apps">Applications multimédia</string>
     <string name="searchMoviesFromMizuu">Recherche un film dans Mizuu</string>
     <string name="searchTvShowsFromMizuu">Recherche une série TV dans Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Séries non visionnées</string>
     <string name="loading_movie_parts">Lecture des parties du film</string>
     <string name="few_moments">Cela peut prendre quelques instants…</string>
-    <string name="fullscreenMode">Mode plein écran</string>
-    <string name="fullscreenModeDescription">Forcer l\'application à utiliser le mode plein écran. Nécessite un redémarrage de l\'application.</string>
     <string name="drawerMyMovies">Mes films</string>
     <string name="drawerMyTvShows">Mes séries TV</string>
     <string name="drawerOnlineMovies">Films en ligne</string>

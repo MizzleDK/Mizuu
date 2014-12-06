@@ -267,16 +267,12 @@
     <string name="syncLibraries">مزامنة المكتبات</string>
     <string name="showDetails">صفحة تفاصيل برنامج التلفاز</string>
     <string name="episodeDetails">صفحة الحلقات</string>
-    <string name="tv_shows_start_page_title">صفحة البداية لبرامج التلفاز</string>
-    <string name="tv_shows_start_page_description">عرض التفاصيل أو الحلقات أولًا عند فتح صفحة برنامج تلفازي.</string>
     <string name="installed_media_apps">تطبيقات الوسائط</string>
     <string name="searchMoviesFromMizuu">البحث عن الأفلام من ميزو</string>
     <string name="searchTvShowsFromMizuu">البحث عن برامج التلفاز من ميزو</string>
     <string name="tvShowsWithUnwatchedEpisodes">برامج غير مشاهدة</string>
     <string name="loading_movie_parts">تحميل أجزاء الفيلم</string>
     <string name="few_moments">قد يستغرق هذا بضع لحظات…</string>
-    <string name="fullscreenMode">وضع الشاشة الكاملة</string>
-    <string name="fullscreenModeDescription">إجبار التطبيق على الظهور بالشاشة الكاملة. يتطلب إعادة تشغيل التطبيق.</string>
     <string name="drawerMyMovies">أفلامي</string>
     <string name="drawerMyTvShows">برامجي التلفازية</string>
     <string name="drawerOnlineMovies">أفلام على الإنترنت</string>

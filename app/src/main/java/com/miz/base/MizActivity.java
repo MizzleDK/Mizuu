@@ -16,31 +16,19 @@
 
 package com.miz.base;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 
-import static com.miz.functions.PreferenceKeys.FULLSCREEN_TAG;
-
-public abstract class MizActivity extends ActionBarActivity implements OnSharedPreferenceChangeListener {
+public abstract class MizActivity extends ActionBarActivity {
 
 	public Toolbar mToolbar;
-	private boolean mFullscreen = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		mFullscreen = MizuuApplication.isFullscreen(this);
-
-		if (isFullscreen())
-			setTheme(R.style.Mizuu_Theme_FullScreen);
 
 		if (getLayoutResource() > 0) {
             setContentView(getLayoutResource());
@@ -50,27 +38,7 @@ public abstract class MizActivity extends ActionBarActivity implements OnSharedP
                 setSupportActionBar(mToolbar);
             }
         }
-
-		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 	}
 
 	protected abstract int getLayoutResource();
-
-	protected boolean isFullscreen() {
-		return mFullscreen;
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (FULLSCREEN_TAG.equals(key)) {
-			mFullscreen = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FULLSCREEN_TAG, false);
-		}
-	}
 }

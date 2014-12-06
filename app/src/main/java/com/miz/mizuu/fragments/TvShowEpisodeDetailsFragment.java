@@ -221,8 +221,7 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
         if (MizLib.isTablet(mContext))
             mFab.setType(FloatingActionButton.TYPE_NORMAL);
 
-        final boolean fullscreen = MizuuApplication.isFullscreen(getActivity());
-        final int height = fullscreen ? MizLib.getActionBarHeight(getActivity()) : MizLib.getActionBarAndStatusBarHeight(getActivity());
+        final int height = MizLib.getActionBarAndStatusBarHeight(getActivity());
 
         mScrollView = (ObservableScrollView) view.findViewById(R.id.observableScrollView);
         mScrollView.setOnScrollChangedListener(new OnScrollChangedListener() {

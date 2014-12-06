@@ -266,16 +266,12 @@
     <string name="syncLibraries">Usklađivanje zbirki</string>
     <string name="showDetails">Stranica pojedinosti o seriji</string>
     <string name="episodeDetails">Stranica epizoda</string>
-    <string name="tv_shows_start_page_title">Početna stranica serija</string>
-    <string name="tv_shows_start_page_description">Prikaži prvo pojedinosti ili epizode prilikom pregleda serija.</string>
     <string name="installed_media_apps">Multimedijske aplikacije</string>
     <string name="searchMoviesFromMizuu">Pretraživanje filmova iz Mizuu</string>
     <string name="searchTvShowsFromMizuu">Pretraživanje serija iz Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Nepregledane serije</string>
     <string name="loading_movie_parts">Učitavanje dijelova filma</string>
     <string name="few_moments">Ovo bi moglo potrajati nekoliko trenutaka&#8230;</string>
-    <string name="fullscreenMode">Preko cijelog zaslona</string>
-    <string name="fullscreenModeDescription">Prisiljava aplikaciju da se prikazuje preko cijeloga ekrana. Zahtijeva ponovno pokretanje aplikacije.</string>
     <string name="drawerMyMovies">Moji Filmovi</string>
     <string name="drawerMyTvShows">Moje Serije</string>
     <string name="drawerOnlineMovies">Online Filmovi</string>

@@ -27,7 +27,6 @@ public class PreferenceKeys {
 	
 	private PreferenceKeys() {} // No instantiation
 
-	public static final String FULLSCREEN_TAG = "prefsFullscreen";
 	public static final String TRAKT_USERNAME = "traktUsername";
 	public static final String TRAKT_PASSWORD = "traktPassword";
 	public static final String TRAKT_FULL_NAME = "traktFullName";
@@ -59,8 +58,6 @@ public class PreferenceKeys {
 	public static final String TVSHOWS_SEASON_ORDER = "prefsSeasonsOrder";
 	public static final String SHOW_TITLES_IN_GRID = "prefsShowGridTitles";
 	public static final String GRID_ITEM_SIZE = "prefsGridItemSize";
-	public static final String SORTING_COLLECTIONS = "prefsSortingCollections";
-	public static final String SORTING_COLLECTIONS_OVERVIEW = "prefsSortingCollectionsOverview";
 	public static final String SORTING_MOVIES = "prefsSorting";
 	public static final String SORTING_TVSHOWS = "prefsSortingTv";
 	public static final String ROOT_ACCESS = "prefsRootAccess";
@@ -70,7 +67,6 @@ public class PreferenceKeys {
 	public static final String ALWAYS_DELETE_FILE = "prefsAlwaysDeleteFile";
 	public static final String BUFFER_SIZE = "prefsBufferSize";
 	public static final String HAS_SHOWN_FILEBROWSER_MESSAGE = "hasShownBrowserHelpMessage";
-	public static final String TVSHOWS_START_PAGE = "prefsTvShowsStartPage";
 	public static final String IGNORE_FILESIZE_CHECK = "prefsIgnoreFilesizeCheck";
 	public static final String SHOW_FILE_LOCATION = "prefsShowFileLocation";
 	public static final String LANGUAGE_PREFERENCE = "prefsLanguagePreference";

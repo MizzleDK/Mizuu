@@ -269,16 +269,12 @@
     <string name="syncLibraries">Bibliotheken synchronisieren</string>
     <string name="showDetails">Seriendetails</string>
     <string name="episodeDetails">Folgenseite</string>
-    <string name="tv_shows_start_page_title">Serien Titelseite</string>
-    <string name="tv_shows_start_page_description">Zeige Details oder Folgen beim öffnen der Serie.</string>
     <string name="installed_media_apps">Medien Apps</string>
     <string name="searchMoviesFromMizuu">Suche Filme in Mizuu</string>
     <string name="searchTvShowsFromMizuu">Suche Serien in Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Ungesehene Folgen</string>
     <string name="loading_movie_parts">Lade Filmteile</string>
     <string name="few_moments">Das kann einen Moment dauern…</string>
-    <string name="fullscreenMode">Vollbildmodus</string>
-    <string name="fullscreenModeDescription">Lässt das Programm im Vollbildmodus laufen. Erfordert Programm Neustart.</string>
     <string name="drawerMyMovies">Meine Filme</string>
     <string name="drawerMyTvShows">Meine Serien</string>
     <string name="drawerOnlineMovies">Online Filme</string>

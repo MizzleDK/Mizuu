@@ -64,7 +64,7 @@ public class ImageViewer extends MizActivity {
             setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
 		}
 
-        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), isFullscreen(), true);
+        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), true);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -137,7 +137,7 @@ public class ImageViewer extends MizActivity {
 
 	private void showSystemUi() {
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), isFullscreen(), true);
+        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), true);
 
         getSupportActionBar().show();
 	}

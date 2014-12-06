@@ -261,16 +261,12 @@
     <string name="syncLibraries">Synkronisera bibliotek</string>
     <string name="showDetails">TV-serie detaljer</string>
     <string name="episodeDetails">Avsnittssida</string>
-    <string name="tv_shows_start_page_title">TV-serie startsida</string>
-    <string name="tv_shows_start_page_description">Visa detaljer eller avsnitt först när du tittar på en TV-serie.</string>
     <string name="installed_media_apps">Mediaappar</string>
     <string name="searchMoviesFromMizuu">Sök filmer från Mizuu</string>
     <string name="searchTvShowsFromMizuu">Sök TV-serier från Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Osedda serier</string>
     <string name="loading_movie_parts">Laddar filmdelar</string>
     <string name="few_moments">Detta kan ta en stund&#8230;</string>
-    <string name="fullscreenMode">Fullskärmsläge</string>
-    <string name="fullscreenModeDescription">Tvinga appen i fullskärmsläge. Kräver att du startar om appen.</string>
     <string name="drawerMyMovies">Mina Filmer</string>
     <string name="drawerMyTvShows">Mina TV-serier</string>
     <string name="drawerOnlineMovies">Onlinefilmer</string>

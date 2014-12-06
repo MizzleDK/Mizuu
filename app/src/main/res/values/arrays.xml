@@ -69,10 +69,6 @@
         <item>@string/ratings_option_2</item>
         <item>@string/ratings_option_3</item>
     </string-array>
-    <string-array name="tv_shows_start_page">
-        <item>@string/showDetails</item>
-        <item>@string/episodeDetails</item>
-    </string-array>
     <string-array name="grid_item_size">
         <item>@string/large</item>
         <item>@string/normal</item>

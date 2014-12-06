@@ -278,8 +278,7 @@ public class MovieDetailsFragment extends Fragment {
         if (MizLib.isTablet(mContext))
             mFab.setType(FloatingActionButton.TYPE_NORMAL);
 
-        final boolean fullscreen = MizuuApplication.isFullscreen(mContext);
-        final int height = fullscreen ? MizLib.getActionBarHeight(mContext) : MizLib.getActionBarAndStatusBarHeight(mContext);
+        final int height = MizLib.getActionBarAndStatusBarHeight(mContext);
 
         mScrollView.setOnScrollChangedListener(new OnScrollChangedListener() {
             @Override

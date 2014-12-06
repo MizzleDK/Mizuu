@@ -266,16 +266,12 @@
     <string name="syncLibraries">Synchronizowanie bibliotek</string>
     <string name="showDetails">Szczegóły seriali</string>
     <string name="episodeDetails">Strona odcinków</string>
-    <string name="tv_shows_start_page_title">Seriale jako strona początkowa</string>
-    <string name="tv_shows_start_page_description">Pokaż najpierw szczegóły lub odcinki przy przeglądaniu seriali.</string>
     <string name="installed_media_apps">Aplikacje media</string>
     <string name="searchMoviesFromMizuu">Szukaj filmów z Mizuu</string>
     <string name="searchTvShowsFromMizuu">Szukaj seriali z Mizuu</string>
     <string name="tvShowsWithUnwatchedEpisodes">Seriale nieobejrzane</string>
     <string name="loading_movie_parts">Wczytuję części filmu</string>
     <string name="few_moments">To może chwilkę potrwać&#8230;</string>
-    <string name="fullscreenMode">Tryb pełnoekranowy</string>
-    <string name="fullscreenModeDescription">Wymuś tryb pełnoekranowy aplikacji. Wymagany restart aplikacji.</string>
     <string name="drawerMyMovies">Moje Filmy</string>
     <string name="drawerMyTvShows">Moje Seriale</string>
     <string name="drawerOnlineMovies">Filmy online</string>

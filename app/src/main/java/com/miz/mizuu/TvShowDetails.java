@@ -45,7 +45,7 @@ public class TvShowDetails extends MizActivity {
         // Set theme
         setTheme(R.style.Mizuu_Theme_NoBackground);
 
-        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), isFullscreen(), true);
+        ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), true);
 
         setTitle(null);
 
