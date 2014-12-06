@@ -21,7 +21,6 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.miz.functions.MizLib;
-import com.miz.mizuu.MizuuApplication;
 
 import java.util.ArrayList;
 
@@ -138,41 +137,12 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 	}
 
 	public boolean deleteFilepath(String filepath) {
-		// Get the show ID, season and episode, so we can check if there are any other filepaths mapped to the episode
-		// if not - we'll delete the episode entry from the episodes database as well.
-		String showId, season, episode;
 		String[] selectionArgs = new String[]{filepath};
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_FILEPATH + " = ?", selectionArgs, null, null, null);
-
-		if (cursor != null && cursor.moveToFirst()) {
-			showId = cursor.getString(cursor.getColumnIndex(KEY_SHOW_ID));
-			season = cursor.getString(cursor.getColumnIndex(KEY_SEASON));
-			episode = cursor.getString(cursor.getColumnIndex(KEY_EPISODE));
-
-			if (!hasMultipleFilepaths(showId, season, episode)) {
-				MizuuApplication.getTvEpisodeDbAdapter().deleteEpisode(showId, Integer.parseInt(season), Integer.parseInt(episode));
-			}
-		}
-
 		return mDatabase.delete(DATABASE_TABLE, KEY_FILEPATH + " = ?", selectionArgs) > 0;
 	}
 
 	public boolean ignoreFilepath(String filepath) {
-		// Get the show ID, season and episode, so we can check if there are any other filepaths mapped to the episode
-		// if not - we'll delete the episode entry from the episodes database as well.
-		String showId, season, episode;
 		String[] selectionArgs = new String[]{filepath};
-		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_FILEPATH + " = ?", selectionArgs, null, null, null);
-
-		if (cursor != null && cursor.moveToFirst()) {
-			showId = cursor.getString(cursor.getColumnIndex(KEY_SHOW_ID));
-			season = cursor.getString(cursor.getColumnIndex(KEY_SEASON));
-			episode = cursor.getString(cursor.getColumnIndex(KEY_EPISODE));
-
-			if (!hasMultipleFilepaths(showId, season, episode)) {
-				MizuuApplication.getTvEpisodeDbAdapter().deleteEpisode(showId, Integer.parseInt(season), Integer.parseInt(episode));
-			}
-		}
 
 		ContentValues values = new ContentValues();
 		values.put(KEY_IGNORED, 1); // Set the ignored value to 1 (true)
@@ -181,8 +151,7 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 	}
 
 	public boolean deleteAllFilepaths(String showId) {
-		boolean result = MizuuApplication.getTvEpisodeDbAdapter().deleteAllEpisodes(showId); // This also deletes the show
-		return result && mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
+		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ?", new String[]{showId}) > 0;
 	}
 
 	public boolean deleteAllFilepaths() {

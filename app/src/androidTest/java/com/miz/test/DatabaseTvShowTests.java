@@ -15,6 +15,7 @@ package com.miz.test;/*
  */
 
 import android.content.Context;
+import android.database.Cursor;
 import android.test.InstrumentationTestCase;
 
 import com.miz.db.DbAdapterTvShowEpisodeMappings;
@@ -483,7 +484,7 @@ public class DatabaseTvShowTests extends InstrumentationTestCase {
         assertEquals(0, dbEpisodes.getEpisodeCountForSeason("1234", "05"));
         assertEquals(0, dbEpisodes.getEpisodeCountForSeason("1234", "06"));
 
-        dbEpisodes.createEpisode("/test/lulz.mkv", "05",  "15", "1234", "episode title", "episode plot",
+        dbEpisodes.createEpisode("/test/lulz.mkv", "05", "15", "1234", "episode title", "episode plot",
                 "1980-06-07", "7.6", "director", "writer", "guest stars", "1", "1");
 
         dbEpisodes.createEpisode("/test/lulz.mkv", "05",  "16", "1234", "episode title", "episode plot",
@@ -592,7 +593,7 @@ public class DatabaseTvShowTests extends InstrumentationTestCase {
 
         DbAdapterTvShowEpisodes dbEpisodes = MizuuApplication.getTvEpisodeDbAdapter();
 
-        dbEpisodes.createEpisode("/test/lulz.mkv", "05",  "15", "1234", "episode title", "episode plot",
+        dbEpisodes.createEpisode("/test/lulz.mkv", "05", "15", "1234", "episode title", "episode plot",
                 "1980-06-07", "7.6", "director", "writer", "guest stars", "0", "1");
 
         dbEpisodes.createEpisode("/test/lulz.mkv", "05",  "16", "1234", "episode title", "episode plot",
@@ -629,7 +630,6 @@ public class DatabaseTvShowTests extends InstrumentationTestCase {
     }
 
     public void testUpdateEpisode() {
-
         getAndResetDatabase();
 
         DbAdapterTvShowEpisodes dbEpisodes = MizuuApplication.getTvEpisodeDbAdapter();
@@ -648,9 +648,285 @@ public class DatabaseTvShowTests extends InstrumentationTestCase {
         assertEquals("2000-06-07", dbEpisodes.getSingleItem("1234", "05", "15", DbAdapterTvShowEpisodes.KEY_EPISODE_AIRDATE));
     }
 
-    /**
-     * - update episode
-     */
+    public void testCreateFilepathMapping() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(false, dbMappings.filepathExists("1234", "05", "15", "/test/lulz.mkv"));
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+
+        assertEquals(true, dbMappings.filepathExists("1234", "05", "15", "/test/lulz.mkv"));
+    }
+
+    public void testCreateFilepathMappingDuplication() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.count());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+
+        assertEquals(1, dbMappings.count());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+
+        assertEquals(1, dbMappings.count());
+    }
+
+    public void testGetFirstFilepath() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals("", dbMappings.getFirstFilepath("1234", "05", "15"));
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "15");
+
+        assertEquals("/test/lulz.mkv", dbMappings.getFirstFilepath("1234", "05", "15"));
+    }
+
+    public void testGetFilepathsForEpisode() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getFilepathsForEpisode("1234", "05", "15").size());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "15");
+
+        assertEquals(2, dbMappings.getFilepathsForEpisode("1234", "05", "15").size());
+    }
+
+    public void testGetUnidentifiedFilepaths() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllUnidentifiedFilepaths().getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", DbAdapterTvShows.UNIDENTIFIED_ID, "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", DbAdapterTvShows.UNIDENTIFIED_ID, "05", "16");
+
+        assertEquals(2, dbMappings.getAllUnidentifiedFilepaths().getCount());
+    }
+
+    public void testGetAllFilepaths() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+
+        assertEquals(2, dbMappings.getAllFilepaths().getCount());
+    }
+
+    public void testGetInfoForFilepath() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllFilepathInfo("/test/lulz.mkv").getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+
+        assertEquals(1, dbMappings.getAllFilepathInfo("/test/lulz.mkv").getCount());
+
+        Cursor c = dbMappings.getAllFilepathInfo("/test/lulz.mkv");
+        c.moveToFirst();
+        assertEquals("/test/lulz.mkv", c.getString(c.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_FILEPATH)));
+    }
+
+    public void testGetAllFilepathsForShow() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllFilepaths("1234").getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "12345", "05", "16");
+
+        assertEquals(2, dbMappings.getAllFilepaths("1234").getCount());
+        assertEquals(1, dbMappings.getAllFilepaths("12345").getCount());
+    }
+
+    public void testGetAllIgnoredFilepaths() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllIgnoredFilepaths().getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "12345", "05", "16");
+
+        dbMappings.ignoreFilepath("/test/lulz.mkv");
+
+        assertEquals(1, dbMappings.getAllIgnoredFilepaths().getCount());
+    }
+
+    public void testDeleteFilepathByFilepath() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "12345", "05", "16");
+
+        assertEquals(3, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.deleteFilepath("/test/lulz.mkv");
+
+        assertEquals(2, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.deleteFilepath("/test/lulzfs.mkv");
+
+        assertEquals(0, dbMappings.getAllFilepaths().getCount());
+    }
+
+    public void testIgnoreFilepath() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+
+        dbMappings.ignoreFilepath("/test/lulz.mkv");
+
+        Cursor c = dbMappings.getAllFilepathInfo("/test/lulz.mkv");
+        c.moveToFirst();
+
+        assertEquals("1", c.getString(c.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_IGNORED)));
+    }
+
+    public void testDeleteAllFilepathsByShowId() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "12345", "05", "16");
+
+        assertEquals(3, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.deleteAllFilepaths("1234");
+
+        assertEquals(1, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.deleteAllFilepaths("12345");
+
+        assertEquals(0, dbMappings.getAllFilepaths().getCount());
+    }
+
+    public void testDeleteAllFilepaths() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "12345", "05", "16");
+
+        assertEquals(3, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.deleteAllFilepaths();
+
+        assertEquals(0, dbMappings.getAllFilepaths().getCount());
+    }
+
+    public void testDeleteAllUnidentifiedFilepaths() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(0, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "12345", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulz.mkv", DbAdapterTvShows.UNIDENTIFIED_ID, "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", DbAdapterTvShows.UNIDENTIFIED_ID, "05", "16");
+
+        assertEquals(5, dbMappings.getAllFilepaths().getCount());
+
+        dbMappings.deleteAllUnidentifiedFilepaths();
+
+        assertEquals(3, dbMappings.getAllFilepaths().getCount());
+    }
+
+    public void testHasMultipleFilepaths() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        assertEquals(false, dbMappings.hasMultipleFilepaths("1234", "05", "15"));
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+
+        assertEquals(false, dbMappings.hasMultipleFilepaths("1234", "05", "15"));
+
+        dbMappings.createFilepathMapping("/test/lulsz.mkv", "1234", "05", "15");
+
+        assertEquals(true, dbMappings.hasMultipleFilepaths("1234", "05", "15"));
+    }
+
+    public void testRemoveSeason() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "06", "16");
+
+        assertEquals(3, dbMappings.getAllFilepaths("1234").getCount());
+
+        dbMappings.removeSeason("1234", 5);
+
+        assertEquals(1, dbMappings.getAllFilepaths("1234").getCount());
+
+        dbMappings.removeSeason("1234", 6);
+
+        assertEquals(0, dbMappings.getAllFilepaths("1234").getCount());
+    }
+
+    public void testIgnoreSeason() {
+        getAndResetDatabase();
+
+        DbAdapterTvShowEpisodeMappings dbMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
+
+        dbMappings.createFilepathMapping("/test/lulz.mkv", "1234", "05", "15");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "05", "16");
+        dbMappings.createFilepathMapping("/test/lulzfs.mkv", "1234", "06", "16");
+
+        assertEquals(0, dbMappings.getAllIgnoredFilepaths().getCount());
+
+        dbMappings.ignoreSeason("1234", 5);
+
+        assertEquals(2, dbMappings.getAllIgnoredFilepaths().getCount());
+
+        dbMappings.ignoreSeason("1234", 6);
+
+        assertEquals(3, dbMappings.getAllIgnoredFilepaths().getCount());
+    }
 
     /**
      * Creates a test TV show in the database.
@@ -703,46 +979,4 @@ public class DatabaseTvShowTests extends InstrumentationTestCase {
         DbAdapterTvShowEpisodeMappings dbEpisodeMappings = MizuuApplication.getTvShowEpisodeMappingsDbAdapter();
         assertEquals(0, dbEpisodeMappings.count());
     }
-
-
-    /*
-TV show episodes:
-
-- update episode
-- delete episode
-- delete all episodes by show ID
-- remove season
-- delete all episodes
-- get episode count by show ID
-- get episode count for season
-- get season count
-- get seasons
-- get episodes in season
-- get latest episode airdate by show ID
-- has unwatched episodes
-- set season watched status
-- set episode watched status
-
-
-TV show episode mapping:
-
-- create filepath mapping
-- filepath exists
-- get first filepath
-- get filepaths for episode
-- get all unidentified filepaths
-- get all filepaths
-- get all info for filepath
-- get all filepaths by show ID
-- get all ignored filepaths
-- delete filepath by filepath
-- ignore filepath
-- delete all filepaths by show ID
-- delete all filepaths
-- delete all unidentified filepaths
-- has multiple filepaths
-- remove season
-- ignore season
-     */
-
 }
