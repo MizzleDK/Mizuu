@@ -494,7 +494,7 @@
     <string name="no_favorites">No favorites</string>
     <string name="no_favorites_description">Don\'t you like movies?</string>
     <string name="no_new_releases">No new releases</string>
-    <string name="no_new_releases_description">Nothing has happened in the last 9 months.</string>
+    <string name="no_new_releases_description">Nothing has happened in the last nine months.</string>
     <string name="empty_watchlist">Nothing to watch</string>
     <string name="empty_watchlist_description">Why not add some? It\'s easy to do.</string>
     <string name="no_watched_movies">No watched movies</string>
@@ -507,7 +507,7 @@
     <string name="no_tv_shows_description">Select <b>Update library</b> from the menu to add TV shows.</string>
     <string name="no_favorites_description_tv">Don\'t you like TV shows?</string>
     <string name="recently_aired">Recently aired</string>
-    <string name="recently_aired_description">Nothing has aired in the last 3 months.</string>
+    <string name="recently_aired_description">Nothing has aired in the last three months.</string>
     <string name="no_watched_tv_shows">No watched TV shows</string>
     <string name="no_unwatched_tv_shows_descriptions">Goob job!</string>"
     <string name="no_episodes_to_play">Sorry, no episodes to play!</string>
