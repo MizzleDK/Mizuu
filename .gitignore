@@ -22,7 +22,10 @@ Thumbs.db
 .DS_Store
 
 # Android Studio
+*.iml
 .idea
 .gradle
 build/
+
+# API keys
 app/src/main/res/values/api_keys.xml
