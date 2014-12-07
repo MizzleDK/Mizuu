@@ -21,8 +21,10 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.graphics.Palette;
+import android.widget.Toast;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.miz.abstractclasses.MovieApiService;
@@ -38,6 +40,7 @@ import com.miz.db.DbAdapterTvShowEpisodeMappings;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.FileRequestTransformer;
+import com.miz.functions.MizLib;
 import com.miz.functions.OkHttpDownloader;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
@@ -280,7 +283,20 @@ public class MizuuApplication extends Application {
 	public static File getAppFolder(Context c) {
 		if (sBaseAppFolder == null) {
 			sBaseAppFolder = c.getExternalFilesDir(null);
-		}
+
+            if (MizLib.hasKitKat()) {
+                File[] test = c.getExternalFilesDirs(null);
+                for (int i = 0; i < test.length; i++)
+                    Toast.makeText(c, "getExternalFilesDirs() #" + (i + 1) + ":\n" + test[i].getAbsolutePath(), Toast.LENGTH_LONG).show();
+            }
+
+            Toast.makeText(c, "getExternalFilesDir():\n" + c.getExternalFilesDir(null).getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+            Toast.makeText(c, "getFilesDir():\n" + c.getFilesDir().getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+            Toast.makeText(c, "Environment.getExternalStorageDirectory():\n" + Environment.getExternalStorageDirectory().getAbsolutePath(), Toast.LENGTH_LONG).show();
+        }
+
 		return sBaseAppFolder;
 	}
 	
