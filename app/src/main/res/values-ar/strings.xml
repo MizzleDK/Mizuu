@@ -265,8 +265,6 @@
     <string name="sourceForShowRatings">مصدر تقييمات برامج التلفاز</string>
     <string name="dataSourceOfShowRatings">حدد مصدر البيانات لتقييمات برامج التلفاز، وإذا لم يتوفر المصدر المحدد فإن الافتراضي هو TheTVDb.</string>
     <string name="syncLibraries">مزامنة المكتبات</string>
-    <string name="showDetails">صفحة تفاصيل برنامج التلفاز</string>
-    <string name="episodeDetails">صفحة الحلقات</string>
     <string name="installed_media_apps">تطبيقات الوسائط</string>
     <string name="searchMoviesFromMizuu">البحث عن الأفلام من ميزو</string>
     <string name="searchTvShowsFromMizuu">البحث عن برامج التلفاز من ميزو</string>

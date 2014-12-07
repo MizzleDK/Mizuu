@@ -267,8 +267,6 @@
     <string name="sourceForShowRatings">Quelle für Serienbewertungen</string>
     <string name="dataSourceOfShowRatings">Legen Sie die Quelle der Serienbewertungen fest. Wenn gewählte Quelle nicht verfügbar ist wird die Bewertung von TheTVDb verwendet.</string>
     <string name="syncLibraries">Bibliotheken synchronisieren</string>
-    <string name="showDetails">Seriendetails</string>
-    <string name="episodeDetails">Folgenseite</string>
     <string name="installed_media_apps">Medien Apps</string>
     <string name="searchMoviesFromMizuu">Suche Filme in Mizuu</string>
     <string name="searchTvShowsFromMizuu">Suche Serien in Mizuu</string>

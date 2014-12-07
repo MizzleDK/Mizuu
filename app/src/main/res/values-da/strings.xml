@@ -266,8 +266,6 @@
     <string name="sourceForShowRatings">Kilde til TV-serie-karakterer</string>
     <string name="dataSourceOfShowRatings">Vælg datakilden til TV-serie-karakterer. Vælger TheTVDb hvis den valgte kilde er utilgængelig.</string>
     <string name="syncLibraries">Synkroniser biblioteker</string>
-    <string name="showDetails">TV-serie detaljevisning</string>
-    <string name="episodeDetails">Afsnit oversigt</string>
     <string name="installed_media_apps">Medie-apps</string>
     <string name="searchMoviesFromMizuu">Søg film fra Mizuu</string>
     <string name="searchTvShowsFromMizuu">Søg TV-serier fra Mizuu</string>

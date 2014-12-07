@@ -265,8 +265,6 @@
     <string name="sourceForShowRatings">Sursa pentru notele serialelor</string>
     <string name="dataSourceOfShowRatings">Setează sursa de date pentru notele serialelor. Implicit este TheTVDb atunci când sursa selectată nu este disponibilă.</string>
     <string name="syncLibraries">Sincronizează bibliotecile</string>
-    <string name="showDetails">Pagina de detalii despre Serial</string>
-    <string name="episodeDetails">Pagina episoadelor</string>
     <string name="installed_media_apps">Aplicații media</string>
     <string name="searchMoviesFromMizuu">Caută filme din Mizuu</string>
     <string name="searchTvShowsFromMizuu">Caută seriale din Mizuu</string>

@@ -266,8 +266,6 @@
     <string name="sourceForShowRatings">Fonte per le valutazioni delle serie TV</string>
     <string name="dataSourceOfShowRatings">Imposta la fonte dati per le valutazioni delle serie TV. TMDb sarà la scelta di default se la fonte selezionata non è disponibile.</string>
     <string name="syncLibraries">Sincronizza librerie</string>
-    <string name="showDetails">Pagina di dettagli sulla serie TV</string>
-    <string name="episodeDetails">Pagina episodi</string>
     <string name="installed_media_apps">Applicazioni multimediali</string>
     <string name="searchMoviesFromMizuu">Cerca film da Mizuu</string>
     <string name="searchTvShowsFromMizuu">Cerca serie TV da Mizuu</string>

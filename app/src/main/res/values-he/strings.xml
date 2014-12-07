@@ -258,8 +258,6 @@
     <string name="sourceForShowRatings">מקור עבור דירוג תוכנית טלוויזיה</string>
     <string name="dataSourceOfShowRatings">בחר את מקור הנתונים של דירוג תוכנית טלוויזיה. הגדר את TheTVDb כברירת מחדל אם המקור שנבחר אינו זמין.</string>
     <string name="syncLibraries">סינכרון ספריות</string>
-    <string name="showDetails">דף פרטי סדרות</string>
-    <string name="episodeDetails">דף פרטי פרקים</string>
     <string name="installed_media_apps">ישומיי מדיה</string>
     <string name="thirdPartyLibraries">ספריות צד שלישי</string>
 

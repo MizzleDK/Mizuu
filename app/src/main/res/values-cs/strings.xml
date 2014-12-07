@@ -263,8 +263,6 @@
     <string name="sourceForShowRatings">Zdroj pro hodnocení TV seriálů</string>
     <string name="dataSourceOfShowRatings">Nastavte zdroj dat hodnocení TV seriálů. Pokud zdroj nebude obsahovat hodnocení, použije se hodnocení TMDb.</string>
     <string name="syncLibraries">Synchronizovat knihovny</string>
-    <string name="showDetails">Podrobnosti o seriálu</string>
-    <string name="episodeDetails">Stránka s epizodami</string>
     <string name="installed_media_apps">Přehrávače médií</string>
     <string name="searchMoviesFromMizuu">Hledat filmy z prostředí Mizuu</string>
     <string name="searchTvShowsFromMizuu">Hledat seriály z prostředí Mizuu</string>

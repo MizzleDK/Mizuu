@@ -259,8 +259,6 @@
     <string name="sourceForShowRatings">A TV sorozatok értékelésének forrása</string>
     <string name="dataSourceOfShowRatings">A sorozatértékelések adatforrásának a megadása. Alapból a TVDb-t használja, ha a kiválasztott forrás nem elérhető.</string>
     <string name="syncLibraries">Könyvtárak szinkronizálása</string>
-    <string name="showDetails">A sorozat információs oldala</string>
-    <string name="episodeDetails">Epizódok</string>
     <string name="installed_media_apps">Médialejátszók</string>
     <string name="searchMoviesFromMizuu">Filmek keresése a Mizuu-ból</string>
     <string name="searchTvShowsFromMizuu">Sorozat keresése a Mizuu-ból</string>

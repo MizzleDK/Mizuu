@@ -264,8 +264,6 @@
     <string name="sourceForShowRatings">TV-ohjelmien arvostelujen lähde</string>
     <string name="dataSourceOfShowRatings">Määritä TV-ohjelmien arvosteluiden lähde. Oletuksena käytetään TheTVDb:a, jos valittua lähdettä ei ole käytettävissä.</string>
     <string name="syncLibraries">Synkronoi kirjastot</string>
-    <string name="showDetails">TV-ohjelman tietosivu</string>
-    <string name="episodeDetails">Jaksot-sivu</string>
     <string name="installed_media_apps">Mediasovellukset</string>
     <string name="searchMoviesFromMizuu">Etsi elokuvia Mizuussa</string>
     <string name="searchTvShowsFromMizuu">Etsi TV-ohjelmia Mizuussa</string>

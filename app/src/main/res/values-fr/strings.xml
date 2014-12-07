@@ -266,8 +266,6 @@
     <string name="sourceForShowRatings">Source pour la notation des séries TV</string>
     <string name="dataSourceOfShowRatings">Définissez la source de données pour la notation des séries TV. Si la source sélectionnée n\'est pas disponible TMDb sera utilisé par défaut.</string>
     <string name="syncLibraries">Synchronisation des bibliothèques</string>
-    <string name="showDetails">Page détails de la série</string>
-    <string name="episodeDetails">Page des épisodes</string>
     <string name="installed_media_apps">Applications multimédia</string>
     <string name="searchMoviesFromMizuu">Recherche un film dans Mizuu</string>
     <string name="searchTvShowsFromMizuu">Recherche une série TV dans Mizuu</string>

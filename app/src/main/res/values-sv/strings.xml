@@ -259,8 +259,6 @@
     <string name="sourceForShowRatings">Källa för TV-seriebetyg</string>
     <string name="dataSourceOfShowRatings">Välj källa för TV-seriebetyg. TheTVDb används som standard om källan är otillgänglig.</string>
     <string name="syncLibraries">Synkronisera bibliotek</string>
-    <string name="showDetails">TV-serie detaljer</string>
-    <string name="episodeDetails">Avsnittssida</string>
     <string name="installed_media_apps">Mediaappar</string>
     <string name="searchMoviesFromMizuu">Sök filmer från Mizuu</string>
     <string name="searchTvShowsFromMizuu">Sök TV-serier från Mizuu</string>

@@ -264,8 +264,6 @@
     <string name="sourceForShowRatings">Izvor za ocjene serija</string>
     <string name="dataSourceOfShowRatings">Postavite izvor podataka za ocjenjivanje serija. Postavlja se na TheTVDb ako je odabrani izvor nedostupan.</string>
     <string name="syncLibraries">Usklađivanje zbirki</string>
-    <string name="showDetails">Stranica pojedinosti o seriji</string>
-    <string name="episodeDetails">Stranica epizoda</string>
     <string name="installed_media_apps">Multimedijske aplikacije</string>
     <string name="searchMoviesFromMizuu">Pretraživanje filmova iz Mizuu</string>
     <string name="searchTvShowsFromMizuu">Pretraživanje serija iz Mizuu</string>

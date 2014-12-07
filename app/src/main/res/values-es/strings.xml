@@ -265,8 +265,6 @@
     <string name="sourceForShowRatings">Fuente para la valoración de las series de TV</string>
     <string name="dataSourceOfShowRatings">Establecer el origen de los datos para la valoración de las series de TV. Si la fuente seleccionada no está disponible se usará TVDb.</string>
     <string name="syncLibraries">Sincronizar bibliotecas</string>
-    <string name="showDetails">Página de detalles de la serie de TV</string>
-    <string name="episodeDetails">Página de episodios</string>
     <string name="installed_media_apps">Aplicaciones de medios</string>
     <string name="searchMoviesFromMizuu">Buscar películas desde Mizuu</string>
     <string name="searchTvShowsFromMizuu">Buscar series de TV desde Mizuu</string>

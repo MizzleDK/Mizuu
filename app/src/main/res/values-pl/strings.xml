@@ -264,8 +264,6 @@
     <string name="sourceForShowRatings">Źródło oceny serialu</string>
     <string name="dataSourceOfShowRatings">Ustaw źródło ocen seriali. Jeśli wybrane źródło jest niedostępne, standardowo jest to TheTVDb.</string>
     <string name="syncLibraries">Synchronizowanie bibliotek</string>
-    <string name="showDetails">Szczegóły seriali</string>
-    <string name="episodeDetails">Strona odcinków</string>
     <string name="installed_media_apps">Aplikacje media</string>
     <string name="searchMoviesFromMizuu">Szukaj filmów z Mizuu</string>
     <string name="searchTvShowsFromMizuu">Szukaj seriali z Mizuu</string>

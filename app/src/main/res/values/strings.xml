@@ -351,8 +351,6 @@
     <string name="sourceForShowRatings">Source for TV show ratings</string>
     <string name="dataSourceOfShowRatings">Set the data source of TV show ratings. Defaults to TheTVDb if the selected source is unavailable.</string>
     <string name="syncLibraries">Synchronize libraries</string>
-    <string name="showDetails">TV show details page</string>
-    <string name="episodeDetails">Episodes page</string>
     <string name="installed_media_apps">Media apps</string>
     <string name="searchMoviesFromMizuu">Search movies from Mizuu</string>
     <string name="searchTvShowsFromMizuu">Search TV shows from Mizuu</string>
