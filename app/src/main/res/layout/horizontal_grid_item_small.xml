@@ -46,7 +46,7 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#666"
+            android:textColor="@color/grid_item_subtitle_text_color"
             android:textIsSelectable="false"
             android:textSize="12sp"
             android:textStyle="italic" />

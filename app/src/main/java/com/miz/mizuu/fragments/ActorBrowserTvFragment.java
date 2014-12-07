@@ -186,14 +186,13 @@ public class ActorBrowserTvFragment extends Fragment {
 			final Actor actor = mActors.get(position);
 
 			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item, container, false);
+				convertView = inflater.inflate(R.layout.grid_cover_two_line, container, false);
 				holder = new CoverItem();
 
-				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.text.setSingleLine(true);
-				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext = (TextView) convertView.findViewById(R.id.sub_text);
 				holder.subtext.setSingleLine(true);
 
 				holder.text.setTypeface(TypefaceUtils.getRobotoMedium(mContext));

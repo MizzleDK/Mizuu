@@ -47,7 +47,7 @@
             android:lines="1"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textSize="12sp"
-            android:textColor="#999"
+            android:textColor="@color/grid_item_subtitle_text_color"
             android:textIsSelectable="false"
             android:textStyle="italic" />
 

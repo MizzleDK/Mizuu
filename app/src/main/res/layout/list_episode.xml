@@ -46,7 +46,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#666"
+                android:textColor="@color/grid_item_subtitle_text_color"
                 android:textIsSelectable="false"
                 android:textSize="@dimen/season_list_subtitle"
                 android:textStyle="italic" />
