@@ -55,6 +55,7 @@ import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteLoader;
+import com.miz.functions.SimpleAnimatorListener;
 import com.miz.mizuu.EditTvShowEpisode;
 import com.miz.mizuu.IdentifyTvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
@@ -198,22 +199,10 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
         mFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ViewUtils.animateFabJump(v, new Animator.AnimatorListener() {
+                ViewUtils.animateFabJump(v, new SimpleAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         play();
-                    }
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
                     }
                 });
             }

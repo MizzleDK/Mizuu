@@ -68,6 +68,7 @@ import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.functions.PaletteLoader;
 import com.miz.functions.PreferenceKeys;
+import com.miz.functions.SimpleAnimatorListener;
 import com.miz.mizuu.EditMovie;
 import com.miz.mizuu.IdentifyMovie;
 import com.miz.mizuu.Main;
@@ -258,20 +259,11 @@ public class MovieDetailsFragment extends Fragment {
         mFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ViewUtils.animateFabJump(v, new Animator.AnimatorListener() {
+                ViewUtils.animateFabJump(v, new SimpleAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         playMovie();
                     }
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {}
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {}
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {}
                 });
             }
         });

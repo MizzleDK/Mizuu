@@ -47,6 +47,7 @@ import com.miz.apis.tmdb.TMDbMovieService;
 import com.miz.apis.trakt.Trakt;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteLoader;
+import com.miz.functions.SimpleAnimatorListener;
 import com.miz.functions.TmdbTrailerSearch;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -149,20 +150,11 @@ public class TmdbMovieDetailsFragment extends Fragment {
         mFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ViewUtils.animateFabJump(v, new Animator.AnimatorListener() {
+                ViewUtils.animateFabJump(v, new SimpleAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         watchTrailer();
                     }
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {}
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {}
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {}
                 });
             }
         });

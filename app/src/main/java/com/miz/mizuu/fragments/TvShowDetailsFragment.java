@@ -66,6 +66,7 @@ import com.miz.functions.IntentKeys;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteLoader;
 import com.miz.functions.PreferenceKeys;
+import com.miz.functions.SimpleAnimatorListener;
 import com.miz.mizuu.EditTvShow;
 import com.miz.mizuu.IdentifyTvShow;
 import com.miz.mizuu.MizuuApplication;
@@ -234,20 +235,11 @@ public class TvShowDetailsFragment extends Fragment {
         mFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ViewUtils.animateFabJump(v, new Animator.AnimatorListener() {
+                ViewUtils.animateFabJump(v, new SimpleAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         playFirstEpisode();
                     }
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {}
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {}
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {}
                 });
             }
         });
