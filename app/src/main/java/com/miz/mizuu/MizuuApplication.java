@@ -283,20 +283,7 @@ public class MizuuApplication extends Application {
 	public static File getAppFolder(Context c) {
 		if (sBaseAppFolder == null) {
 			sBaseAppFolder = c.getExternalFilesDir(null);
-
-            if (MizLib.hasKitKat()) {
-                File[] test = c.getExternalFilesDirs(null);
-                for (int i = 0; i < test.length; i++)
-                    Toast.makeText(c, "getExternalFilesDirs() #" + (i + 1) + ":\n" + test[i].getAbsolutePath(), Toast.LENGTH_LONG).show();
-            }
-
-            Toast.makeText(c, "getExternalFilesDir():\n" + c.getExternalFilesDir(null).getAbsolutePath(), Toast.LENGTH_LONG).show();
-
-            Toast.makeText(c, "getFilesDir():\n" + c.getFilesDir().getAbsolutePath(), Toast.LENGTH_LONG).show();
-
-            Toast.makeText(c, "Environment.getExternalStorageDirectory():\n" + Environment.getExternalStorageDirectory().getAbsolutePath(), Toast.LENGTH_LONG).show();
         }
-
 		return sBaseAppFolder;
 	}
 	
