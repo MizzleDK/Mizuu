@@ -1,40 +1,62 @@
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg">
+
+    <ListView
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:divider="@null"
+        android:drawSelectorOnTop="true"
+        android:dividerHeight="0dp"
+        android:id="@+id/currentList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/no_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg" >
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
-        <ListView
-            android:id="@+id/currentList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </ListView>
-
-        <LinearLayout
-            android:id="@+id/no_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="@string/no_content"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/folder_has_no_files_folders"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-        </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleLarge"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-    </FrameLayout>
+            android:layout_marginBottom="8dp"
+            android:text="@string/no_content"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/folder_has_no_files_folders"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:src="@drawable/ic_add_white_36dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        app:fab_type="mini"
+        app:fab_colorNormal="@color/color_primary"
+        app:fab_colorRipple="#80ffffff"
+        app:fab_colorPressed="@color/color_primary_dark"
+        android:clickable="true"
+        android:focusable="true" />
+</FrameLayout>

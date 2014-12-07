@@ -16,10 +16,13 @@
 
 package com.miz.mizuu.fragments;
 
+import android.animation.Animator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -45,6 +48,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.miz.abstractclasses.AbstractFileSourceBrowser;
 import com.miz.db.DbAdapterSources;
 import com.miz.filesources.BrowserFile;
@@ -54,9 +58,11 @@ import com.miz.functions.BrowserFileObject;
 import com.miz.functions.ContentItem;
 import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
+import com.miz.functions.SimpleAnimatorListener;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.service.WireUpnpService;
+import com.miz.utils.ViewUtils;
 
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.model.action.ActionInvocation;
@@ -101,6 +107,7 @@ public class FileSourceBrowserFragment extends Fragment {
 	private boolean mLoading = false, mIsMovie = false;
 	private AndroidUpnpService upnpService;
 	private ArrayAdapter<ContentItem> contentListAdapter;
+    private FloatingActionButton mFab;
 
 	/**
 	 * Empty constructor as per the Fragment documentation
@@ -145,7 +152,6 @@ public class FileSourceBrowserFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-		setHasOptionsMenu(true);
 
 		mIsMovie = getArguments().getBoolean(MOVIE, false);
 		mType = getArguments().getInt(TYPE, FileSource.FILE);
@@ -158,24 +164,25 @@ public class FileSourceBrowserFragment extends Fragment {
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("onBackPressed"));
 	}
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);	
-		inflater.inflate(R.menu.add_file_source, menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		super.onOptionsItemSelected(item);
-
-		switch (item.getItemId()) {
-		case R.id.add_source:
-			addFileSource();
-			break;
-		}
-
-		return true;
-	}
+    private void showAlertDialog() {
+        AlertDialog.Builder ab = new AlertDialog.Builder(getActivity());
+        ab.setTitle(R.string.addCurrentFolderAsFileSource);
+        ab.setMessage(R.string.areYouSure);
+        ab.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                addFileSource();
+                dialog.dismiss();
+            }
+        });
+        ab.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        ab.show();
+    }
 
 	private void addFileSource() {
 		String contentType = mIsMovie ? DbAdapterSources.KEY_TYPE_MOVIE : DbAdapterSources.KEY_TYPE_SHOW;
@@ -216,6 +223,19 @@ public class FileSourceBrowserFragment extends Fragment {
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);
+
+        mFab = (FloatingActionButton) v.findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewUtils.animateFabJump(v, new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        showAlertDialog();
+                    }
+                });
+            }
+        });
 
 		mProgress = v.findViewById(R.id.progress);
 		mEmpty = v.findViewById(R.id.no_content);
