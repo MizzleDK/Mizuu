@@ -1,6 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/card_background_dark" >
 
     <LinearLayout
         android:id="@+id/card_layout"
@@ -17,34 +21,34 @@
             android:scaleType="centerCrop" />
 
         <TextView
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="4dp"
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/card_background_dark"
             android:ellipsize="end"
             android:maxLines="1"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="2dp"
+            android:lines="1"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/card_title_color"
             android:textIsSelectable="false"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/gridCoverSubtitle"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="4dp"
+            android:id="@+id/sub_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/card_background_dark"
             android:ellipsize="end"
             android:maxLines="1"
-            android:paddingBottom="2dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
+            android:lines="1"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="12sp"
             android:textColor="@color/grid_item_subtitle_text_color"
             android:textIsSelectable="false"
-            android:textSize="12sp"
             android:textStyle="italic" />
     </LinearLayout>
 
@@ -55,4 +59,4 @@
         android:src="@color/gridview_highlight"
         android:visibility="gone" />
 
-</FrameLayout>
+</android.support.v7.widget.CardView>

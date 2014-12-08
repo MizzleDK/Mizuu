@@ -345,12 +345,11 @@ public class TvShowSeasonsFragment extends Fragment {
                 convertView = inflater.inflate(R.layout.grid_season_cover, container, false);
                 holder = new CoverItem();
 
-                holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
                 holder.cover = (ImageView) convertView.findViewById(R.id.cover);
                 holder.highlight = (ImageView) convertView.findViewById(R.id.highlight);
                 holder.text = (TextView) convertView.findViewById(R.id.text);
                 holder.text.setSingleLine(true);
-                holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+                holder.subtext = (TextView) convertView.findViewById(R.id.sub_text);
                 holder.subtext.setSingleLine(true);
 
                 holder.text.setTypeface(TypefaceUtils.getRobotoMedium(mContext));

@@ -410,7 +410,6 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
 				convertView = inflater.inflate(R.layout.grid_item, container, false);
 				holder = new CoverItem();
 
-				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				holder.text.setSingleLine(true);

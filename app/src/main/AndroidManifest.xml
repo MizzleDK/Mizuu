@@ -256,7 +256,7 @@
         <activity
             android:name="com.miz.mizuu.FileSourceBrowser"
             android:exported="false"
-            android:label="@string/fileSources"
+            android:label="@string/addFileSource"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
                 <action android:name="com.miz.mizuu.FileSources" />

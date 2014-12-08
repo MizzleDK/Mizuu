@@ -423,12 +423,11 @@ public class TvShowEpisodesFragment extends Fragment {
 					convertView = inflater.inflate(R.layout.list_episode, container, false);
 				holder = new CoverItem();
 
-				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				if (mUseGridView)
 					holder.text.setSingleLine(true);
-				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
+				holder.subtext = (TextView) convertView.findViewById(R.id.sub_text);
 				if (mUseGridView)
 					holder.subtext.setSingleLine(true);
 				holder.highlight = (ImageView) convertView.findViewById(R.id.highlight);

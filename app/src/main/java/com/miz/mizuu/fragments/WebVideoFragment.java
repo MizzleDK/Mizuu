@@ -193,8 +193,7 @@ public class WebVideoFragment extends Fragment {
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.webvideo_item, container, false);
 				holder = new CoverItem();
-				
-				holder.mLinearLayout = (LinearLayout) convertView.findViewById(R.id.card_layout);
+
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
 				

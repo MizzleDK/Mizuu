@@ -21,7 +21,7 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
- * A custom ImageView class that shows all images in a 2:3 format.
+ * A custom ImageView class that shows all images in a (almost) 2:3 format.
  * @author Michell
  *
  */
