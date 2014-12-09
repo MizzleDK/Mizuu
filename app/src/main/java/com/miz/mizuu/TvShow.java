@@ -21,7 +21,6 @@ import android.text.TextUtils;
 
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
-import com.miz.functions.SortingKeys;
 import com.miz.utils.FileUtils;
 import com.miz.utils.StringUtils;
 
