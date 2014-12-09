@@ -408,6 +408,7 @@ public class TvShowDetailsFragment extends Fragment {
                         @Override
                         public void onPaletteLoaded(int swatchColor) {
                             mToolbarColor = swatchColor;
+	                        ViewUtils.updateToolbarBackground(getActivity(), mToolbar, 0, thisShow.getTitle(), mToolbarColor);
                         }
                     });
 
