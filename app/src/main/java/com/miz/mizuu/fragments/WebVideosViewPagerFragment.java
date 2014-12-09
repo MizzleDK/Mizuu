@@ -54,12 +54,6 @@ public class WebVideosViewPagerFragment extends Fragment {
 		return inflater.inflate(R.layout.viewpager_with_tabs, container, false);
 	}
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getActivity().setTitle(R.string.drawerWebVideos);
-    }
-
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
 		super.onViewCreated(v, savedInstanceState);

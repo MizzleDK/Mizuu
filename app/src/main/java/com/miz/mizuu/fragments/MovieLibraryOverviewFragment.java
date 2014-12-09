@@ -14,6 +14,7 @@ package com.miz.mizuu.fragments;/*
  * limitations under the License.
  */
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -38,19 +39,6 @@ public class MovieLibraryOverviewFragment extends Fragment {
 
     public static MovieLibraryOverviewFragment newInstance() {
         return new MovieLibraryOverviewFragment();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        getActivity().setTitle(R.string.chooserMovies);
     }
 
     @Override

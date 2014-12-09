@@ -155,7 +155,7 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
         }
     };
 
-    private OnLoadCompletedCallback callback = new OnLoadCompletedCallback() {
+    private OnLoadCompletedCallback mCallback = new OnLoadCompletedCallback() {
         @Override
         public void onLoadCompleted() {
             mAdapter.notifyDataSetChanged();
@@ -186,7 +186,7 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
             }
         });
 
-        mMovieLoader = new MovieLoader(mContext, MovieLibraryType.fromInt(getArguments().getInt("type")), callback);
+        mMovieLoader = new MovieLoader(mContext, MovieLibraryType.fromInt(getArguments().getInt("type")), mCallback);
         mMovieLoader.setIgnorePrefixes(mIgnorePrefixes);
         mMovieLoader.load();
         showProgressBar();

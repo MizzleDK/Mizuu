@@ -424,7 +424,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			mBuilder.setSmallIcon(R.drawable.ic_done_white_24dp);
 			mBuilder.setTicker(getString(R.string.finishedMovieLibraryUpdate));
 			mBuilder.setContentTitle(getString(R.string.finishedMovieLibraryUpdate));
-			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + mCount + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, mCount, mCount));
+			mBuilder.setContentText(getString(R.string.stringJustAdded) + " " + mCount + " " + getResources().getQuantityString(R.plurals.moviesInLibrary, mCount));
 		} else {
 			mBuilder.setSmallIcon(R.drawable.ic_cancel_white_24dp);
 			mBuilder.setTicker(getString(R.string.stringUpdateCancelled));

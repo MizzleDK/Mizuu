@@ -58,15 +58,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment {
 
 		setHasOptionsMenu(true);
 		setRetainInstance(true);
-
-        getActivity().setTitle(R.string.drawerOnlineMovies);
 	}
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getActivity().setTitle(R.string.drawerOnlineMovies);
-    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		

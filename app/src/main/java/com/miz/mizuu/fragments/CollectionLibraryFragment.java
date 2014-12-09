@@ -70,7 +70,6 @@ import java.util.Random;
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
-import static com.miz.functions.SortingKeys.ALL_MOVIES;
 
 public class CollectionLibraryFragment extends Fragment implements OnSharedPreferenceChangeListener {
 
@@ -417,7 +416,7 @@ public class CollectionLibraryFragment extends Fragment implements OnSharedPrefe
                 return false;
 
             switch (mPosition) {
-                case ALL_MOVIES:
+                case 0:
                     for (int i = 0; i < mMovies.size(); i++)
                         mTempKeys.add(i);
                     break;

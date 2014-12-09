@@ -43,7 +43,7 @@
     </string-array>
     <string-array name="episodesOrder">
         <item>@string/newestFirst</item>
-        <item>@string/oldestFirst</item>grid_item_size
+        <item>@string/oldestFirst</item>
     </string-array>
     <string-array name="scheduledUpdates">
         <item>@string/scheduledAtLaunch</item>

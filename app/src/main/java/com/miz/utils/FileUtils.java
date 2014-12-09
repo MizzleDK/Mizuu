@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.miz.db.DatabaseHelper;
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 
@@ -114,4 +115,12 @@ public class FileUtils {
 	public static File getOfflineFile(Context c, String filepath) {
 		return new File(MizuuApplication.getAvailableOfflineFolder(c), MizLib.md5(filepath) + "." + StringUtils.getExtension(filepath));
 	}
+
+    public static boolean hasOfflineCopy(Context c, Filepath path) {
+        return getOfflineCopyFile(c, path).exists();
+    }
+
+    private static File getOfflineCopyFile(Context c, Filepath path) {
+        return getOfflineFile(c, path.getFilepath());
+    }
 }

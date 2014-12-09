@@ -21,7 +21,6 @@ import android.text.TextUtils;
 
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
-import com.miz.functions.SortingKeys;
 import com.miz.mizuu.R;
 import com.miz.utils.FileUtils;
 
@@ -207,19 +206,6 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getSubText(int sort) {
-		switch (sort) {
-		case SortingKeys.DURATION:
-			return getPrettyRuntime();
-		case SortingKeys.RATING:
-			return (int) (getRawRating() * 10) + "%";
-		case SortingKeys.WEIGHTED_RATING:
-			return getWeightedCompatibility();
-		case SortingKeys.DATE:
-			return getPrettyDateAdded();
-		case SortingKeys.RELEASE:
-			return getPrettyReleaseDate();
-		default:
-			return getReleaseYear();
-		}
+        return getReleaseYear();
 	}
 }
