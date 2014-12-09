@@ -12,5 +12,6 @@
     <color name="color_accent">#1a237e</color>
     <color name="color_primary_dark">#1a237e</color>
     <color name="grid_item_subtitle_text_color">#999</color>
+    <color name="background_tab_pressed">#1AFFFFFF</color>
 
 </resources>
