@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:minHeight="@dimen/content_details_large_margin"
                 android:background="#666"
-                android:elevation="4dp"
+                android:elevation="1dp"
                 android:layout_marginTop="@dimen/content_details_baseline_margin"
                 android:paddingTop="@dimen/content_details_small_margin"
                 android:paddingLeft="@dimen/content_details_baseline_margin"

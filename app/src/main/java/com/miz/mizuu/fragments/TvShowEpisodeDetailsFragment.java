@@ -49,7 +49,6 @@ import android.widget.Toast;
 import com.melnykov.fab.FloatingActionButton;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterTvShowEpisodes;
-import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.BlurTransformation;
 import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
@@ -64,7 +63,6 @@ import com.miz.mizuu.TvShowEpisode;
 import com.miz.remoteplayback.RemotePlayback;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
-import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TvShowDatabaseUtils;
 import com.miz.utils.TypefaceUtils;
@@ -76,7 +74,6 @@ import com.squareup.otto.Bus;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
@@ -174,7 +171,7 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.new_episode_details, container, false);
+        return inflater.inflate(R.layout.episode_details, container, false);
     }
 
     @Override

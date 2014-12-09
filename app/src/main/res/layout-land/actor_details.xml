@@ -99,7 +99,7 @@
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/content_details_large_margin"
                         android:background="#666"
-                        android:elevation="4dp"
+                        android:elevation="1dp"
                         android:layout_below="@id/linearLayout"
                         android:layout_toRightOf="@id/cardview"
                         android:paddingTop="@dimen/content_details_small_margin"

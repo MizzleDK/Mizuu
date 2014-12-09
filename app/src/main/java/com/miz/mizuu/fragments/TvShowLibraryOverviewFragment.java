@@ -60,7 +60,7 @@ public class TvShowLibraryOverviewFragment extends Fragment {
         mViewPager.setCurrentItem(0);
 
         if (MizLib.hasLollipop())
-            mTabs.setElevation(4);
+            mTabs.setElevation(1f);
 
         return v;
     }
