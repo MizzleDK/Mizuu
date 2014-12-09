@@ -324,13 +324,12 @@ public class TvShowLoader {
                         try {
                             cal.setTime(sdf.parse(latestEpisode));
                             cal.add(Calendar.MONTH, 3);
+                            if (cal.getTimeInMillis() < now) {
+                                mTvShowList.remove(i);
+                                i--;
+                                listSize--;
+                            }
                         } catch (ParseException e) {
-                            mTvShowList.remove(i);
-                            i--;
-                            listSize--;
-                        }
-
-                        if (cal.getTimeInMillis() < now) {
                             mTvShowList.remove(i);
                             i--;
                             listSize--;
