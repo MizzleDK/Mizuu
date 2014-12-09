@@ -253,77 +253,6 @@ public class ViewUtils {
     }
 
     /**
-     * Used to update the ActionBar for movie details view as the user scrolls.
-     * @param context
-     * @param actionBarBackgroundDrawable
-     * @param actionBar
-     * @param title
-     * @param newAlpha
-     * @param setBackground
-     * @param showActionBar
-     */
-    public static void updateActionBarDrawable(Context context, Drawable actionBarBackgroundDrawable,
-                                               ActionBar actionBar, String title, int newAlpha, boolean setBackground, boolean showActionBar) {
-
-        if (!MizLib.isPortrait(context)) {
-            newAlpha = 0;
-            setBackground = true;
-            showActionBar = true;
-        } else {
-            if (!MizLib.isTablet(context) && !MizLib.usesNavigationControl(context)) {
-                if (newAlpha == 0) {
-                    actionBar.hide();
-                } else
-                    actionBar.show();
-            }
-        }
-
-        actionBar.setTitle(newAlpha > 127 ? title : null);
-
-        if (setBackground) {
-            actionBarBackgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor("#" + ((Integer.toHexString(newAlpha).length() == 1) ? ("0" + Integer.toHexString(newAlpha)) : Integer.toHexString(newAlpha)) + "000000"), (newAlpha >= 170) ? Color.parseColor("#" + Integer.toHexString(newAlpha) + "000000") : 0xaa000000});
-            actionBar.setBackgroundDrawable(actionBarBackgroundDrawable);
-        }
-
-        if (showActionBar) {
-            actionBar.show();
-        }
-    }
-
-    /**
-     * Used to update the ActionBar for movie details view as the user scrolls.
-     * @param context
-     * @param actionBarBackgroundDrawable
-     * @param actionBar
-     * @param title
-     * @param newAlpha
-     * @param setBackground
-     * @param showActionBar
-     */
-    public static void updateActionBarDrawable(Context context, Drawable actionBarBackgroundDrawable,
-                                               android.support.v7.app.ActionBar actionBar, String title, int newAlpha, boolean setBackground, boolean showActionBar) {
-
-        if (!MizLib.isPortrait(context)) {
-            newAlpha = 0;
-            setBackground = true;
-            showActionBar = true;
-        } else {
-            if (!MizLib.isTablet(context) && !MizLib.usesNavigationControl(context)) {
-                if (newAlpha == 0) {
-                    actionBar.hide();
-                } else
-                    actionBar.show();
-            }
-        }
-
-        actionBar.setTitle(newAlpha > 127 ? title : null);
-
-        if (showActionBar) {
-            actionBar.show();
-        }
-    }
-
-    /**
      * Animates the transition when changing the maxLines
      * attribute of a TextView.
      * @param text
@@ -414,7 +343,7 @@ public class ViewUtils {
     }
 
     public static int getNavigationDrawerWidth(Context context) {
-        int drawerWidth = 0;
+        int drawerWidth;
 
         // The navigation drawer should have a width equal to
         // the screen width minus the Toolbar height - at least
