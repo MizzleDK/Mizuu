@@ -50,7 +50,6 @@ public class FileMovie extends MovieFileSource<File> {
 
 	@Override
 	public void removeUnidentifiedFiles() {
-		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 
 		File temp;
@@ -66,7 +65,6 @@ public class FileMovie extends MovieFileSource<File> {
 
 	@Override
 	public void removeUnavailableFiles() {
-		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 
 		File temp;

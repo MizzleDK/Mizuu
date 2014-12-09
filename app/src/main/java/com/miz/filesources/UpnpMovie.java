@@ -74,7 +74,6 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 	@Override
 	public void removeUnidentifiedFiles() {
-		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 
 		int count = dbMovies.size();
@@ -86,7 +85,6 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 	@Override
 	public void removeUnavailableFiles() {
-		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 
 		int count = dbMovies.size();
@@ -127,7 +125,7 @@ public class UpnpMovie extends MovieFileSource<String> {
 
 	@Override
 	public void recursiveSearch(String folder, TreeSet<String> results) {
-		mContext.bindService(new Intent(mContext, WireUpnpService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+		mContext.getApplicationContext().bindService(new Intent(mContext, WireUpnpService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
 		try {
 			mLatch.await(10, TimeUnit.MINUTES);

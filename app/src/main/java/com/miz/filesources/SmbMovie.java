@@ -51,7 +51,6 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 	@Override
 	public void removeUnidentifiedFiles() {
-		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 
 		ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
@@ -96,12 +95,10 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 	@Override
 	public void removeUnavailableFiles() {
-		DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 		List<DbMovie> dbMovies = getDbMovies();
 		ArrayList<FileSource> filesources = MizLib.getFileSources(MizLib.TYPE_MOVIE, true);
 
 		FileSource source;
-		boolean deleted;
 		SmbFile temp;
 		int count = dbMovies.size();
 		if (MizLib.isWifiConnected(getContext())) {

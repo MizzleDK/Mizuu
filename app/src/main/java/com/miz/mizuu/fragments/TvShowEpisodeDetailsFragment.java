@@ -66,6 +66,7 @@ import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.TvShowDatabaseUtils;
 import com.miz.utils.TypefaceUtils;
 import com.miz.utils.VideoUtils;
 import com.miz.utils.ViewUtils;
@@ -661,47 +662,19 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
                 .setCancelable(false)
                 .setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Create and open database
-                        mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
-                        boolean deleted = true;
-                        //if (mIgnoreDeletedFiles) TODO fix this!
-                        //deleted = mDatabaseHelper.ignoreEpisode(mEpisode.getRowId());
-                        //else
-                        for (Filepath path : mEpisode.getFilepaths())
-                            deleted = deleted && MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteFilepath(path.getFullFilepath());
+                        TvShowDatabaseUtils.deleteEpisode(mContext, mEpisode.getShowId(),
+                                MizLib.getInteger(mEpisode.getSeason()), MizLib.getInteger(mEpisode.getEpisode()));
 
-                        if (deleted) {
-                            try {
-                                // Delete episode images
-                                File episodePhoto = FileUtils.getTvShowEpisode(getActivity(), mEpisode.getShowId(), mEpisode.getSeason(), mEpisode.getEpisode());
-                                if (episodePhoto.exists()) {
-                                    MizLib.deleteFile(episodePhoto);
-                                }
-                            } catch (NullPointerException e) {} // No file to delete
-
-                            if (mDatabaseHelper.getEpisodeCount(mEpisode.getShowId()) == 0) { // No more episodes for this show
-                                DbAdapterTvShows dbShow = MizuuApplication.getTvDbAdapter();
-                                boolean deletedShow = dbShow.deleteShow(mEpisode.getShowId());
-
-                                if (deletedShow) {
-                                    MizLib.deleteFile(FileUtils.getTvShowThumb(getActivity(), mEpisode.getShowId()));
-                                    MizLib.deleteFile(FileUtils.getTvShowBackdrop(getActivity(), mEpisode.getShowId()));
-                                }
+                        if (cb.isChecked()) {
+                            for (Filepath path : mEpisode.getFilepaths()) {
+                                Intent deleteIntent = new Intent(getActivity(), DeleteFile.class);
+                                deleteIntent.putExtra("filepath", path.getFilepath());
+                                getActivity().startService(deleteIntent);
                             }
-
-                            if (cb.isChecked()) {
-                                for (Filepath path : mEpisode.getFilepaths()) {
-                                    Intent deleteIntent = new Intent(getActivity(), DeleteFile.class);
-                                    deleteIntent.putExtra("filepath", path.getFilepath());
-                                    getActivity().startService(deleteIntent);
-                                }
-                            }
-
-                            notifyDatasetChanges();
-                            getActivity().finish();
-                        } else {
-                            Toast.makeText(getActivity(), getString(R.string.failedToRemoveEpisode), Toast.LENGTH_SHORT).show();
                         }
+
+                        notifyDatasetChanges();
+                        getActivity().finish();
                     }
                 })
                 .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
