@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
 
 public abstract class MizActivity extends ActionBarActivity {
@@ -35,12 +36,20 @@ public abstract class MizActivity extends ActionBarActivity {
 
             mToolbar = (Toolbar) findViewById(R.id.toolbar);
             if (mToolbar != null) {
-                try {
-                    setSupportActionBar(mToolbar);
-                } catch (Throwable t) {
-                    // Samsung pls...
-                }
+                setSupportActionBar(mToolbar);
             }
+        }
+    }
+
+    @Override
+    public void setSupportActionBar(Toolbar toolbar) {
+        try {
+            if (MizLib.hasLollipop())
+                toolbar.setElevation(1f);
+
+            super.setSupportActionBar(toolbar);
+        } catch (Throwable t) {
+            // Samsung pls...
         }
     }
 

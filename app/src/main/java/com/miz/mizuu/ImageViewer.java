@@ -67,11 +67,7 @@ public class ImageViewer extends MizActivity {
         ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), true);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        try {
-            setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        setSupportActionBar(mToolbar);
 
         ViewUtils.setProperToolbarSize(this, mToolbar);
 

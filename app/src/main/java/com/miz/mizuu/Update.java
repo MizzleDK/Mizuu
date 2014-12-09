@@ -22,7 +22,6 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +31,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.miz.base.MizActivity;
 import com.miz.functions.MizLib;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
@@ -42,7 +42,7 @@ import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_TVSHOWS;
 import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_MOVIES;
 import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_TVSHOWS;
 
-public class Update extends ActionBarActivity {
+public class Update extends MizActivity {
 
     private Button mFileSourcesButton, mUpdateLibraryButton;
     private TextView mFileSourcesDescription, mUpdateLibraryDescription;
@@ -57,15 +57,9 @@ public class Update extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.update_layout);
-
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        try {
-            setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        setSupportActionBar(mToolbar);
 
         mIsMovie = getIntent().getExtras().getBoolean("isMovie");
 
@@ -95,6 +89,11 @@ public class Update extends ActionBarActivity {
         mFileSourcesButton.setTypeface(mTypeface);
         mUpdateLibraryButton = (Button) findViewById(R.id.start_update_button);
         mUpdateLibraryButton.setTypeface(mTypeface);
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.update_layout;
     }
 
     private OnCheckedChangeListener getOnCheckedChangeListener(final boolean clearLibrary) {

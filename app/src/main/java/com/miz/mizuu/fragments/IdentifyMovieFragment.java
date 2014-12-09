@@ -54,6 +54,7 @@ import android.widget.Toast;
 
 import com.miz.abstractclasses.MovieApiService;
 import com.miz.apis.tmdb.Movie;
+import com.miz.base.MizActivity;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.identification.MovieStructure;
@@ -137,11 +138,7 @@ public class IdentifyMovieFragment extends Fragment {
         super.onViewCreated(v, savedInstanceState);
 
         mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
-        try {
-            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        ((MizActivity) getActivity()).setSupportActionBar(mToolbar);
 
         mListView = (ListView) v.findViewById(R.id.listView1);
         mQuery = (EditText) v.findViewById(R.id.editText1);

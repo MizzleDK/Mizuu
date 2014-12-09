@@ -25,6 +25,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
@@ -78,11 +79,7 @@ public class EditTvShowEpisodeFragment extends Fragment {
         super.onViewCreated(v, savedInstanceState);
 
         mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
-        try {
-            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        ((MizActivity) getActivity()).setSupportActionBar(mToolbar);
 
         // Text fields
         mTitle = (EditText) v.findViewById(R.id.edit_title);

@@ -182,7 +182,7 @@ public class MovieDiscoveryViewPagerFragment extends Fragment {
         mTabs.setViewPager(mViewPager);
         mTabs.setVisibility(View.VISIBLE);
         if (MizLib.hasLollipop())
-            mTabs.setElevation(4);
+            mTabs.setElevation(1f);
 
         mProgressBar.setVisibility(View.GONE);
     }

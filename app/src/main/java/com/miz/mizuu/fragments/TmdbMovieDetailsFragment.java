@@ -45,6 +45,7 @@ import com.melnykov.fab.FloatingActionButton;
 import com.miz.apis.tmdb.Movie;
 import com.miz.apis.tmdb.TMDbMovieService;
 import com.miz.apis.trakt.Trakt;
+import com.miz.base.MizActivity;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteLoader;
 import com.miz.functions.SimpleAnimatorListener;
@@ -122,11 +123,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
         mToolbar.setBackgroundResource(android.R.color.transparent);
         ViewUtils.setProperToolbarSize(mContext, mToolbar);
 
-        try {
-            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        ((MizActivity) getActivity()).setSupportActionBar(mToolbar);
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // This needs to be re-initialized here and not in onCreate()

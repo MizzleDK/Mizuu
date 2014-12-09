@@ -48,6 +48,7 @@ import android.widget.Toast;
 
 import com.miz.abstractclasses.MovieApiService;
 import com.miz.apis.tmdb.Movie;
+import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
@@ -107,11 +108,7 @@ public class SearchWebMoviesFragment extends Fragment {
         super.onViewCreated(v, savedInstanceState);
 
         mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
-        try {
-            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        ((MizActivity) getActivity()).setSupportActionBar(mToolbar);
 
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar1);
         v.findViewById(R.id.spinner1).setVisibility(View.GONE);

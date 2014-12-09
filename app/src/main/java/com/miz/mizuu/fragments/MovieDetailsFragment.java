@@ -58,6 +58,7 @@ import android.widget.Toast;
 import com.melnykov.fab.FloatingActionButton;
 import com.miz.abstractclasses.MovieApiService;
 import com.miz.apis.trakt.Trakt;
+import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.Actor;
 import com.miz.functions.BlurTransformation;
@@ -233,11 +234,7 @@ public class MovieDetailsFragment extends Fragment {
         mToolbar.setBackgroundResource(android.R.color.transparent);
         ViewUtils.setProperToolbarSize(mContext, mToolbar);
 
-        try {
-            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        ((MizActivity) getActivity()).setSupportActionBar(mToolbar);
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // This needs to be re-initialized here and not in onCreate()

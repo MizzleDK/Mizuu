@@ -55,6 +55,7 @@ import android.widget.Toast;
 
 import com.miz.abstractclasses.ApiService;
 import com.miz.apis.thetvdb.TvShow;
+import com.miz.base.MizActivity;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
@@ -135,11 +136,7 @@ public class IdentifyTvShowFragment extends Fragment {
         super.onViewCreated(v, savedInstanceState);
 
         mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
-        try {
-            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        ((MizActivity) getActivity()).setSupportActionBar(mToolbar);
 
         mListView = (ListView) v.findViewById(R.id.listView1);
         mQuery = (EditText) v.findViewById(R.id.editText1);

@@ -36,6 +36,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.miz.apis.tmdb.TMDbMovieService;
+import com.miz.base.MizActivity;
 import com.miz.functions.BlurTransformation;
 import com.miz.functions.CompleteActor;
 import com.miz.functions.MizLib;
@@ -110,11 +111,8 @@ public class ActorDetailsFragment extends Fragment {
         mToolbar.setBackgroundResource(android.R.color.transparent);
         ViewUtils.setProperToolbarSize(mContext, mToolbar);
 
-        try {
-            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
-        } catch (Throwable t) {
-            // Samsung pls...
-        }
+        ((MizActivity) getActivity()).setSupportActionBar(mToolbar);
+
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // This needs to be re-initialized here and not in onCreate()
