@@ -611,8 +611,9 @@ public class TvShowDetailsFragment extends Fragment {
 
     private void searchCover() {
         Intent i = new Intent();
-        i.putExtra("id", thisShow.getId());
         i.setClass(mContext, ShowCoverFanartBrowser.class);
+        i.putExtra("id", thisShow.getId());
+        i.putExtra(IntentKeys.TOOLBAR_COLOR, mToolbarColor);
         startActivity(i);
     }
 

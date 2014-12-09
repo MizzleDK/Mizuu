@@ -26,9 +26,11 @@ import android.widget.ProgressBar;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.miz.base.MizActivity;
+import com.miz.functions.IntentKeys;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.CoverSearchFragmentTv;
 import com.miz.mizuu.fragments.FanartSearchFragmentTv;
+import com.miz.utils.ViewUtils;
 
 public class ShowCoverFanartBrowser extends MizActivity  {
 
@@ -36,6 +38,7 @@ public class ShowCoverFanartBrowser extends MizActivity  {
     private ViewPager mViewPager;
     private ProgressBar mProgressBar;
     private PagerSlidingTabStrip mTabs;
+    private int mToolbarColor;
 
 	@Override
 	protected int getLayoutResource() {
@@ -53,6 +56,7 @@ public class ShowCoverFanartBrowser extends MizActivity  {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		tvdbId = getIntent().getExtras().getString("id");
+        mToolbarColor = getIntent().getExtras().getInt(IntentKeys.TOOLBAR_COLOR);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -70,6 +74,15 @@ public class ShowCoverFanartBrowser extends MizActivity  {
             mViewPager.setCurrentItem(savedInstanceState.getInt("tab", 0));
 		}
 	}
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ViewUtils.setToolbarAndStatusBarColor(getSupportActionBar(), getWindow(), mToolbarColor);
+        mTabs.setBackgroundColor(mToolbarColor);
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

@@ -29,10 +29,12 @@ import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.miz.base.MizActivity;
+import com.miz.functions.IntentKeys;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.CollectionCoverSearchFragment;
 import com.miz.mizuu.fragments.CoverSearchFragment;
 import com.miz.mizuu.fragments.FanartSearchFragment;
+import com.miz.utils.ViewUtils;
 
 public class MovieCoverFanartBrowser extends MizActivity  {
 
@@ -40,6 +42,7 @@ public class MovieCoverFanartBrowser extends MizActivity  {
 	private ViewPager mViewPager;
 	private ProgressBar mProgressBar;
     private PagerSlidingTabStrip mTabs;
+    private int mToolbarColor;
 
 	@Override
 	protected int getLayoutResource() {
@@ -54,10 +57,10 @@ public class MovieCoverFanartBrowser extends MizActivity  {
 
         if (MizLib.hasLollipop())
             getSupportActionBar().setElevation(0);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mTmdbId = getIntent().getExtras().getString("tmdbId");
         mCollectionId = getIntent().getExtras().getString("collectionId");
+        mToolbarColor = getIntent().getExtras().getInt(IntentKeys.TOOLBAR_COLOR);
 		mTmdbApiKey = MizLib.getTmdbApiKey(this);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
@@ -81,6 +84,15 @@ public class MovieCoverFanartBrowser extends MizActivity  {
 			new MovieLoader(getApplicationContext()).execute(mTmdbId, mCollectionId);
 		}
 	}
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ViewUtils.setToolbarAndStatusBarColor(getSupportActionBar(), getWindow(), mToolbarColor);
+        mTabs.setBackgroundColor(mToolbarColor);
+    }
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {

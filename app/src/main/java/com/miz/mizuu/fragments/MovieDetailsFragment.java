@@ -919,6 +919,7 @@ public class MovieDetailsFragment extends Fragment {
             Intent intent = new Intent(mContext, MovieCoverFanartBrowser.class);
             intent.putExtra("tmdbId", mMovie.getTmdbId());
             intent.putExtra("collectionId", mMovie.getCollectionId());
+            intent.putExtra(IntentKeys.TOOLBAR_COLOR, mToolbarColor);
             startActivity(intent); // Start the intent for result
         } else {
             // No movie ID / Internet connection
