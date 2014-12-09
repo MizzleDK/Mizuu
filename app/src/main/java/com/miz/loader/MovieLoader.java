@@ -84,8 +84,8 @@ public class MovieLoader {
     private final DbAdapterMovies mDatabase;
 
     private MovieSortType mSortType;
-    private ArrayList<MediumMovie> mResults = new ArrayList<MediumMovie>();
-    private HashSet<MovieFilter> mFilters = new HashSet<MovieFilter>();
+    private ArrayList<MediumMovie> mResults = new ArrayList<>();
+    private HashSet<MovieFilter> mFilters = new HashSet<>();
     private MovieLoaderAsyncTask mAsyncTask;
     private boolean mIgnorePrefixes = false,
             mShowingSearchResults = false;
@@ -324,8 +324,6 @@ public class MovieLoader {
         @Override
         protected Void doInBackground(Void... params) {
 
-            // We're only interested in querying the database
-            // if we're not searching for a query
             switch (mLibraryType) {
                 case ALL_MOVIES:
                     mMovieList.addAll(listFromCursor(mDatabase.getAllMovies()));
@@ -491,54 +489,54 @@ public class MovieLoader {
                 ArrayList<MediumMovie> tempCollection = Lists.newArrayList();
 
                 if (mSearchQuery.startsWith("actor:")) {
-                    for (int i = 0; i < mResults.size(); i++) {
+                    for (int i = 0; i < mMovieList.size(); i++) {
                         if (isCancelled())
                             return null;
 
-                        if (mResults.get(i).getCast().toLowerCase(Locale.ENGLISH).contains(mSearchQuery.replace("actor:", "").trim()))
-                            tempCollection.add(mResults.get(i));
+                        if (mMovieList.get(i).getCast().toLowerCase(Locale.ENGLISH).contains(mSearchQuery.replace("actor:", "").trim()))
+                            tempCollection.add(mMovieList.get(i));
                     }
                 } else if (mSearchQuery.equalsIgnoreCase("missing_genres")) {
-                    for (int i = 0; i < mResults.size(); i++) {
+                    for (int i = 0; i < mMovieList.size(); i++) {
                         if (isCancelled())
                             return null;
 
-                        if (TextUtils.isEmpty(mResults.get(i).getGenres()))
-                            tempCollection.add(mResults.get(i));
+                        if (TextUtils.isEmpty(mMovieList.get(i).getGenres()))
+                            tempCollection.add(mMovieList.get(i));
                     }
                 } else if (mSearchQuery.equalsIgnoreCase("multiple_versions")) {
                     DbAdapterMovieMappings db = MizuuApplication.getMovieMappingAdapter();
 
-                    for (int i = 0; i < mResults.size(); i++) {
+                    for (int i = 0; i < mMovieList.size(); i++) {
                         if (isCancelled())
                             return null;
 
-                        if (db.hasMultipleFilepaths(mResults.get(i).getTmdbId()))
-                            tempCollection.add(mResults.get(i));
+                        if (db.hasMultipleFilepaths(mMovieList.get(i).getTmdbId()))
+                            tempCollection.add(mMovieList.get(i));
                     }
                 } else {
                     Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x for ~700 movies)
 
-                    for (int i = 0; i < mResults.size(); i++) {
+                    for (int i = 0; i < mMovieList.size(); i++) {
                         if (isCancelled())
                             return null;
 
                         String lowerCaseTitle = (getType() == MovieLibraryType.COLLECTIONS) ?
-                                mResults.get(i).getCollection().toLowerCase(Locale.ENGLISH) :
-                                mResults.get(i).getTitle().toLowerCase(Locale.ENGLISH);
+                                mMovieList.get(i).getCollection().toLowerCase(Locale.ENGLISH) :
+                                mMovieList.get(i).getTitle().toLowerCase(Locale.ENGLISH);
 
                         boolean foundInTitle = false;
 
-                        if (lowerCaseTitle.indexOf(mSearchQuery) != -1 || p.matcher(lowerCaseTitle).replaceAll("").indexOf(mSearchQuery) != -1) {
-                            tempCollection.add(mResults.get(i));
+                        if (lowerCaseTitle.contains(mSearchQuery) || p.matcher(lowerCaseTitle).replaceAll("").indexOf(mSearchQuery) != -1) {
+                            tempCollection.add(mMovieList.get(i));
                             foundInTitle = true;
                         }
 
                         if (!foundInTitle) {
-                            for (Filepath path : mResults.get(i).getFilepaths()) {
+                            for (Filepath path : mMovieList.get(i).getFilepaths()) {
                                 String filepath = path.getFilepath().toLowerCase(Locale.ENGLISH);
                                 if (filepath.indexOf(mSearchQuery) != -1) {
-                                    tempCollection.add(mResults.get(i));
+                                    tempCollection.add(mMovieList.get(i));
                                     break; // Break the loop
                                 }
                             }

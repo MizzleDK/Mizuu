@@ -147,7 +147,7 @@ public class TvShowEpisodes extends MizActivity {
 		protected Void doInBackground(Void... params) {
 			HashMap<String, EpisodeCounter> seasons = MizuuApplication.getTvEpisodeDbAdapter().getSeasons(mShowId);
 
-			File temp = null;
+			File temp;
 			for (String key : seasons.keySet()) {
 				temp = FileUtils.getTvShowSeason(mContext, mShowId, key);				
 				mItems.add(new GridSeason(mContext, mShowId, Integer.valueOf(key), seasons.get(key).getEpisodeCount(), seasons.get(key).getWatchedCount(),
@@ -156,7 +156,6 @@ public class TvShowEpisodes extends MizActivity {
 			}
 
 			seasons.clear();
-			seasons = null;
 
 			Collections.sort(mItems);
 

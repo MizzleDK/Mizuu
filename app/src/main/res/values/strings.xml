@@ -45,6 +45,10 @@
         <item quantity="one">episode selected</item>
         <item quantity="other">episodes selected</item>
     </plurals>
+    <plurals name="files">
+        <item quantity="one">file</item>
+        <item quantity="other">files</item>
+    </plurals>
 
     <!-- APP STRINGS -->
     <string name="app_name">Mizuu</string>
@@ -503,6 +507,7 @@
     <string name="no_movie_collections_description">It happens to the best of us…</string>
     <string name="no_tv_shows">No TV shows</string>
     <string name="no_tv_shows_description">Select <b>Update library</b> from the menu to add TV shows.</string>
+    <string name="no_tv_shows_description_tablet">Select the <b>Update icon</b> from the menu to add TV shows.</string>
     <string name="no_favorites_description_tv">Don\'t you like TV shows?</string>
     <string name="recently_aired">Recently aired</string>
     <string name="recently_aired_description">Nothing has aired in the last three months.</string>
@@ -514,5 +519,10 @@
     <string name="stop">Stop</string>
     <string name="pause">Pause</string>
     <string name="connect">Connect</string>
+    <string name="watched_tv_shows">Watched shows</string>
+    <string name="unwatched_tv_shows">Unwatched shows</string>
+    <string name="all_episodes">All episodes</string>
+    <string name="watched_episodes">Watched episodes</string>
+    <string name="unwatched_episodes">Unwatched episodes</string>
 
 </resources>

@@ -193,7 +193,7 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 
 				episodes.add(new GridEpisode(context,
 						cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE_TITLE)),
-						MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFirstFilepath(showId, seasonWithIndex, cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE))),
+						MizuuApplication.getTvShowEpisodeMappingsDbAdapter().getFilepathsForEpisode(showId, seasonWithIndex, cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE))),
 						season,
 						Integer.valueOf(cursor.getString(cache.getColumnIndex(cursor, KEY_EPISODE))),
 						cursor.getString(cache.getColumnIndex(cursor, KEY_HAS_WATCHED)).equals("1"),

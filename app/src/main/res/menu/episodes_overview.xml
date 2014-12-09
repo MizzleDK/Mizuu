@@ -1,0 +1,48 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        app:actionViewClass="android.support.v7.widget.SwitchCompat"
+        app:showAsAction="always|withText"
+        android:id="@+id/switch_button"
+        android:enabled="true"
+        android:title="@string/identify">
+    </item>
+
+    <item
+        android:id="@+id/sort"
+        android:icon="@drawable/ic_sort_white_24dp"
+        app:showAsAction="ifRoom"
+        android:title="@string/stringSort">
+        <menu>
+            <item
+                android:id="@+id/menuSortDesc"
+                android:title="@string/newestFirst"/>
+            <item
+                android:id="@+id/menuSortAsc"
+                android:title="@string/oldestFirst"/>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/filters"
+        android:icon="@drawable/ic_filter_list_white_24dp"
+        app:showAsAction="ifRoom"
+        android:title="@string/filters">
+        <menu>
+            <item
+                android:id="@+id/all_episodes"
+                android:icon="@drawable/ic_tv_white_24dp"
+                android:title="@string/all_episodes"/>
+            <item
+                android:id="@+id/watched"
+                android:icon="@drawable/ic_visibility_white_24dp"
+                android:title="@string/watched_episodes"/>
+            <item
+                android:id="@+id/unwatched"
+                android:icon="@drawable/ic_visibility_off_white_24dp"
+                android:title="@string/unwatched_episodes"/>
+        </menu>
+    </item>
+
+</menu>

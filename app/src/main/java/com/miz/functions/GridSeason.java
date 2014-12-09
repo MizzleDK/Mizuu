@@ -120,10 +120,6 @@ public class GridSeason implements Comparable<GridSeason> {
 	 */
 	@Override
 	public int compareTo(GridSeason another) {
-		String defaultOrder = mContext.getString(R.string.oldestFirst);
-		boolean oldestFirst = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_SEASON_ORDER, defaultOrder).equals(defaultOrder);
-		int multiplier = oldestFirst ? 1 : -1;
-		
 		if (getSeason() == 0)
 			return 1;
 		if (another.getSeason() == 0)
@@ -131,9 +127,9 @@ public class GridSeason implements Comparable<GridSeason> {
 		
 		// Regular sorting
 		if (getSeason() < another.getSeason())
-			return -1 * multiplier;
+			return -1;
 		if (getSeason() > another.getSeason())
-			return multiplier;
+			return 1;
 		return 0;
 	}
 }

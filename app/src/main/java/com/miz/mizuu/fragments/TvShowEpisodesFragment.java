@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +39,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,6 +54,8 @@ import com.miz.functions.GridEpisode;
 import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MizLib;
 import com.miz.functions.TvShowEpisode;
+import com.miz.loader.OnLoadCompletedCallback;
+import com.miz.loader.TvShowEpisodeLoader;
 import com.miz.mizuu.IdentifyTvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -77,17 +81,17 @@ public class TvShowEpisodesFragment extends Fragment {
 	private static final String SEASON = "season";
 
 	private Set<Integer> mCheckedEpisodes = new HashSet<Integer>();
-	private List<GridEpisode> mItems = new ArrayList<GridEpisode>();
 	private Context mContext;
 	private GridView mGridView;
 	private ProgressBar mProgressBar;
 	private ImageAdapter mAdapter;
 	private String mShowId;
-	private boolean mUseGridView, mContextualActionBarEnabled;
+	private boolean mUseGridView, mContextualActionBarEnabled, mLoading = true;
 	private int mSeason, mImageThumbSize, mImageThumbSpacing, mResizedWidth, mResizedHeight;
 	private Picasso mPicasso;
 	private Config mConfig;
 	private Bus mBus;
+    private TvShowEpisodeLoader mEpisodeLoader;
 
 	public static TvShowEpisodesFragment newInstance(String showId, int season) {
 		TvShowEpisodesFragment frag = new TvShowEpisodesFragment();
@@ -104,6 +108,8 @@ public class TvShowEpisodesFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
 		mContext = getActivity().getApplicationContext();
 
 		mPicasso = MizuuApplication.getPicasso(mContext);
@@ -119,6 +125,69 @@ public class TvShowEpisodesFragment extends Fragment {
 		mSeason = getArguments().getInt(SEASON);
 		mUseGridView = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_COLLECTION_LAYOUT, getString(R.string.gridView)).equals(getString(R.string.gridView));
 	}
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.episodes_overview, menu);
+
+        int padding = MizLib.convertDpToPixels(getActivity(), 16);
+
+        SwitchCompat switchCompat = (SwitchCompat) menu.findItem(R.id.switch_button).getActionView();
+        switchCompat.setChecked(mEpisodeLoader != null ? mEpisodeLoader.showAvailableFiles() : false);
+        switchCompat.setText(R.string.choiceAvailableFiles);
+        switchCompat.setSwitchPadding(padding);
+        switchCompat.setPadding(0, 0, padding, 0);
+
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mEpisodeLoader.setShowAvailableFiles(isChecked);
+                mEpisodeLoader.load();
+                showProgressBar();
+            }
+        });
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()) {
+            case R.id.menuSortDesc:
+                mEpisodeLoader.setSortType(TvShowEpisodeLoader.TvShowEpisodeSortType.DESCENDING);
+                mEpisodeLoader.load();
+                showProgressBar();
+                break;
+
+            case R.id.menuSortAsc:
+                mEpisodeLoader.setSortType(TvShowEpisodeLoader.TvShowEpisodeSortType.ASCENDING);
+                mEpisodeLoader.load();
+                showProgressBar();
+                break;
+
+            case R.id.all_episodes:
+                mEpisodeLoader.setWatchedFilter(TvShowEpisodeLoader.TvShowEpisodeWatchedFilter.ALL);
+                mEpisodeLoader.load();
+                showProgressBar();
+                break;
+
+            case R.id.watched:
+                mEpisodeLoader.setWatchedFilter(TvShowEpisodeLoader.TvShowEpisodeWatchedFilter.WATCHED);
+                mEpisodeLoader.load();
+                showProgressBar();
+                break;
+
+            case R.id.unwatched:
+                mEpisodeLoader.setWatchedFilter(TvShowEpisodeLoader.TvShowEpisodeWatchedFilter.UNWATCHED);
+                mEpisodeLoader.load();
+                showProgressBar();
+                break;
+        }
+
+        return true;
+    }
 
 	@Override
 	public void onDestroy() {
@@ -180,7 +249,7 @@ public class TvShowEpisodesFragment extends Fragment {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {	
 				Intent i = new Intent(mContext, TvShowEpisodeDetails.class);
 				i.putExtra(SHOW_ID, mShowId);
-				i.putExtra("episode", mItems.get(arg2).getEpisode());
+				i.putExtra("episode", mEpisodeLoader.getResults().get(arg2).getEpisode());
 				i.putExtra("season", mSeason);
 				getActivity().startActivityForResult(i, 0);
 			}
@@ -241,9 +310,9 @@ public class TvShowEpisodesFragment extends Fragment {
 			@Override
 			public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {				
 				if (checked)
-					mCheckedEpisodes.add(mItems.get(position).getEpisode());
+					mCheckedEpisodes.add(mEpisodeLoader.getResults().get(position).getEpisode());
 				else
-					mCheckedEpisodes.remove(mItems.get(position).getEpisode());
+					mCheckedEpisodes.remove(mEpisodeLoader.getResults().get(position).getEpisode());
 
 				int count = mCheckedEpisodes.size();
 				mode.setTitle(count + " " + getResources().getQuantityString(R.plurals.episodes_selected, count, count));
@@ -360,40 +429,43 @@ public class TvShowEpisodesFragment extends Fragment {
 	}
 
 	private void loadEpisodes() {
-		new EpisodeLoader().execute();
+		mEpisodeLoader = new TvShowEpisodeLoader(mContext, mShowId, mSeason, mCallback);
+        mEpisodeLoader.load();
 	}
+
+    private OnLoadCompletedCallback mCallback = new OnLoadCompletedCallback() {
+        @Override
+        public void onLoadCompleted() {
+            mAdapter.notifyDataSetChanged();
+        }
+    };
 
 	private class ImageAdapter extends BaseAdapter {
 
 		private LayoutInflater inflater;
 		private final Context mContext;
 		private int mNumColumns = 0;
-		private List<GridEpisode> mItems = new ArrayList<GridEpisode>();
 
 		public ImageAdapter(Context context) {
 			mContext = context;
 			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
-		// This is necessary in order to avoid random ArrayOutOfBoundsException when changing the items
-		public void setItems(List<GridEpisode> items) {
-			mItems = new ArrayList<GridEpisode>(items);
-			notifyDataSetChanged();
-		}
-
 		@Override
 		public int getCount() {
-			return mItems.size();
+            if (mEpisodeLoader != null)
+                return mEpisodeLoader.getResults().size();
+			return 0;
 		}
 
 		@Override
 		public boolean isEmpty() {
-			return mItems.size() == 0;
+			return getCount() == 0 && !mLoading;
 		}
 
 		@Override
-		public Object getItem(int position) {
-			return position;
+		public GridEpisode getItem(int position) {
+			return mEpisodeLoader.getResults().get(position);
 		}
 
 		@Override
@@ -414,7 +486,7 @@ public class TvShowEpisodesFragment extends Fragment {
 		@Override
 		public View getView(final int position, View convertView, ViewGroup container) {
 			final CoverItem holder;
-			final GridEpisode episode = mItems.get(position);
+			final GridEpisode episode = getItem(position);
 
 			if (convertView == null) {
 				if (mUseGridView)
@@ -466,6 +538,14 @@ public class TvShowEpisodesFragment extends Fragment {
 			return convertView;
 		}
 
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+
+            // Hide the progress bar once the data set has been changed
+            hideProgressBar();
+        }
+
 		public void setNumColumns(int numColumns) {
 			mNumColumns = numColumns;
 		}
@@ -475,26 +555,15 @@ public class TvShowEpisodesFragment extends Fragment {
 		}
 	}
 
-	private class EpisodeLoader extends LibrarySectionAsyncTask<Void, Void, Void> {
-		@Override
-		protected void onPreExecute() {
-			mProgressBar.setVisibility(View.VISIBLE);
-		}
+    private void hideProgressBar() {
+        mGridView.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
+        mLoading = false;
+    }
 
-		@Override
-		protected Void doInBackground(Void... params) {
-			mItems.clear();
-			mItems.addAll(MizuuApplication.getTvEpisodeDbAdapter().getEpisodesInSeason(mContext, mShowId, mSeason));
-
-			Collections.sort(mItems);
-
-			return null;
-		}
-
-		@Override
-		public void onPostExecute(Void result) {
-			mProgressBar.setVisibility(View.GONE);
-			mAdapter.setItems(mItems);
-		}
-	}
+    private void showProgressBar() {
+        mGridView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mLoading = true;
+    }
 }

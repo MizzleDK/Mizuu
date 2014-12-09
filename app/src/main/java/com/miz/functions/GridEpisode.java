@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import com.miz.mizuu.R;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import static com.miz.functions.PreferenceKeys.TVSHOWS_EPISODE_ORDER;
 
@@ -30,19 +31,22 @@ public class GridEpisode implements Comparable<GridEpisode> {
 
 	private Context mContext;
 	private File mCover;
-	private String mSubtitleText, mTitle, mFilepath, mAirDate;
+	private String mSubtitleText, mTitle, mAirDate;
+    private ArrayList<Filepath> mFilepaths = new ArrayList<>();
 	private int mSeason, mEpisode;
 	private boolean mWatched;
 
-	public GridEpisode(Context context, String title, String filepath, int season, int episode, boolean watched, File cover, String airdate) {
+	public GridEpisode(Context context, String title, ArrayList<String> filepaths, int season, int episode, boolean watched, File cover, String airdate) {
 		mContext = context;
 		mTitle = title;
-		mFilepath = filepath;
 		mSeason = season;
 		mEpisode = episode;
 		mWatched = watched;
 		mCover = cover;
 		mAirDate = airdate;
+
+        for (String filepath : filepaths)
+                mFilepaths.add(new Filepath(filepath));
 
 		// Subtitle text
 		StringBuilder sb = new StringBuilder();
@@ -56,10 +60,7 @@ public class GridEpisode implements Comparable<GridEpisode> {
 	
 	public String getTitle() {
 		if (TextUtils.isEmpty(mTitle)) {
-			String temp = mFilepath.contains("<MiZ>") ? mFilepath.split("<MiZ>")[0] : mFilepath;
-			File fileName = new File(temp);
-			int pointPosition=fileName.getName().lastIndexOf(".");
-			return pointPosition == -1 ? fileName.getName() : fileName.getName().substring(0, pointPosition);
+			return mFilepaths.get(0).getFilepathName();
 		} else {
 			return mTitle;
 		}
@@ -92,6 +93,10 @@ public class GridEpisode implements Comparable<GridEpisode> {
 	public String getAirDate() {
 		return mAirDate;
 	}
+
+    public ArrayList<Filepath> getFilepaths() {
+        return mFilepaths;
+    }
 
 	@Override
 	public int compareTo(GridEpisode another) {
