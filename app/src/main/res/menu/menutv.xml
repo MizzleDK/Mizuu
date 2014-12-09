@@ -34,6 +34,7 @@
         </menu>
     </item>
     <item
+        android:id="@+id/filters"
         android:icon="@drawable/ic_filter_list_white_24dp"
         app:showAsAction="ifRoom"
         android:title="@string/filters">
@@ -43,6 +44,14 @@
                 android:icon="@drawable/ic_flag_white_24dp"
                 android:title="@string/detailsCertification"/>
             <item
+                android:id="@+id/fileSources"
+                android:icon="@drawable/ic_insert_drive_file_white_24dp"
+                android:title="@string/fileSources"/>
+            <item
+                android:id="@+id/folders"
+                android:icon="@drawable/ic_folder_open_white_24dp"
+                android:title="@string/folders"/>
+            <item
                 android:id="@+id/genres"
                 android:icon="@drawable/ic_label_white_24dp"
                 android:title="@string/choiceGenres"/>
@@ -50,6 +59,14 @@
                 android:id="@+id/release_year"
                 android:icon="@drawable/ic_today_white_24dp"
                 android:title="@string/release_year"/>
+            <item
+                android:id="@+id/available_files"
+                android:icon="@drawable/ic_done_white_24dp"
+                android:title="@string/choiceAvailableFiles"/>
+            <item
+                android:id="@+id/offline_files"
+                android:icon="@drawable/ic_cloud_download_white_24dp"
+                android:title="@string/choiceOffline"/>
             <item
                 android:id="@+id/clear_filters"
                 android:icon="@drawable/ic_close_white_24dp"

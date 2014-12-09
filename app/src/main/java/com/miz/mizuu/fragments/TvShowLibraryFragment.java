@@ -16,61 +16,47 @@
 
 package com.miz.mizuu.fragments;
 
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.database.Cursor;
 import android.graphics.Bitmap.Config;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.miz.db.DatabaseHelper;
-import com.miz.db.DbAdapterTvShowEpisodes;
-import com.miz.db.DbAdapterTvShows;
-import com.miz.functions.AsyncTask;
-import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.CoverItem;
-import com.miz.functions.LibrarySectionAsyncTask;
 import com.miz.functions.MizLib;
-import com.miz.functions.SQLiteCursorLoader;
-import com.miz.functions.SpinnerItem;
-import com.miz.functions.TvShowSortHelper;
+import com.miz.loader.OnLoadCompletedCallback;
+import com.miz.loader.TvShowFilter;
+import com.miz.loader.TvShowLibraryType;
+import com.miz.loader.TvShowLoader;
+import com.miz.loader.TvShowSortType;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShow;
@@ -80,465 +66,238 @@ import com.miz.mizuu.UnidentifiedTvShows;
 import com.miz.mizuu.Update;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TypefaceUtils;
+import com.miz.utils.ViewUtils;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import java.util.Random;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
 
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
-import static com.miz.functions.PreferenceKeys.SORTING_TVSHOWS;
-import static com.miz.functions.SortingKeys.ALL_SHOWS;
-import static com.miz.functions.SortingKeys.CERTIFICATION;
-import static com.miz.functions.SortingKeys.DURATION;
-import static com.miz.functions.SortingKeys.FAVORITES;
-import static com.miz.functions.SortingKeys.GENRES;
-import static com.miz.functions.SortingKeys.NEWEST_EPISODE;
-import static com.miz.functions.SortingKeys.RATING;
-import static com.miz.functions.SortingKeys.RELEASE;
-import static com.miz.functions.SortingKeys.RELEASE_YEAR;
-import static com.miz.functions.SortingKeys.TITLE;
-import static com.miz.functions.SortingKeys.UNWATCHED_SHOWS;
-import static com.miz.functions.SortingKeys.WEIGHTED_RATING;
-
-public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavigationListener, OnSharedPreferenceChangeListener {
-
-	private SharedPreferences mSharedPreferences;
-	private int mImageThumbSize, mImageThumbSpacing, mResizedWidth, mResizedHeight, mCurrentSort;
-	private LoaderAdapter mAdapter;
-	private ArrayList<TvShow> mTvShows = new ArrayList<TvShow>();
-	private ArrayList<Integer> mTvShowKeys = new ArrayList<Integer>();
-	private GridView mGridView = null;
-	private ProgressBar mProgressBar;
-	private boolean mIgnorePrefixes, mLoading, mShowTitles;
-	private ActionBar mActionBar;
-	private Picasso mPicasso;
-	private ArrayList<SpinnerItem> mSpinnerItems = new ArrayList<SpinnerItem>();
-	private SearchTask mSearch;
-	private Config mConfig;
-	private TvShowSectionLoader mTvShowSectionLoader;
-	private View mEmptyLibraryLayout;
-	private TextView mEmptyLibraryTitle, mEmptyLibraryDescription;
-
-	/**
-	 * Empty constructor as per the Fragment documentation
-	 */
-	public TvShowLibraryFragment() {}
-
-	public static TvShowLibraryFragment newInstance() {
-		return new TvShowLibraryFragment();
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {		
-		super.onCreate(savedInstanceState);
-
-		setRetainInstance(true);
-		setHasOptionsMenu(true);
-
-		setupSpinnerItems();
-
-		// Set OnSharedPreferenceChange listener
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
-
-		// Initialize the PreferenceManager variable and preference variable(s)
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-		mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
-		mShowTitles = mSharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
-
-		String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
-		if (thumbnailSize.equals(getString(R.string.large))) 
-			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
-		else if (thumbnailSize.equals(getString(R.string.normal))) 
-			mImageThumbSize = (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
-		else
-			mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
-		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-
-		mPicasso = MizuuApplication.getPicasso(getActivity());
-		mConfig = MizuuApplication.getBitmapConfig();
-
-		mAdapter = new LoaderAdapter(getActivity());
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-        getActivity().setTitle(R.string.chooserTVShows);
-
-		// Setup ActionBar with the action list
-		setupActionBar();
-
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_LIBRARY));
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-actor-search"));
-	}
-
-	private void setupActionBar() {
-        mActionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-	}
-
-	private void setupSpinnerItems() {
-		mSpinnerItems.clear();
-		mSpinnerItems.add(new SpinnerItem(getString(R.string.chooserTVShows), getString(R.string.choiceAllShows)));
-		mSpinnerItems.add(new SpinnerItem(getString(R.string.choiceFavorites), getString(R.string.choiceFavorites)));
-		mSpinnerItems.add(new SpinnerItem(getString(R.string.tvShowsWithUnwatchedEpisodes), getString(R.string.tvShowsWithUnwatchedEpisodes)));
-	}
-
-	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (intent.filterEquals(new Intent("mizuu-shows-actor-search"))) {
-				search("actor: " + intent.getStringExtra("intent_extra_data_key"));
-			} else {
-
-				clearCaches();
-				forceLoaderLoad();
-			}
-		}
-	};
-	
-	LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
-		@Override
-		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {			
-			mLoading = true;
-			return new SQLiteCursorLoader(getActivity(), DatabaseHelper.getHelper(getActivity()).getWritableDatabase(), DbAdapterTvShows.DATABASE_TABLE, DbAdapterTvShows.SELECT_ALL, "NOT(" + DbAdapterTvShows.KEY_SHOW_ID + " = '" + DbAdapterTvShows.UNIDENTIFIED_ID + "')", null, null, null, DbAdapterTvShows.KEY_SHOW_TITLE + " ASC");
-		}
-
-		@Override
-		public void onLoadFinished(Loader<Cursor> arg0, final Cursor cursor) {
-			AsyncTask<Void, Void, Void> load = new AsyncTask<Void, Void, Void>() {
-				@Override
-				protected void onPreExecute() {
-					mTvShows.clear();
-					mTvShowKeys.clear();
-				}
-
-				@Override
-				protected Void doInBackground(Void... params) {					
-					ColumnIndexCache cache = new ColumnIndexCache();
-					
-					try {
-						while (cursor.moveToNext()) {
-							mTvShows.add(new TvShow(
-									getActivity(),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_TITLE)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_PLOT)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RATING)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_GENRES)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ACTORS)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RUNTIME)),
-									mIgnorePrefixes,
-									cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
-									MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)))
-									));
-						}
-					} catch (Exception e) {
-					} finally {
-						cursor.close();
-						cache.clear();
-					}
-					
-					for (int i = 0; i < mTvShows.size(); i++)
-						mTvShowKeys.add(i);
-
-					return null;
-				}
-
-				@Override
-				protected void onPostExecute(Void result) {
-					showTvShowSection(0);
-
-					getActivity().invalidateOptionsMenu();
-
-					mLoading = false;
-				}
-
-			};
-			load.execute();
-		}
-
-		@Override
-		public void onLoaderReset(Loader<Cursor> arg0) {
-			mTvShows.clear();
-			mTvShowKeys.clear();
-			notifyDataSetChanged();
-		}
-	};
-
-	private void clearCaches() {
-		if (isAdded())
-			MizuuApplication.clearLruCache(getActivity());
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
-		final View v = inflater.inflate(R.layout.image_grid_fragment, container, false);
-
-		mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
-
-		mEmptyLibraryLayout = v.findViewById(R.id.empty_library_layout);
-		mEmptyLibraryTitle = (TextView) v.findViewById(R.id.empty_library_title);
-		mEmptyLibraryTitle.setTypeface(TypefaceUtils.getRobotoCondensedRegular(getActivity()));
-		mEmptyLibraryDescription = (TextView) v.findViewById(R.id.empty_library_description);
-		mEmptyLibraryDescription.setTypeface(TypefaceUtils.getRobotoLight(getActivity()));
-
-		mAdapter = new LoaderAdapter(getActivity());
-
-		mGridView = (GridView) v.findViewById(R.id.gridView);
-		mGridView.setAdapter(mAdapter);
-		mGridView.setEmptyView(mEmptyLibraryLayout);
-		mGridView.setColumnWidth(mImageThumbSize);
-
-		// Calculate the total column width to set item heights by factor 1.5
-		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
-				new ViewTreeObserver.OnGlobalLayoutListener() {
-					@SuppressLint("NewApi")
-					@Override
-					public void onGlobalLayout() {
-						if (mAdapter.getNumColumns() == 0) {
-							final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-							if (numColumns > 0) {
-								mAdapter.setNumColumns(numColumns);
-								mResizedWidth = (int) (((mGridView.getWidth() - (numColumns * mImageThumbSpacing))
-										/ numColumns) * 1.1); // * 1.1 is a hack to make images look slightly less blurry
-								mResizedHeight = (int) (mResizedWidth * 1.5);
-							}
-
-							MizLib.removeViewTreeObserver(mGridView.getViewTreeObserver(), this);
-						}
-					}
-				});
-		mGridView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Intent intent = new Intent();
-				intent.putExtra("showId", mTvShows.get(mTvShowKeys.get(arg2)).getId());
-				intent.setClass(getActivity(), TvShowDetails.class);
-
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), arg1.findViewById(R.id.cover), "cover");
-                ActivityCompat.startActivityForResult(getActivity(), intent, 0, options.toBundle());
-			}
-		});
-
-		return v;
-	}
-
-	private void showDetails(int arg2) {
-		Intent intent = new Intent();
-		intent.putExtra("showId", mTvShows.get(mTvShowKeys.get(arg2)).getId());
-		intent.setClass(getActivity(), TvShowDetails.class);
-		startActivityForResult(intent, 0);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		if (mTvShows.size() == 0)
-			forceLoaderLoad();
-
-		notifyDataSetChanged();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		// Unregister since the activity is about to be closed.
-		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
-	}
-
-	private class LoaderAdapter extends BaseAdapter {
-
-		private LayoutInflater inflater;
-		private final Context mContext;
-		private int mNumColumns = 0;
-		private ArrayList<TvShow> mTvShows = new ArrayList<TvShow>();
-		private ArrayList<Integer> mTvShowKeys = new ArrayList<Integer>();
-
-		public LoaderAdapter(Context context) {
-			mContext = context;
-			inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		}
-
-		// This is necessary in order to avoid random ArrayOutOfBoundsException when changing the items (i.e. during a library update)
-		public void setItems(ArrayList<TvShow> shows, ArrayList<Integer> showKeys) {
-			mTvShows = new ArrayList<TvShow>(shows);
-			mTvShowKeys = new ArrayList<Integer>(showKeys);
-			notifyDataSetChanged();
-		}
-		
-		@Override
-		public boolean isEmpty() {
-			return !mLoading && mTvShowKeys.size() == 0;
-		}
-
-		@Override
-		public int getCount() {
-			return mTvShowKeys.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return position;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup container) {
-
-			final TvShow mTvShow = mTvShows.get(mTvShowKeys.get(position));
-
-			CoverItem holder;
-			if (convertView == null) {
-				convertView = inflater.inflate(R.layout.grid_item, container, false);
-				holder = new CoverItem();
-
-				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
-				holder.text = (TextView) convertView.findViewById(R.id.text);
-				holder.text.setSingleLine(true);
-				holder.subtext = (TextView) convertView.findViewById(R.id.gridCoverSubtitle);
-				holder.subtext.setSingleLine(true);
-
-				holder.text.setTypeface(TypefaceUtils.getRobotoMedium(mContext));
-
-				convertView.setTag(holder);
-			} else {
-				holder = (CoverItem) convertView.getTag();
-			}
-			
-			if (!mShowTitles) {
-				holder.text.setVisibility(View.GONE);
-				holder.subtext.setVisibility(View.GONE);
-			} else {
-				holder.text.setVisibility(View.VISIBLE);
-				holder.subtext.setVisibility(View.VISIBLE);
-
-				holder.text.setText(mTvShow.getTitle());
-				holder.subtext.setText(mTvShow.getSubText(mCurrentSort));
-			}
-
-			holder.cover.setImageResource(R.color.card_background_dark);
-
-			if (mResizedWidth > 0)
-				mPicasso.load(mTvShow.getThumbnail()).resize(mResizedWidth, mResizedHeight).config(mConfig).into(holder);
-			else
-				mPicasso.load(mTvShow.getThumbnail()).config(mConfig).into(holder);
-
-			return convertView;
-		}
-
-		public void setNumColumns(int numColumns) {
-			mNumColumns = numColumns;
-		}
-
-		public int getNumColumns() {
-			return mNumColumns;
-		}
-	}
-
-	private void notifyDataSetChanged() {
-		if (mAdapter != null)
-			mAdapter.setItems(mTvShows, mTvShowKeys);
-	}
-
-	@Override
-	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		if (!mLoading)
-			showTvShowSection(itemPosition);
-
-		return true;
-	}
-
-	private void showTvShowSection(int position) {
-		if (mTvShowSectionLoader != null)
-			mTvShowSectionLoader.cancel(true);
-		mTvShowSectionLoader = new TvShowSectionLoader(position);
-		mTvShowSectionLoader.execute();
-	}
-
-	private class TvShowSectionLoader extends LibrarySectionAsyncTask<Void, Void, Boolean> {
-		private int mPosition;
-		private ArrayList<Integer> mTempKeys = new ArrayList<Integer>();
-
-		public TvShowSectionLoader(int position) {
-			mPosition = position;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			setProgressBarVisible(true);
-			mTvShowKeys.clear();
-		}
-
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			if (isCancelled())
-				return false;
-
-			switch (mPosition) {
-			case ALL_SHOWS:
-				for (int i = 0; i < mTvShows.size(); i++)
-					mTempKeys.add(i);
-				break;
-
-			case FAVORITES:
-				for (int i = 0; i < mTvShows.size(); i++) {
-					if (mTvShows.get(i).isFavorite())
-						mTempKeys.add(i);
-				}
-				break;
-
-			case UNWATCHED_SHOWS:
-				DbAdapterTvShowEpisodes db = MizuuApplication.getTvEpisodeDbAdapter();
-				for (int i = 0; i < mTvShows.size(); i++)
-					if (db.hasUnwatchedEpisodes(mTvShows.get(i).getId()))
-						mTempKeys.add(i);
-				break;
-			}
-
-			return true;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean success) {
-			// Make sure that the loading was successful, that the Fragment is still added and
-			// that the currently selected navigation index is the same as when we started loading
-			if (success && isAdded()) {
-				mTvShowKeys.addAll(mTempKeys);
-
-				sortTvShows();
-				notifyDataSetChanged();
-				setProgressBarVisible(false);
-			}
-		}
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        setupActionBar();
+
+public class TvShowLibraryFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private Context mContext;
+    private SharedPreferences mSharedPreferences;
+    private int mImageThumbSize, mImageThumbSpacing;
+    private LoaderAdapter mAdapter;
+    private GridView mGridView;
+    private ProgressBar mProgressBar;
+    private boolean mShowTitles, mIgnorePrefixes, mLoading = true;
+    private Picasso mPicasso;
+    private Config mConfig;
+    private TvShowLoader mTvShowLoader;
+    private SearchView mSearchView;
+    private View mEmptyLibraryLayout;
+    private TextView mEmptyLibraryTitle, mEmptyLibraryDescription;
+
+    /**
+     * Empty constructor as per the Fragment documentation
+     */
+    public TvShowLibraryFragment() {}
+
+    public static TvShowLibraryFragment newInstance(int type) {
+        TvShowLibraryFragment frag = new TvShowLibraryFragment();
+        Bundle b = new Bundle();
+        b.putInt("type", type);
+        frag.setArguments(b);
+        return frag;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+
+        mContext = getActivity().getApplicationContext();
+
+        // Set OnSharedPreferenceChange listener
+        PreferenceManager.getDefaultSharedPreferences(mContext).registerOnSharedPreferenceChangeListener(this);
+
+        // Initialize the PreferenceManager variable and preference variable(s)
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
+        mShowTitles = mSharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
+
+        mImageThumbSize = ViewUtils.getGridViewThumbSize(mContext);
+        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+
+        mPicasso = MizuuApplication.getPicasso(mContext);
+        mConfig = MizuuApplication.getBitmapConfig();
+
+        mAdapter = new LoaderAdapter(mContext);
+
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_LIBRARY));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter("mizuu-shows-actor-search"));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mMessageReceiver);
+        PreferenceManager.getDefaultSharedPreferences(mContext).unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mTvShowLoader != null) {
+                if (intent.filterEquals(new Intent("mizuu-shows-actor-search"))) {
+                    mTvShowLoader.search("actor: " + intent.getStringExtra("intent_extra_data_key"));
+                } else {
+                    mTvShowLoader.load();
+                }
+                showProgressBar();
+            }
+        }
+    };
+
+    private OnLoadCompletedCallback mCallback = new OnLoadCompletedCallback() {
+        @Override
+        public void onLoadCompleted() {
+            mAdapter.notifyDataSetChanged();
+        }
+    };
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.image_grid_fragment, container, false);
+
+        mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
+
+        mEmptyLibraryLayout = v.findViewById(R.id.empty_library_layout);
+        mEmptyLibraryTitle = (TextView) v.findViewById(R.id.empty_library_title);
+        mEmptyLibraryTitle.setTypeface(TypefaceUtils.getRobotoCondensedRegular(mContext));
+        mEmptyLibraryDescription = (TextView) v.findViewById(R.id.empty_library_description);
+        mEmptyLibraryDescription.setTypeface(TypefaceUtils.getRobotoLight(mContext));
+
+        mAdapter = new LoaderAdapter(mContext);
+
+        mGridView = (GridView) v.findViewById(R.id.gridView);
+        mGridView.setAdapter(mAdapter);
+        mGridView.setColumnWidth(mImageThumbSize);
+        mGridView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                viewTvShowDetails(arg2, arg1);
+            }
+        });
+
+        mTvShowLoader = new TvShowLoader(mContext, TvShowLibraryType.fromInt(getArguments().getInt("type")), mCallback);
+        mTvShowLoader.setIgnorePrefixes(mIgnorePrefixes);
+        mTvShowLoader.load();
+        showProgressBar();
+
+        return v;
+    }
+
+    private void viewTvShowDetails(int position, View view) {
+        Intent intent = new Intent();
+        intent.putExtra("showId", mAdapter.getItem(position).getId());
+        intent.setClass(mContext, TvShowDetails.class);
+
+        if (view != null) {
+            Pair<View, String> pair = new Pair<>(view.findViewById(R.id.cover), "cover");
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair);
+            ActivityCompat.startActivityForResult(getActivity(), intent, 0, options.toBundle());
+        } else {
+            startActivityForResult(intent, 0);
+        }
+    }
+
+    private class LoaderAdapter extends BaseAdapter {
+
+        private LayoutInflater mInflater;
+        private final Context mContext;
+        private Typeface mTypeface;
+
+        public LoaderAdapter(Context context) {
+            mContext = context;
+            mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mTypeface = TypefaceUtils.getRobotoMedium(mContext);
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return getCount() == 0 && !mLoading;
+        }
+
+        @Override
+        public int getCount() {
+            if (mTvShowLoader != null)
+                return mTvShowLoader.getResults().size();
+            return 0;
+        }
+
+        @Override
+        public TvShow getItem(int position) {
+            return mTvShowLoader.getResults().get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup container) {
+            final TvShow show = getItem(position);
+
+            CoverItem holder;
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.grid_cover, container, false);
+                holder = new CoverItem();
+
+                holder.cover = (ImageView) convertView.findViewById(R.id.cover);
+                holder.text = (TextView) convertView.findViewById(R.id.text);
+                holder.text.setTypeface(mTypeface);
+
+                convertView.setTag(holder);
+            } else {
+                holder = (CoverItem) convertView.getTag();
+            }
+
+            if (!mShowTitles) {
+                holder.text.setVisibility(View.GONE);
+            } else {
+                holder.text.setVisibility(View.VISIBLE);
+                holder.text.setText(show.getTitle());
+            }
+
+            holder.cover.setImageResource(R.color.card_background_dark);
+
+            mPicasso.load(show.getThumbnail()).placeholder(R.drawable.bg).config(mConfig).into(holder);
+
+            return convertView;
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+
+            // Hide the progress bar once the data set has been changed
+            hideProgressBar();
+
+            if (isEmpty()) {
+                showEmptyView();
+            } else {
+                hideEmptyView();
+            }
+        }
+    }
+
+    private void onSearchViewCollapsed() {
+        mTvShowLoader.load();
+        showProgressBar();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menutv, menu);
-
-        if (mTvShows.size() == 0)
-            menu.findItem(R.id.random).setVisible(false);
-        else
-            menu.findItem(R.id.random).setVisible(true);
 
         MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search_textbox), new OnActionExpandListener() {
             @Override
@@ -553,15 +312,13 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
             }
         });
 
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_textbox).getActionView();
-        ComponentName cn = new ComponentName(getActivity(), TvShowActorSearchActivity.class);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search_textbox));
+        mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() > 0) {
-                    search(newText);
+                    mTvShowLoader.search(newText);
+                    showProgressBar();
                 } else {
                     onSearchViewCollapsed();
                 }
@@ -571,375 +328,170 @@ public class TvShowLibraryFragment extends Fragment implements ActionBar.OnNavig
             public boolean onQueryTextSubmit(String query) { return false; }
         });
 
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-	
-	private void onSearchViewCollapsed() {
-		if (isAdded() && mActionBar != null) {
-			showTvShowSection(ALL_SHOWS);
-		}
-	}
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        ComponentName cn = new ComponentName(getActivity(), TvShowActorSearchActivity.class);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {		
-		super.onOptionsItemSelected(item);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-		switch (item.getItemId()) {
-		case R.id.update:
-			startActivityForResult(getUpdateIntent(), 0);
-			break;
-		case R.id.menuSortRating:
-			sortBy(RATING);
-			break;
-		case R.id.menuSortWeightedRating:
-			sortBy(WEIGHTED_RATING);
-			break;
-		case R.id.menuSortTitle:
-			sortBy(TITLE);
-			break;
-		case R.id.menuSortRelease:
-			sortBy(RELEASE);
-			break;
-		case R.id.menuSortNewestEpisode:
-			sortBy(NEWEST_EPISODE);
-			break;
-		case R.id.menuSortDuration:
-			sortBy(DURATION);
-			break;
-		case R.id.genres:
-			showGenres();
-			break;
-		case R.id.certifications:
-			showCertifications();
-			break;
-		case R.id.release_year:
-			showReleaseYear();
-			break;
-		case R.id.unidentifiedFiles:
-			startActivity(new Intent(getActivity(), UnidentifiedTvShows.class));
-			break;
-		case R.id.clear_filters:
-			showTvShowSection(0);
-			break;
-		case R.id.random:
-			if (mTvShowKeys.size() > 0) {
-				int random = new Random().nextInt(mTvShowKeys.size());
-				showDetails(random);
-			}
-			break;
-		}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
 
-		return true;
-	}
+        switch (item.getItemId()) {
+            case R.id.update:
+                Intent intent = new Intent();
+                intent.setClass(mContext, Update.class);
+                intent.putExtra("isMovie", false);
+                startActivityForResult(intent, 0);
+                break;
+            case R.id.menuSortNewestEpisode:
+                mTvShowLoader.setSortType(TvShowSortType.NEWEST_EPISODE);
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortRating:
+                mTvShowLoader.setSortType(TvShowSortType.RATING);
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortWeightedRating:
+                mTvShowLoader.setSortType(TvShowSortType.WEIGHTED_RATING);
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortRelease:
+                mTvShowLoader.setSortType(TvShowSortType.FIRST_AIR_DATE);
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortTitle:
+                mTvShowLoader.setSortType(TvShowSortType.TITLE);
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.menuSortDuration:
+                mTvShowLoader.setSortType(TvShowSortType.DURATION);
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.genres:
+                mTvShowLoader.showGenresFilterDialog(getActivity());
+                break;
+            case R.id.certifications:
+                mTvShowLoader.showCertificationsFilterDialog(getActivity());
+                break;
+            case R.id.folders:
+                mTvShowLoader.showFoldersFilterDialog(getActivity());
+                break;
+            case R.id.fileSources:
+                mTvShowLoader.showFileSourcesFilterDialog(getActivity());
+                break;
+            case R.id.release_year:
+                mTvShowLoader.showReleaseYearFilterDialog(getActivity());
+                break;
+            case R.id.offline_files:
+                mTvShowLoader.addFilter(new TvShowFilter(TvShowFilter.OFFLINE_FILES));
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.available_files:
+                mTvShowLoader.addFilter(new TvShowFilter(TvShowFilter.AVAILABLE_FILES));
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.clear_filters:
+                mTvShowLoader.clearFilters();
+                mTvShowLoader.load();
+                showProgressBar();
+                break;
+            case R.id.random:
+                if (mAdapter.getCount() > 0) {
+                    int random = new Random().nextInt(mAdapter.getCount());
+                    viewTvShowDetails(random, null);
+                }
+                break;
+            case R.id.unidentifiedFiles:
+                startActivity(new Intent(mContext, UnidentifiedTvShows.class));
+                break;
+        }
 
-	private Intent getUpdateIntent() {
-		Intent intent = new Intent();
-		intent.setClass(getActivity(), Update.class);
-		intent.putExtra("isMovie", false);
-		return intent;
-	}
+        return true;
+    }
 
-	private void sortTvShows() {
-		if (!isAdded())
-			return;
+    private void hideProgressBar() {
+        mGridView.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
+        mLoading = false;
+    }
 
-		String SORT_TYPE = mSharedPreferences.getString(SORTING_TVSHOWS, "sortTitle");
+    private void showProgressBar() {
+        mGridView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mLoading = true;
+    }
 
-		if (SORT_TYPE.equals("sortRelease")) {
-			sortBy(RELEASE);
-		} else if (SORT_TYPE.equals("sortRating")) {
-			sortBy(RATING);
-		} else if (SORT_TYPE.equals("sortWeightedRating")) {
-			sortBy(WEIGHTED_RATING);
-		} else if (SORT_TYPE.equals("sortNewestEpisode")) {
-			sortBy(NEWEST_EPISODE);
-		} else if (SORT_TYPE.equals("sortDuration")) {
-			sortBy(DURATION);
-		} else { // if SORT_TYPE equals "sortTitle"
-			sortBy(TITLE);
-		}
-	}
+    private void showEmptyView() {
+        mGridView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
+        mEmptyLibraryLayout.setVisibility(View.VISIBLE);
 
-	public void sortBy(int sort) {
-		if (!isAdded())
-			return;
+        if (mTvShowLoader.isShowingSearchResults()) {
+            mEmptyLibraryTitle.setText(R.string.no_search_results);
+            mEmptyLibraryDescription.setText(R.string.no_search_results_description);
+        } else {
+            switch (mTvShowLoader.getType()) {
+                case ALL_SHOWS:
+                    mEmptyLibraryTitle.setText(R.string.no_tv_shows);
+                    mEmptyLibraryDescription.setText(MizLib.isTablet(mContext) ?
+                            R.string.no_tv_shows_description_tablet : R.string.no_tv_shows_description);
+                    break;
+                case FAVORITES:
+                    mEmptyLibraryTitle.setText(R.string.no_favorites);
+                    mEmptyLibraryDescription.setText(R.string.no_favorites_description_tv);
+                    break;
+                case RECENTLY_AIRED:
+                    mEmptyLibraryTitle.setText(R.string.recently_aired);
+                    mEmptyLibraryDescription.setText(R.string.recently_aired_description);
+                    break;
+                case WATCHED:
+                    mEmptyLibraryTitle.setText(R.string.no_watched_tv_shows);
+                    mEmptyLibraryDescription.setText(R.string.no_watched_movies_description);
+                    break;
+                case UNWATCHED:
+                    mEmptyLibraryTitle.setText(R.string.no_unwatched_movies);
+                    mEmptyLibraryDescription.setText(R.string.no_unwatched_tv_shows_descriptions);
+                    break;
+            }
+        }
+    }
 
-		mCurrentSort = sort;
+    private void hideEmptyView() {
+        mEmptyLibraryLayout.setVisibility(View.GONE);
+    }
 
-		Editor editor = mSharedPreferences.edit();
-		switch (mCurrentSort) {
-		case TITLE:
-			editor.putString(SORTING_TVSHOWS, "sortTitle");
-			break;
-		case RELEASE:
-			editor.putString(SORTING_TVSHOWS, "sortRelease");
-			break;
-		case RATING:
-			editor.putString(SORTING_TVSHOWS, "sortRating");
-			break;
-		case WEIGHTED_RATING:
-			editor.putString(SORTING_TVSHOWS, "sortWeightedRating");
-			break;
-		case NEWEST_EPISODE:
-			editor.putString(SORTING_TVSHOWS, "sortNewestEpisode");
-			break;
-		case DURATION:
-			editor.putString(SORTING_TVSHOWS, "sortDuration");
-			break;
-		}
-		editor.apply();
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(IGNORED_TITLE_PREFIXES)) {
+            mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
 
-		ArrayList<TvShowSortHelper> tempHelper = new ArrayList<TvShowSortHelper>();
-		for (int i = 0; i < mTvShowKeys.size(); i++) {
-			tempHelper.add(new TvShowSortHelper(mTvShows.get(mTvShowKeys.get(i)), mTvShowKeys.get(i), mCurrentSort));
-		}
+            if (mTvShowLoader != null) {
+                mTvShowLoader.setIgnorePrefixes(mIgnorePrefixes);
+                mTvShowLoader.load();
+            }
 
-		Collections.sort(tempHelper);
+        } else if (key.equals(GRID_ITEM_SIZE)) {
+            mImageThumbSize = ViewUtils.getGridViewThumbSize(mContext);
 
-		mTvShowKeys.clear();
-		for (int i = 0; i < tempHelper.size(); i++) {
-			mTvShowKeys.add(tempHelper.get(i).getIndex());
-		}
+            if (mGridView != null)
+                mGridView.setColumnWidth(mImageThumbSize);
 
-		tempHelper.clear();
+            mAdapter.notifyDataSetChanged();
 
-		setProgressBarVisible(false);
-		notifyDataSetChanged();
-	}
-
-	private void showGenres() {
-		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-		String[] split;
-		for (int i = 0; i < mTvShowKeys.size(); i++) {
-			if (!mTvShows.get(mTvShowKeys.get(i)).getGenres().isEmpty()) {
-				split = mTvShows.get(mTvShowKeys.get(i)).getGenres().split(",");
-				for (int j = 0; j < split.length; j++) {
-					if (map.containsKey(split[j].trim())) {
-						map.put(split[j].trim(), map.get(split[j].trim()) + 1);
-					} else {
-						map.put(split[j].trim(), 1);
-					}
-				}
-			}
-		}
-
-		createAndShowAlertDialog(setupItemArray(map, R.string.allGenres), R.string.selectGenre, GENRES);
-	}
-
-	private void showCertifications() {
-		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-		for (int i = 0; i < mTvShowKeys.size(); i++) {
-			String certification = mTvShows.get(mTvShowKeys.get(i)).getCertification();
-			if (!TextUtils.isEmpty(certification) && !certification.equalsIgnoreCase(getString(R.string.stringNA))) {
-				if (map.containsKey(certification.trim())) {
-					map.put(certification.trim(), map.get(certification.trim()) + 1);
-				} else {
-					map.put(certification.trim(), 1);
-				}
-			}
-		}
-
-		createAndShowAlertDialog(setupItemArray(map, R.string.allCertifications), R.string.selectCertification, CERTIFICATION);
-	}
-	
-	private void showReleaseYear() {
-		final TreeMap<String, Integer> map = new TreeMap<String, Integer>();
-		for (int i = 0; i < mTvShowKeys.size(); i++) {
-			String year = mTvShows.get(mTvShowKeys.get(i)).getReleaseYear().trim();
-			if (!TextUtils.isEmpty(year)) {
-				if (map.containsKey(year)) {
-					map.put(year, map.get(year) + 1);
-				} else {
-					map.put(year, 1);
-				}
-			}
-		}
-
-		createAndShowAlertDialog(setupItemArray(map, R.string.allReleaseYears), R.string.selectReleaseYear, RELEASE_YEAR);
-	}
-
-	private void createAndShowAlertDialog(final CharSequence[] temp, int title, final int type) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(title)
-		.setItems(temp, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				handleDialogOnClick(dialog, which, type, temp);
-			}
-		});
-		builder.show();
-	}
-
-	private CharSequence[] setupItemArray(TreeMap<String, Integer> map, int stringId) {
-		final CharSequence[] tempArray = map.keySet().toArray(new CharSequence[map.keySet().size()]);	
-		for (int i = 0; i < tempArray.length; i++)
-			tempArray[i] = tempArray[i] + " (" + map.get(tempArray[i]) +  ")";
-
-		final CharSequence[] temp = new CharSequence[tempArray.length + 1];
-		temp[0] = getString(stringId);
-
-        System.arraycopy(tempArray, 0, temp, 0, tempArray.length);
-
-		return temp;
-	}
-
-	private void handleDialogOnClick(DialogInterface dialog, int which, int type, CharSequence[] temp) {
-		if (which > 0) {
-			ArrayList<Integer> currentlyShown = new ArrayList<Integer>(mTvShowKeys);
-			mTvShowKeys.clear();
-
-			String selected = temp[which].toString();
-			selected = selected.substring(0, selected.lastIndexOf("(")).trim();
-
-			boolean condition;
-			for (int i = 0; i < currentlyShown.size(); i++) {
-				condition = false;
-
-				switch (type) {
-				case GENRES:
-					if (mTvShows.get(currentlyShown.get(i)).getGenres().contains(selected)) {
-						String[] genres = mTvShows.get(currentlyShown.get(i)).getGenres().split(",");
-						for (String genre : genres) {
-							if (genre.trim().equals(selected)) {
-								condition = true;
-								break;
-							}
-						}
-					}
-					break;
-				case CERTIFICATION:
-					condition = mTvShows.get(currentlyShown.get(i)).getCertification().trim().contains(selected);
-					break;
-				case RELEASE_YEAR:
-					condition = mTvShows.get(currentlyShown.get(i)).getReleaseYear().trim().contains(selected);
-					break;
-				}
-
-				if (condition)
-					mTvShowKeys.add(currentlyShown.get(i));
-			}
-
-			sortTvShows();
-			notifyDataSetChanged();
-		}
-
-		dialog.dismiss();
-	}
-
-	private void search(String query) {
-		setProgressBarVisible(true);
-
-		if (mSearch != null)
-			mSearch.cancel(true);
-
-		mSearch = new SearchTask(query);
-		mSearch.execute();
-	}
-
-	private class SearchTask extends AsyncTask<String, String, String> {
-
-		private String mSearchQuery = "";
-		private List<Integer> mTempKeys;
-
-		public SearchTask(String query) {
-			mSearchQuery = query.toLowerCase(Locale.ENGLISH);
-		}
-
-		@Override
-		protected void onPreExecute() {
-			setProgressBarVisible(true);
-			mTvShowKeys.clear();
-		}
-
-		@Override
-		protected String doInBackground(String... params) {
-			mTempKeys = new ArrayList<Integer>();
-
-			if (mSearchQuery.startsWith("actor:")) {
-				for (int i = 0; i < mTvShows.size(); i++) {
-					if (isCancelled())
-						return null;
-
-					if (mTvShows.get(i).getActors().toLowerCase(Locale.ENGLISH).contains(mSearchQuery.replace("actor:", "").trim()))
-						mTempKeys.add(i);
-				}
-			} else {
-				Pattern p = Pattern.compile(MizLib.CHARACTER_REGEX); // Use a pre-compiled pattern as it's a lot faster (approx. 3x)
-
-				for (int i = 0; i < mTvShows.size(); i++) {
-					if (isCancelled())
-						return null;
-
-					String lowerCase = mTvShows.get(i).getTitle().toLowerCase(Locale.ENGLISH);
-
-					if (lowerCase.indexOf(mSearchQuery) != -1 ||  p.matcher(lowerCase).replaceAll("").indexOf(mSearchQuery) != -1)
-						mTempKeys.add(i);
-				}
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			mTvShowKeys.addAll(mTempKeys);
-
-			sortTvShows();
-			notifyDataSetChanged();
-			setProgressBarVisible(false);
-		}
-	}
-
-	private void setProgressBarVisible(boolean visible) {
-		mProgressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
-		mGridView.setVisibility(visible ? View.GONE : View.VISIBLE);
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode == 2) { // Favourite removed
-			if (mActionBar.getSelectedNavigationIndex() == FAVORITES) {
-				showTvShowSection(FAVORITES);
-			}
-		} else if (resultCode == 3) {
-			notifyDataSetChanged();
-		}
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(IGNORED_TITLE_PREFIXES)) {
-			mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
-			forceLoaderLoad();
-		} else if (key.equals(GRID_ITEM_SIZE)) {
-			String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
-			if (thumbnailSize.equals(getString(R.string.large))) 
-				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);
-			else if (thumbnailSize.equals(getString(R.string.normal))) 
-				mImageThumbSize = (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1);
-			else
-				mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
-
-			mGridView.setColumnWidth(mImageThumbSize);
-
-			final int numColumns = (int) Math.floor(mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-			if (numColumns > 0) {
-				mAdapter.setNumColumns(numColumns);
-			}
-
-			notifyDataSetChanged();
-		} else if (key.equals(SHOW_TITLES_IN_GRID)) {
-			mShowTitles = sharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
-			notifyDataSetChanged();
-		}
-	}
-
-	private void forceLoaderLoad() {
-		if (isAdded())
-			if (getLoaderManager().getLoader(0) == null)
-				getLoaderManager().initLoader(0, null, loaderCallbacks);
-			else
-				getLoaderManager().restartLoader(0, null, loaderCallbacks);
-	}
+        } else if (key.equals(SHOW_TITLES_IN_GRID)) {
+            mShowTitles = sharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
 }

@@ -166,6 +166,10 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 		return mDatabase.query(DATABASE_TABLE, SELECT_ALL, "NOT(" + KEY_SHOW_ID + " = '" + UNIDENTIFIED_ID + "')", null, null, null, KEY_SHOW_TITLE + " ASC");
 	}
 
+    public Cursor getAllFavorites() {
+        return mDatabase.query(DATABASE_TABLE, SELECT_ALL, KEY_SHOW_FAVOURITE + " = '1' AND NOT(" + KEY_SHOW_ID + " = '" + UNIDENTIFIED_ID + "')", null, null, null, KEY_SHOW_TITLE + " ASC");
+    }
+
 	public boolean deleteShow(String showId) {
 		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + "= '" + showId + "'", null) > 0;
 	}

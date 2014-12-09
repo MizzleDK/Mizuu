@@ -19,6 +19,7 @@ package com.miz.mizuu;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.SortingKeys;
 import com.miz.utils.FileUtils;
@@ -31,7 +32,7 @@ public class TvShow implements Comparable<TvShow> {
 
 	private Context mContext;
 	private String TITLE, DESCRIPTION, RATING, GENRES, ACTORS, CERTIFICATION, FIRST_AIR_DATE, RUNTIME, LATEST_EPISODE_AIR_DATE;
-	private String mId, mRuntime, mWeightedCompatibility, mReleaseDate, mGetReleaseYear, mTitle, mLatestEpisodeAirDate;
+	private String mId, mGetReleaseYear, mTitle;
 	private boolean mFavorite;
 	private File mThumbnail;
 
@@ -90,18 +91,6 @@ public class TvShow implements Comparable<TvShow> {
 		} else {
 			mGetReleaseYear = mContext.getString(R.string.unknownYear);
 		}
-
-		// Weighted compatibility
-		mWeightedCompatibility = (int) (getWeightedRating() * 10) + "% " + mContext.getString(R.string.compatibility);
-
-		// Runtime
-		mRuntime = MizLib.getPrettyTime(mContext, Integer.parseInt(getRuntime()));
-
-		// Release date
-		mReleaseDate = MizLib.getPrettyDate(mContext, getFirstAirdate());
-		
-		// Latest episode airdate
-		mLatestEpisodeAirDate = MizLib.getPrettyDate(mContext, getLatestEpisodeAirdate());;
 	}
 
 	public String getTitle() {
@@ -122,7 +111,6 @@ public class TvShow implements Comparable<TvShow> {
 
 	/**
 	 * Get the TV show ID
-	 * @param includeHacks Include information about the service provider in the ID, i.e. "tmdb_" at the start of the ID.
 	 * @return
 	 */
 	public String getId() {
@@ -254,40 +242,15 @@ public class TvShow implements Comparable<TvShow> {
 		return getTitle().compareToIgnoreCase(another.getTitle());
 	}
 
-	public String getPrettyRuntime() {
-		return mRuntime;
-	}
-
-	public String getWeightedCompatibility() {
-		return mWeightedCompatibility;
-	}
-
-	public String getPrettyReleaseDate() {
-		return mReleaseDate;
-	}
-	
-	public String getPrettyLatestEpisodeAirDate() {
-		return mLatestEpisodeAirDate;
-	}
-
 	public String getReleaseYear() {
 		return mGetReleaseYear;
 	}
 
-	public String getSubText(int sort) {
-		switch (sort) {
-		case SortingKeys.DURATION:
-			return getPrettyRuntime();
-		case SortingKeys.RATING:
-			return (int) (getRawRating() * 10) + "%";
-		case SortingKeys.WEIGHTED_RATING:
-			return getWeightedCompatibility();
-		case SortingKeys.NEWEST_EPISODE:
-			return getPrettyLatestEpisodeAirDate();
-		case SortingKeys.RELEASE:
-			return getPrettyReleaseDate();
-		default:
-			return getReleaseYear();
-		}
-	}
+    public boolean hasOfflineCopy(Filepath path) {
+        return getOfflineCopyFile(path).exists();
+    }
+
+    public File getOfflineCopyFile(Filepath path) {
+        return FileUtils.getOfflineFile(mContext, path.getFilepath());
+    }
 }

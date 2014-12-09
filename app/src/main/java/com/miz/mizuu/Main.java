@@ -63,7 +63,7 @@ import com.miz.mizuu.fragments.AccountsFragment;
 import com.miz.mizuu.fragments.ContactDeveloperFragment;
 import com.miz.mizuu.fragments.MovieDiscoveryViewPagerFragment;
 import com.miz.mizuu.fragments.MovieLibraryOverviewFragment;
-import com.miz.mizuu.fragments.TvShowLibraryFragment;
+import com.miz.mizuu.fragments.TvShowLibraryOverviewFragment;
 import com.miz.mizuu.fragments.WebVideosViewPagerFragment;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TypefaceUtils;
@@ -185,8 +185,6 @@ public class Main extends MizActivity {
         if (type == 0)
             type = 1;
 
-        setTitle(null);
-
         Fragment frag = getSupportFragmentManager().findFragmentByTag("frag" + type);
         if (frag == null) {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -196,7 +194,7 @@ public class Main extends MizActivity {
                     ft.replace(R.id.content_frame, MovieLibraryOverviewFragment.newInstance(), "frag" + type);
                     break;
                 case SHOWS:
-                    ft.replace(R.id.content_frame, TvShowLibraryFragment.newInstance(), "frag" + type);
+                    ft.replace(R.id.content_frame, TvShowLibraryOverviewFragment.newInstance(), "frag" + type);
                     break;
                 case WEB_MOVIES:
                     ft.replace(R.id.content_frame, MovieDiscoveryViewPagerFragment.newInstance(), "frag" + type);
@@ -206,6 +204,21 @@ public class Main extends MizActivity {
                     break;
             }
             ft.commit();
+        }
+
+        switch (type) {
+            case MOVIES:
+                setTitle(R.string.chooserMovies);
+                break;
+            case SHOWS:
+                setTitle(R.string.chooserTVShows);
+                break;
+            case WEB_MOVIES:
+                setTitle(R.string.drawerOnlineMovies);
+                break;
+            case WEB_VIDEOS:
+                setTitle(R.string.drawerWebVideos);
+                break;
         }
 
         selectListIndex(type);

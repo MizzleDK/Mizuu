@@ -20,6 +20,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 
 import java.util.ArrayList;
@@ -113,6 +114,26 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 
 		return paths;
 	}
+
+    public ArrayList<String> getFilepathsForShow(String showId) {
+        ArrayList<String> paths = new ArrayList<String>();
+
+        Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ?" ,
+                new String[]{showId}, null, null, null);
+
+        if (cursor != null) {
+            try {
+                while (cursor.moveToNext()) {
+                    paths.add(cursor.getString(cursor.getColumnIndex(KEY_FILEPATH)));
+                }
+            } catch (Exception e) {
+            } finally {
+                cursor.close();
+            }
+        }
+
+        return paths;
+    }
 
 	public Cursor getAllUnidentifiedFilepaths() {
 		String[] selectionArgs = new String[]{DbAdapterTvShows.UNIDENTIFIED_ID};
