@@ -471,7 +471,7 @@
     <string name="unwatched">(ikke set)</string>
     <string name="unwatchedEpisodesCount">%d ikke set</string>
     <string name="unwatched_episodes">Usete afsnit</string>
-    <string name="unwatched_tv_shows">Sete afsnit</string>
+    <string name="unwatched_tv_shows">Usete serier</string>
     <string name="updatedTvShow">Opdaterede TV-serier succesfuldt!</string>
     <string name="use_dvd_order">Brug DVD-sortering</string>
     <string name="use_dvd_order_description">Identificer sæsoner og afsnit ved brug af DVD-sortering, hvis dette eksisterer.</string>
