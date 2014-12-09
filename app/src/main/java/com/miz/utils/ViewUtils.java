@@ -362,8 +362,8 @@ public class ViewUtils {
      * @param title
      * @param color
      */
-    public static void updateToolbarBackground(Activity activity, Toolbar toolbar, int alpha, String title,
-                                               int color) {
+    public static void updateToolbarBackground(Activity activity, Toolbar toolbar,
+                                               int alpha, String title, int color) {
         if (defaultTitleTextColor == -1) {
             int[] textColorAttr = new int[]{R.attr.actionMenuTextColor};
             TypedValue typedValue = new TypedValue();
@@ -375,10 +375,7 @@ public class ViewUtils {
         toolbar.setTitle(title);
         toolbar.setTitleTextColor(adjustAlpha(defaultTitleTextColor, alpha));
         int toolbarColor = adjustAlpha(color, alpha);
-        if (MizLib.hasLollipop()) {
-            if(alpha < 127){
-                activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
-            }
+        if (MizLib.hasJellyBean()) {
             int topColor = darkenColor(color, alpha / 255f);
             topColor = adjustAlpha(topColor, Math.max(125, alpha));
             int[] colors = {topColor, toolbarColor};
