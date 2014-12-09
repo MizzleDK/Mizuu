@@ -41,166 +41,170 @@ import com.squareup.otto.Subscribe;
 
 public class ImageViewer extends MizActivity {
 
-	private ViewPager mViewPager;
-	private boolean mPortraitPhotos;
-	private String[] mPhotos;
-	private Bus mBus;
-	private Handler mHandler = new Handler();
+    private ViewPager mViewPager;
+    private boolean mPortraitPhotos;
+    private String[] mPhotos;
+    private Bus mBus;
+    private Handler mHandler = new Handler();
     private Toolbar mToolbar;
-	private Runnable mHideSystemUiRunnable = new Runnable() {
-		@Override
-		public void run() {
-			hideSystemUi();
-		}
-	};
+    private Runnable mHideSystemUiRunnable = new Runnable() {
+        @Override
+        public void run() {
+            hideSystemUi();
+        }
+    };
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		if (MizLib.hasKitKat()) {
+        if (MizLib.hasKitKat()) {
             setTheme(R.style.Mizuu_Theme_Translucent_FullScreen);
-		} else {
+        } else {
             setTheme(R.style.Mizuu_Theme_Transparent_FullScreen);
-		}
+        }
 
         ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), true);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        try {
+            setSupportActionBar(mToolbar);
+        } catch (Throwable t) {
+            // Samsung pls...
+        }
 
         ViewUtils.setProperToolbarSize(this, mToolbar);
 
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.transparent_actionbar));
-		
-		mBus = MizuuApplication.getBus();
 
-		mPortraitPhotos = getIntent().getBooleanExtra("portraitPhotos", true);
-		mPhotos = getIntent().getStringArrayExtra("photos");
+        mBus = MizuuApplication.getBus();
 
-		getSupportActionBar().setTitle((getIntent().getIntExtra("selectedIndex", 0) + 1) + " " + getString(R.string.of) + " " + mPhotos.length);
+        mPortraitPhotos = getIntent().getBooleanExtra("portraitPhotos", true);
+        mPhotos = getIntent().getStringArrayExtra("photos");
 
-		mViewPager = (ViewPager) findViewById(R.id.awesomepager);
-		mViewPager.setPageMargin(MizLib.convertDpToPixels(getApplicationContext(), 16));
-		mViewPager.setAdapter(new ActorPhotosAdapter(getSupportFragmentManager()));
-		mViewPager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int arg0) {
+        getSupportActionBar().setTitle((getIntent().getIntExtra("selectedIndex", 0) + 1) + " " + getString(R.string.of) + " " + mPhotos.length);
+
+        mViewPager = (ViewPager) findViewById(R.id.awesomepager);
+        mViewPager.setPageMargin(MizLib.convertDpToPixels(getApplicationContext(), 16));
+        mViewPager.setAdapter(new ActorPhotosAdapter(getSupportFragmentManager()));
+        mViewPager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int arg0) {
                 getSupportActionBar().setTitle((arg0 + 1) + " " + getString(R.string.of) + " " + mPhotos.length);
-			}
+            }
 
-		});
-		mViewPager.setCurrentItem(getIntent().getIntExtra("selectedIndex", 0));
+        });
+        mViewPager.setCurrentItem(getIntent().getIntExtra("selectedIndex", 0));
 
-		View decorView = getWindow().getDecorView();
-		decorView.setOnSystemUiVisibilityChangeListener(new OnSystemUiVisibilityChangeListener() {
-			@Override
-			public void onSystemUiVisibilityChange(int visibility) {
-				if (visibility == 0) {
-					// The UI is visible due to user interaction - let's hide it again after three seconds
-					mHandler.postDelayed(mHideSystemUiRunnable, 3000);
-				}
-			}
-		});
-	}
-	
-	@Override
-	protected int getLayoutResource() {
-		return R.layout.viewpager_with_toolbar_overlay;
-	}
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener(new OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                if (visibility == 0) {
+                    // The UI is visible due to user interaction - let's hide it again after three seconds
+                    mHandler.postDelayed(mHideSystemUiRunnable, 3000);
+                }
+            }
+        });
+    }
 
-	@SuppressLint("InlinedApi")
-	@Subscribe
-	public void tappedImage(Object event) {
-		boolean visible = getSupportActionBar().isShowing();
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.viewpager_with_toolbar_overlay;
+    }
 
-		if (visible) {
-			hideSystemUi();
-		} else {
-			showSystemUi();
-		}		
-	}
+    @SuppressLint("InlinedApi")
+    @Subscribe
+    public void tappedImage(Object event) {
+        boolean visible = getSupportActionBar().isShowing();
 
-	@SuppressLint("InlinedApi")
-	private void hideSystemUi() {
-		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-				| View.SYSTEM_UI_FLAG_FULLSCREEN
-				| View.SYSTEM_UI_FLAG_IMMERSIVE);
-		
-		mHandler.removeCallbacks(mHideSystemUiRunnable);
+        if (visible) {
+            hideSystemUi();
+        } else {
+            showSystemUi();
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    private void hideSystemUi() {
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+
+        mHandler.removeCallbacks(mHideSystemUiRunnable);
 
         getSupportActionBar().hide();
-	}
+    }
 
-	private void showSystemUi() {
-		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    private void showSystemUi() {
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         ViewUtils.setupWindowFlagsForStatusbarOverlay(getWindow(), true);
 
         getSupportActionBar().show();
-	}
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		mBus.register(this);
-	}
+        mBus.register(this);
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
+    @Override
+    public void onPause() {
+        super.onPause();
 
-		mBus.unregister(this);
-	}
+        mBus.unregister(this);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.open_in_browser, menu);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.open_in_browser, menu);
+        return true;
+    }
 
-	private class ActorPhotosAdapter extends FragmentPagerAdapter {
+    private class ActorPhotosAdapter extends FragmentPagerAdapter {
 
-		public ActorPhotosAdapter(FragmentManager fm) {
-			super(fm);
-		}
+        public ActorPhotosAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-		@Override  
-		public Fragment getItem(int index) {
-			return ActorPhotoFragment.newInstance(mPhotos[index], mPortraitPhotos);
-		}  
+        @Override
+        public Fragment getItem(int index) {
+            return ActorPhotoFragment.newInstance(mPhotos[index], mPortraitPhotos);
+        }
 
-		@Override  
-		public int getCount() { 
-			return mPhotos.length;
-		}
-	}
+        @Override
+        public int getCount() {
+            return mPhotos.length;
+        }
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			onBackPressed();
-			return true;
-		case R.id.openInBrowser:
-			openInBrowser();
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.openInBrowser:
+                openInBrowser();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-	private void openInBrowser() {
-		Intent i = new Intent(Intent.ACTION_VIEW);
-		i.setData(Uri.parse(mPhotos[mViewPager.getCurrentItem()]));
-		startActivity(i);
-	}
+    private void openInBrowser() {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(mPhotos[mViewPager.getCurrentItem()]));
+        startActivity(i);
+    }
 
-	@Override
-	public void onStart() {
-		super.onStart();
+    @Override
+    public void onStart() {
+        super.onStart();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	}
+    }
 }

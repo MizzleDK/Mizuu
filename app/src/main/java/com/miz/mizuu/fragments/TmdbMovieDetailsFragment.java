@@ -122,7 +122,11 @@ public class TmdbMovieDetailsFragment extends Fragment {
         mToolbar.setBackgroundResource(android.R.color.transparent);
         ViewUtils.setProperToolbarSize(mContext, mToolbar);
 
-        ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
+        try {
+            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
+        } catch (Throwable t) {
+            // Samsung pls...
+        }
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // This needs to be re-initialized here and not in onCreate()

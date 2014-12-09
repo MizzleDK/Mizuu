@@ -53,97 +53,101 @@ import com.squareup.picasso.Picasso;
 
 public class ActorDetailsFragment extends Fragment {
 
-	private String mActorId;
-	private CompleteActor mActor;
-	private Activity mContext;
-	private TextView mName, mPlaceOfBirth, mBirthday, mKnownCredits, mBiography;
-	private ImageView mPhoto, mBackdrop;
+    private String mActorId;
+    private CompleteActor mActor;
+    private Activity mContext;
+    private TextView mName, mPlaceOfBirth, mBirthday, mKnownCredits, mBiography;
+    private ImageView mPhoto, mBackdrop;
     private ObservableScrollView mScrollView;
-	private HorizontalCardLayout mMovieCards, mTvCards, mPhotoCards, mTaggedPhotoCards;
-	private int mImageThumbSize, mImageThumbBackdropSize, mImageThumbSpacing, mToolbarColor = 0;
+    private HorizontalCardLayout mMovieCards, mTvCards, mPhotoCards, mTaggedPhotoCards;
+    private int mImageThumbSize, mImageThumbBackdropSize, mImageThumbSpacing, mToolbarColor = 0;
     private Typeface mMedium, mBold, mCondensedRegular;
-	private View mProgressLayout, mDetailsLayout;
-	private Picasso mPicasso;
+    private View mProgressLayout, mDetailsLayout;
+    private Picasso mPicasso;
     private Toolbar mToolbar;
     private PaletteLoader mPaletteLoader;
 
-	public ActorDetailsFragment() {}
+    public ActorDetailsFragment() {}
 
-	public static ActorDetailsFragment newInstance(String actorId) {
-		ActorDetailsFragment frag = new ActorDetailsFragment();
+    public static ActorDetailsFragment newInstance(String actorId) {
+        ActorDetailsFragment frag = new ActorDetailsFragment();
 
-		Bundle args = new Bundle();
-		args.putString("actorId", actorId);
+        Bundle args = new Bundle();
+        args.putString("actorId", actorId);
 
-		frag.setArguments(args);
+        frag.setArguments(args);
 
-		return frag;
-	}
+        return frag;
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {		
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		setRetainInstance(true);
+        setRetainInstance(true);
 
-		mContext = getActivity();
+        mContext = getActivity();
 
-		mActorId = getArguments().getString("actorId");
+        mActorId = getArguments().getString("actorId");
 
-		mPicasso = MizuuApplication.getPicassoDetailsView(mContext);
+        mPicasso = MizuuApplication.getPicassoDetailsView(mContext);
 
         mMedium = TypefaceUtils.getRobotoMedium(mContext);
         mBold = TypefaceUtils.getRobotoBold(mContext);
         mCondensedRegular = TypefaceUtils.getRobotoCondensedRegular(mContext);
-	}
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.actor_details, container, false);
-	}
+    }
 
-	@Override
-	public void onViewCreated(final View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
         mToolbar.setBackgroundResource(android.R.color.transparent);
         ViewUtils.setProperToolbarSize(mContext, mToolbar);
 
-        ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
+        try {
+            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
+        } catch (Throwable t) {
+            // Samsung pls...
+        }
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		// This needs to be re-initialized here and not in onCreate()
-		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.horizontal_grid_item_width);
-		mImageThumbBackdropSize = getResources().getDimensionPixelSize(R.dimen.horizontal_grid_item_backdrop_width);
-		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+        // This needs to be re-initialized here and not in onCreate()
+        mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.horizontal_grid_item_width);
+        mImageThumbBackdropSize = getResources().getDimensionPixelSize(R.dimen.horizontal_grid_item_backdrop_width);
+        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-		// Progress layout
-		mProgressLayout = view.findViewById(R.id.progress_layout);
+        // Progress layout
+        mProgressLayout = view.findViewById(R.id.progress_layout);
 
-		// Details layout
-		mDetailsLayout = view.findViewById(R.id.details_area);
+        // Details layout
+        mDetailsLayout = view.findViewById(R.id.details_area);
 
-		mName = (TextView) view.findViewById(R.id.actor_name);
-		mName.setTypeface(mCondensedRegular);
+        mName = (TextView) view.findViewById(R.id.actor_name);
+        mName.setTypeface(mCondensedRegular);
 
-		mPlaceOfBirth = (TextView) view.findViewById(R.id.place_of_birth);
-		mPlaceOfBirth.setTypeface(mBold);
+        mPlaceOfBirth = (TextView) view.findViewById(R.id.place_of_birth);
+        mPlaceOfBirth.setTypeface(mBold);
 
-		mBirthday = (TextView) view.findViewById(R.id.actor_birthday);
-		mBirthday.setTypeface(mMedium);
+        mBirthday = (TextView) view.findViewById(R.id.actor_birthday);
+        mBirthday.setTypeface(mMedium);
 
-		mKnownCredits = (TextView) view.findViewById(R.id.actor_known_credits);
-		mKnownCredits.setTypeface(mMedium);
+        mKnownCredits = (TextView) view.findViewById(R.id.actor_known_credits);
+        mKnownCredits.setTypeface(mMedium);
 
-		mBiography = (TextView) view.findViewById(R.id.actor_biography);
+        mBiography = (TextView) view.findViewById(R.id.actor_biography);
 
-		mBiography.setBackgroundResource(R.drawable.selectable_background);
-		mBiography.setMaxLines(mContext.getResources().getInteger(R.integer.show_details_max_lines));
-		mBiography.setTag(true); // true = collapsed
-		mBiography.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
+        mBiography.setBackgroundResource(R.drawable.selectable_background);
+        mBiography.setMaxLines(mContext.getResources().getInteger(R.integer.show_details_max_lines));
+        mBiography.setTag(true); // true = collapsed
+        mBiography.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 if (((Boolean) mBiography.getTag())) {
                     // Animate
                     ViewUtils.animateTextViewMaxLines(mBiography, 50); // It seems highly unlikely that there would every be more than 50 lines
@@ -158,19 +162,19 @@ public class ActorDetailsFragment extends Fragment {
                     // Reverse the tag
                     mBiography.setTag(true);
                 }
-			}
-		});
-		mBiography.setEllipsize(TextUtils.TruncateAt.END);
-		mBiography.setFocusable(true);
+            }
+        });
+        mBiography.setEllipsize(TextUtils.TruncateAt.END);
+        mBiography.setFocusable(true);
         mBiography.setTypeface(mCondensedRegular);
 
-		mPhoto = (ImageView) view.findViewById(R.id.actor_image);
-		mBackdrop = (ImageView) view.findViewById(R.id.imageBackground);
+        mPhoto = (ImageView) view.findViewById(R.id.actor_image);
+        mBackdrop = (ImageView) view.findViewById(R.id.imageBackground);
 
-		mMovieCards = (HorizontalCardLayout) view.findViewById(R.id.actor_movie_cards);
-		mTvCards = (HorizontalCardLayout) view.findViewById(R.id.actor_tv_cards);
-		mPhotoCards = (HorizontalCardLayout) view.findViewById(R.id.actor_photo_cards);
-		mTaggedPhotoCards = (HorizontalCardLayout) view.findViewById(R.id.actor_tagged_photo_cards);
+        mMovieCards = (HorizontalCardLayout) view.findViewById(R.id.actor_movie_cards);
+        mTvCards = (HorizontalCardLayout) view.findViewById(R.id.actor_tv_cards);
+        mPhotoCards = (HorizontalCardLayout) view.findViewById(R.id.actor_photo_cards);
+        mTaggedPhotoCards = (HorizontalCardLayout) view.findViewById(R.id.actor_tagged_photo_cards);
 
         mScrollView = (ObservableScrollView) view.findViewById(R.id.observableScrollView);
 
@@ -194,118 +198,118 @@ public class ActorDetailsFragment extends Fragment {
 
         ViewUtils.updateToolbarBackground(getActivity(), mToolbar, 0, "", mToolbarColor);
 
-		if (mActor == null)
-			new ActorLoader(mActorId).execute();
-		else
-			fillViews();
-	}
+        if (mActor == null)
+            new ActorLoader(mActorId).execute();
+        else
+            fillViews();
+    }
 
-	private void fillViews() {
-		mName.setText(mActor.getName());
+    private void fillViews() {
+        mName.setText(mActor.getName());
 
-		if (!TextUtils.isEmpty(mActor.getPlaceOfBirth()))
-			mPlaceOfBirth.setText(mActor.getPlaceOfBirth());
-		else
-			mPlaceOfBirth.setVisibility(View.GONE);
+        if (!TextUtils.isEmpty(mActor.getPlaceOfBirth()))
+            mPlaceOfBirth.setText(mActor.getPlaceOfBirth());
+        else
+            mPlaceOfBirth.setVisibility(View.GONE);
 
-		if (!TextUtils.isEmpty(mActor.getBiography()))
-			mBiography.setText(mActor.getBiography());
-		else
-			mBiography.setText(R.string.no_biography);
+        if (!TextUtils.isEmpty(mActor.getBiography()))
+            mBiography.setText(mActor.getBiography());
+        else
+            mBiography.setText(R.string.no_biography);
 
-		mBirthday.setText(MizLib.getPrettyDatePrecise(mContext, mActor.getBirthday()));
-		mKnownCredits.setText(String.valueOf(mActor.getKnownCreditCount()));
+        mBirthday.setText(MizLib.getPrettyDatePrecise(mContext, mActor.getBirthday()));
+        mKnownCredits.setText(String.valueOf(mActor.getKnownCreditCount()));
 
-		loadImages();
+        loadImages();
 
-		mMovieCards.setTitle(R.string.chooserMovies);
-		mMovieCards.setSeeMoreVisibility(true);
-		mMovieCards.getViewTreeObserver().addOnGlobalLayoutListener(
-				new ViewTreeObserver.OnGlobalLayoutListener() {
-					@Override
-					public void onGlobalLayout() {
-						if (mMovieCards.getWidth() > 0) {
-							final int numColumns = (int) Math.floor(mMovieCards.getWidth() / (mImageThumbSize + mImageThumbSpacing));	
-							mImageThumbSize = (mMovieCards.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
+        mMovieCards.setTitle(R.string.chooserMovies);
+        mMovieCards.setSeeMoreVisibility(true);
+        mMovieCards.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (mMovieCards.getWidth() > 0) {
+                            final int numColumns = (int) Math.floor(mMovieCards.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+                            mImageThumbSize = (mMovieCards.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
 
-							mMovieCards.loadItems(mContext, mPicasso, numColumns, mImageThumbSize, mActor.getMovies(), HorizontalCardLayout.MOVIES, mToolbarColor);
-							MizLib.removeViewTreeObserver(mMovieCards.getViewTreeObserver(), this);
-						}
-					}
-				});
-		mMovieCards.setSeeMoreOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(IntentUtils.getActorMoviesIntent(mContext, mActor.getName(), mActor.getId(), mToolbarColor));
-			}
-		});
+                            mMovieCards.loadItems(mContext, mPicasso, numColumns, mImageThumbSize, mActor.getMovies(), HorizontalCardLayout.MOVIES, mToolbarColor);
+                            MizLib.removeViewTreeObserver(mMovieCards.getViewTreeObserver(), this);
+                        }
+                    }
+                });
+        mMovieCards.setSeeMoreOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(IntentUtils.getActorMoviesIntent(mContext, mActor.getName(), mActor.getId(), mToolbarColor));
+            }
+        });
 
-		mTvCards.setTitle(R.string.chooserTVShows);
-		mTvCards.setSeeMoreVisibility(true);
-		mTvCards.getViewTreeObserver().addOnGlobalLayoutListener(
-				new ViewTreeObserver.OnGlobalLayoutListener() {
-					@Override
-					public void onGlobalLayout() {
-						if (mTvCards.getWidth() > 0) {
-							final int numColumns = (int) Math.floor(mTvCards.getWidth() / (mImageThumbSize + mImageThumbSpacing));	
-							mImageThumbSize = (mTvCards.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
+        mTvCards.setTitle(R.string.chooserTVShows);
+        mTvCards.setSeeMoreVisibility(true);
+        mTvCards.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (mTvCards.getWidth() > 0) {
+                            final int numColumns = (int) Math.floor(mTvCards.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+                            mImageThumbSize = (mTvCards.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
 
-							mTvCards.loadItems(mContext, mPicasso, numColumns, mImageThumbSize, mActor.getTvShows(), HorizontalCardLayout.TV_SHOWS, mToolbarColor);
-							MizLib.removeViewTreeObserver(mTvCards.getViewTreeObserver(), this);
-						}
-					}
-				});
-		mTvCards.setSeeMoreOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(IntentUtils.getActorTvShowsIntent(mContext, mActor.getName(), mActor.getId(), mToolbarColor));
-			}
-		});
+                            mTvCards.loadItems(mContext, mPicasso, numColumns, mImageThumbSize, mActor.getTvShows(), HorizontalCardLayout.TV_SHOWS, mToolbarColor);
+                            MizLib.removeViewTreeObserver(mTvCards.getViewTreeObserver(), this);
+                        }
+                    }
+                });
+        mTvCards.setSeeMoreOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(IntentUtils.getActorTvShowsIntent(mContext, mActor.getName(), mActor.getId(), mToolbarColor));
+            }
+        });
 
-		mPhotoCards.setTitle(R.string.actorsShowAllPhotos);
-		mPhotoCards.setSeeMoreVisibility(true);
-		mPhotoCards.getViewTreeObserver().addOnGlobalLayoutListener(
-				new ViewTreeObserver.OnGlobalLayoutListener() {
-					@Override
-					public void onGlobalLayout() {
-						if (mPhotoCards.getWidth() > 0) {
-							final int numColumns = (int) Math.floor(mPhotoCards.getWidth() / (mImageThumbSize + mImageThumbSpacing));	
-							mImageThumbSize = (mPhotoCards.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
+        mPhotoCards.setTitle(R.string.actorsShowAllPhotos);
+        mPhotoCards.setSeeMoreVisibility(true);
+        mPhotoCards.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (mPhotoCards.getWidth() > 0) {
+                            final int numColumns = (int) Math.floor(mPhotoCards.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+                            mImageThumbSize = (mPhotoCards.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
 
-							mPhotoCards.loadItems(mContext, mPicasso, numColumns, mImageThumbSize, mActor.getPhotos(), HorizontalCardLayout.PHOTOS, mToolbarColor);
-							MizLib.removeViewTreeObserver(mPhotoCards.getViewTreeObserver(), this);
-						}
-					}
-				});
-		mPhotoCards.setSeeMoreOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(IntentUtils.getActorPhotosIntent(mContext, mActor.getName(), mActor.getId(), mToolbarColor));
-			}
-		});
+                            mPhotoCards.loadItems(mContext, mPicasso, numColumns, mImageThumbSize, mActor.getPhotos(), HorizontalCardLayout.PHOTOS, mToolbarColor);
+                            MizLib.removeViewTreeObserver(mPhotoCards.getViewTreeObserver(), this);
+                        }
+                    }
+                });
+        mPhotoCards.setSeeMoreOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(IntentUtils.getActorPhotosIntent(mContext, mActor.getName(), mActor.getId(), mToolbarColor));
+            }
+        });
 
-		mTaggedPhotoCards.setTitle(R.string.actorsTaggedPhotos);
-		mTaggedPhotoCards.setSeeMoreVisibility(true);
-		mTaggedPhotoCards.getViewTreeObserver().addOnGlobalLayoutListener(
-				new ViewTreeObserver.OnGlobalLayoutListener() {
-					@Override
-					public void onGlobalLayout() {
-						if (mTaggedPhotoCards.getWidth() > 0) {
-							final int numColumns = (int) Math.floor(mTaggedPhotoCards.getWidth() / (mImageThumbBackdropSize + mImageThumbSpacing));	
-							mImageThumbBackdropSize = (mTaggedPhotoCards.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
+        mTaggedPhotoCards.setTitle(R.string.actorsTaggedPhotos);
+        mTaggedPhotoCards.setSeeMoreVisibility(true);
+        mTaggedPhotoCards.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (mTaggedPhotoCards.getWidth() > 0) {
+                            final int numColumns = (int) Math.floor(mTaggedPhotoCards.getWidth() / (mImageThumbBackdropSize + mImageThumbSpacing));
+                            mImageThumbBackdropSize = (mTaggedPhotoCards.getWidth() - (numColumns * mImageThumbSpacing)) / numColumns;
 
-							mTaggedPhotoCards.loadItems(mContext, mPicasso, numColumns, mImageThumbBackdropSize, mActor.getTaggedPhotos(), HorizontalCardLayout.TAGGED_PHOTOS, mToolbarColor);
-							MizLib.removeViewTreeObserver(mTaggedPhotoCards.getViewTreeObserver(), this);
-						}
-					}
-				});
-		mTaggedPhotoCards.setSeeMoreOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(IntentUtils.getActorTaggedPhotosIntent(mContext, mActor.getName(), mActor.getId(), mToolbarColor));
-			}
-		});
-	}
+                            mTaggedPhotoCards.loadItems(mContext, mPicasso, numColumns, mImageThumbBackdropSize, mActor.getTaggedPhotos(), HorizontalCardLayout.TAGGED_PHOTOS, mToolbarColor);
+                            MizLib.removeViewTreeObserver(mTaggedPhotoCards.getViewTreeObserver(), this);
+                        }
+                    }
+                });
+        mTaggedPhotoCards.setSeeMoreOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(IntentUtils.getActorTaggedPhotosIntent(mContext, mActor.getName(), mActor.getId(), mToolbarColor));
+            }
+        });
+    }
 
     private void loadImages() {
         mPicasso.load(mActor.getProfilePhoto()).placeholder(R.drawable.noactor).error(R.drawable.noactor).into(mPhoto, new Callback() {
@@ -355,48 +359,48 @@ public class ActorDetailsFragment extends Fragment {
         }
     }
 
-	private class ActorLoader extends AsyncTask<Void, Void, Void> {
+    private class ActorLoader extends AsyncTask<Void, Void, Void> {
 
-		private final String mActorId;
+        private final String mActorId;
 
-		public ActorLoader(String actorId) {
-			mActorId = actorId;
-		}
+        public ActorLoader(String actorId) {
+            mActorId = actorId;
+        }
 
-		@Override
-		protected void onPreExecute() {
-			// Show that we're loading
-			mProgressLayout.setVisibility(View.VISIBLE);
-		}
+        @Override
+        protected void onPreExecute() {
+            // Show that we're loading
+            mProgressLayout.setVisibility(View.VISIBLE);
+        }
 
-		@Override
-		protected Void doInBackground(Void... params) {
+        @Override
+        protected Void doInBackground(Void... params) {
 
-			// Load the actor details
-			TMDbMovieService service = TMDbMovieService.getInstance(mContext);
-			mActor = service.getCompleteActorDetails(mActorId);
-			
-			for (int i = 0; i < mActor.getMovies().size(); i++) {
-				String id = mActor.getMovies().get(i).getId();
-				mActor.getMovies().get(i).setInLibrary(MizuuApplication.getMovieAdapter().movieExists(id));
-			}
+            // Load the actor details
+            TMDbMovieService service = TMDbMovieService.getInstance(mContext);
+            mActor = service.getCompleteActorDetails(mActorId);
 
-			for (int i = 0; i < mActor.getTvShows().size(); i++) {
-				String id = mActor.getTvShows().get(i).getId();
-				String title = mActor.getTvShows().get(i).getTitle();
-				mActor.getTvShows().get(i).setInLibrary(MizuuApplication.getTvDbAdapter().showExists(id, title));
-			}
-			
-			return null;
-		}
+            for (int i = 0; i < mActor.getMovies().size(); i++) {
+                String id = mActor.getMovies().get(i).getId();
+                mActor.getMovies().get(i).setInLibrary(MizuuApplication.getMovieAdapter().movieExists(id));
+            }
 
-		@Override
-		protected void onPostExecute(Void result) {
-			// No longer loading, so hide the layout
-			mProgressLayout.setVisibility(View.GONE);
+            for (int i = 0; i < mActor.getTvShows().size(); i++) {
+                String id = mActor.getTvShows().get(i).getId();
+                String title = mActor.getTvShows().get(i).getTitle();
+                mActor.getTvShows().get(i).setInLibrary(MizuuApplication.getTvDbAdapter().showExists(id, title));
+            }
 
-			// Fill in all the details
-			fillViews();
-		}
-	}
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // No longer loading, so hide the layout
+            mProgressLayout.setVisibility(View.GONE);
+
+            // Fill in all the details
+            fillViews();
+        }
+    }
 }

@@ -208,7 +208,11 @@ public class TvShowDetailsFragment extends Fragment {
         mToolbar.setBackgroundResource(android.R.color.transparent);
         ViewUtils.setProperToolbarSize(mContext, mToolbar);
 
-        ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
+        try {
+            ((ActionBarActivity) getActivity()).setSupportActionBar(mToolbar);
+        } catch (Throwable t) {
+            // Samsung pls...
+        }
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // This needs to be re-initialized here and not in onCreate()
@@ -486,7 +490,7 @@ public class TvShowDetailsFragment extends Fragment {
                 HashMap<String, EpisodeCounter> seasons = MizuuApplication.getTvEpisodeDbAdapter().getSeasons(thisShow.getId());
 
                 for (String key : seasons.keySet()) {
-                   File temp = FileUtils.getTvShowSeason(mContext, thisShow.getId(), key);
+                    File temp = FileUtils.getTvShowSeason(mContext, thisShow.getId(), key);
                     mSeasons.add(new GridSeason(mContext, thisShow.getId(), Integer.valueOf(key), seasons.get(key).getEpisodeCount(), seasons.get(key).getWatchedCount(),
                             temp.exists() ? temp :
                                     FileUtils.getTvShowThumb(mContext, thisShow.getId())));

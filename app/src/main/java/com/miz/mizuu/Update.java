@@ -44,113 +44,118 @@ import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_TVSHOWS;
 
 public class Update extends ActionBarActivity {
 
-	private Button mFileSourcesButton, mUpdateLibraryButton;
-	private TextView mFileSourcesDescription, mUpdateLibraryDescription;
-	private CheckBox mClearLibrary, mRemoveUnavailableFiles;
-	private Editor mEditor;
-	private SharedPreferences mSharedPreferences;
-	private boolean mIsMovie;
-	private Typeface mTypeface;
-	private Toolbar mToolbar;
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    private Button mFileSourcesButton, mUpdateLibraryButton;
+    private TextView mFileSourcesDescription, mUpdateLibraryDescription;
+    private CheckBox mClearLibrary, mRemoveUnavailableFiles;
+    private Editor mEditor;
+    private SharedPreferences mSharedPreferences;
+    private boolean mIsMovie;
+    private Typeface mTypeface;
+    private Toolbar mToolbar;
 
-		setContentView(R.layout.update_layout);
-		
-		mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(mToolbar);
-		
-		mIsMovie = getIntent().getExtras().getBoolean("isMovie");
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		mTypeface = TypefaceUtils.getRobotoLight(this);
+        setContentView(R.layout.update_layout);
 
-		if (!mIsMovie)
-			setTitle(getString(R.string.updateTvShowsTitle));
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+            setSupportActionBar(mToolbar);
+        } catch (Throwable t) {
+            // Samsung pls...
+        }
 
-		mClearLibrary = (CheckBox) findViewById(R.id.checkBox);
-		mClearLibrary.setTypeface(mTypeface);
-		mClearLibrary.setChecked(false);
-		mClearLibrary.setOnCheckedChangeListener(getOnCheckedChangeListener(true));
+        mIsMovie = getIntent().getExtras().getBoolean("isMovie");
 
-		mRemoveUnavailableFiles = (CheckBox) findViewById(R.id.checkBox2);
-		mRemoveUnavailableFiles.setTypeface(mTypeface);
-		mRemoveUnavailableFiles.setChecked(false);
-		mRemoveUnavailableFiles.setOnCheckedChangeListener(getOnCheckedChangeListener(false));
+        mTypeface = TypefaceUtils.getRobotoLight(this);
 
-		mFileSourcesDescription = (TextView) findViewById(R.id.file_sources_description);
-		mFileSourcesDescription.setTypeface(mTypeface);
-		mUpdateLibraryDescription = (TextView) findViewById(R.id.update_library_description);
-		mUpdateLibraryDescription.setTypeface(mTypeface);
+        if (!mIsMovie)
+            setTitle(getString(R.string.updateTvShowsTitle));
 
-		mFileSourcesButton = (Button) findViewById(R.id.select_file_sources_button);
-		mFileSourcesButton.setTypeface(mTypeface);
-		mUpdateLibraryButton = (Button) findViewById(R.id.start_update_button);
-		mUpdateLibraryButton.setTypeface(mTypeface);
-	}
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-	private OnCheckedChangeListener getOnCheckedChangeListener(final boolean clearLibrary) {
-		return new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        mClearLibrary = (CheckBox) findViewById(R.id.checkBox);
+        mClearLibrary.setTypeface(mTypeface);
+        mClearLibrary.setChecked(false);
+        mClearLibrary.setOnCheckedChangeListener(getOnCheckedChangeListener(true));
+
+        mRemoveUnavailableFiles = (CheckBox) findViewById(R.id.checkBox2);
+        mRemoveUnavailableFiles.setTypeface(mTypeface);
+        mRemoveUnavailableFiles.setChecked(false);
+        mRemoveUnavailableFiles.setOnCheckedChangeListener(getOnCheckedChangeListener(false));
+
+        mFileSourcesDescription = (TextView) findViewById(R.id.file_sources_description);
+        mFileSourcesDescription.setTypeface(mTypeface);
+        mUpdateLibraryDescription = (TextView) findViewById(R.id.update_library_description);
+        mUpdateLibraryDescription.setTypeface(mTypeface);
+
+        mFileSourcesButton = (Button) findViewById(R.id.select_file_sources_button);
+        mFileSourcesButton.setTypeface(mTypeface);
+        mUpdateLibraryButton = (Button) findViewById(R.id.start_update_button);
+        mUpdateLibraryButton.setTypeface(mTypeface);
+    }
+
+    private OnCheckedChangeListener getOnCheckedChangeListener(final boolean clearLibrary) {
+        return new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mEditor = mSharedPreferences.edit();
                 if (clearLibrary)
-					mEditor.putBoolean(mIsMovie ? CLEAR_LIBRARY_MOVIES : CLEAR_LIBRARY_TVSHOWS, isChecked);
-				else
-					mEditor.putBoolean(mIsMovie ? REMOVE_UNAVAILABLE_FILES_MOVIES : REMOVE_UNAVAILABLE_FILES_TVSHOWS, isChecked);
-				mEditor.apply();
-			}
-		};
-	}
+                    mEditor.putBoolean(mIsMovie ? CLEAR_LIBRARY_MOVIES : CLEAR_LIBRARY_TVSHOWS, isChecked);
+                else
+                    mEditor.putBoolean(mIsMovie ? REMOVE_UNAVAILABLE_FILES_MOVIES : REMOVE_UNAVAILABLE_FILES_TVSHOWS, isChecked);
+                mEditor.apply();
+            }
+        };
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		mClearLibrary.setChecked(mSharedPreferences.getBoolean(mIsMovie ? CLEAR_LIBRARY_MOVIES : CLEAR_LIBRARY_TVSHOWS, false));
-		mRemoveUnavailableFiles.setChecked(mSharedPreferences.getBoolean(mIsMovie ? REMOVE_UNAVAILABLE_FILES_MOVIES : REMOVE_UNAVAILABLE_FILES_TVSHOWS, false));
-	}
+        mClearLibrary.setChecked(mSharedPreferences.getBoolean(mIsMovie ? CLEAR_LIBRARY_MOVIES : CLEAR_LIBRARY_TVSHOWS, false));
+        mRemoveUnavailableFiles.setChecked(mSharedPreferences.getBoolean(mIsMovie ? REMOVE_UNAVAILABLE_FILES_MOVIES : REMOVE_UNAVAILABLE_FILES_TVSHOWS, false));
+    }
 
-	public void startUpdate(View v) {
-		if (mIsMovie && !MizLib.isMovieLibraryBeingUpdated(this))
-			getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));
-		else if (!mIsMovie && !MizLib.isTvShowLibraryBeingUpdated(this))
-			getApplicationContext().startService(new Intent(getApplicationContext(), TvShowsLibraryUpdate.class));
-		setResult(1); // end activity and reload Main activity
+    public void startUpdate(View v) {
+        if (mIsMovie && !MizLib.isMovieLibraryBeingUpdated(this))
+            getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));
+        else if (!mIsMovie && !MizLib.isTvShowLibraryBeingUpdated(this))
+            getApplicationContext().startService(new Intent(getApplicationContext(), TvShowsLibraryUpdate.class));
+        setResult(1); // end activity and reload Main activity
 
-		finish(); // Leave the Update screen once the update has been started
-	}
+        finish(); // Leave the Update screen once the update has been started
+    }
 
-	@Override
-	public void onStart() {
-		super.onStart();
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	}
+    @Override
+    public void onStart() {
+        super.onStart();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			onBackPressed();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
-	public void selectSources(View v) {
-		Intent intent = new Intent(this, FileSources.class);
-		intent.putExtra("fromUpdate", true);
-		intent.putExtra("isMovie", mIsMovie);
-		intent.putExtra("completeScan", mClearLibrary.isChecked());
-		startActivity(intent);
-	}
+    public void selectSources(View v) {
+        Intent intent = new Intent(this, FileSources.class);
+        intent.putExtra("fromUpdate", true);
+        intent.putExtra("isMovie", mIsMovie);
+        intent.putExtra("completeScan", mClearLibrary.isChecked());
+        startActivity(intent);
+    }
 }

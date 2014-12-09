@@ -24,21 +24,25 @@ import com.miz.mizuu.R;
 
 public abstract class MizActivity extends ActionBarActivity {
 
-	public Toolbar mToolbar;
+    public Toolbar mToolbar;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (getLayoutResource() > 0) {
+        if (getLayoutResource() > 0) {
             setContentView(getLayoutResource());
 
             mToolbar = (Toolbar) findViewById(R.id.toolbar);
             if (mToolbar != null) {
-                setSupportActionBar(mToolbar);
+                try {
+                    setSupportActionBar(mToolbar);
+                } catch (Throwable t) {
+                    // Samsung pls...
+                }
             }
         }
-	}
+    }
 
-	protected abstract int getLayoutResource();
+    protected abstract int getLayoutResource();
 }
