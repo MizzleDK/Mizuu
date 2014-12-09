@@ -366,8 +366,6 @@
     <string name="check_in">Tjek ind på Trakt</string>
     <string name="checked_in">Tjekket ind på Trakt!</string>
     <string name="choiceOffline">Offline-kopier</string>
-    <string name="choiceReddit"></string>
-    <string name="choiceYouTube"></string>
     <string name="chromecast_description">Aktiver understøttelse for casting af SMB- og UPnP-filer.</string>
     <string name="chromecast_title">Chromecast-understøttelse (smugkig)</string>
     <string name="clear_filters">Fjern filtre</string>
@@ -403,7 +401,6 @@
     <string name="large">Stor</string>
     <string name="leftEpisodesCount">%d tilbage</string>
     <string name="logged_in_as">Logget ind som %s</string>
-    <string name="mizuu_filename_key"></string>
     <string name="no_actors">Ingen skuespillere fundet!</string>
     <string name="no_actors_description">Det lader til at der ikke er nogen skuespillere…</string>
     <string name="no_biography">Ingen biografi tilgængelig.</string>
@@ -436,7 +433,6 @@
     <string name="pause">Pause</string>
     <string name="play">Afspil</string>
     <string name="playing_season_episode">Afspiller %1$s (S%2$sE%3$s): %4$s</string>
-    <string name="prefsCreditsTmdbDescription"></string>
     <string name="random_movie">Tilfældig film</string>
     <string name="random_show">Tilfældig TV-serie</string>
     <string name="recently_aired">Nyligt sendt</string>
@@ -478,6 +474,5 @@
     <string name="view_collection_online">Vis samling online</string>
     <string name="watched_episodes">Sete afsnit</string>
     <string name="watched_tv_shows">Sete serier</string>
-    <string name="youtube_api_key"></string>
 
 </resources>
