@@ -94,7 +94,8 @@ public class MovieIdentification {
 	}
 
     public void setCurrentMovieId(String oldMovieId) {
-        mCurrentMovieId = oldMovieId;
+        if (!TextUtils.isEmpty(oldMovieId))
+            mCurrentMovieId = oldMovieId;
     }
 
 	private boolean overrideMovieId() {

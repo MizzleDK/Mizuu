@@ -114,6 +114,9 @@ public class DbAdapterMovies extends AbstractDbAdapter {
     }
 
     public String getSingleItem(String tmdbId, String column) {
+        if (TextUtils.isEmpty(tmdbId))
+            return "";
+
         String singleItem = "";
         Cursor c = mDatabase.query(DATABASE_TABLE, new String[]{column}, KEY_TMDB_ID + " = ?", new String[]{tmdbId}, null, null, null);
         if (c != null) {
@@ -124,6 +127,7 @@ public class DbAdapterMovies extends AbstractDbAdapter {
                 c.close();
             }
         }
+
         return singleItem;
     }
 
@@ -153,6 +157,8 @@ public class DbAdapterMovies extends AbstractDbAdapter {
     }
 
     public String getCollectionId(String tmdbId) {
+        if (TextUtils.isEmpty(tmdbId))
+            return "";
         return getSingleItem(tmdbId, KEY_COLLECTION_ID);
     }
 

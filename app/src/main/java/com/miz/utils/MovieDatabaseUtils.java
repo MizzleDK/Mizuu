@@ -17,6 +17,7 @@
 package com.miz.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.miz.db.DbAdapterMovies;
 import com.miz.mizuu.MizuuApplication;
@@ -49,6 +50,9 @@ public class MovieDatabaseUtils {
 	}
 
     public static void deleteMovie(Context context, String tmdbId) {
+        if (TextUtils.isEmpty(tmdbId))
+            return;
+
         DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 
         // Delete the movie details
@@ -65,6 +69,9 @@ public class MovieDatabaseUtils {
     }
 
     public static void ignoreMovie(String tmdbId) {
+        if (TextUtils.isEmpty(tmdbId))
+            return;
+
         DbAdapterMovies db = MizuuApplication.getMovieAdapter();
 
         // We delete the movie...
