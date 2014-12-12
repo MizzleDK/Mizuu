@@ -69,6 +69,7 @@
                         android:layout_alignParentEnd="false"
                         android:layout_marginRight="@dimen/content_details_baseline_margin"
                         android:layout_marginTop="@dimen/content_details_landscape_fab_margin_top"
+                        app:fab_colorNormal="#666"
                         app:fab_type="mini" />
 
                     <LinearLayout

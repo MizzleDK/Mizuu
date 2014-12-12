@@ -36,6 +36,7 @@
                     android:layout_marginRight="@dimen/content_details_baseline_margin"
                     android:layout_marginTop="@dimen/content_details_fab_negative_margin"
                     android:layout_below="@+id/imageBackground"
+                    app:fab_colorNormal="#666"
                     app:fab_type="mini"/>
 
                 <android.support.v7.widget.CardView
