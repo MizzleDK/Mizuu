@@ -138,11 +138,10 @@ public class UnidentifiedTvShows extends MizActivity {
 		}
 
 		Intent i = new Intent();
-		i.setClass(this, IdentifyTvShow.class);
-		i.putExtra("files", filepaths.toArray(new String[filepaths.size()]));
-		i.putExtra("showName", "");
-		i.putExtra("oldShowId", "0");
-		i.putExtra("includeShowData", true);
+		i.setClass(this, IdentifyTvShowEpisode.class);
+        i.putExtra("filepaths", filepaths);
+		i.putExtra("showTitle", "");
+		i.putExtra("showId", ""); // Unidentified
 		startActivity(i);
 	}
 
