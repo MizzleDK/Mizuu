@@ -250,11 +250,6 @@ public class MovieIdentification {
     }
 
     private void addToDatabase(MovieStructure ms, Movie movie) {
-
-        System.out.println("OLD ID: " + getCurrentMovieId());
-        System.out.println("NEW ID: " + getMovieId());
-        System.out.println("MOVIE ID: " + movie.getId());
-
         DbAdapterMovieMappings dbHelperMovieMapping = MizuuApplication.getMovieMappingAdapter();
         DbAdapterMovies dbHelper = MizuuApplication.getMovieAdapter();
 
