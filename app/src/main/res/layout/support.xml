@@ -61,7 +61,8 @@
                 android:id="@+id/traktUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/message" >
+                android:hint="@string/message"
+                android:capitalize="sentences">
             </EditText>
 
             <LinearLayout
