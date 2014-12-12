@@ -94,6 +94,13 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
 		return mDatabase.update(DATABASE_TABLE, values, KEY_FILEPATH + " = ? AND " + KEY_TMDB_ID + " = ?", new String[]{filepath, currentId}) > 0;
 	}
 
+    public boolean updateTmdbId(String filepath, String newId) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_TMDB_ID, newId);
+
+        return mDatabase.update(DATABASE_TABLE, values, KEY_FILEPATH + " = ?", new String[]{filepath}) > 0;
+    }
+
 	public boolean exists(String tmdbId) {
 		Cursor cursor = mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_TMDB_ID + " = ?", new String[]{tmdbId}, null, null, null);
 		boolean result = false;
