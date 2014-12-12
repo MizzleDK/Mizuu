@@ -83,18 +83,8 @@ public class MovieDetails extends MizActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == 0) {
-			if (resultCode == Activity.RESULT_OK) {
-				finish();
-			}
-		}
-
-		if (resultCode == 1)
-			WidgetUtils.updateMovieWidgets(this);
-
-		if (resultCode == 2 || resultCode == 4) {
-			if (resultCode == 4) // The movie data has been edited
-				Toast.makeText(this, getString(R.string.updatedMovie), Toast.LENGTH_SHORT).show();
+		if (resultCode == 4) {
+			Toast.makeText(this, getString(R.string.updatedMovie), Toast.LENGTH_SHORT).show();
 
 			// Create a new Intent with the Bundle
 			Intent intent = new Intent();

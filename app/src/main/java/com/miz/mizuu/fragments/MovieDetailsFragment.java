@@ -735,13 +735,6 @@ public class MovieDetailsFragment extends Fragment {
         return intent;
     }
 
-    public void shareMovie(MenuItem item) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, "http://www.imdb.com/title/" + mMovie.getImdbId());
-        startActivity(Intent.createChooser(intent, getString(R.string.shareWith)));
-    }
-
     public void favAction() {
         mMovie.setFavourite(!mMovie.isFavourite()); // Reverse the favourite boolean
 
