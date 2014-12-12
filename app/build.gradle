@@ -59,7 +59,7 @@ dependencies {
     compile files('libs/YouTubeAndroidPlayerApi.jar')
 
 /**
- * // Cling
+ * // Cling 2.0 dependencies on Android
  compile group: 'org.fourthline.cling', name: 'cling-core', version:'2.0.1'
  compile group: 'org.fourthline.cling', name: 'cling-support', version:'2.0.1'
  compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'8.1.12.v20130726'
