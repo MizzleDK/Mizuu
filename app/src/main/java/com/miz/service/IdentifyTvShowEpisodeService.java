@@ -34,6 +34,7 @@ import com.miz.functions.MizLib;
 import com.miz.functions.TvShowLibraryUpdateCallback;
 import com.miz.identification.ShowStructure;
 import com.miz.identification.TvShowIdentification;
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TvShowDatabaseUtils;
@@ -130,6 +131,8 @@ public class IdentifyTvShowEpisodeService extends IntentService implements TvSho
         for (String path : mFilepaths) {
             if (!TextUtils.isEmpty(mOldShowId))
                 TvShowDatabaseUtils.deleteEpisode(this, mOldShowId, path);
+            else
+                MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteFilepath(path);
         }
 
         LocalBroadcastUtils.updateTvShowLibrary(this);
