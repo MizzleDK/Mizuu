@@ -400,7 +400,9 @@ public class MizuuApplication extends Application {
 	}
 	
 	public static List<String> getMovieFilepaths(String id) {
-		return mMovieFilepaths.get(id);
+        if (mMovieFilepaths != null && mMovieFilepaths.containsKey(id))
+		    return mMovieFilepaths.get(id);
+        return null;
 	}
 	
 	/**
