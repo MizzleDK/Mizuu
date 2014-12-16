@@ -17,37 +17,36 @@
 package com.miz.mizuu;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
-import android.graphics.Typeface;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterTvShows;
+import com.miz.functions.AsyncTask;
+import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.MizLib;
 import com.miz.utils.FileUtils;
 import com.miz.utils.TypefaceUtils;
@@ -57,21 +56,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-import static com.miz.functions.PreferenceKeys.CONFIRM_BACK_PRESS;
+public class Welcome extends MizActivity {
 
-public class Welcome extends MizActivity implements ViewFactory {
+	private final long INTERVAL = 10000;
 
-	private long interval = 10000;
-	private int mNumMovies, mNumShows, mNumWatchlist, index = -1;
-	private ListView list;
-	private Typeface tf;
-	private DbAdapterMovies dbHelper;
-	private DbAdapterTvShows dbHelperTv;
-	private ArrayList<Backdrop> backdrops = new ArrayList<Backdrop>();
-	private boolean isRunning = true, confirmExit, hasTriedOnce = false;
-	private ImageSwitcher imageSwitcher;
-	private TextView title;
-	private Handler handler;
+	private int mNumMovies, mNumShows, index = -1;
+    private ArrayList<WelcomeItem> mItems = new ArrayList<>();
+	private boolean isRunning = true;
+	private ImageSwitcher mImageSwitcher, mImageCover;
+	private TextSwitcher title;
+	private Handler mHandler = new Handler();
+    private Animation mAnimationIn, mAnimationOut;
 
 	@Override
 	protected int getLayoutResource() {
@@ -82,166 +77,102 @@ public class Welcome extends MizActivity implements ViewFactory {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
-		confirmExit = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(CONFIRM_BACK_PRESS, false);
-
 		supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE); // This works on API level 13 as well
+		getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LOW_PROFILE|
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
 		super.onCreate(savedInstanceState);
-		
-		tf = TypefaceUtils.getRobotoThin(this);
 
-		dbHelper = MizuuApplication.getMovieAdapter();
-		dbHelperTv = MizuuApplication.getTvDbAdapter();
-
-		Cursor cursor = dbHelper.fetchAllMovies(DbAdapterMovies.KEY_TITLE + " ASC");
-		while (cursor.moveToNext()) {
-			try {
-				backdrops.add(new Backdrop(
-						FileUtils.getMovieBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID))).getAbsolutePath(),
-						cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TMDB_ID)),
-						true,
-						cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TITLE))
-						));
-			} catch (NullPointerException e) {}
-		}
-		cursor = dbHelperTv.getAllShows();
-		while (cursor.moveToNext()) {
-			try {
-				backdrops.add(new Backdrop(FileUtils.getTvShowBackdrop(this, cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID))).getAbsolutePath(),
-								cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID)),
-								false,
-								cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_TITLE))
-						));
-			} catch (NullPointerException e) {}
-		}
-		cursor.close();
-
-		Collections.shuffle(backdrops, new Random(System.nanoTime()));
-
-		list = (ListView) findViewById(R.id.list);
-		list.setDivider(null);
-		list.setAdapter(new MenuAdapter());
-		list.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (!(arg2 == 0 || arg2 == 4)) {
-					Intent i = new Intent(Intent.ACTION_VIEW);
-					i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-					switch (arg2) {
-					case 1:
-						i.putExtra("startup", "1");
-						break;
-					case 2:
-						i.putExtra("startup", "2");
-						break;
-					case 3:
-						i.putExtra("startup", "3");
-						break;
-					case 5:
-						i.putExtra("startup", "4");
-						break;
-					case 6:
-						i.putExtra("startup", "5");
-						break;
-					}
-					i.setClass(getApplicationContext(), Main.class);
-					startActivity(i);
-					overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-				}
-			}
-		});
-		list.setSelection(1); // Google TV goodies
+        mAnimationIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+        mAnimationIn.setDuration(500);
+        mAnimationOut = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
+        mAnimationOut.setDuration(500);
 
 		updateLibraryCounts();
 
-		title = (TextView) findViewById(R.id.title);
-		if (MizLib.isTablet(this))
-			title.setTextSize(26f);
-		else
-			title.setVisibility(View.GONE);
+        mImageCover = (ImageSwitcher) findViewById(R.id.imageCover);
+        mImageCover.setInAnimation(mAnimationIn);
+        mImageCover.setOutAnimation(mAnimationOut);
+        mImageCover.setFactory(new ViewFactory() {
+            @Override
+            public View makeView() {
+                ImageView imageView = new ImageView(getApplicationContext());
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setLayoutParams(new ImageSwitcher.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                return imageView;
+            }
+        });
 
-		Animation aniIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-		aniIn.setDuration(800);
-		Animation aniOut = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
-		aniOut.setDuration(800);
+		title = (TextSwitcher) findViewById(R.id.title);
+        title.setInAnimation(mAnimationIn);
+        title.setOutAnimation(mAnimationOut);
+        title.setFactory(new ViewFactory() {
+            @Override
+            public View makeView() {
+                TextView tv = new TextView(getApplicationContext());
+                tv.setTextAppearance(getApplicationContext(), android.R.style.TextAppearance_Large);
+                tv.setShadowLayer(1f, 0, 0, Color.BLACK);
+                tv.setTextIsSelectable(false);
+                tv.setGravity(Gravity.RIGHT);
+                tv.setTypeface(TypefaceUtils.getRobotoCondensedRegular(getApplicationContext()));
+                tv.setLayoutParams(new TextSwitcher.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                return tv;
+            }
+        });
 
-		imageSwitcher = (ImageSwitcher) findViewById(R.id.imageSwitcher1);
+        mImageSwitcher = (ImageSwitcher) findViewById(R.id.imageSwitcher1);
 		if (!MizLib.usesNavigationControl(getApplicationContext()))
-			imageSwitcher.setOnClickListener(new OnClickListener() {
+			mImageCover.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent intent = new Intent();
-					if (index == -1)
-						index = 0;
-					if (backdrops.get(index).isMovie()) {
-						intent.putExtra("tmdbId", backdrops.get(index).getId());
-						intent.setClass(getApplicationContext(), MovieDetails.class);
-					} else {
-						intent.putExtra("showId", backdrops.get(index).getId());
-						intent.setClass(getApplicationContext(), TvShowDetails.class);
-					}
-					startActivity(intent);
+                    Pair<View, String> pair = new Pair<>(findViewById(R.id.cardview), "cover");
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(Welcome.this, pair);
+                    ActivityCompat.startActivityForResult(Welcome.this, mItems.get(index).getIntent(getApplicationContext()), 0, options.toBundle());
 				}
 			});
-		imageSwitcher.setInAnimation(aniIn);
-		imageSwitcher.setOutAnimation(aniOut);
-		imageSwitcher.setFactory(this);
+        mImageSwitcher.setInAnimation(mAnimationIn);
+        mImageSwitcher.setOutAnimation(mAnimationOut);
+        mImageSwitcher.setFactory(new ViewFactory() {
+            @Override
+            public View makeView() {
+                ImageView imageView = new ImageView(getApplicationContext());
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setLayoutParams(new ImageSwitcher.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                return imageView;
+            }
+        });
 
-		handler = new Handler();
-
-		if (backdrops.size() > 0) {
-			handler.post(runnable);
-		}
+        new WelcomeLoader(getApplicationContext()).execute();
 	}
 
 	private void startAnimatedBackground() {
-		handler.postDelayed(runnable, interval);
+		mHandler.postDelayed(runnable, INTERVAL);
 	}
 
-	private int tries = 0;
-	private File tFile;
-
 	private void increaseIndex() {
-		index++;
-		index = index % backdrops.size();
-		tFile = new File(backdrops.get(index).getPath());
-		if (!tFile.exists() && tries < 10) {
-			tries++;
-			increaseIndex();
-		}
+        if (index >= (mItems.size() - 1))
+            index = 0;
+        else
+            index++;
 	}
 
 	private Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
 			if (isRunning) {
-				//index++;
-				//index = index % backdrops.size();
 				increaseIndex();
-				imageSwitcher.setImageURI(Uri.parse(backdrops.get(index).getPath()));
 
-				final Animation aniIn = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
-				Animation aniOut = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
-				aniOut.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						title.setText(backdrops.get(index).getTitle());
-						title.startAnimation(aniIn);
-					}
+                mImageSwitcher.setImageURI(Uri.parse(mItems.get(index).getBackdropPath()));
+                mImageCover.setImageURI(Uri.parse(mItems.get(index).getCoverPath()));
+                title.setCurrentText(mItems.get(index).getTitle());
 
-					@Override
-					public void onAnimationRepeat(Animation animation) {}
-
-					@Override
-					public void onAnimationStart(Animation animation) {}
-				});
-
-				title.startAnimation(aniOut);
-
-				handler.postDelayed(this, interval);
+				mHandler.postDelayed(this, INTERVAL);
 			}
 		}
 	};
@@ -265,159 +196,155 @@ public class Welcome extends MizActivity implements ViewFactory {
 			@Override
 			public void run() {
 				try {					
-					mNumMovies = dbHelper.count();
-					mNumWatchlist = dbHelper.countWatchlist();
-					mNumShows = dbHelperTv.count();
+					mNumMovies = MizuuApplication.getMovieAdapter().count();
+					mNumShows = MizuuApplication.getTvDbAdapter().count();
 
-					runOnUiThread(new Runnable() {
+					/*runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
 							((BaseAdapter) list.getAdapter()).notifyDataSetChanged();
 						}
-					});
+					});*/
 				} catch (Exception e) {} // Problemer med at kontakte databasen
 			}
 		}.start();
 	}
 
-	public class MenuAdapter extends BaseAdapter {
+    private class WelcomeItem {
 
-		@Override
-		public int getCount() {
-			return 7;
-		}
+        public static final int MOVIE = 0, TV_SHOW = 1;
 
-		@Override
-		public Object getItem(int position) {
-			return null;
-		}
+        private String mItemId, mTitle;
+        private File mBackdrop, mCover;
+        private int mType;
 
-		@Override
-		public long getItemId(int position) {
-			return 0;
-		}
+        public WelcomeItem(String itemId, String title, File backdrop, File cover, int type) {
+            mItemId = itemId;
+            mTitle = title;
+            mBackdrop = backdrop;
+            mCover = cover;
+            mType = type;
+        }
 
-		@Override
-		public int getViewTypeCount() {
-			return 2;
-		}
+        public String getItemId() {
+            return mItemId;
+        }
 
-		@Override
-		public int getItemViewType(int position) {
-			if (position == 0 || position == 4)
-				return 0;
-			else
-				return 1;
-		}
+        public String getTitle() {
+            return mTitle;
+        }
 
-		@Override
-		public boolean isEnabled(int position) {
-            return !(position == 0 || position == 4);
-		}
+        public File getBackdrop() {
+            return mBackdrop;
+        }
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+        public String getBackdropPath() {
+            return mBackdrop.getAbsolutePath();
+        }
 
-			if (position == 0 || position == 4) {
-				convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row_header, parent, false);
-				if (position == 0) {
-					((TextView) convertView.findViewById(R.id.options)).setText(getString(R.string.stringLocal));
-				} else {
-					((TextView) convertView.findViewById(R.id.options)).setText(getString(R.string.stringDiscover));
-				}
-				return convertView;
-			}
+        public File getCover() {
+            return mCover;
+        }
 
-			convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.row, parent, false);
-			ImageView icon = (ImageView) convertView.findViewById(R.id.row_icon);
-			TextView title = (TextView) convertView.findViewById(R.id.row_title);
-			if (MizLib.isTablet(getApplicationContext()))
-				title.setTextSize(26f);
-			TextView description = (TextView) convertView.findViewById(R.id.local_movie_count);
+        public String getCoverPath() {
+            return mCover.getAbsolutePath();
+        }
 
-			title.setTypeface(tf);
-			title.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        public int getType() {
+            return mType;
+        }
 
-			switch (position) {
-			case 1:
-				icon.setImageResource(R.drawable.ic_movie_white_24dp);
-				title.setText(getString(R.string.chooserMovies));
-				description.setText(String.valueOf(mNumMovies));
-				break;
-			case 2:
-				icon.setImageResource(R.drawable.ic_tv_white_24dp);
-				title.setText(getString(R.string.chooserTVShows));
-				description.setText(String.valueOf(mNumShows));
-				break;
-			case 3:
-				icon.setImageResource(R.drawable.ic_list_white_24dp);
-				title.setText(getString(R.string.chooserWatchList));
-				description.setText(String.valueOf(mNumWatchlist));
-				break;
-			case 5:
-				icon.setImageResource(R.drawable.ic_movie_white_24dp);
-				title.setText(getString(R.string.chooserMovies));
-				description.setVisibility(View.GONE);
-				break;
-			case 6:
-				icon.setImageResource(R.drawable.ic_language_white_24dp);
-				title.setText(getString(R.string.chooserWebVideos));
-				description.setVisibility(View.GONE);
-				break;
-			}
+        public Intent getIntent(Context context) {
+            Intent i = new Intent(context, getType() == MOVIE ?
+                    MovieDetails.class : TvShowDetails.class);
+            i.putExtra(getType() == MOVIE ?
+                    "tmdbId" : "showId", getItemId());
+            return i;
+        }
 
-			return convertView;
-		}	
-	}
+    }
 
-	@Override
-	public void onBackPressed() {
-		if (confirmExit) {
-			if (hasTriedOnce) {
-				super.onBackPressed();
-			} else {
-				Toast.makeText(this, getString(R.string.pressBackToExit), Toast.LENGTH_SHORT).show();
-				hasTriedOnce = true;
-			}
-		} else {
-			super.onBackPressed();
-		}
-	}
+    private class WelcomeLoader extends AsyncTask<Void, Void, Void> {
 
-	private class Backdrop {
-		private String mPath, mId, mTitle;
-		private boolean mMovie;
+        private final Context mContext;
+        private ArrayList<WelcomeItem> mTempItems = new ArrayList<>();
 
-		public Backdrop(String path, String id, boolean isMovie, String title) {
-			mPath = path;
-			mId = id;
-			mMovie = isMovie;
-			mTitle = title;
-		}
+        public WelcomeLoader(Context context) {
+            mContext = context;
+        }
 
-		public String getTitle() {
-			return mTitle;
-		}
-		
-		public String getId() {
-			return mId;
-		}
+        @Override
+        protected Void doInBackground(Void... params) {
 
-		public String getPath() {
-			return mPath;
-		}
+            ColumnIndexCache cache = new ColumnIndexCache();
 
-		public boolean isMovie() {
-			return mMovie;
-		}
-	}
+            Cursor movieCursor = MizuuApplication.getMovieAdapter().getAllMovies();
+            try {
+                while (movieCursor.moveToNext()) {
+                    final String id = movieCursor.getString(cache.getColumnIndex(movieCursor, DbAdapterMovies.KEY_TMDB_ID));
 
-	@Override
-	public View makeView() {
-		ImageView imageView = new ImageView(this);
-		imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-		imageView.setLayoutParams(new ImageSwitcher.LayoutParams(
-				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-		return imageView;
-	}
+                    mTempItems.add(new WelcomeItem(
+                            id,
+                            movieCursor.getString(cache.getColumnIndex(movieCursor, DbAdapterMovies.KEY_TITLE)),
+                            FileUtils.getMovieBackdrop(mContext, id),
+                            FileUtils.getMovieThumb(mContext, id),
+                            WelcomeItem.MOVIE
+                    ));
+                }
+            } catch (Exception e) {
+            } finally {
+                movieCursor.close();
+            }
+
+            // Clear the cache
+            cache.clear();
+
+            Cursor tvCursor = MizuuApplication.getTvDbAdapter().getAllShows();
+            try {
+                while (tvCursor.moveToNext()) {
+                    final String id = tvCursor.getString(cache.getColumnIndex(tvCursor, DbAdapterTvShows.KEY_SHOW_ID));
+
+                    mTempItems.add(new WelcomeItem(
+                            id,
+                            tvCursor.getString(cache.getColumnIndex(tvCursor, DbAdapterTvShows.KEY_SHOW_TITLE)),
+                            FileUtils.getTvShowBackdrop(mContext, id),
+                            FileUtils.getTvShowThumb(mContext, id),
+                            WelcomeItem.TV_SHOW
+                    ));
+                }
+            } catch (Exception e) {
+            } finally {
+                tvCursor.close();
+            }
+
+            // Clear the cache
+            cache.clear();
+
+            // Ensure that we only show content with an existing backdrop and cover image
+            int totalSize = mTempItems.size();
+            for (int i = 0; i < totalSize; i++) {
+                if (!(mTempItems.get(i).getBackdrop().exists() && mTempItems.get(i).getCover().exists())) {
+                    if (mTempItems.size() > i) {
+                        mTempItems.remove(i);
+                        i--;
+                        totalSize--;
+                    }
+                }
+            }
+
+            // Shuffle the collection
+            Collections.shuffle(mTempItems, new Random(System.nanoTime()));
+
+            return null;
+        }
+
+        @Override
+        public void onPostExecute(Void result) {
+            mItems.addAll(mTempItems);
+
+            if (mItems.size() > 0) {
+                mHandler.post(runnable);
+            }
+        }
+    }
 }
