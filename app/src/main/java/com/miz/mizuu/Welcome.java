@@ -272,6 +272,7 @@ public class Welcome extends MizActivity {
                 mImageCover.setImageURI(Uri.parse(mItems.get(index).getCoverPath()));
                 title.setCurrentText(mItems.get(index).getTitle());
 
+                mHandler.removeCallbacks(this);
                 mHandler.postDelayed(this, INTERVAL);
             }
         }
