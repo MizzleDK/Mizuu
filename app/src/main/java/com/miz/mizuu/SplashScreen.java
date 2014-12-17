@@ -85,7 +85,7 @@ public class SplashScreen extends Activity {
 		if (settings.getInt(SCHEDULED_UPDATES_TVSHOWS, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
 			getApplicationContext().startService(new Intent(getApplicationContext(), TvShowsLibraryUpdate.class));
 
-		Intent i = new Intent(Intent.ACTION_VIEW);
+		Intent i = new Intent();
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		if (startup.equals("0")) { // Welcome
 			i.setClass(getApplicationContext(), Welcome.class);

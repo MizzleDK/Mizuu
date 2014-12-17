@@ -20,24 +20,41 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.util.Pair;
+import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
@@ -46,53 +63,92 @@ import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.AsyncTask;
+import com.miz.functions.BlurTransformation;
 import com.miz.functions.ColumnIndexCache;
+import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
+import com.miz.mizuu.fragments.AccountsFragment;
+import com.miz.mizuu.fragments.ContactDeveloperFragment;
 import com.miz.utils.FileUtils;
 import com.miz.utils.TypefaceUtils;
+import com.miz.utils.ViewUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
+
+import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
+import static com.miz.functions.PreferenceKeys.TRAKT_FULL_NAME;
+import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
 
 public class Welcome extends MizActivity {
 
-	private final long INTERVAL = 10000;
+    private final long INTERVAL = 10000;
 
-	private int mNumMovies, mNumShows, index = -1;
+    private int mNumMovies, mNumShows, index = -1;
     private ArrayList<WelcomeItem> mItems = new ArrayList<>();
-	private boolean isRunning = true;
-	private ImageSwitcher mImageSwitcher, mImageCover;
-	private TextSwitcher title;
-	private Handler mHandler = new Handler();
+    private boolean isRunning = true;
+    private ImageSwitcher mImageSwitcher, mImageCover;
+    private TextSwitcher title;
+    private Handler mHandler = new Handler();
     private Animation mAnimationIn, mAnimationOut;
+    private ArrayList<MenuItem> mMenuItems = new ArrayList<>();
+    private Typeface mTfMedium, mTfRegular;
+    private ListView mListView;
 
-	@Override
-	protected int getLayoutResource() {
-		return R.layout.welcome;
-	}
-	
-	@SuppressLint("InlinedApi")
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.welcome;
+    }
 
-		supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-		getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LOW_PROFILE|
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    @SuppressLint("InlinedApi")
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
 
-		super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LOW_PROFILE);
+
+        super.onCreate(savedInstanceState);
+
+        mTfMedium = TypefaceUtils.getRobotoMedium(getApplicationContext());
+        mTfRegular = TypefaceUtils.getRoboto(getApplicationContext());
 
         mAnimationIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         mAnimationIn.setDuration(500);
         mAnimationOut = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
         mAnimationOut.setDuration(500);
 
-		updateLibraryCounts();
+        mListView = (ListView) findViewById(R.id.list);
+        mListView.setLayoutParams(new FrameLayout.LayoutParams(ViewUtils.getNavigationDrawerWidth(this), FrameLayout.LayoutParams.MATCH_PARENT));
+        mListView.setAdapter(new MenuAdapter());
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                switch (mMenuItems.get(arg2).getType()) {
+                    case MenuItem.SECTION:
+
+                        Intent mainIntent = new Intent(getApplicationContext(), Main.class);
+                        mainIntent.putExtra("startup", String.valueOf(mMenuItems.get(arg2).getFragment()));
+                        startActivity(mainIntent);
+
+                        break;
+                    case MenuItem.THIRD_PARTY_APP:
+                        final PackageManager pm = getPackageManager();
+                        Intent i = pm.getLaunchIntentForPackage(mMenuItems.get(arg2).getPackageName());
+                        if (i != null) {
+                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(i);
+                        }
+                        break;
+                }
+            }
+        });
 
         mImageCover = (ImageSwitcher) findViewById(R.id.imageCover);
         mImageCover.setInAnimation(mAnimationIn);
@@ -108,7 +164,7 @@ public class Welcome extends MizActivity {
             }
         });
 
-		title = (TextSwitcher) findViewById(R.id.title);
+        title = (TextSwitcher) findViewById(R.id.title);
         title.setInAnimation(mAnimationIn);
         title.setOutAnimation(mAnimationOut);
         title.setFactory(new ViewFactory() {
@@ -120,21 +176,21 @@ public class Welcome extends MizActivity {
                 tv.setTextIsSelectable(false);
                 tv.setGravity(Gravity.RIGHT);
                 tv.setTypeface(TypefaceUtils.getRobotoCondensedRegular(getApplicationContext()));
+                tv.setSingleLine();
+                tv.setEllipsize(TextUtils.TruncateAt.END);
                 tv.setLayoutParams(new TextSwitcher.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
                 return tv;
             }
         });
 
         mImageSwitcher = (ImageSwitcher) findViewById(R.id.imageSwitcher1);
-		if (!MizLib.usesNavigationControl(getApplicationContext()))
-			mImageCover.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-                    Pair<View, String> pair = new Pair<>(findViewById(R.id.cardview), "cover");
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(Welcome.this, pair);
-                    ActivityCompat.startActivityForResult(Welcome.this, mItems.get(index).getIntent(getApplicationContext()), 0, options.toBundle());
-				}
-			});
+        if (!MizLib.usesNavigationControl(getApplicationContext()))
+            mImageCover.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(mItems.get(index).getIntent(getApplicationContext()));
+                }
+            });
         mImageSwitcher.setInAnimation(mAnimationIn);
         mImageSwitcher.setOutAnimation(mAnimationOut);
         mImageSwitcher.setFactory(new ViewFactory() {
@@ -148,67 +204,100 @@ public class Welcome extends MizActivity {
             }
         });
 
+        updateLibraryCounts();
+
+        mListView.setSelection(0);
+
         new WelcomeLoader(getApplicationContext()).execute();
-	}
+    }
 
-	private void startAnimatedBackground() {
-		mHandler.postDelayed(runnable, INTERVAL);
-	}
+    private void setupMenuItems() {
+        mMenuItems.clear();
 
-	private void increaseIndex() {
+        // Regular menu items
+        mMenuItems.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, MenuItem.SECTION, null, 1, R.drawable.ic_movie_grey600_24dp));
+        mMenuItems.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, MenuItem.SECTION, null, 2, R.drawable.ic_tv_grey600_24dp));
+        mMenuItems.add(new MenuItem(getString(R.string.drawerOnlineMovies), -1, MenuItem.SECTION, null, 3, R.drawable.ic_local_movies_grey600_24dp));
+        mMenuItems.add(new MenuItem(getString(R.string.drawerWebVideos), -1, MenuItem.SECTION, null, 4, R.drawable.ic_cloud_grey600_24dp));
+
+        // Third party applications
+        final PackageManager pm = getPackageManager();
+        List<ApplicationInfo> mApplicationList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        List<MenuItem> temp = new ArrayList<MenuItem>();
+        for (int i = 0; i < mApplicationList.size(); i++) {
+            if (MizLib.isMediaApp(mApplicationList.get(i))) {
+                temp.add(new MenuItem(pm.getApplicationLabel(mApplicationList.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, mApplicationList.get(i).packageName));
+            }
+        }
+
+        if (temp.size() > 0) {
+            // Menu section header
+            mMenuItems.add(new MenuItem(MenuItem.SEPARATOR));
+            mMenuItems.add(new MenuItem(getString(R.string.installed_media_apps), -1, MenuItem.SUB_HEADER, null));
+        }
+
+        Collections.sort(temp, new Comparator<MenuItem>() {
+            @Override
+            public int compare(MenuItem lhs, MenuItem rhs) {
+                return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
+            }
+        });
+
+        for (int i = 0; i < temp.size(); i++) {
+            mMenuItems.add(temp.get(i));
+        }
+
+        temp.clear();
+    }
+
+    private void startAnimatedBackground() {
+        mHandler.postDelayed(runnable, INTERVAL);
+    }
+
+    private void increaseIndex() {
         if (index >= (mItems.size() - 1))
             index = 0;
         else
             index++;
-	}
+    }
 
-	private Runnable runnable = new Runnable() {
-		@Override
-		public void run() {
-			if (isRunning) {
-				increaseIndex();
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isRunning) {
+                increaseIndex();
 
                 mImageSwitcher.setImageURI(Uri.parse(mItems.get(index).getBackdropPath()));
                 mImageCover.setImageURI(Uri.parse(mItems.get(index).getCoverPath()));
                 title.setCurrentText(mItems.get(index).getTitle());
 
-				mHandler.postDelayed(this, INTERVAL);
-			}
-		}
-	};
+                mHandler.postDelayed(this, INTERVAL);
+            }
+        }
+    };
 
-	public void onResume() {
-		super.onResume();
+    public void onResume() {
+        super.onResume();
 
-		if (!isRunning) {
-			startAnimatedBackground();
-			isRunning = true;
-		}
-	}
+        if (!isRunning) {
+            startAnimatedBackground();
+            isRunning = true;
+        }
+    }
 
-	public void onPause() {
-		super.onPause();
-		isRunning = false;
-	}
+    public void onPause() {
+        super.onPause();
+        isRunning = false;
+    }
 
-	private void updateLibraryCounts() {
-		new Thread() {
-			@Override
-			public void run() {
-				try {					
-					mNumMovies = MizuuApplication.getMovieAdapter().count();
-					mNumShows = MizuuApplication.getTvDbAdapter().count();
+    private void updateLibraryCounts() {
+        mNumMovies = MizuuApplication.getMovieAdapter().count();
+        mNumShows = MizuuApplication.getTvDbAdapter().count();
 
-					/*runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							((BaseAdapter) list.getAdapter()).notifyDataSetChanged();
-						}
-					});*/
-				} catch (Exception e) {} // Problemer med at kontakte databasen
-			}
-		}.start();
-	}
+        setupMenuItems();
+        ((BaseAdapter) mListView.getAdapter()).notifyDataSetChanged();
+    }
 
     private class WelcomeItem {
 
@@ -345,6 +434,98 @@ public class Welcome extends MizActivity {
             if (mItems.size() > 0) {
                 mHandler.post(runnable);
             }
+        }
+    }
+
+    public class MenuAdapter extends BaseAdapter {
+
+        private final LayoutInflater mInflater;
+
+        public MenuAdapter() {
+            mInflater = LayoutInflater.from(getApplicationContext());
+        }
+
+        @Override
+        public int getCount() {
+            return mMenuItems.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 6;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            switch (mMenuItems.get(position).getType()) {
+                case MenuItem.SEPARATOR:
+                    return 0;
+                case MenuItem.SUB_HEADER:
+                    return 1;
+                default:
+                    return 2;
+            }
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            int type = mMenuItems.get(position).getType();
+            return !(type == MenuItem.SEPARATOR || type == MenuItem.SUB_HEADER);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (mMenuItems.get(position).getType() == MenuItem.SEPARATOR) {
+                convertView = mInflater.inflate(R.layout.menu_drawer_separator, parent, false);
+
+                convertView.findViewById(R.id.divider).setBackgroundColor(Color.parseColor("#80666666"));
+
+            } else if (mMenuItems.get(position).getType() == MenuItem.SUB_HEADER) {
+                convertView = mInflater.inflate(R.layout.menu_drawer_header_item, parent, false);
+                TextView title = (TextView) convertView.findViewById(R.id.title);
+                title.setText(mMenuItems.get(position).getTitle());
+                title.setTypeface(mTfMedium);
+                title.setTextColor(Color.parseColor("#DDDDDD"));
+            } else if (mMenuItems.get(position).getType() == MenuItem.THIRD_PARTY_APP || mMenuItems.get(position).getType() == MenuItem.SECTION) {
+                convertView = mInflater.inflate(R.layout.menu_drawer_item, parent, false);
+
+                // Icon
+                ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
+                icon.setImageResource(mMenuItems.get(position).getIcon());
+
+                // Title
+                TextView title = (TextView) convertView.findViewById(R.id.title);
+                title.setText(mMenuItems.get(position).getTitle());
+                title.setTypeface(mTfMedium);
+
+                // Description
+                TextView description = (TextView) convertView.findViewById(R.id.count);
+                description.setTypeface(mTfRegular);
+
+                int color = Color.parseColor("#F0F0F0");
+
+                title.setTextColor(color);
+                description.setTextColor(color);
+                icon.setColorFilter(Color.parseColor("#DDDDDD"));
+
+                if (mMenuItems.get(position).getCount() >= 0)
+                    description.setText(String.valueOf(mMenuItems.get(position).getCount()));
+                else
+                    description.setVisibility(View.GONE);
+
+            }
+
+            return convertView;
         }
     }
 }

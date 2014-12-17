@@ -16,19 +16,32 @@
         android:src="@drawable/gradient_black_to_transparent"
         android:layout_alignParentBottom="true"/>
 
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="280dp"
+    <android.support.v7.widget.CardView
+        android:id="@+id/list_card"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        app:cardBackgroundColor="@android:color/transparent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        app:cardCornerRadius="4dp"
         android:layout_margin="16dp"
-        android:background="#cc000000" >
-    </ListView>
+        android:elevation="8dp">
+        <ListView
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:id="@+id/list"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:background="#cc000000"
+            android:divider="@null"
+            android:dividerHeight="0dp">
+        </ListView>
+    </android.support.v7.widget.CardView>
 
     <LinearLayout
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/list"
+        android:layout_toRightOf="@+id/list_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -41,8 +54,8 @@
             app:cardBackgroundColor="#303030"
             android:transitionName="cover"
             android:layout_marginBottom="16dp"
-            android:layout_width="@dimen/content_details_thumb_width"
-            android:layout_height="@dimen/content_details_thumb_height">
+            android:layout_width="@dimen/thumb_small_width"
+            android:layout_height="@dimen/thumb_small_height">
 
             <ImageSwitcher
                 android:layout_width="match_parent"
