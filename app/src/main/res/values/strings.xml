@@ -524,5 +524,7 @@
     <string name="all_episodes">All episodes</string>
     <string name="watched_episodes">Watched episodes</string>
     <string name="unwatched_episodes">Unwatched episodes</string>
+    <string name="use_fast_blur">Enable fast blur</string>
+    <string name="use_fast_blur_description">Use a fast blur algorithm. Unsupported on some low-end devices.</string>
 
 </resources>

@@ -480,7 +480,6 @@ public class Main extends MizActivity {
                     mPicasso.load(mBackdropPath)
                             .resize(MizLib.convertDpToPixels(getApplicationContext(), 320),
                                     MizLib.convertDpToPixels(getApplicationContext(), 180))
-                            .transform(new BlurTransformation(getApplicationContext(), mBackdropPath + "-blur", 5))
                             .into(backgroundImage);
                 else
                     mPicasso.load(R.drawable.default_menu_backdrop)
