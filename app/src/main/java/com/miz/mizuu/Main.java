@@ -47,6 +47,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -104,9 +105,9 @@ public class Main extends MizActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        setTheme(R.style.Mizuu_Theme_Overview);
 
-        MizuuApplication.setupTheme(this);
+        super.onCreate(savedInstanceState);
 
         mPicasso = MizuuApplication.getPicasso(getApplicationContext());
 
@@ -123,10 +124,11 @@ public class Main extends MizActivity {
         setupMenuItems(true);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary_dark));
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_list_shadow, GravityCompat.START);
 
         mDrawerList = (ListView) findViewById(R.id.listView1);
-        mDrawerList.setLayoutParams(new LinearLayout.LayoutParams(ViewUtils.getNavigationDrawerWidth(this), LinearLayout.LayoutParams.MATCH_PARENT));
+        mDrawerList.setLayoutParams(new FrameLayout.LayoutParams(ViewUtils.getNavigationDrawerWidth(this), FrameLayout.LayoutParams.MATCH_PARENT));
         mDrawerList.setAdapter(new MenuAdapter());
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
             @Override

@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miz.mizuu"
-    android:versionCode="1028"
+    android:versionCode="1029"
     android:versionName="3.0-black-rc3" >
-
-    <uses-sdk
-        android:minSdkVersion="15"
-        android:targetSdkVersion="21" />
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />

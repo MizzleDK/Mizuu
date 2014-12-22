@@ -20,7 +20,7 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="Mizuu.Theme" parent="Theme.AppCompat">
+    <style name="Mizuu.Theme.Base" parent="Theme.AppCompat">
         <item name="android:listSelector">@drawable/list_selector</item>
         <item name="android:windowBackground">@drawable/bg</item>
         <item name="android:editTextStyle">@style/RobotoEditTextStyle</item>
@@ -36,6 +36,14 @@
         <item name="colorControlActivated">#fff</item>
         <item name="colorControlHighlight">#fff</item>
         <item name="colorSwitchThumbNormal">#b0b0b0</item>
+    </style>
+
+    <style name="Mizuu.Theme.Overview" parent="Mizuu.Theme" >
+
+    </style>
+
+    <style name="Mizuu.Theme" parent="Mizuu.Theme.Base">
+
     </style>
 
     <style name="Mizuu.Theme.ActionButton.Overflow" parent="@style/Widget.AppCompat.ActionButton.Overflow">

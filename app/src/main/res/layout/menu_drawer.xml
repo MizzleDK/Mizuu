@@ -29,13 +29,15 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <com.miz.views.ScrimInsetsFrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/left_drawer"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="left"
+        android:layout_gravity="start|left"
         android:background="#fafafa"
-        android:orientation="vertical" >
+        android:elevation="10dp"
+        android:fitsSystemWindows="true"
+        app:insetForeground="#4000">
 
         <ListView
             android:id="@+id/listView1"
@@ -48,6 +50,7 @@
             android:drawSelectorOnTop="true"
             android:focusable="true" >
         </ListView>
-    </LinearLayout>
+
+        </com.miz.views.ScrimInsetsFrameLayout>
 
 </android.support.v4.widget.DrawerLayout>

@@ -12,7 +12,7 @@ android {
         testApplicationId "com.miz.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
 
-        renderscriptTargetApi 21
+        renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
     }
 

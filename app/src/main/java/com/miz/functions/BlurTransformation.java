@@ -44,9 +44,9 @@ public class BlurTransformation implements Transformation {
 		Bitmap blur;
 
         if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(PreferenceKeys.USE_FAST_BLUR, true))
-            blur = MizLib.fastBlur(mContext, Bitmap.createScaledBitmap(source, source.getWidth() / 2, source.getHeight() / 2, false), mBlurRadius);
+            blur = MizLib.fastBlur(mContext, Bitmap.createScaledBitmap(source, source.getWidth() / 2, source.getHeight() / 2, true), mBlurRadius);
         else
-            blur = MizLib.slowBlur(Bitmap.createScaledBitmap(source, source.getWidth() / 2, source.getHeight() / 2, false), mBlurRadius);
+            blur = MizLib.slowBlur(Bitmap.createScaledBitmap(source, source.getWidth() / 2, source.getHeight() / 2, true), mBlurRadius);
 
         source.recycle();
 		
