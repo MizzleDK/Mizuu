@@ -57,16 +57,15 @@ public class Update extends MizActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mIsMovie = getIntent().getExtras().getBoolean("isMovie");
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (!mIsMovie)
+            mToolbar.setTitle(getString(R.string.updateTvShowsTitle));
 
         setSupportActionBar(mToolbar);
 
-        mIsMovie = getIntent().getExtras().getBoolean("isMovie");
-
         mTypeface = TypefaceUtils.getRobotoLight(this);
-
-        if (!mIsMovie)
-            setTitle(getString(R.string.updateTvShowsTitle));
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
