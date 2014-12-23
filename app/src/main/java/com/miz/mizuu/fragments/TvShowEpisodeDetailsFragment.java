@@ -57,6 +57,7 @@ import com.miz.functions.PaletteLoader;
 import com.miz.functions.SimpleAnimatorListener;
 import com.miz.mizuu.EditTvShowEpisode;
 import com.miz.mizuu.IdentifyTvShowEpisode;
+import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
@@ -668,6 +669,15 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
                                 deleteIntent.putExtra("filepath", path.getFilepath());
                                 getActivity().startService(deleteIntent);
                             }
+                        }
+
+                        if (MizuuApplication.getTvEpisodeDbAdapter().getEpisodeCount(mEpisode.getShowId()) == 0) {
+                            // The show has been deleted! Let's show the TV show library overview
+
+                            Intent i = new Intent(mContext, Main.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            i.putExtra("startup", String.valueOf(Main.SHOWS));
+                            startActivity(i);
                         }
 
                         notifyDatasetChanges();
