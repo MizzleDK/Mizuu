@@ -353,8 +353,17 @@ public class TvShowIdentification {
 
     private void addToDatabase(TvShow thisShow, Episode ep, String filepath) {
         DbAdapterTvShowEpisodes dbHelper = MizuuApplication.getTvEpisodeDbAdapter();
-        dbHelper.createEpisode(filepath, MizLib.addIndexZero(ep.getSeason()), MizLib.addIndexZero(ep.getEpisode()), thisShow.getId(), ep.getTitle(), ep.getDescription(),
-                ep.getAirdate(), ep.getRating(), ep.getDirector(), ep.getWriter(), ep.getGueststars(), "0", "0");
+
+        if (thisShow.getId().equals(DbAdapterTvShows.UNIDENTIFIED_ID)) {
+            // If it's an unidentified file, we shouldn't create a episode entry in the database
+            MizuuApplication.getTvShowEpisodeMappingsDbAdapter().createFilepathMapping(filepath,
+                    thisShow.getId(), MizLib.addIndexZero(ep.getSeason()), MizLib.addIndexZero(ep.getEpisode()));
+        } else {
+            dbHelper.createEpisode(filepath, MizLib.addIndexZero(ep.getSeason()),
+                    MizLib.addIndexZero(ep.getEpisode()), thisShow.getId(), ep.getTitle(),
+                    ep.getDescription(), ep.getAirdate(), ep.getRating(), ep.getDirector(),
+                    ep.getWriter(), ep.getGueststars(), "0", "0");
+        }
 
         updateNotification(thisShow, ep, filepath);
     }
