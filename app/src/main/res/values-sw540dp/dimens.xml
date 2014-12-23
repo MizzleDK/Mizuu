@@ -20,4 +20,11 @@
     <dimen name="horizontal_grid_item_width">120dp</dimen>
     <dimen name="horizontal_grid_item_backdrop_width">180dp</dimen>
 
+    <dimen name="content_details_thumb_height">330dp</dimen>
+    <dimen name="content_details_thumb_width">220dp</dimen>
+    <dimen name="content_details_main_height">346dp</dimen>
+    <dimen name="content_details_title">32sp</dimen>
+    <dimen name="content_details_subheader">20sp</dimen>
+    <dimen name="content_details_body_text">18sp</dimen>
+
 </resources>
