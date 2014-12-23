@@ -66,6 +66,8 @@
                         android:drawSelectorOnTop="true"
                         android:dividerHeight="0dp"
                         android:id="@+id/currentList"
+                        android:nextFocusDown="@id/fab"
+                        android:nextFocusRight="@id/fab"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" >
                     </ListView>
@@ -113,10 +115,9 @@
         android:src="@drawable/ic_add_white_36dp"
         android:layout_marginRight="32dp"
         android:layout_marginBottom="32dp"
+        android:nextFocusLeft="@id/currentList"
         app:fab_type="mini"
         app:fab_colorNormal="@color/color_primary"
         app:fab_colorRipple="#80ffffff"
-        app:fab_colorPressed="@color/color_primary_dark"
-        android:clickable="true"
-        android:focusable="true" />
+        app:fab_colorPressed="@color/color_primary_dark" />
 </FrameLayout>
