@@ -270,6 +270,7 @@ public class TvShowIdentification {
         }
 
         LocalBroadcastUtils.updateTvShowLibrary(mContext);
+        LocalBroadcastUtils.updateTvShowSeasonsOverview(mContext);
         WidgetUtils.updateTvShowWidgets(mContext);
     }
 

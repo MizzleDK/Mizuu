@@ -31,6 +31,7 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
+import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TypefaceUtils;
 
 import java.util.Calendar;
@@ -228,6 +229,10 @@ public class EditTvShowEpisodeFragment extends Fragment {
         MizuuApplication.getTvEpisodeDbAdapter().editEpisode(mEpisode.getShowId(), MizLib.getInteger(mEpisode.getSeason()), MizLib.getInteger(mEpisode.getEpisode()),
                 mTitle.getText().toString(), mDescription.getText().toString(), mDirector.getText().toString(), mWriter.getText().toString(),
                 mGuestStars.getText().toString(), mEpisode.getRating(), mEpisode.getReleasedate());
+
+        LocalBroadcastUtils.updateTvShowEpisodesOverview(getActivity());
+        LocalBroadcastUtils.updateTvShowEpisodeDetailsView(getActivity());
+
 
         getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();

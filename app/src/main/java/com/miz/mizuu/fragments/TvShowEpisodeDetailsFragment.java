@@ -21,8 +21,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -30,6 +33,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -89,7 +93,7 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
     private TextView mTitle, mDescription, mFileSource, mAirDate, mRating, mDirector, mWriter, mGuestStars, mSeasonEpisodeNumber;
     private View mDetailsArea;
     private Picasso mPicasso;
-    private Typeface mLight, mMediumItalic, mMedium, mBold, mCondensedRegular;
+    private Typeface mMediumItalic, mMedium, mCondensedRegular;
     private DbAdapterTvShowEpisodes mDatabaseHelper;
     private long mVideoPlaybackStarted, mVideoPlaybackEnded;
     private boolean mShowFileLocation;
@@ -129,16 +133,32 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
         mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
 
-        mLight = TypefaceUtils.getRobotoLight(mContext);
         mMediumItalic = TypefaceUtils.getRobotoMediumItalic(mContext);
         mMedium = TypefaceUtils.getRobotoMedium(mContext);
-        mBold = TypefaceUtils.getRobotoBold(mContext);
         mCondensedRegular = TypefaceUtils.getRobotoCondensedRegular(mContext);
 
         mDatabaseHelper = MizuuApplication.getTvEpisodeDbAdapter();
 
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mBroadcastReceiver,
+                new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_EPISODE_DETAILS_OVERVIEW));
+
         loadEpisode();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mBroadcastReceiver);
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loadEpisode();
+            loadData();
+        }
+    };
 
     private void loadEpisode() {
         if (!getArguments().getString("showId").isEmpty() && getArguments().getInt("season") >= 0 && getArguments().getInt("episode") >= 0) {
@@ -675,9 +695,12 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
                             // The show has been deleted! Let's show the TV show library overview
 
                             Intent i = new Intent(mContext, Main.class);
-                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             i.putExtra("startup", String.valueOf(Main.SHOWS));
                             startActivity(i);
+                        } else {
+                            LocalBroadcastUtils.updateTvShowSeasonsOverview(mContext);
+                            LocalBroadcastUtils.updateTvShowEpisodesOverview(mContext);
                         }
 
                         notifyDatasetChanges();

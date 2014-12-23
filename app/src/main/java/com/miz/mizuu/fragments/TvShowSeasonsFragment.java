@@ -17,11 +17,15 @@
 package com.miz.mizuu.fragments;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -119,13 +123,24 @@ public class TvShowSeasonsFragment extends Fragment {
 
         mShowId = getArguments().getString(SHOW_ID);
         mToolbarColor = getArguments().getInt(IntentKeys.TOOLBAR_COLOR);
+
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mBroadcastReceiver,
+                new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_SEASONS_OVERVIEW));
     }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loadSeasons();
+        }
+    };
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
         mBus.unregister(this);
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mBroadcastReceiver);
     }
 
     @Subscribe

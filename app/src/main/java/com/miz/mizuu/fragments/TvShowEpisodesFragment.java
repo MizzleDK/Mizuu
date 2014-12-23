@@ -17,14 +17,17 @@
 package com.miz.mizuu.fragments;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SwitchCompat;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -124,7 +127,18 @@ public class TvShowEpisodesFragment extends Fragment {
 		mShowId = getArguments().getString(SHOW_ID);
 		mSeason = getArguments().getInt(SEASON);
 		mUseGridView = PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_COLLECTION_LAYOUT, getString(R.string.gridView)).equals(getString(R.string.gridView));
+
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mBroadcastReceiver,
+                new IntentFilter(LocalBroadcastUtils.UPDATE_TV_SHOW_EPISODES_OVERVIEW));
 	}
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mEpisodeLoader.load();
+            showProgressBar();
+        }
+    };
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -194,6 +208,7 @@ public class TvShowEpisodesFragment extends Fragment {
 		super.onDestroy();
 
 		mBus.unregister(this);
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mBroadcastReceiver);
 	}
 
 	@Subscribe

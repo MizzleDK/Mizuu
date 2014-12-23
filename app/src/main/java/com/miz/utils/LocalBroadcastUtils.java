@@ -27,6 +27,9 @@ public class LocalBroadcastUtils {
 	public static final String UPDATE_MOVIE_LIBRARY = "mizuu-movies-update";
 	public static final String UPDATE_TV_SHOW_LIBRARY = "mizuu-tvshows-update";
 	public static final String CLEAR_IMAGE_CACHE = "clear-image-cache";
+    public static final String UPDATE_TV_SHOW_SEASONS_OVERVIEW = "mizuu-tvshows-seasons-update";
+    public static final String UPDATE_TV_SHOW_EPISODES_OVERVIEW = "mizuu-tvshows-episodes-update";
+    public static final String UPDATE_TV_SHOW_EPISODE_DETAILS_OVERVIEW = "mizuu-tvshows-episode-details-update";
 	
 	private LocalBroadcastUtils() {} // No instantiation
 	
@@ -54,4 +57,28 @@ public class LocalBroadcastUtils {
 		MizuuApplication.clearLruCache(context);
 		LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(CLEAR_IMAGE_CACHE));
 	}
+
+    /**
+     * Force the TV show seasons overview to reload.
+     * @param context
+     */
+    public static void updateTvShowSeasonsOverview(Context context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(UPDATE_TV_SHOW_SEASONS_OVERVIEW));
+    }
+
+    /**
+     * Force the TV show episodes overview to reload.
+     * @param context
+     */
+    public static void updateTvShowEpisodesOverview(Context context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(UPDATE_TV_SHOW_EPISODES_OVERVIEW));
+    }
+
+    /**
+     * Force the TV show details view to reload.
+     * @param context
+     */
+    public static void updateTvShowEpisodeDetailsView(Context context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(UPDATE_TV_SHOW_EPISODE_DETAILS_OVERVIEW));
+    }
 }
