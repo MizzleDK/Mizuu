@@ -134,6 +134,17 @@ public class Main extends MizActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 switch (mMenuItems.get(arg2).getType()) {
+                    case MenuItem.HEADER:
+
+                        Intent intent = new Intent(getApplicationContext(), Preferences.class);
+                        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, AccountsFragment.class.getName());
+                        intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+                        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, getString(R.string.social));
+                        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_SHORT_TITLE, getString(R.string.social));
+
+                        startActivity(intent);
+                        break;
+
                     case MenuItem.SECTION:
                         loadFragment(mMenuItems.get(arg2).getFragment());
                         break;
@@ -434,8 +445,9 @@ public class Main extends MizActivity {
         @Override
         public boolean isEnabled(int position) {
             int type = mMenuItems.get(position).getType();
-            return !(type == MenuItem.SEPARATOR || type == MenuItem.SEPARATOR_EXTRA_PADDING ||
-                    type == MenuItem.HEADER || type == MenuItem.SUB_HEADER);
+            return !(type == MenuItem.SEPARATOR ||
+                    type == MenuItem.SEPARATOR_EXTRA_PADDING ||
+                    type == MenuItem.SUB_HEADER);
         }
 
         @Override
@@ -491,20 +503,6 @@ public class Main extends MizActivity {
 
                 // Dark color filter on the background image
                 backgroundImage.setColorFilter(Color.parseColor("#50181818"), android.graphics.PorterDuff.Mode.SRC_OVER);
-
-                // Take the user to the Trakt login screen
-                convertView.findViewById(R.id.personalizedArea).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent smallIntent = new Intent(getApplicationContext(), Preferences.class);
-                        smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, AccountsFragment.class.getName());
-                        smallIntent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
-                        smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, getString(R.string.social));
-                        smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_SHORT_TITLE, getString(R.string.social));
-
-                        startActivity(smallIntent);
-                    }
-                });
 
             } else if (mMenuItems.get(position).getType() == MenuItem.SEPARATOR) {
                 convertView = mInflater.inflate(R.layout.menu_drawer_separator, parent, false);
