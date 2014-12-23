@@ -49,6 +49,6 @@ Some strings have explanations / context descriptions. Please refer to these, if
 Some languages include words for many different quantities. You may add or remove these quantities to match the specific language. Valid quantities are: "zero", "one", "two", "few", "many", "other".
 
  [1]: https://github.com/MizzleDK/Mizuu/fork
- [2]: https://github.com/MizzleDK/Mizuu/blob/master/res/values/strings.xml
- [3]: https://github.com/MizzleDK/Mizuu/blob/master/res/
+ [2]: https://github.com/MizzleDK/Mizuu/blob/michell-dev/app/src/main/res/values/strings.xml
+ [3]: https://github.com/MizzleDK/Mizuu/blob/michell-dev/app/src/main/res/
  [4]: http://www.loc.gov/standards/iso639-2/php/code_list.php
