@@ -17,10 +17,21 @@
 package com.miz.utils;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.widget.Toast;
 
+import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterMovies;
+import com.miz.functions.MediumMovie;
+import com.miz.functions.Movie;
 import com.miz.mizuu.MizuuApplication;
+import com.miz.mizuu.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
 
 public class MovieDatabaseUtils {
 
@@ -85,5 +96,83 @@ public class MovieDatabaseUtils {
 
         // And finally we make sure that Mizuu ignores the filepath in the future
         MizuuApplication.getMovieMappingAdapter().ignoreMovie(tmdbId);
+    }
+
+    public static void setMoviesFavourite(final Context context,
+                                        final List<MediumMovie> movies,
+                                        boolean favourite) {
+        boolean success = true;
+
+        for (MediumMovie movie : movies)
+            success = success && MizuuApplication.getMovieAdapter().updateMovieSingleItem(movie.getTmdbId(),
+                    DbAdapterMovies.KEY_FAVOURITE, favourite ? "1" : "0");
+
+        if (success)
+            if (favourite)
+                Toast.makeText(context, context.getString(R.string.addedToFavs), Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(context, context.getString(R.string.removedFromFavs), Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(context, context.getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
+
+        new Thread() {
+            @Override
+            public void run() {
+                Trakt.moviesFavorite(movies, context);
+            }
+        }.start();
+    }
+
+    public static void setMoviesWatched(final Context context,
+                                        final List<MediumMovie> movies,
+                                        boolean watched) {
+        boolean success = true;
+
+        for (MediumMovie movie : movies)
+            success = success && MizuuApplication.getMovieAdapter().updateMovieSingleItem(movie.getTmdbId(),
+                    DbAdapterMovies.KEY_HAS_WATCHED, watched ? "1" : "0");
+
+        if (success)
+            if (watched) {
+                Toast.makeText(context, context.getString(R.string.markedAsWatched), Toast.LENGTH_SHORT).show();
+
+                if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true))
+                    setMoviesWatchlist(context, movies, false); // False to remove from watchlist
+            } else
+                Toast.makeText(context, context.getString(R.string.markedAsUnwatched), Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(context, context.getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
+
+        new Thread() {
+            @Override
+            public void run() {
+                Trakt.markMoviesAsWatched(movies, context);
+            }
+        }.start();
+    }
+
+    public static void setMoviesWatchlist(final Context context,
+                                        final List<MediumMovie> movies,
+                                        boolean toWatch) {
+        boolean success = true;
+
+        for (MediumMovie movie : movies)
+            success = success && MizuuApplication.getMovieAdapter().updateMovieSingleItem(movie.getTmdbId(),
+                    DbAdapterMovies.KEY_TO_WATCH, toWatch ? "1" : "0");
+
+        if (success)
+            if (toWatch)
+                Toast.makeText(context, context.getString(R.string.addedToWatchList), Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(context, context.getString(R.string.removedFromWatchList), Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(context, context.getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
+
+        new Thread() {
+            @Override
+            public void run() {
+                Trakt.moviesWatchlist(movies, context);
+            }
+        }.start();
     }
 }

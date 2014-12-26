@@ -33,14 +33,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -64,11 +67,16 @@ import com.miz.mizuu.R;
 import com.miz.mizuu.UnidentifiedMovies;
 import com.miz.mizuu.Update;
 import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.MovieDatabaseUtils;
 import com.miz.utils.TypefaceUtils;
 import com.miz.utils.ViewUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
@@ -186,6 +194,73 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
             }
         });
 
+        // We only want to display the contextual menu if we're showing movies, not collections
+        if (getArguments().getInt("type") != MovieLoader.COLLECTIONS) {
+            mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+            mGridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+                @Override
+                public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                    mAdapter.setItemChecked(position, checked);
+
+                    mode.setTitle(String.format(getString(R.string.selected),
+                            mAdapter.getCheckedItemCount()));
+                }
+
+                @Override
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    getActivity().getMenuInflater().inflate(R.menu.movie_library_cab, menu);
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+                    int id = item.getItemId();
+
+                    switch (id) {
+                        case R.id.movie_add_fav:
+                            MovieDatabaseUtils.setMoviesFavourite(mContext, mAdapter.getCheckedMovies(), true);
+                            break;
+                        case R.id.movie_remove_fav:
+                            MovieDatabaseUtils.setMoviesFavourite(mContext, mAdapter.getCheckedMovies(), false);
+                            break;
+                        case R.id.movie_watched:
+                            MovieDatabaseUtils.setMoviesWatched(mContext, mAdapter.getCheckedMovies(), true);
+                            break;
+                        case R.id.movie_unwatched:
+                            MovieDatabaseUtils.setMoviesWatched(mContext, mAdapter.getCheckedMovies(), false);
+                            break;
+                        case R.id.add_to_watchlist:
+                            MovieDatabaseUtils.setMoviesWatchlist(mContext, mAdapter.getCheckedMovies(), true);
+                            break;
+                        case R.id.remove_from_watchlist:
+                            MovieDatabaseUtils.setMoviesWatchlist(mContext, mAdapter.getCheckedMovies(), false);
+                            break;
+                    }
+
+                    if (!(id == R.id.watched_menu ||
+                            id == R.id.watchlist_menu ||
+                            id == R.id.favorite_menu)) {
+                        mode.finish();
+
+                        LocalBroadcastUtils.updateMovieLibrary(mContext);
+                    }
+
+                    return true;
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+                    mAdapter.clearCheckedItems();
+                }
+            });
+        }
+
         mMovieLoader = new MovieLoader(mContext, MovieLibraryType.fromInt(getArguments().getInt("type")), mCallback);
         mMovieLoader.setIgnorePrefixes(mIgnorePrefixes);
         mMovieLoader.load();
@@ -217,6 +292,7 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
 
     private class LoaderAdapter extends BaseAdapter {
 
+        private Set<Integer> mChecked = new HashSet<>();
         private LayoutInflater mInflater;
         private final Context mContext;
         private Typeface mTypeface;
@@ -225,6 +301,31 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
             mContext = context;
             mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mTypeface = TypefaceUtils.getRobotoMedium(mContext);
+        }
+
+        public void setItemChecked(int index, boolean checked) {
+            if (checked)
+                mChecked.add(index);
+            else
+                mChecked.remove(index);
+
+            notifyDataSetChanged();
+        }
+
+        public void clearCheckedItems() {
+            mChecked.clear();
+            notifyDataSetChanged();
+        }
+
+        public int getCheckedItemCount() {
+            return mChecked.size();
+        }
+
+        public List<MediumMovie> getCheckedMovies() {
+            List<MediumMovie> movies = new ArrayList<>(mChecked.size());
+            for (Integer i : mChecked)
+                movies.add(getItem(i));
+            return movies;
         }
 
         @Override
@@ -258,6 +359,7 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
                 convertView = mInflater.inflate(R.layout.grid_cover, container, false);
                 holder = new CoverItem();
 
+                holder.cardview = (CardView) convertView.findViewById(R.id.card);
                 holder.cover = (ImageView) convertView.findViewById(R.id.cover);
                 holder.text = (TextView) convertView.findViewById(R.id.text);
                 holder.text.setTypeface(mTypeface);
@@ -279,6 +381,12 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
 
             mPicasso.load(mMovieLoader.getType() == MovieLibraryType.COLLECTIONS ?
                     movie.getCollectionPoster() : movie.getThumbnail()).placeholder(R.drawable.bg).config(mConfig).into(holder);
+
+            if (mChecked.contains(position)) {
+                holder.cardview.setForeground(getResources().getDrawable(R.drawable.checked_foreground_drawable));
+            } else {
+                holder.cardview.setForeground(null);
+            }
 
             return convertView;
         }

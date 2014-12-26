@@ -526,5 +526,6 @@
     <string name="unwatched_episodes">Unwatched episodes</string>
     <string name="use_fast_blur">Enable fast blur</string>
     <string name="use_fast_blur_description">Use a fast blur algorithm. Unsupported on some low-end devices.</string>
+    <string name="selected">%1$d selected</string>
 
 </resources>

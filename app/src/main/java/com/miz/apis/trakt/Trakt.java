@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.mizuu.MizuuApplication;
@@ -196,6 +197,38 @@ public class Trakt {
 		}
 	}
 
+    public static boolean markMoviesAsWatched(List<MediumMovie> movies, Context c) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+        String username = settings.getString(TRAKT_USERNAME, "").trim();
+        String password = settings.getString(TRAKT_PASSWORD, "");
+
+        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || movies.size() == 0)
+            return false;
+
+        try {
+            JSONObject holder = new JSONObject();
+            holder.put("username", username);
+            holder.put("password", password);
+
+            JSONArray array = new JSONArray();
+            int count = movies.size();
+            for (int i = 0; i < count; i++) {
+                JSONObject jsonMovie = new JSONObject();
+                jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
+                jsonMovie.put("year", movies.get(i).getReleaseYear());
+                jsonMovie.put("title", movies.get(i).getTitle());
+                array.put(jsonMovie);
+            }
+            holder.put("movies", array);
+
+            Request request = MizLib.getJsonPostRequest((movies.get(0).hasWatched() ? "http://api.trakt.tv/movie/seen/" : "http://api.trakt.tv/movie/unseen/") + getApiKey(c), holder);
+            Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
+            return response.isSuccessful();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 	public static boolean changeSeasonWatchedStatus(String showId, int season, Context c, boolean watched) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
@@ -359,6 +392,38 @@ public class Trakt {
 		}
 	}
 
+    public static boolean moviesWatchlist(List<MediumMovie> movies, Context c) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+        String username = settings.getString(TRAKT_USERNAME, "").trim();
+        String password = settings.getString(TRAKT_PASSWORD, "");
+
+        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || movies.size() == 0)
+            return false;
+
+        try {
+            JSONObject json = new JSONObject();
+            json.put("username", username);
+            json.put("password", password);
+
+            JSONArray array = new JSONArray();
+            int count = movies.size();
+            for (int i = 0; i < count; i++) {
+                JSONObject jsonMovie = new JSONObject();
+                jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
+                jsonMovie.put("year", movies.get(i).getReleaseYear());
+                jsonMovie.put("title", movies.get(i).getTitle());
+                array.put(jsonMovie);
+            }
+            json.put("movies", array);
+
+            Request request = MizLib.getJsonPostRequest((movies.get(0).toWatch() ? "http://api.trakt.tv/movie/watchlist/" : "http://api.trakt.tv/movie/unwatchlist/") + getApiKey(c), json);
+            Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
+            return response.isSuccessful();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 	public static boolean movieFavorite(List<Movie> movies, Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
 		String username = settings.getString(TRAKT_USERNAME, "").trim();
@@ -392,6 +457,39 @@ public class Trakt {
 			return false;
 		}
 	}
+
+    public static boolean moviesFavorite(List<MediumMovie> movies, Context c) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);
+        String username = settings.getString(TRAKT_USERNAME, "").trim();
+        String password = settings.getString(TRAKT_PASSWORD, "");
+
+        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || movies.size() == 0)
+            return false;
+
+        try {
+            JSONObject json = new JSONObject();
+            json.put("username", username);
+            json.put("password", password);
+
+            JSONArray array = new JSONArray();
+            int count = movies.size();
+            for (int i = 0; i < count; i++) {
+                JSONObject jsonMovie = new JSONObject();
+                jsonMovie.put("tmdb_id", movies.get(i).getTmdbId());
+                jsonMovie.put("year", movies.get(i).getReleaseYear());
+                jsonMovie.put("title", movies.get(i).getTitle());
+                jsonMovie.put("rating", movies.get(i).isFavourite() ? "love" : "unrate");
+                array.put(jsonMovie);
+            }
+            json.put("movies", array);
+
+            Request request = MizLib.getJsonPostRequest("http://api.trakt.tv/rate/movies/" + getApiKey(c), json);
+            Response response = MizuuApplication.getOkHttpClient().newCall(request).execute();
+            return response.isSuccessful();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 	public static boolean hasTraktAccount(Context c) {
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(c);

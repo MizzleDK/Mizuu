@@ -19,6 +19,7 @@ package com.miz.functions;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.CardView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -30,6 +31,7 @@ import com.squareup.picasso.Target;
 
 public class CoverItem implements Target {
 
+    public CardView cardview;
     public TextView text, subtext;
     public ImageView cover, highlight;
     public RelativeLayout layout;
