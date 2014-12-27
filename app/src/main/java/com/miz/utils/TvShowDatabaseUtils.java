@@ -19,14 +19,19 @@ package com.miz.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
+import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterTvShowEpisodeMappings;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.GridEpisode;
 import com.miz.functions.MizLib;
 import com.miz.functions.PreferenceKeys;
+import com.miz.functions.TvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
+import com.miz.mizuu.R;
+import com.miz.mizuu.TvShow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -211,4 +216,71 @@ public class TvShowDatabaseUtils {
 	public static void deleteAllUnidentifiedFiles() {
 		MizuuApplication.getTvShowEpisodeMappingsDbAdapter().deleteAllUnidentifiedFilepaths();
 	}
+
+    public static void setTvShowsFavourite(final Context context,
+                                          final List<TvShow> shows,
+                                          boolean favourite) {
+        boolean success = true;
+
+        for (TvShow show : shows)
+            success = success && MizuuApplication.getTvDbAdapter().updateShowSingleItem(show.getId(),
+                DbAdapterTvShows.KEY_SHOW_FAVOURITE, favourite ? "1" : "0");
+
+        if (success)
+            if (favourite)
+                Toast.makeText(context, context.getString(R.string.addedToFavs), Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(context, context.getString(R.string.removedFromFavs), Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(context, context.getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
+
+        new Thread() {
+            @Override
+            public void run() {
+                Trakt.tvShowFavorite(shows, context);
+            }
+        }.start();
+    }
+
+    public static void setTvShowsWatched(final Context context,
+                                           final List<TvShow> shows,
+                                           final boolean watched) {
+        boolean success = true;
+
+        for (TvShow show : shows)
+            success = success && MizuuApplication.getTvEpisodeDbAdapter().setShowWatchStatus(show.getId(), watched);
+
+        if (success)
+            if (watched)
+                Toast.makeText(context, context.getString(R.string.markedAsWatched), Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(context, context.getString(R.string.markedAsUnwatched), Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(context, context.getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
+
+        new Thread() {
+            @Override
+            public void run() {
+                for (TvShow show : shows) {
+                    Cursor cursor = MizuuApplication.getTvEpisodeDbAdapter().getEpisodes(show.getId());
+                    if (cursor != null) {
+                        try {
+                            List<TvShowEpisode> episodes = new ArrayList<>();
+                            while (cursor.moveToNext()) {
+                                episodes.add(new TvShowEpisode(show.getId(),
+                                        MizLib.getInteger(cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_EPISODE))),
+                                        MizLib.getInteger(cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodes.KEY_SEASON)))
+                                ));
+                            }
+                            Trakt.markEpisodeAsWatched(show.getId(), episodes, context, watched);
+                        } catch (Exception e) {
+
+                        } finally {
+                            cursor.close();
+                        }
+                    }
+                }
+            }
+        }.start();
+    }
 }

@@ -34,14 +34,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -65,11 +68,16 @@ import com.miz.mizuu.TvShowDetails;
 import com.miz.mizuu.UnidentifiedTvShows;
 import com.miz.mizuu.Update;
 import com.miz.utils.LocalBroadcastUtils;
+import com.miz.utils.TvShowDatabaseUtils;
 import com.miz.utils.TypefaceUtils;
 import com.miz.utils.ViewUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
@@ -186,6 +194,62 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
                 viewTvShowDetails(arg2, arg1);
             }
         });
+        mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+        mGridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                mAdapter.setItemChecked(position, checked);
+
+                mode.setTitle(String.format(getString(R.string.selected),
+                        mAdapter.getCheckedItemCount()));
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                getActivity().getMenuInflater().inflate(R.menu.show_library_cab, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+                int id = item.getItemId();
+
+                switch (id) {
+                    case R.id.show_add_fav:
+                        TvShowDatabaseUtils.setTvShowsFavourite(mContext, mAdapter.getCheckedShows(), true);
+                        break;
+                    case R.id.show_remove_fav:
+                        TvShowDatabaseUtils.setTvShowsFavourite(mContext, mAdapter.getCheckedShows(), false);
+                        break;
+                    case R.id.show_watched:
+                        TvShowDatabaseUtils.setTvShowsWatched(mContext, mAdapter.getCheckedShows(), true);
+                        break;
+                    case R.id.show_unwatched:
+                        TvShowDatabaseUtils.setTvShowsWatched(mContext, mAdapter.getCheckedShows(), false);
+                        break;
+                }
+
+                if (!(id == R.id.watched_menu ||
+                        id == R.id.favorite_menu)) {
+                    mode.finish();
+
+                    LocalBroadcastUtils.updateTvShowLibrary(mContext);
+                }
+
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mAdapter.clearCheckedItems();
+            }
+        });
 
         mTvShowLoader = new TvShowLoader(mContext, TvShowLibraryType.fromInt(getArguments().getInt("type")), mCallback);
         mTvShowLoader.setIgnorePrefixes(mIgnorePrefixes);
@@ -211,6 +275,7 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
 
     private class LoaderAdapter extends BaseAdapter {
 
+        private Set<Integer> mChecked = new HashSet<>();
         private LayoutInflater mInflater;
         private final Context mContext;
         private Typeface mTypeface;
@@ -219,6 +284,31 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
             mContext = context;
             mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mTypeface = TypefaceUtils.getRobotoMedium(mContext);
+        }
+
+        public void setItemChecked(int index, boolean checked) {
+            if (checked)
+                mChecked.add(index);
+            else
+                mChecked.remove(index);
+
+            notifyDataSetChanged();
+        }
+
+        public void clearCheckedItems() {
+            mChecked.clear();
+            notifyDataSetChanged();
+        }
+
+        public int getCheckedItemCount() {
+            return mChecked.size();
+        }
+
+        public List<TvShow> getCheckedShows() {
+            List<TvShow> shows = new ArrayList<>(mChecked.size());
+            for (Integer i : mChecked)
+                shows.add(getItem(i));
+            return shows;
         }
 
         @Override
@@ -252,6 +342,7 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
                 convertView = mInflater.inflate(R.layout.grid_cover, container, false);
                 holder = new CoverItem();
 
+                holder.cardview = (CardView) convertView.findViewById(R.id.card);
                 holder.cover = (ImageView) convertView.findViewById(R.id.cover);
                 holder.text = (TextView) convertView.findViewById(R.id.text);
                 holder.text.setTypeface(mTypeface);
@@ -271,6 +362,12 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
             holder.cover.setImageResource(R.color.card_background_dark);
 
             mPicasso.load(show.getThumbnail()).placeholder(R.drawable.bg).config(mConfig).into(holder);
+
+            if (mChecked.contains(position)) {
+                holder.cardview.setForeground(getResources().getDrawable(R.drawable.checked_foreground_drawable));
+            } else {
+                holder.cardview.setForeground(null);
+            }
 
             return convertView;
         }

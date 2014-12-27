@@ -1,0 +1,37 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/favorite_menu"
+        android:icon="@drawable/ic_favorite_white_24dp"
+        app:showAsAction="always"
+        android:title="@string/menuFavouriteTitle">
+        <menu>
+            <item
+                android:id="@+id/show_add_fav"
+                android:title="@string/menuFavouriteTitle">
+            </item>
+            <item
+                android:id="@+id/show_remove_fav"
+                android:title="@string/menuFavouriteTitleRemove">
+            </item>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/watched_menu"
+        android:icon="@drawable/ic_visibility_white_24dp"
+        app:showAsAction="always"
+        android:title="@string/markedAsWatched">
+        <menu>
+            <item
+                android:id="@+id/show_watched"
+                android:title="@string/stringMarkAsWatched">
+            </item>
+            <item
+                android:id="@+id/show_unwatched"
+                android:title="@string/stringMarkAsUnwatched">
+            </item>
+        </menu>
+    </item>
+
+</menu>

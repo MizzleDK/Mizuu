@@ -239,6 +239,13 @@ public class DbAdapterTvShowEpisodes extends AbstractDbAdapter {
 		return c.getCount() > 0;
 	}
 
+    public boolean setShowWatchStatus(String showId, boolean watched) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_HAS_WATCHED, watched ? "1" : "0");
+        return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = ?",
+                new String[]{showId}) > 0;
+    }
+
 	public boolean setSeasonWatchStatus(String showId, String season, boolean watched) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_HAS_WATCHED, watched ? "1" : "0");
