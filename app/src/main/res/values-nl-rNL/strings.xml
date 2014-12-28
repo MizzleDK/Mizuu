@@ -478,4 +478,12 @@
     <string name="play">Afspelen</string>
     <string name="pause">Pauzeer</string>
     <string name="connect">Verbinden</string>
+    <string name="watched_tv_shows">Bekeken TV-series</string>
+    <string name="unwatched_tv_shows">Niet-bekeken TV-series</string>
+    <string name="all_episodes">Alle afleveringen</string>
+    <string name="watched_episodes">Bekeken afleveringen</string>
+    <string name="unwatched_episodes">Niet-bekeken afleveringen</string>
+    <string name="use_fast_blur">Snelle vervaging aanzetten</string>
+    <string name="use_fast_blur_description">Gebruik een algoritme om snel te vervagen. Niet-ondersteund op sommige goedkopere apparaten.</string>
+    <string name="selected">%1$d gekozen</string>
 </resources>
