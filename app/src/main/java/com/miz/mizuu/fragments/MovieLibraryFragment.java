@@ -52,6 +52,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
 import com.miz.functions.CoverItem;
 import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
@@ -88,7 +89,7 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
     private SharedPreferences mSharedPreferences;
     private int mImageThumbSize, mImageThumbSpacing;
     private LoaderAdapter mAdapter;
-    private GridView mGridView;
+    private ObservableGridView mGridView;
     private ProgressBar mProgressBar;
     private boolean mShowTitles, mIgnorePrefixes, mLoading = true;
     private Picasso mPicasso;
@@ -184,7 +185,7 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
 
         mAdapter = new LoaderAdapter(mContext);
 
-        mGridView = (GridView) v.findViewById(R.id.gridView);
+        mGridView = (ObservableGridView) v.findViewById(R.id.gridView);
         mGridView.setAdapter(mAdapter);
         mGridView.setColumnWidth(mImageThumbSize);
         mGridView.setOnItemClickListener(new OnItemClickListener() {
@@ -193,6 +194,7 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
                 viewMovieDetails(arg2, arg1);
             }
         });
+        mGridView.setScrollViewCallbacks(ViewUtils.getLibraryScrollViewCallback(getActivity()));
 
         // We only want to display the contextual menu if we're showing movies, not collections
         if (getArguments().getInt("type") != MovieLoader.COLLECTIONS) {

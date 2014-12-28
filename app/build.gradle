@@ -51,6 +51,8 @@ dependencies {
     compile 'com.squareup.okio:okio:1.0.1'
     compile 'com.squareup:otto:1.3.4'
     compile 'com.melnykov:floatingactionbutton:1.1.0'
+    compile 'com.github.ksoichiro:android-observablescrollview:1.3.2'
+
     //compile 'com.jpardogo.materialtabstrip:library:1.0.6' VERSION 1.0.6 is buggy on some devices
     compile files('libs/cling-core-1.0.5.jar')
     compile files('libs/cling-support-1.0.5.jar')

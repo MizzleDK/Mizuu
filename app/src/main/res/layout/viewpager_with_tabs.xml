@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <com.astuetz.PagerSlidingTabStrip
         android:id="@+id/tabs"
         android:layout_width="match_parent"
@@ -11,6 +12,7 @@
         app:pstsTabBackground="?android:attr/selectableItemBackground"
         app:pstsTabPaddingLeftRight="16dp"
         android:background="?attr/colorPrimary" />
+
     <FrameLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"

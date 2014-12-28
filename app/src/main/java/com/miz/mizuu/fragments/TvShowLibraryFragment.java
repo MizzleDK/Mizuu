@@ -53,6 +53,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
 import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.loader.OnLoadCompletedCallback;
@@ -89,7 +90,7 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
     private SharedPreferences mSharedPreferences;
     private int mImageThumbSize, mImageThumbSpacing;
     private LoaderAdapter mAdapter;
-    private GridView mGridView;
+    private ObservableGridView mGridView;
     private ProgressBar mProgressBar;
     private boolean mShowTitles, mIgnorePrefixes, mLoading = true;
     private Picasso mPicasso;
@@ -185,7 +186,7 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
 
         mAdapter = new LoaderAdapter(mContext);
 
-        mGridView = (GridView) v.findViewById(R.id.gridView);
+        mGridView = (ObservableGridView) v.findViewById(R.id.gridView);
         mGridView.setAdapter(mAdapter);
         mGridView.setColumnWidth(mImageThumbSize);
         mGridView.setOnItemClickListener(new OnItemClickListener() {
@@ -194,6 +195,7 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
                 viewTvShowDetails(arg2, arg1);
             }
         });
+        mGridView.setScrollViewCallbacks(ViewUtils.getLibraryScrollViewCallback(getActivity()));
         mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         mGridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <GridView
+    <com.github.ksoichiro.android.observablescrollview.ObservableGridView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,7 +17,7 @@
         android:scrollbarStyle="outsideOverlay"
         android:stretchMode="columnWidth"
         android:verticalSpacing="@dimen/image_thumbnail_spacing" >
-    </GridView>
+    </com.github.ksoichiro.android.observablescrollview.ObservableGridView>
 
     <ProgressBar
         android:id="@+id/progress"

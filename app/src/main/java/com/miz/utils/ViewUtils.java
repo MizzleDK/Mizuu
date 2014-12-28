@@ -31,6 +31,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Display;
@@ -47,6 +48,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.miz.functions.Actor;
 import com.miz.functions.GridSeason;
 import com.miz.functions.MizLib;
@@ -480,5 +483,29 @@ public class ViewUtils {
             thumbSize = (int) (context.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 0.75);
 
         return thumbSize;
+    }
+
+    public static ObservableScrollViewCallbacks getLibraryScrollViewCallback(final Activity activity) {
+        return new ObservableScrollViewCallbacks() {
+            @Override
+            public void onScrollChanged(int i, boolean b, boolean b2) {}
+
+            @Override
+            public void onDownMotionEvent() {}
+
+            @Override
+            public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+                android.support.v7.app.ActionBar ab = ((ActionBarActivity) activity).getSupportActionBar();
+                if (scrollState == ScrollState.UP) {
+                    if (ab.isShowing()) {
+                        ab.hide();
+                    }
+                } else if (scrollState == ScrollState.DOWN) {
+                    if (!ab.isShowing()) {
+                        ab.show();
+                    }
+                }
+            }
+        };
     }
 }

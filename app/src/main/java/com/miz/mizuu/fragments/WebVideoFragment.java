@@ -30,12 +30,11 @@ import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
@@ -45,6 +44,7 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.TypefaceUtils;
+import com.miz.utils.ViewUtils;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -57,7 +57,7 @@ public class WebVideoFragment extends Fragment {
 	private int mImageThumbSize, mImageThumbSpacing;
 	private ImageAdapter mAdapter;
 	private ArrayList<WebVideo> mVideos = new ArrayList<WebVideo>();
-	private GridView mGridView = null;
+	private ObservableGridView mGridView = null;
 	private ProgressBar mProgressBar;
 	private String mType;
 	private Picasso mPicasso;
@@ -113,7 +113,7 @@ public class WebVideoFragment extends Fragment {
 
 		mAdapter = new ImageAdapter(getActivity());
 
-		mGridView = (GridView) v.findViewById(R.id.gridView);
+		mGridView = (ObservableGridView) v.findViewById(R.id.gridView);
 		mGridView.setClipToPadding(false);
 		mGridView.setAdapter(mAdapter);
 		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -143,6 +143,7 @@ public class WebVideoFragment extends Fragment {
 				}
 			}
 		});
+        mGridView.setScrollViewCallbacks(ViewUtils.getLibraryScrollViewCallback(getActivity()));
 	}
 
 	@Override

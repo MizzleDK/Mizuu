@@ -35,12 +35,11 @@ import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
@@ -51,6 +50,7 @@ import com.miz.mizuu.MovieDetails;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TMDbMovieDetails;
 import com.miz.utils.TypefaceUtils;
+import com.miz.utils.ViewUtils;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -66,7 +66,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 	private ImageAdapter mAdapter;
 	private ArrayList<WebMovie> mMovies = new ArrayList<WebMovie>();
 	private SparseBooleanArray mMovieMap = new SparseBooleanArray();
-	private GridView mGridView = null;
+	private ObservableGridView mGridView = null;
 	private ProgressBar mProgressBar;
 	private DbAdapterMovies mDatabase;
 	private Picasso mPicasso;
@@ -124,7 +124,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
 
 		mAdapter = new ImageAdapter(getActivity());
 
-		mGridView = (GridView) v.findViewById(R.id.gridView);
+		mGridView = (ObservableGridView) v.findViewById(R.id.gridView);
 		mGridView.setAdapter(mAdapter);
 		mGridView.setColumnWidth(mImageThumbSize);
 
@@ -160,6 +160,7 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
                 ActivityCompat.startActivity(getActivity(), i, options.toBundle());
 			}
 		});
+        mGridView.setScrollViewCallbacks(ViewUtils.getLibraryScrollViewCallback(getActivity()));
 
 		if (getArguments().containsKey("json")) {
 			mJson = getArguments().getString("json");
