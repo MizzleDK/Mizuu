@@ -105,10 +105,10 @@
         <Preference
             android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Apache License, Version 2.0"
-            android:title="CWAC LoaderEx by CommonsWare" >
+            android:title="FloatingActionButton by Melnykov Oleksandr" >
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/commonsguy/cwac-loaderex" />
+                android:data="https://github.com/makovkastar/FloatingActionButton" />
         </Preference>
         <Preference
             android:icon="@drawable/ic_extension_white_24dp"
@@ -129,10 +129,26 @@
         <Preference
             android:icon="@drawable/ic_extension_white_24dp"
             android:summary="Apache License, Version 2.0"
+            android:title="ObservableScrollView by Soichiro Kashima" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/ksoichiro/Android-ObservableScrollView" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_extension_white_24dp"
+            android:summary="Apache License, Version 2.0"
             android:title="OkHttp by Square, Inc." >
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="http://square.github.io/okhttp/" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_extension_white_24dp"
+            android:summary="Apache License, Version 2.0"
+            android:title="Okio by Square, Inc." >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://square.github.io/okio/" />
         </Preference>
         <Preference
             android:icon="@drawable/ic_extension_white_24dp"
