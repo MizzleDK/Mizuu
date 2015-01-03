@@ -26,9 +26,14 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
+import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,7 +44,7 @@ import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 public class Prefs extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
-	private Preference mPref, mLanguagePref;
+	private Preference mPref, mLanguagePref, mCopyDatabase;
 	private Locale[] mSystemLocales;
 
 	@Override
@@ -54,6 +59,28 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 		mPref = getPreferenceScreen().findPreference("prefsIgnoredFiles");
 		if (mPref != null)
 			mPref.setEnabled(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_FILES_ENABLED, false));
+
+        mCopyDatabase = getPreferenceScreen().findPreference("prefsCopyDatabase");
+        if (mCopyDatabase != null)
+            mCopyDatabase.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    try {
+
+                        File newPath = new File(MizuuApplication.getAppFolder(getActivity()), "database.db");
+                        newPath.createNewFile();
+
+                        FileUtils.copyFile(FileUtils.getDatabaseFile(getActivity()), newPath);
+                        Toast.makeText(getActivity(), getString(R.string.database_copied) + "\n(" + newPath.getAbsolutePath() + ")", Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        Toast.makeText(getActivity(), R.string.errorSomethingWentWrong, Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+
+                    return true;
+                }
+            });
 
 		mLanguagePref = getPreferenceScreen().findPreference(LANGUAGE_PREFERENCE);
 		if (mLanguagePref != null)

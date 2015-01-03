@@ -527,5 +527,8 @@
     <string name="use_fast_blur">Enable fast blur</string>
     <string name="use_fast_blur_description">Use a fast blur algorithm. Unsupported on some low-end devices.</string>
     <string name="selected">%1$d selected</string>
+    <string name="database_dump_title">Copy database</string>
+    <string name="database_dump_description">Creates a copy of the database in the application folder.</string>
+    <string name="database_copied">Database copied!</string>
 
 </resources>
