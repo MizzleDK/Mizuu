@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="addedToFavs">Added to favourites!</string>
+    <string name="removedFromFavs">Removed from favourites!</string>
+    <string name="menuFavouriteTitle">Add favourite</string>
+    <string name="menuFavouriteTitleRemove">Remove favourite</string>
+    <string name="choiceFavorites">Favourites</string>
+    <string name="updatingTvShowFavorites">Updating TV show favourites…</string>
+    <string name="no_favourites">No favourites</string>
+</resources>
