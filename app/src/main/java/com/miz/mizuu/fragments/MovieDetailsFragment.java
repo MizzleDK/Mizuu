@@ -1026,7 +1026,7 @@ public class MovieDetailsFragment extends Fragment {
 
             try {
                 if (fileType == FileSource.SMB)
-                    temp = MizLib.getSplitParts(orig_filepath, MizLib.getAuthFromFilepath(MizLib.TYPE_MOVIE, orig_filepath));
+                    temp = MizLib.getSplitParts(orig_filepath, MizLib.getLoginFromFilepath(MizLib.TYPE_MOVIE, orig_filepath));
                 else
                     temp = MizLib.getSplitParts(orig_filepath, null);
 

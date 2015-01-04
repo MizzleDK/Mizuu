@@ -31,6 +31,7 @@ import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
+import com.miz.functions.SmbLogin;
 import com.miz.functions.TmdbTrailerSearch;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
@@ -41,7 +42,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 
-import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
 import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
@@ -55,7 +55,7 @@ public class VideoUtils {
 	
 	public static boolean playVideo(Activity activity, String filepath, int filetype, Object videoObject) {
 		boolean videoWildcard = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
-		boolean playbackStarted = false;
+		boolean playbackStarted = true;
 		
 		if (filetype == FileSource.SMB) {
 			playbackStarted = playNetworkFile(activity, filepath, videoObject);
@@ -66,6 +66,7 @@ public class VideoUtils {
 				try { // Attempt to launch intent based on wildcard MIME type
 					activity.startActivity(getVideoIntent(filepath, "video/*", videoObject));
 				} catch (Exception e2) {
+                    playbackStarted = false;
 					Toast.makeText(activity, activity.getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 				}
 			}
@@ -98,7 +99,7 @@ public class VideoUtils {
 		}
 		
 		int contentType = (videoObject instanceof Movie) ? MizLib.TYPE_MOVIE : MizLib.TYPE_SHOWS;
-		final NtlmPasswordAuthentication auth = MizLib.getAuthFromFilepath(contentType, filepath);
+		final SmbLogin auth = MizLib.getLoginFromFilepath(contentType, filepath);
 
 		new Thread(){
 			public void run(){
@@ -158,7 +159,7 @@ public class VideoUtils {
         }
 
         int contentType = (videoObject instanceof Movie) ? MizLib.TYPE_MOVIE : MizLib.TYPE_SHOWS;
-        final NtlmPasswordAuthentication auth = MizLib.getAuthFromFilepath(contentType, filepath);
+        final SmbLogin auth = MizLib.getLoginFromFilepath(contentType, filepath);
 
         new Thread(){
             public void run(){

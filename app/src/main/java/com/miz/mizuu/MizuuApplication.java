@@ -89,7 +89,10 @@ public class MizuuApplication extends Application {
 		mInstance = this;
 		
 		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "false");
-		
+
+        // Initialize the preferences
+        initializePreferences();
+
 		// Database setup
 		sDbMovies = new DbAdapterMovies(this);
 		sDbMovieMapping = new DbAdapterMovieMappings(this);
@@ -125,7 +128,15 @@ public class MizuuApplication extends Application {
 	public static Context getContext() {
 		return mInstance;
 	}
-	
+
+    private void initializePreferences() {
+        PreferenceManager.setDefaultValues(this, R.xml.advanced_prefs, false);
+        PreferenceManager.setDefaultValues(this, R.xml.general_prefs, false);
+        PreferenceManager.setDefaultValues(this, R.xml.identification_search_prefs, false);
+        PreferenceManager.setDefaultValues(this, R.xml.other_prefs, false);
+        PreferenceManager.setDefaultValues(this, R.xml.user_interface_prefs, false);
+    }
+
 	private void transitionLocalizationPreference() {
 		// Transition from the old localization preference if such exists
 		String languagePref;

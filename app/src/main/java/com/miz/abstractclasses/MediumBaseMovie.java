@@ -134,6 +134,8 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getRuntime() {
+        if (TextUtils.isEmpty(RUNTIME))
+            return "0";
 		return RUNTIME;
 	}
 	
@@ -162,7 +164,7 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	}
 	
 	public String getDateAdded() {
-		if (!MizLib.isNumber(DATE_ADDED))
+		if (TextUtils.isEmpty(DATE_ADDED) || !MizLib.isNumber(DATE_ADDED))
 			return "0";
 		return DATE_ADDED;
 	}

@@ -143,7 +143,7 @@ public class ShowStructure {
 		folderName = folderName.trim();
 
 		// Season ## or Season## [1-4] [has to begin with it]
-		Pattern pattern = Pattern.compile("^(?:season|staffel)[-_ \\.]?(\\d{1,4}).*?$", Pattern.CASE_INSENSITIVE);
+		Pattern pattern = Pattern.compile("^(?:season|staffel|series)[-_ \\.]?(\\d{1,4}).*?$", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(folderName);
 		if (matcher.find())
 			return MizLib.getInteger(matcher.group(1));
@@ -277,7 +277,7 @@ public class ShowStructure {
 			return episodes;
 
 		// season ## episode ##
-		pattern = Pattern.compile("(.*?)season[ ._-]*(\\d{1,4})[ ._-]*episode[ ._-]*(\\d{1,3})(.*)", Pattern.CASE_INSENSITIVE);
+		pattern = Pattern.compile("(.*?)(?:season|staffel|series)[ ._-]*(\\d{1,4})[ ._-]*episode[ ._-]*(\\d{1,3})(.*)", Pattern.CASE_INSENSITIVE);
 		matcher = pattern.matcher(filename);
 
 		if (matcher.find()) {

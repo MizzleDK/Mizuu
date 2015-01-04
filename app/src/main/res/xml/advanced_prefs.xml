@@ -63,6 +63,12 @@
             android:key="prefsChromecastBeta"
             android:summary="@string/chromecast_description"
             android:title="@string/chromecast_title" />
+        <Preference
+            android:key="prefsCopyDatabase"
+            android:icon="@drawable/ic_action_database"
+            android:summary="@string/database_dump_description"
+            android:title="@string/database_dump_title"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>

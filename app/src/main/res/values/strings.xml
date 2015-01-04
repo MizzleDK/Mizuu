@@ -512,7 +512,7 @@
     <string name="recently_aired">Recently aired</string>
     <string name="recently_aired_description">Nothing has aired in the last three months.</string>
     <string name="no_watched_tv_shows">No watched TV shows</string>
-    <string name="no_unwatched_tv_shows_descriptions">Goob job!</string>"
+    <string name="no_unwatched_tv_shows_descriptions">Good job!</string>
     <string name="no_episodes_to_play">Sorry, no episodes to play!</string>
     <string name="playing_season_episode">Playing %1$s (S%2$sE%3$s): %4$s</string>
     <string name="play">Play</string>
@@ -527,5 +527,8 @@
     <string name="use_fast_blur">Enable fast blur</string>
     <string name="use_fast_blur_description">Use a fast blur algorithm. Unsupported on some low-end devices.</string>
     <string name="selected">%1$d selected</string>
+    <string name="database_dump_title">Copy database</string>
+    <string name="database_dump_description">Creates a copy of the database in the application folder.</string>
+    <string name="database_copied">Database copied!</string>
 
 </resources>
