@@ -55,7 +55,7 @@ public class VideoUtils {
 	
 	public static boolean playVideo(Activity activity, String filepath, int filetype, Object videoObject) {
 		boolean videoWildcard = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
-		boolean playbackStarted = false;
+		boolean playbackStarted = true;
 		
 		if (filetype == FileSource.SMB) {
 			playbackStarted = playNetworkFile(activity, filepath, videoObject);
@@ -66,6 +66,7 @@ public class VideoUtils {
 				try { // Attempt to launch intent based on wildcard MIME type
 					activity.startActivity(getVideoIntent(filepath, "video/*", videoObject));
 				} catch (Exception e2) {
+                    playbackStarted = false;
 					Toast.makeText(activity, activity.getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 				}
 			}
