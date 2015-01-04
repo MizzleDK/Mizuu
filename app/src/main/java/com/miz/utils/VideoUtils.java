@@ -31,6 +31,7 @@ import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
+import com.miz.functions.SmbLogin;
 import com.miz.functions.TmdbTrailerSearch;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
@@ -41,7 +42,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 
-import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
 import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
@@ -98,7 +98,7 @@ public class VideoUtils {
 		}
 		
 		int contentType = (videoObject instanceof Movie) ? MizLib.TYPE_MOVIE : MizLib.TYPE_SHOWS;
-		final NtlmPasswordAuthentication auth = MizLib.getAuthFromFilepath(contentType, filepath);
+		final SmbLogin auth = MizLib.getLoginFromFilepath(contentType, filepath);
 
 		new Thread(){
 			public void run(){
@@ -158,7 +158,7 @@ public class VideoUtils {
         }
 
         int contentType = (videoObject instanceof Movie) ? MizLib.TYPE_MOVIE : MizLib.TYPE_SHOWS;
-        final NtlmPasswordAuthentication auth = MizLib.getAuthFromFilepath(contentType, filepath);
+        final SmbLogin auth = MizLib.getLoginFromFilepath(contentType, filepath);
 
         new Thread(){
             public void run(){

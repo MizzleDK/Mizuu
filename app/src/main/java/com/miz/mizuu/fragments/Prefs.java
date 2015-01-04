@@ -28,9 +28,11 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.miz.functions.PreferenceKeys;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.FileUtils;
+import com.miz.utils.LocalBroadcastUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +46,7 @@ import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 public class Prefs extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
-	private Preference mPref, mLanguagePref, mCopyDatabase;
+	private Preference mPref, mLanguagePref, mCopyDatabase, mIgnoreNfoFiles;
 	private Locale[] mSystemLocales;
 
 	@Override
@@ -65,9 +67,7 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
             mCopyDatabase.setOnPreferenceClickListener(new OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-
                     try {
-
                         File newPath = new File(MizuuApplication.getAppFolder(getActivity()), "database.db");
                         newPath.createNewFile();
 
@@ -77,6 +77,21 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
                         Toast.makeText(getActivity(), R.string.errorSomethingWentWrong, Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
+
+                    return true;
+                }
+            });
+
+        mIgnoreNfoFiles = getPreferenceScreen().findPreference(PreferenceKeys.IGNORED_NFO_FILES);
+        if (mIgnoreNfoFiles != null)
+            mIgnoreNfoFiles.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    // Clear the cache
+                    MizuuApplication.clearLruCache(getActivity());
+
+                    // Refresh the movie library
+                    LocalBroadcastUtils.updateMovieLibrary(getActivity());
 
                     return true;
                 }

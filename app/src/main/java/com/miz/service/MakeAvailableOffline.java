@@ -32,6 +32,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.miz.functions.MizLib;
+import com.miz.functions.SmbLogin;
 import com.miz.mizuu.CancelOfflineDownload;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -50,7 +51,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 
-import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
@@ -66,7 +66,7 @@ public class MakeAvailableOffline extends IntentService {
 	public static final String TYPE = "type";
 	private String mFileUrl;
 	private int mType, mBufferSize;
-	private NtlmPasswordAuthentication mAuth;
+	private SmbLogin mAuth;
 	private SmbFile mSmb;
 	private Context mContext;
 	private long mSize;
@@ -218,7 +218,7 @@ public class MakeAvailableOffline extends IntentService {
 		if (mFileUrl.startsWith("http")) {
 			return MizLib.exists(mFileUrl);
 		} else {
-			mAuth = MizLib.getAuthFromFilepath(mType, mFileUrl);
+			mAuth = MizLib.getLoginFromFilepath(mType, mFileUrl);
 			try {
 				mSmb = new SmbFile(
 						MizLib.createSmbLoginString(
