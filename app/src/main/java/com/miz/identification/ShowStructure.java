@@ -160,6 +160,12 @@ public class ShowStructure {
 		if (matcher.find())
 			return MizLib.getInteger(matcher.group(1));
 
+        // ## season / staffel / series [1-4] [has to contain just that]
+        pattern = Pattern.compile("^(\\d{1,4})[-_ \\.]?(?:season|staffel|series)$", Pattern.CASE_INSENSITIVE);
+        matcher = pattern.matcher(folderName);
+        if (matcher.find())
+            return MizLib.getInteger(matcher.group(1));
+
 		// special / specials / special episode / special episodes [has to contain just that]
 		pattern = Pattern.compile("^(([s][p][e][c][i][a][l](?:([s]*)|([-_ \\.]?[e][p][i][s][o][d][e][s]*)))|([e][x][t][r][a][s]*))$", Pattern.CASE_INSENSITIVE);
 		matcher = pattern.matcher(folderName);
