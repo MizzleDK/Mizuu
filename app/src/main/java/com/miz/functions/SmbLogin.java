@@ -16,7 +16,14 @@ package com.miz.functions;/*
 
 public class SmbLogin {
 
+    // Default values for guest login
     private final String mDomain, mUser, mPassword;
+
+    public SmbLogin() {
+        mDomain = "?";
+        mUser = "GUEST";
+        mPassword = "";
+    }
 
     public SmbLogin(String domain, String user, String password) {
         mDomain = domain;

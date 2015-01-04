@@ -1243,7 +1243,7 @@ public class MizLib {
                 TextUtils.isEmpty(source.getDomain()) &&
                         TextUtils.isEmpty(source.getUser()) &&
                         TextUtils.isEmpty(source.getPassword())) {
-            return new SmbLogin("?", "GUEST", "");
+            return new SmbLogin();
         } else {
             return new SmbLogin(source.getDomain(), source.getUser(), source.getPassword());
         }
