@@ -22,13 +22,16 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -36,7 +39,9 @@ import android.widget.Toast;
 
 import com.miz.functions.MizLib;
 import com.miz.mizuu.R;
+import com.miz.utils.FileUtils;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +51,7 @@ public class ContactDeveloperFragment extends Fragment {
 	private EditText message;
 	private TextView deviceDetails;
 	private Button send;
+    private CheckBox mCheckBox;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +70,7 @@ public class ContactDeveloperFragment extends Fragment {
 		if (!MizLib.isTablet(getActivity()))
 			getActivity().setTitle(R.string.menuAboutContact);
 
+        mCheckBox = (CheckBox) v.findViewById(R.id.includeDatabase);
 		subject = (Spinner) v.findViewById(R.id.subjectSpinner);
 		message = (EditText) v.findViewById(R.id.traktUsername);
 		deviceDetails = (TextView) v.findViewById(R.id.textView2);
@@ -114,6 +121,14 @@ public class ContactDeveloperFragment extends Fragment {
 				if (best != null)
 					emailIntent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
 				emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                if (mCheckBox.isChecked()) {
+                    String path = FileUtils.copyDatabase(getActivity());
+
+                    if (!TextUtils.isEmpty(path))
+                    emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(path)));
+                }
+
 				startActivity(emailIntent);
 				Toast.makeText(getActivity(), getString(R.string.launchingGmail), Toast.LENGTH_SHORT).show();
 			} catch (Exception e) {

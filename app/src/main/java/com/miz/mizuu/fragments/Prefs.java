@@ -26,6 +26,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.miz.functions.PreferenceKeys;
@@ -67,15 +68,12 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
             mCopyDatabase.setOnPreferenceClickListener(new OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    try {
-                        File newPath = new File(MizuuApplication.getAppFolder(getActivity()), "database.db");
-                        newPath.createNewFile();
+                    String path = FileUtils.copyDatabase(getActivity());
 
-                        FileUtils.copyFile(FileUtils.getDatabaseFile(getActivity()), newPath);
-                        Toast.makeText(getActivity(), getString(R.string.database_copied) + "\n(" + newPath.getAbsolutePath() + ")", Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
+                    if (!TextUtils.isEmpty(path)) {
+                        Toast.makeText(getActivity(), getString(R.string.database_copied) + "\n(" + path + ")", Toast.LENGTH_LONG).show();
+                    } else {
                         Toast.makeText(getActivity(), R.string.errorSomethingWentWrong, Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
                     }
 
                     return true;

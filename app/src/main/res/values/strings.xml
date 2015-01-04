@@ -530,5 +530,6 @@
     <string name="database_dump_title">Copy database</string>
     <string name="database_dump_description">Creates a copy of the database in the application folder.</string>
     <string name="database_copied">Database copied!</string>
+    <string name="include_database">Include database</string>
 
 </resources>

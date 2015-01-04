@@ -123,4 +123,17 @@ public class FileUtils {
     private static File getOfflineCopyFile(Context c, Filepath path) {
         return getOfflineFile(c, path.getFilepath());
     }
+
+    public static String copyDatabase(Context context) {
+        try {
+            File newPath = new File(MizuuApplication.getAppFolder(context), "database.db");
+            newPath.createNewFile();
+            newPath.setReadable(true);
+            FileUtils.copyFile(FileUtils.getDatabaseFile(context), newPath);
+
+            return newPath.exists() ? newPath.getAbsolutePath() : null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
 }

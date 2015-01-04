@@ -65,6 +65,13 @@
                 android:capitalize="sentences">
             </EditText>
 
+            <CheckBox
+                android:id="@+id/includeDatabase"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/include_database"/>
+
             <LinearLayout
                 style="?android:attr/buttonBarStyle"
                 android:layout_width="match_parent"
