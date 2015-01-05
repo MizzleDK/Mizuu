@@ -500,7 +500,7 @@
   <string name="no_watched_movies">Ei katsottuja elokuvia</string>
   <string name="no_watched_movies_description">Mitä sinä odotat?</string>
   <string name="no_unwatched_movies">Olet katsonut kaiken</string>
-  <string name="no_unwatched_movies_description">Tarkista <b>Verkkoelokuvat</b>-osioon tutustuaksesi uusiin elokuviin.</string>
+  <string name="no_unwatched_movies_description">Hienoa työtä! Tsekkaa <b>Verkkoelokuvat</b>-osioon tutustuaksesi uusiin elokuviin.</string>
   <string name="no_movie_collections">Tyhjä elokuvakokoelma</string>
   <string name="no_movie_collections_description">Sitä sattuu paremmissakin piireissä&#8230;</string>
   <string name="no_tv_shows">Ei TV-ohjelmia</string>
@@ -510,7 +510,7 @@
   <string name="recently_aired">Viimeksi esitetty</string>
   <string name="recently_aired_description">Mitään ei ole esitetty viimeisen kolmen kuukauden aikana.</string>
   <string name="no_watched_tv_shows">Ei katsottuja TV-ohjelmia</string>
-  <string name="no_unwatched_tv_shows_descriptions">Hyvää työtä!</string>
+  <string name="no_unwatched_tv_shows_descriptions">Hienoa työtä!</string>
   <string name="no_episodes_to_play">Sinulla ei näyttäisi olevan jaksoja toistettavana!</string>
   <string name="playing_season_episode">Toistetaan %1$s (K%2$sJ%3$s): %4$s</string>
   <string name="play">Toista</string>
@@ -525,4 +525,8 @@
   <string name="use_fast_blur">Pikasumennus</string>
   <string name="use_fast_blur_description">Käyttää pikasumennusalgoritmia. Malliston huokeimmat laitteet eivät välttämättä tue.</string>
   <string name="selected">%1$d valittuna</string>
+  <string name="database_dump_title">Kopioi tietokanta</string>
+  <string name="database_dump_description">Luo tietokannan kopion sovelluskansiosta.</string>
+  <string name="database_copied">Tietokanta kopioitu!</string>
+  <string name="include_database">Sisältää tietokannan</string>
 </resources>
