@@ -36,24 +36,24 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.2'
+    compile 'com.android.support:support-v4:21.0.3'
     compile 'com.google.guava:guava:18.0'
-    compile 'com.android.support:support-v4:21.0.2'
-    compile 'com.android.support:support-v13:21.0.0'
-    compile 'com.android.support:appcompat-v7:21.0.2'
-    compile 'com.android.support:palette-v7:21.0.0'
-    compile 'com.android.support:mediarouter-v7:21.0.0'
-    compile 'com.android.support:recyclerview-v7:21.0.0'
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:support-v13:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:palette-v7:21.0.3'
+    compile 'com.android.support:mediarouter-v7:21.0.3'
+    compile 'com.android.support:recyclerview-v7:21.0.3'
     compile 'com.android.support:cardview-v7:21.0.0'
     compile 'com.squareup.picasso:picasso:2.3.4'
-    compile 'com.squareup.okhttp:okhttp:2.1.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.1.0'
-    compile 'com.squareup.okio:okio:1.0.1'
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
+    compile 'com.squareup.okio:okio:1.2.0'
     compile 'com.squareup:otto:1.3.4'
     compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile 'com.github.ksoichiro:android-observablescrollview:1.4.0'
-
-    //compile 'com.jpardogo.materialtabstrip:library:1.0.6' VERSION 1.0.6 is buggy on some devices
+    compile 'com.android.support:leanback-v17:21.0.3'
+    compile 'com.jpardogo.materialtabstrip:library:1.0.7'
     compile files('libs/cling-core-1.0.5.jar')
     compile files('libs/cling-support-1.0.5.jar')
     compile files('libs/jcifs.jar')
