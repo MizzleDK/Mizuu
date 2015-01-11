@@ -160,7 +160,6 @@ public class MovieDiscoveryFragment extends Fragment implements OnSharedPreferen
                 ActivityCompat.startActivity(getActivity(), i, options.toBundle());
 			}
 		});
-        mGridView.setScrollViewCallbacks(ViewUtils.getLibraryScrollViewCallback(getActivity()));
 
 		if (getArguments().containsKey("json")) {
 			mJson = getArguments().getString("json");

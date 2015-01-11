@@ -195,7 +195,6 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
                 viewTvShowDetails(arg2, arg1);
             }
         });
-        mGridView.setScrollViewCallbacks(ViewUtils.getLibraryScrollViewCallback(getActivity()));
         mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         mGridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override

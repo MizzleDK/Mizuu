@@ -194,7 +194,6 @@ public class MovieLibraryFragment extends Fragment implements SharedPreferences.
                 viewMovieDetails(arg2, arg1);
             }
         });
-        mGridView.setScrollViewCallbacks(ViewUtils.getLibraryScrollViewCallback(getActivity()));
 
         // We only want to display the contextual menu if we're showing movies, not collections
         if (getArguments().getInt("type") != MovieLoader.COLLECTIONS) {

@@ -484,28 +484,4 @@ public class ViewUtils {
 
         return thumbSize;
     }
-
-    public static ObservableScrollViewCallbacks getLibraryScrollViewCallback(final Activity activity) {
-        return new ObservableScrollViewCallbacks() {
-            @Override
-            public void onScrollChanged(int i, boolean b, boolean b2) {}
-
-            @Override
-            public void onDownMotionEvent() {}
-
-            @Override
-            public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-                android.support.v7.app.ActionBar ab = ((ActionBarActivity) activity).getSupportActionBar();
-                if (scrollState == ScrollState.UP) {
-                    if (ab.isShowing()) {
-                        ab.hide();
-                    }
-                } else if (scrollState == ScrollState.DOWN) {
-                    if (!ab.isShowing()) {
-                        ab.show();
-                    }
-                }
-            }
-        };
-    }
 }

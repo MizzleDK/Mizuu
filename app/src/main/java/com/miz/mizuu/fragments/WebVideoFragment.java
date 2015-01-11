@@ -143,7 +143,6 @@ public class WebVideoFragment extends Fragment {
 				}
 			}
 		});
-        mGridView.setScrollViewCallbacks(ViewUtils.getLibraryScrollViewCallback(getActivity()));
 	}
 
 	@Override
