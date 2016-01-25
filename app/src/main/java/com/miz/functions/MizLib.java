@@ -162,13 +162,6 @@ public class MizLib {
         return key;
     }
 
-    public static String getMizuuKey(Context context) {
-        String key = context.getString(R.string.mizuu_filename_key);
-        if (TextUtils.isEmpty(key) || key.equals("add_your_own"))
-            throw new RuntimeException("You need to add a Mizuu key!");
-        return key;
-    }
-
     public static String[] getPrefixes(Context c) {
         ArrayList<String> prefixesArray = new ArrayList<String>();
         String prefix = c.getString(R.string.prefixes);
@@ -2351,32 +2344,5 @@ public class MizLib {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void shareFilenames(Context context, ArrayList<String> filenames, boolean movie) {
-
-        StringBuilder sb = new StringBuilder();
-        for (String s : filenames) {
-            sb.append(s);
-            sb.append("<MiZ>");
-        }
-        sb.substring(0, sb.length() - 1);
-
-        final OkHttpClient client = MizuuApplication.getOkHttpClient();
-
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("filepaths", sb.toString())
-                .add("type", movie ? "0" : "1")
-                .add("key", getMizuuKey(context))
-                .build();
-
-        Request request = new Request.Builder()
-                .url("http://mizuu.tv/add_filepath.php")
-                .post(formBody)
-                .build();
-
-        try {
-            client.newCall(request).execute();
-        } catch (Exception e) {}
     }
 }

@@ -30,7 +30,6 @@ import com.miz.apis.thetvdb.TvShow;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.MizLib;
-import com.miz.functions.PreferenceKeys;
 import com.miz.functions.TvShowLibraryUpdateCallback;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.FileUtils;
@@ -131,9 +130,6 @@ public class TvShowIdentification {
     }
 
     public void start() {
-
-        // Share filenames
-        shareFilenames();
 
         // Go through all files
         for (int i = 0; i < mShowStructures.size(); i++) {
@@ -400,31 +396,4 @@ public class TvShowIdentification {
         return smallSize;
     }
 
-    private void shareFilenames() {
-        if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(PreferenceKeys.FILENAME_RECOGNITION, false)) {
-            ArrayList<String> filenames = new ArrayList<String>();
-
-            for (int i = 0; i < mShowStructures.size(); i++) {
-                if (mShowStructures.get(i).hasSeasonFolder()) {
-                    if (mShowStructures.get(i).hasShowFolder()) {
-                        filenames.add((mShowStructures.get(i).getShowFolderName() + "/"
-                                + mShowStructures.get(i).getSeasonFolderName() + "/"
-                                + mShowStructures.get(i).getFilename()));
-                    } else {
-                        filenames.add(mShowStructures.get(i).getSeasonFolderName() + "/"
-                                + mShowStructures.get(i).getFilename());
-                    }
-                } else {
-                    if (mShowStructures.get(i).hasShowFolder()) {
-                        filenames.add((mShowStructures.get(i).getShowFolderName() + "/"
-                                + mShowStructures.get(i).getFilename()));
-                    } else {
-                        filenames.add(mShowStructures.get(i).getFilename());
-                    }
-                }
-            }
-
-            MizLib.shareFilenames(mContext, filenames, false);
-        }
-    }
 }

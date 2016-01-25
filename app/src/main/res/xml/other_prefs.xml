@@ -192,13 +192,5 @@
                 android:data="http://translate.mizuu.tv/" />
         </Preference>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/data_collection" >
-        <CheckBoxPreference
-            android:icon="@drawable/ic_extension_white_24dp"
-            android:title="@string/improve_filename_recognition"
-            android:summary="@string/improve_filename_recognition_description"
-            android:defaultValue="false"
-            android:key="prefsFilenameRecognition" />
-    </PreferenceCategory>
 
 </PreferenceScreen>
