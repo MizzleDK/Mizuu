@@ -24,9 +24,6 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeApiServiceUtil;
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
@@ -48,15 +45,15 @@ import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
 import static com.miz.functions.PreferenceKeys.IGNORE_VIDEO_FILE_TYPE;
 
 public class VideoUtils {
-	
+
 	// TODO Move all related methods from MizLib, etc. into this class
 
 	private VideoUtils() {} // No instantiation
-	
+
 	public static boolean playVideo(Activity activity, String filepath, int filetype, Object videoObject) {
 		boolean videoWildcard = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
 		boolean playbackStarted = true;
-		
+
 		if (filetype == FileSource.SMB) {
 			playbackStarted = playNetworkFile(activity, filepath, videoObject);
 		} else {
@@ -66,19 +63,19 @@ public class VideoUtils {
 				try { // Attempt to launch intent based on wildcard MIME type
 					activity.startActivity(getVideoIntent(filepath, "video/*", videoObject));
 				} catch (Exception e2) {
-                    playbackStarted = false;
+					playbackStarted = false;
 					Toast.makeText(activity, activity.getString(R.string.noVideoPlayerFound), Toast.LENGTH_LONG).show();
 				}
 			}
 		}
-		
+
 		return playbackStarted;
 	}
-	
+
 	private static boolean playNetworkFile(final Activity activity, final String filepath, final Object videoObject) {
-		
+
 		final boolean videoWildcard = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(IGNORE_VIDEO_FILE_TYPE, false);
-		
+
 		if (!MizLib.isWifiConnected(activity)) {
 			Toast.makeText(activity, activity.getString(R.string.noConnection), Toast.LENGTH_LONG).show();
 			return false;
@@ -97,7 +94,7 @@ public class VideoUtils {
 			Toast.makeText(activity, activity.getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
 			return false;
 		}
-		
+
 		int contentType = (videoObject instanceof Movie) ? MizLib.TYPE_MOVIE : MizLib.TYPE_SHOWS;
 		final SmbLogin auth = MizLib.getLoginFromFilepath(contentType, filepath);
 
@@ -111,7 +108,7 @@ public class VideoUtils {
 									auth.getPassword(),
 									filepath,
 									false
-									));
+							));
 
 					s.setStreamSrc(file, MizLib.getSubtitleFiles(filepath, auth)); //the second argument can be a list of subtitle files
 					activity.runOnUiThread(new Runnable(){
@@ -134,55 +131,55 @@ public class VideoUtils {
 				catch (UnsupportedEncodingException e1) {}
 			}
 		}.start();
-		
+
 		return true;
 	}
 
-    public static String startSmbServer(final Activity activity, final String filepath, final Object videoObject) {
-        if (!MizLib.isWifiConnected(activity)) {
-            Toast.makeText(activity, activity.getString(R.string.noConnection), Toast.LENGTH_LONG).show();
-            return "";
-        }
+	public static String startSmbServer(final Activity activity, final String filepath, final Object videoObject) {
+		if (!MizLib.isWifiConnected(activity)) {
+			Toast.makeText(activity, activity.getString(R.string.noConnection), Toast.LENGTH_LONG).show();
+			return "";
+		}
 
-        int bufferSize;
-        String buff = PreferenceManager.getDefaultSharedPreferences(activity).getString(BUFFER_SIZE, activity.getString(R.string._16kb));
-        if (buff.equals(activity.getString(R.string._16kb)))
-            bufferSize = 8192 * 2; // This appears to be the limit for most video players
-        else bufferSize = 8192;
+		int bufferSize;
+		String buff = PreferenceManager.getDefaultSharedPreferences(activity).getString(BUFFER_SIZE, activity.getString(R.string._16kb));
+		if (buff.equals(activity.getString(R.string._16kb)))
+			bufferSize = 8192 * 2; // This appears to be the limit for most video players
+		else bufferSize = 8192;
 
-        final Streamer s = Streamer.getInstance();
-        if (s != null)
-            s.setBufferSize(bufferSize);
-        else {
-            Toast.makeText(activity, activity.getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
-            return "";
-        }
+		final Streamer s = Streamer.getInstance();
+		if (s != null)
+			s.setBufferSize(bufferSize);
+		else {
+			Toast.makeText(activity, activity.getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
+			return "";
+		}
 
-        int contentType = (videoObject instanceof Movie) ? MizLib.TYPE_MOVIE : MizLib.TYPE_SHOWS;
-        final SmbLogin auth = MizLib.getLoginFromFilepath(contentType, filepath);
+		int contentType = (videoObject instanceof Movie) ? MizLib.TYPE_MOVIE : MizLib.TYPE_SHOWS;
+		final SmbLogin auth = MizLib.getLoginFromFilepath(contentType, filepath);
 
-        new Thread(){
-            public void run(){
-                try{
-                    final SmbFile file = new SmbFile(
-                            MizLib.createSmbLoginString(
-                                    auth.getDomain(),
-                                    auth.getUsername(),
-                                    auth.getPassword(),
-                                    filepath,
-                                    false
-                            ));
+		new Thread(){
+			public void run(){
+				try{
+					final SmbFile file = new SmbFile(
+							MizLib.createSmbLoginString(
+									auth.getDomain(),
+									auth.getUsername(),
+									auth.getPassword(),
+									filepath,
+									false
+							));
 
-                    s.setStreamSrc(file, MizLib.getSubtitleFiles(filepath, auth)); //the second argument can be a list of subtitle files
-                }
-                catch (MalformedURLException e) {}
-                catch (UnsupportedEncodingException e1) {}
-            }
-        }.start();
+					s.setStreamSrc(file, MizLib.getSubtitleFiles(filepath, auth)); //the second argument can be a list of subtitle files
+				}
+				catch (MalformedURLException e) {}
+				catch (UnsupportedEncodingException e1) {}
+			}
+		}.start();
 
-        return Uri.parse(s.getUrl() + Uri.fromFile(new File(Uri.parse(filepath).getPath())).getEncodedPath()).toString();
-    }
-	
+		return Uri.parse(s.getUrl() + Uri.fromFile(new File(Uri.parse(filepath).getPath())).getEncodedPath()).toString();
+	}
+
 	public static void playTrailer(final Activity activity, final Movie movie) {
 		String localTrailer = "";
 		for (Filepath path : movie.getFilepaths()) {
@@ -206,20 +203,15 @@ public class VideoUtils {
 			}
 		} else {
 			if (!TextUtils.isEmpty(movie.getTrailer())) {
-				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(activity).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(activity, MizLib.getYouTubeApiKey(activity), MizLib.getYouTubeId(movie.getTrailer()), 0, false, true);
-					activity.startActivity(intent);
-				} else {
-					Intent intent = new Intent(Intent.ACTION_VIEW);
-					intent.setData(Uri.parse(movie.getTrailer()));
-					activity.startActivity(intent);
-				}
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(Uri.parse(movie.getTrailer()));
+				activity.startActivity(intent);
 			} else {
-				new TmdbTrailerSearch(activity, movie.getTmdbId(), movie.getTitle()).execute();
+				new TmdbTrailerSearch(activity, movie.getTmdbId()).execute();
 			}
 		}
 	}
-	
+
 	public static Intent getVideoIntent(String fileUrl, boolean useWildcard, Object videoObject) {
 		if (fileUrl.startsWith("http"))
 			return getVideoIntent(Uri.parse(fileUrl), useWildcard, videoObject);
@@ -284,7 +276,7 @@ public class VideoUtils {
 		b.putBoolean("forcedirect", true);
 		return b;
 	}
-	
+
 	public static String getMimeType(String filepath, boolean useWildcard) {
 		if (useWildcard)
 			return "video/*";

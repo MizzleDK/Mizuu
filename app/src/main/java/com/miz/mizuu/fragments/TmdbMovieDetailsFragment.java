@@ -476,7 +476,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
     }
 
     public void watchTrailer() {
-        new TmdbTrailerSearch(getActivity(), mMovie.getId(), mMovie.getTitle()).execute();
+        new TmdbTrailerSearch(getActivity(), mMovie.getId()).execute();
     }
 
     public void checkIn() {

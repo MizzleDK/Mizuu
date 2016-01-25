@@ -162,13 +162,6 @@ public class MizLib {
         return key;
     }
 
-    public static String getYouTubeApiKey(Context context) {
-        String key = context.getString(R.string.youtube_api_key);
-        if (TextUtils.isEmpty(key) || key.equals("add_your_own"))
-            throw new RuntimeException("You need to add a YouTube API key!");
-        return key;
-    }
-
     public static String getMizuuKey(Context context) {
         String key = context.getString(R.string.mizuu_filename_key);
         if (TextUtils.isEmpty(key) || key.equals("add_your_own"))

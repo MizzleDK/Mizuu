@@ -35,16 +35,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
-import com.google.android.youtube.player.YouTubeApiServiceUtil;
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.miz.functions.AsyncTask;
 import com.miz.functions.CoverItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.TypefaceUtils;
-import com.miz.utils.ViewUtils;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -78,17 +74,17 @@ public class WebVideoFragment extends Fragment {
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {		
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.backdrop_thumbnail_width) * 1.25);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-		
+
 		mPicasso = MizuuApplication.getPicasso(getActivity());
 		mConfig = MizuuApplication.getBitmapConfig();
-		
+
 		mContext = getActivity().getApplicationContext();
-		
+
 		mType = getArguments().getString("type");
 		if (mType.equals(getString(R.string.choiceYouTube))) {
 			new GetYouTubeVideos().execute();
@@ -133,14 +129,9 @@ public class WebVideoFragment extends Fragment {
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity()).equals(YouTubeInitializationResult.SUCCESS)) {
-					Intent intent = YouTubeStandalonePlayer.createVideoIntent(getActivity(), MizLib.getYouTubeApiKey(getActivity()), mVideos.get(arg2).getId(), 0, false, true);
-					startActivity(intent);
-				} else {
-					Intent intent = new Intent(Intent.ACTION_VIEW);
-					intent.setData(Uri.parse("http://www.youtube.com/watch?v=" + mVideos.get(arg2).getId()));
-					startActivity(intent);
-				}
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(Uri.parse("http://www.youtube.com/watch?v=" + mVideos.get(arg2).getId()));
+				startActivity(intent);
 			}
 		});
 	}
@@ -151,11 +142,11 @@ public class WebVideoFragment extends Fragment {
 		if (mAdapter != null)
 			mAdapter.notifyDataSetChanged();
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	private class ImageAdapter extends BaseAdapter {
@@ -189,25 +180,25 @@ public class WebVideoFragment extends Fragment {
 
 			final WebVideo mWebVideo = mVideos.get(position);
 			CoverItem holder;
-			
+
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.webvideo_item, container, false);
 				holder = new CoverItem();
 
 				holder.cover = (ImageView) convertView.findViewById(R.id.cover);
 				holder.text = (TextView) convertView.findViewById(R.id.text);
-				
+
 				holder.text.setTypeface(TypefaceUtils.getRobotoMedium(mContext));
-				
+
 				convertView.setTag(holder);
 			} else {
 				holder = (CoverItem) convertView.getTag();
 			}
 
 			holder.text.setText(mWebVideo.getTitle());
-			
+
 			mPicasso.load(mWebVideo.getUrl()).placeholder(R.color.card_background_dark).error(R.drawable.nobackdrop).config(mConfig).into(holder.cover);
-			
+
 			return convertView;
 		}
 
@@ -235,10 +226,10 @@ public class WebVideoFragment extends Fragment {
 					JSONObject id = item.getJSONObject("id");
 
 					mVideos.add(new WebVideo(
-							item.getJSONObject("title").getString("$t"),
-							id.getString("$t").substring(id.getString("$t").lastIndexOf("videos/") + 7, id.getString("$t").length()),
-							item.getJSONObject("media$group").getJSONArray("media$thumbnail").getJSONObject(0).getString("url"))
-							);
+									item.getJSONObject("title").getString("$t"),
+									id.getString("$t").substring(id.getString("$t").lastIndexOf("videos/") + 7, id.getString("$t").length()),
+									item.getJSONObject("media$group").getJSONArray("media$thumbnail").getJSONObject(0).getString("url"))
+					);
 				}
 			} catch (Exception e) {}
 
@@ -268,16 +259,16 @@ public class WebVideoFragment extends Fragment {
 						String youtubeId = MizLib.getYouTubeId(jsonArray.getJSONObject(i).getJSONObject("data").getString("url"));
 						if (!youtubeId.isEmpty()) {
 							mVideos.add(new WebVideo(
-									jsonArray.getJSONObject(i).getJSONObject("data").getString("title"),
-									youtubeId,
-									jsonArray.getJSONObject(i).getJSONObject("data").getJSONObject("media").getJSONObject("oembed").getString("thumbnail_url"))
-									);
+											jsonArray.getJSONObject(i).getJSONObject("data").getString("title"),
+											youtubeId,
+											jsonArray.getJSONObject(i).getJSONObject("data").getJSONObject("media").getJSONObject("oembed").getString("thumbnail_url"))
+							);
 						}
 					}
 				}
 			} catch (Exception e) {}
 
-			return null;			
+			return null;
 		}
 
 		@Override
@@ -304,14 +295,14 @@ public class WebVideoFragment extends Fragment {
 					JSONObject id = item.getJSONObject("id");
 
 					mVideos.add(new WebVideo(
-							item.getJSONObject("title").getString("$t"),
-							id.getString("$t").substring(id.getString("$t").lastIndexOf("videos/") + 7, id.getString("$t").length()),
-							item.getJSONObject("media$group").getJSONArray("media$thumbnail").getJSONObject(0).getString("url"))
-							);
+									item.getJSONObject("title").getString("$t"),
+									id.getString("$t").substring(id.getString("$t").lastIndexOf("videos/") + 7, id.getString("$t").length()),
+									item.getJSONObject("media$group").getJSONArray("media$thumbnail").getJSONObject(0).getString("url"))
+					);
 				}
 			} catch (Exception e) {}
 
-			return null;		
+			return null;
 		}
 
 		@Override

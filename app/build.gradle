@@ -58,7 +58,6 @@ dependencies {
     compile files('libs/cling-support-1.0.5.jar')
     compile files('libs/jcifs.jar')
     compile files('libs/teleal-common-1.0.13.jar')
-    compile files('libs/YouTubeAndroidPlayerApi.jar')
 
 /**
  * // Cling 2.0 dependencies on Android
