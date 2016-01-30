@@ -11,11 +11,6 @@
         <item>1</item>
         <item>2</item>
     </string-array>
-    <string-array name="subjects">
-        <item>@string/problem</item>
-        <item>@string/suggestion</item>
-        <item>@string/other</item>
-    </string-array>
     <string-array name="bufferSizes">
         <item>@string/_8kb</item>
         <item>@string/_16kb</item>
