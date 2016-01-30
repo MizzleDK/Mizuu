@@ -72,7 +72,6 @@ public class PreferenceKeys {
 	public static final String BLUR_BACKDROPS = "prefsBlurBackdrops";
     public static final String DVD_ORDERING = "prefsDvdOrdering";
     public static final String CHROMECAST_BETA_SUPPORT = "prefsChromecastBeta";
-    public static final String FILENAME_RECOGNITION = "prefsFilenameRecognition";
     public static final String USE_FAST_BLUR = "prefsUseFastBlur";
 
 }
