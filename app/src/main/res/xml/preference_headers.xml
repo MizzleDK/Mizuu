@@ -48,9 +48,5 @@
             android:name="resource"
             android:value="other_prefs" />
     </header>
-    <header
-        android:fragment="com.miz.mizuu.fragments.ContactDeveloperFragment"
-        android:icon="@drawable/ic_help_white_24dp"
-        android:title="@string/menuAboutContact" />
 
 </preference-headers>

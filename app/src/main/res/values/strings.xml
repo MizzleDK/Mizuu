@@ -100,7 +100,6 @@
     <string name="menuShareTitle">Share</string>
     <string name="menuRemoveTitle">Remove</string>
     <string name="menuUpdateTitle">Update library</string>
-    <string name="menuAboutContact">Contact developer</string>
     <string name="prefsFileSourcesDescription">Configure the file sources to include in library updates.</string>
     <string name="actorsShowAllPhotos">Photos</string>
     <string name="actorsTaggedPhotos">Tagged photos</string>
@@ -204,15 +203,7 @@
     <string name="stringPopular">Popular</string>
     <string name="addFileSource">Add file source</string>
     <string name="done">Done</string>
-    <string name="send">Send</string>
-    <string name="enterAMessage">Enter a message!</string>
-    <string name="launchingGmail">Opening Gmail…</string>
-    <string name="failedGmailLaunch">"Couldn't open Gmail"</string>
-    <string name="problem">Problem</string>
     <string name="other">Other</string>
-    <string name="suggestion">Suggestion</string>
-    <string name="message">Message</string>
-    <string name="subject">Subject</string>
     <string name="noVideoPlayerFound">No compatible video player found!</string>
     <string name="ignoreMoviePrefixes">Ignore title prefixes</string>
     <string name="ignoreMoviePrefixesDescription">Ignore prefixes like "A" and "The".</string>
@@ -526,6 +517,5 @@
     <string name="database_dump_title">Copy database</string>
     <string name="database_dump_description">Creates a copy of the database in the application folder.</string>
     <string name="database_copied">Database copied!</string>
-    <string name="include_database">Include database</string>
 
 </resources>

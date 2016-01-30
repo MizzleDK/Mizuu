@@ -57,7 +57,6 @@ import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.AccountsFragment;
-import com.miz.mizuu.fragments.ContactDeveloperFragment;
 import com.miz.mizuu.fragments.MovieLibraryOverviewFragment;
 import com.miz.mizuu.fragments.TvShowLibraryOverviewFragment;
 import com.miz.utils.LocalBroadcastUtils;
@@ -141,13 +140,6 @@ public class Main extends MizActivity {
                     case MenuItem.SETTINGS_AREA:
 
                         Intent smallIntent = new Intent(getApplicationContext(), Preferences.class);
-                        if (mMenuItems.get(arg2).getIcon() == R.drawable.ic_help_grey600_24dp) {
-                            smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, ContactDeveloperFragment.class.getName());
-                            smallIntent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
-                            smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, getString(R.string.menuAboutContact));
-                            smallIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_SHORT_TITLE, getString(R.string.menuAboutContact));
-                        }
-
                         startActivity(smallIntent);
 
                         mDrawerLayout.closeDrawers();
@@ -245,7 +237,6 @@ public class Main extends MizActivity {
         mMenuItems.add(new MenuItem(MenuItem.SEPARATOR_EXTRA_PADDING));
 
         mMenuItems.add(new MenuItem(getString(R.string.settings_name), MenuItem.SETTINGS_AREA, R.drawable.ic_settings_grey600_24dp));
-        mMenuItems.add(new MenuItem(getString(R.string.menuAboutContact), MenuItem.SETTINGS_AREA, R.drawable.ic_help_grey600_24dp));
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
