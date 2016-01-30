@@ -31,8 +31,10 @@
         android:icon="@drawable/menuicon"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:supportsRtl="true"
         android:banner="@drawable/android_tv_banner"
         android:theme="@style/Mizuu.Theme" >
+
         <uses-library android:name="android.test.runner" />
 
         <!-- Welcome activity -->
