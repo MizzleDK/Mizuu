@@ -354,16 +354,6 @@
             </intent-filter>
         </activity>
 
-        <!-- SearchWebMovies -->
-        <activity
-            android:name="com.miz.mizuu.SearchWebMovies"
-            android:exported="false"
-            android:label="@string/stringSearch" >
-            <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <!-- Identify TV show activity -->
         <activity
             android:name="com.miz.mizuu.IdentifyTvShow"

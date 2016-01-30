@@ -58,10 +58,8 @@ import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.AccountsFragment;
 import com.miz.mizuu.fragments.ContactDeveloperFragment;
-import com.miz.mizuu.fragments.MovieDiscoveryViewPagerFragment;
 import com.miz.mizuu.fragments.MovieLibraryOverviewFragment;
 import com.miz.mizuu.fragments.TvShowLibraryOverviewFragment;
-import com.miz.mizuu.fragments.WebVideosViewPagerFragment;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TypefaceUtils;
 import com.miz.utils.ViewUtils;
@@ -78,7 +76,7 @@ import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
 @SuppressLint("NewApi")
 public class Main extends MizActivity {
 
-    public static final int MOVIES = 1, SHOWS = 2, WEB_MOVIES = 3, WEB_VIDEOS = 4;
+    public static final int MOVIES = 1, SHOWS = 2;
     private int mNumMovies, mNumShows, selectedIndex, mStartup;
     private Typeface mTfMedium, mTfRegular;
     private DrawerLayout mDrawerLayout;
@@ -193,12 +191,6 @@ public class Main extends MizActivity {
                 case SHOWS:
                     ft.replace(R.id.content_frame, TvShowLibraryOverviewFragment.newInstance(), "frag" + type);
                     break;
-                case WEB_MOVIES:
-                    ft.replace(R.id.content_frame, MovieDiscoveryViewPagerFragment.newInstance(), "frag" + type);
-                    break;
-                case WEB_VIDEOS:
-                    ft.replace(R.id.content_frame, WebVideosViewPagerFragment.newInstance(), "frag" + type);
-                    break;
             }
             ft.commit();
         }
@@ -209,12 +201,6 @@ public class Main extends MizActivity {
                 break;
             case SHOWS:
                 setTitle(R.string.chooserTVShows);
-                break;
-            case WEB_MOVIES:
-                setTitle(R.string.drawerOnlineMovies);
-                break;
-            case WEB_VIDEOS:
-                setTitle(R.string.drawerWebVideos);
                 break;
         }
 
