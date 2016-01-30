@@ -20,8 +20,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -63,8 +61,6 @@ import com.miz.utils.ViewUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Random;
 
 public class Welcome extends MizActivity {
@@ -113,23 +109,9 @@ public class Welcome extends MizActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                switch (mMenuItems.get(arg2).getType()) {
-                    case MenuItem.SECTION:
-
-                        Intent mainIntent = new Intent(getApplicationContext(), Main.class);
-                        mainIntent.putExtra("startup", String.valueOf(mMenuItems.get(arg2).getFragment()));
-                        startActivity(mainIntent);
-
-                        break;
-                    case MenuItem.THIRD_PARTY_APP:
-                        final PackageManager pm = getPackageManager();
-                        Intent i = pm.getLaunchIntentForPackage(mMenuItems.get(arg2).getPackageName());
-                        if (i != null) {
-                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(i);
-                        }
-                        break;
-                }
+                Intent mainIntent = new Intent(getApplicationContext(), Main.class);
+                mainIntent.putExtra("startup", String.valueOf(mMenuItems.get(arg2).getFragment()));
+                startActivity(mainIntent);
             }
         });
 
@@ -198,40 +180,8 @@ public class Welcome extends MizActivity {
         mMenuItems.clear();
 
         // Regular menu items
-        mMenuItems.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, MenuItem.SECTION, null, 1, R.drawable.ic_movie_grey600_24dp));
-        mMenuItems.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, MenuItem.SECTION, null, 2, R.drawable.ic_tv_grey600_24dp));
-        mMenuItems.add(new MenuItem(getString(R.string.drawerOnlineMovies), -1, MenuItem.SECTION, null, 3, R.drawable.ic_local_movies_grey600_24dp));
-        mMenuItems.add(new MenuItem(getString(R.string.drawerWebVideos), -1, MenuItem.SECTION, null, 4, R.drawable.ic_cloud_grey600_24dp));
-
-        // Third party applications
-        final PackageManager pm = getPackageManager();
-        List<ApplicationInfo> mApplicationList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-
-        List<MenuItem> temp = new ArrayList<MenuItem>();
-        for (int i = 0; i < mApplicationList.size(); i++) {
-            if (MizLib.isMediaApp(mApplicationList.get(i))) {
-                temp.add(new MenuItem(pm.getApplicationLabel(mApplicationList.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, mApplicationList.get(i).packageName));
-            }
-        }
-
-        if (temp.size() > 0) {
-            // Menu section header
-            mMenuItems.add(new MenuItem(MenuItem.SEPARATOR));
-            mMenuItems.add(new MenuItem(getString(R.string.installed_media_apps), -1, MenuItem.SUB_HEADER, null));
-        }
-
-        Collections.sort(temp, new Comparator<MenuItem>() {
-            @Override
-            public int compare(MenuItem lhs, MenuItem rhs) {
-                return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
-            }
-        });
-
-        for (int i = 0; i < temp.size(); i++) {
-            mMenuItems.add(temp.get(i));
-        }
-
-        temp.clear();
+        mMenuItems.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, MenuItem.SECTION, 1, R.drawable.ic_movie_grey600_24dp));
+        mMenuItems.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, MenuItem.SECTION, 2, R.drawable.ic_tv_grey600_24dp));
     }
 
     private void startAnimatedBackground() {
@@ -480,7 +430,7 @@ public class Welcome extends MizActivity {
                 title.setText(mMenuItems.get(position).getTitle());
                 title.setTypeface(mTfMedium);
                 title.setTextColor(Color.parseColor("#DDDDDD"));
-            } else if (mMenuItems.get(position).getType() == MenuItem.THIRD_PARTY_APP || mMenuItems.get(position).getType() == MenuItem.SECTION) {
+            } else if (mMenuItems.get(position).getType() == MenuItem.SECTION) {
                 convertView = mInflater.inflate(R.layout.menu_drawer_item, parent, false);
 
                 // Icon

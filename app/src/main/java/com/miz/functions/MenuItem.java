@@ -18,10 +18,10 @@ package com.miz.functions;
 
 public class MenuItem {
 	
-	public static final int HEADER = 0, SEPARATOR = 1000, SEPARATOR_EXTRA_PADDING = 1100, SUB_HEADER = 1500, SECTION = 2000, THIRD_PARTY_APP = 3000, SETTINGS_AREA = 4000;
+	public static final int HEADER = 0, SEPARATOR = 1000, SEPARATOR_EXTRA_PADDING = 1100, SUB_HEADER = 1500, SECTION = 2000, SETTINGS_AREA = 4000;
 	
 	private int mType, mCount, mFragment, mIcon;
-	private String mTitle, mPackageName;
+	private String mTitle;
 
     public MenuItem(int type) {
         mType = type;
@@ -33,18 +33,10 @@ public class MenuItem {
 		mIcon = icon;
 	}
 	
-	public MenuItem(String title, int count, int type, String packageName) {
+	public MenuItem(String title, int count, int type, int fragment, int icon) {
 		mTitle = title;
 		mCount = count;
 		mType = type;
-		mPackageName = packageName;
-	}
-	
-	public MenuItem(String title, int count, int type, String packageName, int fragment, int icon) {
-		mTitle = title;
-		mCount = count;
-		mType = type;
-		mPackageName = packageName;
 		mFragment = fragment;
         mIcon = icon;
 	}
@@ -55,10 +47,6 @@ public class MenuItem {
 	
 	public int getCount() {
 		return mCount;
-	}
-	
-	public String getPackageName() {
-		return mPackageName;
 	}
 	
 	public int getType() {

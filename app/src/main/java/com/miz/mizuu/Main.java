@@ -22,8 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,7 +47,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,7 +54,6 @@ import android.widget.Toast;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovies;
 import com.miz.db.DbAdapterTvShows;
-import com.miz.functions.BlurTransformation;
 import com.miz.functions.MenuItem;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.AccountsFragment;
@@ -73,9 +69,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import static com.miz.functions.PreferenceKeys.CONFIRM_BACK_PRESS;
 import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
@@ -95,7 +88,6 @@ public class Main extends MizActivity {
     private DbAdapterTvShows mDbHelperTv;
     private boolean mConfirmExit, mTriedOnce = false;
     private ArrayList<MenuItem> mMenuItems = new ArrayList<MenuItem>();
-    private List<ApplicationInfo> mApplicationList;
     private Picasso mPicasso;
 
     @Override
@@ -121,7 +113,7 @@ public class Main extends MizActivity {
         mTfMedium = TypefaceUtils.getRobotoMedium(getApplicationContext());
         mTfRegular = TypefaceUtils.getRoboto(getApplicationContext());
 
-        setupMenuItems(true);
+        setupMenuItems();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary_dark));
@@ -147,14 +139,6 @@ public class Main extends MizActivity {
 
                     case MenuItem.SECTION:
                         loadFragment(mMenuItems.get(arg2).getFragment());
-                        break;
-                    case MenuItem.THIRD_PARTY_APP:
-                        final PackageManager pm = getPackageManager();
-                        Intent i = pm.getLaunchIntentForPackage(mMenuItems.get(arg2).getPackageName());
-                        if (i != null) {
-                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(i);
-                        }
                         break;
                     case MenuItem.SETTINGS_AREA:
 
@@ -262,50 +246,15 @@ public class Main extends MizActivity {
         outState.putInt("selectedIndex", selectedIndex);
     }
 
-    private void setupMenuItems(boolean refreshThirdPartyApps) {
+    private void setupMenuItems() {
         mMenuItems.clear();
 
         // Menu header
-        mMenuItems.add(new MenuItem(null, -1, MenuItem.HEADER, null));
+        mMenuItems.add(new MenuItem(null, MenuItem.HEADER, -1));
 
         // Regular menu items
-        mMenuItems.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, MenuItem.SECTION, null, MOVIES, R.drawable.ic_movie_grey600_24dp));
-        mMenuItems.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, MenuItem.SECTION, null, SHOWS, R.drawable.ic_tv_grey600_24dp));
-        mMenuItems.add(new MenuItem(getString(R.string.drawerOnlineMovies), -1, MenuItem.SECTION, null, WEB_MOVIES, R.drawable.ic_local_movies_grey600_24dp));
-        mMenuItems.add(new MenuItem(getString(R.string.drawerWebVideos), -1, MenuItem.SECTION, null, WEB_VIDEOS, R.drawable.ic_cloud_grey600_24dp));
-
-        // Third party applications
-        final PackageManager pm = getPackageManager();
-
-        if (refreshThirdPartyApps) {
-            mApplicationList = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-        }
-
-        List<MenuItem> temp = new ArrayList<MenuItem>();
-        for (int i = 0; i < mApplicationList.size(); i++) {
-            if (MizLib.isMediaApp(mApplicationList.get(i))) {
-                temp.add(new MenuItem(pm.getApplicationLabel(mApplicationList.get(i)).toString(), -1, MenuItem.THIRD_PARTY_APP, mApplicationList.get(i).packageName));
-            }
-        }
-
-        if (temp.size() > 0) {
-            // Menu section header
-            mMenuItems.add(new MenuItem(MenuItem.SEPARATOR));
-            mMenuItems.add(new MenuItem(getString(R.string.installed_media_apps), -1, MenuItem.SUB_HEADER, null));
-        }
-
-        Collections.sort(temp, new Comparator<MenuItem>() {
-            @Override
-            public int compare(MenuItem lhs, MenuItem rhs) {
-                return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
-            }
-        });
-
-        for (int i = 0; i < temp.size(); i++) {
-            mMenuItems.add(temp.get(i));
-        }
-
-        temp.clear();
+        mMenuItems.add(new MenuItem(getString(R.string.drawerMyMovies), mNumMovies, MenuItem.SECTION, MOVIES, R.drawable.ic_movie_grey600_24dp));
+        mMenuItems.add(new MenuItem(getString(R.string.drawerMyTvShows), mNumShows, MenuItem.SECTION, SHOWS, R.drawable.ic_tv_grey600_24dp));
 
         mMenuItems.add(new MenuItem(MenuItem.SEPARATOR_EXTRA_PADDING));
 
@@ -345,7 +294,7 @@ public class Main extends MizActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            setupMenuItems(false);
+                            setupMenuItems();
                             ((BaseAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
                         }
                     });
@@ -435,7 +384,6 @@ public class Main extends MizActivity {
                 case MenuItem.SUB_HEADER:
                     return 3;
                 case MenuItem.SECTION:
-                case MenuItem.THIRD_PARTY_APP:
                     return 4;
                 default:
                     return 5;
@@ -513,7 +461,7 @@ public class Main extends MizActivity {
                 TextView title = (TextView) convertView.findViewById(R.id.title);
                 title.setText(mMenuItems.get(position).getTitle());
                 title.setTypeface(mTfMedium);
-            } else if (mMenuItems.get(position).getType() == MenuItem.THIRD_PARTY_APP || mMenuItems.get(position).getType() == MenuItem.SECTION) {
+            } else if (mMenuItems.get(position).getType() == MenuItem.SECTION) {
                 convertView = mInflater.inflate(R.layout.menu_drawer_item, parent, false);
 
                 // Icon
