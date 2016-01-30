@@ -134,11 +134,6 @@
     <string name="prefsCreditsWikipedia">Wikipedia</string>
     <string name="prefsCreditsWikipediaDescription">www.wikipedia.org</string>
     <string name="addFileSourceTitle">Add file source</string>
-    <string name="contactDeviceDetails">Device details</string>
-    <string name="contactDeviceModel">Model</string>
-    <string name="contactDeviceCustomization">Brand / customization</string>
-    <string name="contactDeviceManufacturer">Manufacturer</string>
-    <string name="contactDeviceOS">Android OS</string>
     <string name="errorSomethingWentWrong">Something went wrong - please try again!</string>
     <string name="updatedMovie">Successfully updated movie!</string>
     <string name="updatedTvShow">Successfully updated TV show!</string>
