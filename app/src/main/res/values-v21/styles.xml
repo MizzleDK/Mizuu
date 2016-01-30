@@ -8,9 +8,9 @@
 
     <style name="Mizuu.Theme.Preference" parent="android:Theme.Material">
         <item name="android:windowBackground">@drawable/bg</item>
-        <item name="android:colorPrimary">#3f51b5</item>
-        <item name="android:colorAccent">#fff</item>
-        <item name="android:colorPrimaryDark">#1a237e</item>
+        <item name="android:colorPrimary">@color/color_primary</item>
+        <item name="android:colorAccent">@color/color_accent</item>
+        <item name="android:colorPrimaryDark">@color/color_primary_dark</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:colorControlNormal">#fff</item>
         <item name="android:colorControlActivated">#fff</item>

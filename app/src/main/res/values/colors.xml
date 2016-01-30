@@ -5,11 +5,11 @@
     <color name="card_title_color">#d0d0d0</color>
     <color name="dark_background">#181818</color>
     <color name="card_background_dark">#292929</color>
-    <color name="gridview_highlight">#88336699</color>
+    <color name="gridview_highlight">#88607D8B</color>
     <color name="fab_default">#666</color>
     <color name="fab_light">#777</color>
     <color name="color_primary">#3f51b5</color>
-    <color name="color_accent">#1a237e</color>
+    <color name="color_accent">#64B5F6</color>
     <color name="color_primary_dark">#1a237e</color>
     <color name="grid_item_subtitle_text_color">#999</color>
     <color name="background_tab_pressed">#1AFFFFFF</color>

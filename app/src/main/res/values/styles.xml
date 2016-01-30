@@ -27,9 +27,9 @@
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
         <item name="actionOverflowButtonStyle">@style/Mizuu.Theme.ActionButton.Overflow</item>
-        <item name="colorPrimary">#3f51b5</item>
-        <item name="colorAccent">#1a237e</item>
-        <item name="colorPrimaryDark">#1a237e</item>
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="windowActionBar">false</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="colorControlNormal">#aaffffff</item>
