@@ -27,7 +27,6 @@ import com.miz.db.DbAdapterMovieMappings;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.MizLib;
 import com.miz.functions.MovieLibraryUpdateCallback;
-import com.miz.functions.NfoMovie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
@@ -35,13 +34,10 @@ import com.miz.utils.MovieDatabaseUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 public class MovieIdentification {
@@ -51,25 +47,18 @@ public class MovieIdentification {
     private final Context mContext;
     private final String mIgnoredTags;
     private final ArrayList<MovieStructure> mMovieStructures;
-    private final HashMap<String, InputStream> mNfoFiles;
 
     private SparseBooleanArray mImdbMap = new SparseBooleanArray();
     private String mMovieId = null, mCurrentMovieId = null, mLocale = null;
-    private boolean mCancel = false, mIgnoreNfoFiles = true;
+    private boolean mCancel = false;
     private int mCount = 0;
 
-    public MovieIdentification(Context context, MovieLibraryUpdateCallback callback, ArrayList<MovieStructure> files, HashMap<String, InputStream> nfoFiles) {
+    public MovieIdentification(Context context, MovieLibraryUpdateCallback callback, ArrayList<MovieStructure> files) {
         mContext = context;
         mCallback = callback;
         mMovieStructures = new ArrayList<MovieStructure>(files);
 
-        if (nfoFiles == null)
-            mNfoFiles = new HashMap<String, InputStream>();
-        else
-            mNfoFiles = new HashMap<String, InputStream>(nfoFiles);
-
         mIgnoredTags = PreferenceManager.getDefaultSharedPreferences(mContext).getString(IGNORED_FILENAME_TAGS, "");
-        mIgnoreNfoFiles = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_NFO_FILES, true);
 
         mPicasso = Picasso.with(mContext);
 
@@ -127,9 +116,6 @@ public class MovieIdentification {
             if (mCancel)
                 return;
 
-            if (!mIgnoreNfoFiles)
-                continue;
-
             MovieStructure ms = mMovieStructures.get(i);
             ms.setCustomTags(mIgnoredTags);
 
@@ -143,25 +129,6 @@ public class MovieIdentification {
                 return;
 
             mCount++;
-
-            if (!mIgnoreNfoFiles) {
-                // Let's check if there's a NFO file
-
-                boolean match = true;
-                String nfo1 = ms.getFilepath().replaceAll("part[1-9]|cd[1-9]", "").trim();
-                String nfo2 = MizLib.convertToGenericNfo(ms.getFilepath());
-
-                if (mNfoFiles.containsKey(nfo1)) {
-                    new NfoMovie(ms.getFilepath(), mNfoFiles.get(nfo1), mContext, mCallback, mCount);
-                } else if (mNfoFiles.containsKey(nfo2)) {
-                    new NfoMovie(ms.getFilepath(), mNfoFiles.get(nfo2), mContext, mCallback, mCount);
-                } else {
-                    match = false;
-                }
-
-                if (match)
-                    continue;
-            }
 
             Movie movie = null;
             List<Movie> results = new ArrayList<Movie>();

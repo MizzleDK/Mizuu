@@ -44,6 +44,7 @@ import com.miz.functions.MizLib;
 import com.miz.functions.MovieLibraryUpdateCallback;
 import com.miz.identification.MovieIdentification;
 import com.miz.identification.MovieStructure;
+import com.miz.mizuu.BuildConfig;
 import com.miz.mizuu.CancelLibraryUpdate;
 import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
@@ -60,19 +61,16 @@ import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
 import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
-import static com.miz.functions.PreferenceKeys.IGNORED_NFO_FILES;
 import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_MOVIES;
 import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 
 public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpdateCallback {
 
 	public static final String STOP_MOVIE_LIBRARY_UPDATE = "mizuu-stop-movie-library-update";
-	private boolean isDebugging = true;
 	private ArrayList<FileSource> mFileSources;
 	private ArrayList<MovieFileSource<?>> mMovieFileSources;
-	private HashMap<String, InputStream> mNfoFiles = new HashMap<String, InputStream>();
 	private ArrayList<MovieStructure> mMovieQueue = new ArrayList<MovieStructure>();
-	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mIgnoreNfoFiles, mDisableEthernetWiFiCheck, mSyncLibraries, mStopUpdate;
+	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mDisableEthernetWiFiCheck, mSyncLibraries, mStopUpdate;
 	private int mTotalFiles, mCount;
 	private SharedPreferences mSettings;
 	private Editor mEditor;
@@ -272,11 +270,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 			for (int i = 0; i < tempList.size(); i++) {
 				mMovieQueue.add(new MovieStructure(tempList.get(i)));
 			}
-
-			if (!mIgnoreNfoFiles) {
-				tempNfoMap = mMovieFileSources.get(j).getNfoFiles();
-				mNfoFiles.putAll(tempNfoMap);
-			}
 		}
 
 		// Clean up...
@@ -326,7 +319,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mClearLibrary = mSettings.getBoolean(CLEAR_LIBRARY_MOVIES, false);
 		mSearchSubfolders = mSettings.getBoolean(ENABLE_SUBFOLDER_SEARCH, true);
 		mClearUnavailable = mSettings.getBoolean(REMOVE_UNAVAILABLE_FILES_MOVIES, false);
-		mIgnoreNfoFiles = mSettings.getBoolean(IGNORED_NFO_FILES, true);
 		mDisableEthernetWiFiCheck = mSettings.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 		mIgnoreRemovedFiles = mSettings.getBoolean(IGNORED_FILES_ENABLED, false);
 		mSyncLibraries = mSettings.getBoolean(SYNC_WITH_TRAKT, true);
@@ -343,7 +335,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	};
 
 	private void updateMovies() {
-		mMovieIdentification = new MovieIdentification(getApplicationContext(), this, mMovieQueue, mNfoFiles);
+		mMovieIdentification = new MovieIdentification(getApplicationContext(), this, mMovieQueue);
 		mMovieIdentification.start();
 	}
 
@@ -352,14 +344,12 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mFileSources = new ArrayList<FileSource>();
 		mMovieFileSources = new ArrayList<MovieFileSource<?>>();
 		mMovieQueue = new ArrayList<MovieStructure>();
-		mNfoFiles = new HashMap<String, InputStream>();
 
 		// Booleans
 		mIgnoreRemovedFiles = false;
 		mClearLibrary = false;
 		mSearchSubfolders = true;
 		mClearUnavailable = false;
-		mIgnoreNfoFiles = true;
 		mDisableEthernetWiFiCheck = false;
 		mSyncLibraries = true;
 		mStopUpdate = false;
@@ -373,7 +363,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	}
 
 	private void log(String msg) {
-		if (isDebugging)
+		if (BuildConfig.DEBUG)
 			Log.d("MovieLibraryUpdate", msg);
 	}
 

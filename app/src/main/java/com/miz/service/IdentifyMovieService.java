@@ -105,7 +105,7 @@ public class IdentifyMovieService extends IntentService implements MovieLibraryU
 	}
 
 	private void start() {
-		MovieIdentification identification = new MovieIdentification(this, this, mFiles, null);
+		MovieIdentification identification = new MovieIdentification(this, this, mFiles);
 		identification.setMovieId(mMovieId);
         identification.setCurrentMovieId(mOldMovieId);
 		identification.setLanguage(mLanguage);

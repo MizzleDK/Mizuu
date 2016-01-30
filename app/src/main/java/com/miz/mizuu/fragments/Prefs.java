@@ -29,14 +29,9 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.miz.functions.PreferenceKeys;
-import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.FileUtils;
-import com.miz.utils.LocalBroadcastUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,7 +42,7 @@ import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 public class Prefs extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
-	private Preference mPref, mLanguagePref, mCopyDatabase, mIgnoreNfoFiles;
+	private Preference mPref, mLanguagePref, mCopyDatabase;
 	private Locale[] mSystemLocales;
 
 	@Override
@@ -75,21 +70,6 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
                     } else {
                         Toast.makeText(getActivity(), R.string.errorSomethingWentWrong, Toast.LENGTH_SHORT).show();
                     }
-
-                    return true;
-                }
-            });
-
-        mIgnoreNfoFiles = getPreferenceScreen().findPreference(PreferenceKeys.IGNORED_NFO_FILES);
-        if (mIgnoreNfoFiles != null)
-            mIgnoreNfoFiles.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    // Clear the cache
-                    MizuuApplication.clearLruCache(getActivity());
-
-                    // Refresh the movie library
-                    LocalBroadcastUtils.updateMovieLibrary(getActivity());
 
                     return true;
                 }

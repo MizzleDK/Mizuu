@@ -49,7 +49,6 @@ public class PreferenceKeys {
 	public static final String REMOVE_UNAVAILABLE_FILES_MOVIES = "prefsRemoveUnavailable";
 	public static final String DISABLE_ETHERNET_WIFI_CHECK = "prefsDisableEthernetWiFiCheck";
 	public static final String IGNORED_FILES_ENABLED = "prefsIgnoredFilesEnabled";
-	public static final String IGNORED_NFO_FILES = "prefsIgnoreNfoFiles";
 	public static final String IGNORE_VIDEO_FILE_TYPE = "prefsIgnoreFileType";
 	public static final String IGNORED_TITLE_PREFIXES = "prefsIgnorePrefixesInTitles";
 	public static final String REMOVE_MOVIES_FROM_WATCHLIST = "prefsRemoveMoviesFromWatchlist";

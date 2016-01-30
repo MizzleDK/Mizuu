@@ -160,11 +160,6 @@ public class UpnpMovie extends MovieFileSource<String> {
 		return mFileSource.getFilepath();
 	}
 
-	@Override
-	public boolean supportsNfo() {
-		return false;
-	}
-
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mUpnpService = (AndroidUpnpService) service;

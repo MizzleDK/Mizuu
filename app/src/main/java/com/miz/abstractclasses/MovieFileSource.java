@@ -27,14 +27,11 @@ import com.miz.functions.FileSource;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class MovieFileSource<T> extends AbstractFileSource<T> {
 
-	protected HashMap<String, InputStream> mNfoFiles = new HashMap<String, InputStream>();
 	protected List<DbMovie> mDbMovies = new ArrayList<DbMovie>();
 
 	public MovieFileSource(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
@@ -79,19 +76,4 @@ public abstract class MovieFileSource<T> extends AbstractFileSource<T> {
 		return mDbMovies;
 	}
 
-	public void addNfoFile(String filepath, InputStream is) {
-		mNfoFiles.put(filepath, is);
-	}
-
-	public HashMap<String, InputStream> getNfoFiles() {
-		return mNfoFiles;
-	}
-
-	/**
-	 * Determine if this file source supports loading of .NFO files. Should be overridden if the file source doesn't support .NFO files.
-	 * @return The value indicates if the file source supports loading of .NFO files or not.
-	 */
-	public boolean supportsNfo() {
-		return true;
-	}
 }

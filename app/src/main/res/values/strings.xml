@@ -213,8 +213,6 @@
     <string name="suggestion">Suggestion</string>
     <string name="message">Message</string>
     <string name="subject">Subject</string>
-    <string name="ignorenfotitle">Ignore custom movie data files</string>
-    <string name="ignorenfo">Disable reading of local .nfo files and custom image art.</string>
     <string name="noVideoPlayerFound">No compatible video player found!</string>
     <string name="ignoreMoviePrefixes">Ignore title prefixes</string>
     <string name="ignoreMoviePrefixesDescription">Ignore prefixes like "A" and "The".</string>

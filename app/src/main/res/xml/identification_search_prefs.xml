@@ -31,13 +31,6 @@
             android:title="@string/setFileSizeLimit" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_insert_drive_file_white_24dp"
-            android:key="prefsIgnoreNfoFiles"
-            android:summary="@string/ignorenfo"
-            android:title="@string/ignorenfotitle" >
-        </CheckBoxPreference>
-        <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_delete_white_24dp"
             android:key="prefsIgnoredFilesEnabled"

@@ -21,7 +21,6 @@ import android.database.Cursor;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapterMovieMappings;
-import com.miz.db.DbAdapterMovies;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
@@ -30,8 +29,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.MovieDatabaseUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -160,11 +157,7 @@ public class FileMovie extends MovieFileSource<File> {
 
 	@Override
 	public void addToResults(File file, TreeSet<String> results) {
-		if (supportsNfo() && MizLib.isNfoFile(file.getAbsolutePath())) {
-			try {
-				addNfoFile(MizLib.removeExtension(file.getAbsolutePath()), new FileInputStream(file));
-			} catch (FileNotFoundException ignored) {}
-		} else if (MizLib.checkFileTypes(file.getAbsolutePath())) {
+		 if (MizLib.checkFileTypes(file.getAbsolutePath())) {
 			if (file.length() < getFileSizeLimit() && !file.getName().equalsIgnoreCase("video_ts.ifo"))
 				return;
 

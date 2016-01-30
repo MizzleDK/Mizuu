@@ -21,7 +21,6 @@ import android.database.Cursor;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapterMovieMappings;
-import com.miz.db.DbAdapterMovies;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
@@ -29,7 +28,6 @@ import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.MovieDatabaseUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -227,11 +225,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 	@Override
 	public void addToResults(SmbFile file, TreeSet<String> results) {
-		if (supportsNfo() && MizLib.isNfoFile(file.getCanonicalPath())) {
-			try {
-				addNfoFile(MizLib.removeExtension(file.getCanonicalPath()), file.getInputStream());
-			} catch (IOException ignored) {}
-		} else if (MizLib.checkFileTypes(file.getCanonicalPath())) {
+		if (MizLib.checkFileTypes(file.getCanonicalPath())) {
 			try {
 				if (file.length() < getFileSizeLimit() && !file.getName().equalsIgnoreCase("video_ts.ifo"))
 					return;

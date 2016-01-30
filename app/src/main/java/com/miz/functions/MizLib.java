@@ -773,14 +773,6 @@ public class MizLib {
         return false;
     }
 
-    public static boolean isNfoFile(String file) {
-        if (file.contains(".")) { // Must have a file type
-            String type = file.substring(file.lastIndexOf("."));
-            return type.equalsIgnoreCase(".nfo");
-        }
-        return false;
-    }
-
     public static String removeExtension(String filepath) {
         final int lastPeriodPos = filepath.lastIndexOf('.');
         if (lastPeriodPos <= 0) {
