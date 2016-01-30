@@ -50,7 +50,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.MovieDatabaseUtils;
-import com.miz.utils.WidgetUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -104,8 +103,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		reloadLibrary();
 		
 		showPostUpdateNotification();
-
-		WidgetUtils.updateMovieWidgets(this);
 
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 

@@ -34,7 +34,6 @@ import com.miz.functions.TvShowLibraryUpdateCallback;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
-import com.miz.utils.WidgetUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -267,7 +266,6 @@ public class TvShowIdentification {
 
         LocalBroadcastUtils.updateTvShowLibrary(mContext);
         LocalBroadcastUtils.updateTvShowSeasonsOverview(mContext);
-        WidgetUtils.updateTvShowWidgets(mContext);
     }
 
     private void createShow(TvShow thisShow) {

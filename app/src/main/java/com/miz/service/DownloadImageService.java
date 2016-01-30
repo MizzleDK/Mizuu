@@ -32,7 +32,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
-import com.miz.utils.WidgetUtils;
 
 import java.io.File;
 
@@ -189,26 +188,7 @@ public class DownloadImageService extends IntentService {
 	}
 
 	private void update() {
-		
 		LocalBroadcastUtils.clearImageCache(this);
-		
-		switch (mImageType) {
-		case IMAGE_TYPE_TVSHOW_COVER:
-		case IMAGE_TYPE_TVSHOW_BACKDROP:
-
-			// Update widget
-			WidgetUtils.updateTvShowWidgets(this);
-
-			break;
-
-		case IMAGE_TYPE_MOVIE_COVER:
-		case IMAGE_TYPE_MOVIE_BACKDROP:
-
-			// Update widget
-			WidgetUtils.updateMovieWidgets(this);
-
-			break;
-		}
 	}
 
 	private void dismiss() {

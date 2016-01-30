@@ -40,7 +40,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
-import com.miz.utils.WidgetUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -69,10 +68,8 @@ public class IdentifyTvShowService extends IntentService implements TvShowLibrar
 			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		mNotificationManager.cancel(NOTIFICATION_ID);
-		
-		LocalBroadcastUtils.updateTvShowLibrary(this);
 
-		WidgetUtils.updateTvShowWidgets(this);
+		LocalBroadcastUtils.updateTvShowLibrary(this);
 	}
 
 	@Override

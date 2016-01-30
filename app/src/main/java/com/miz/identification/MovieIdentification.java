@@ -32,7 +32,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.MovieDatabaseUtils;
-import com.miz.utils.WidgetUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -311,8 +310,6 @@ public class MovieIdentification {
         }
 
         LocalBroadcastUtils.updateMovieLibrary(mContext);
-
-        WidgetUtils.updateMovieWidgets(mContext);
     }
 
     // These variables don't need to be re-initialized

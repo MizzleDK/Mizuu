@@ -52,7 +52,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.FileUtils;
 import com.miz.utils.LocalBroadcastUtils;
-import com.miz.utils.WidgetUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -104,8 +103,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		LocalBroadcastUtils.updateTvShowLibrary(this);
 
 		showPostUpdateNotification();
-
-		WidgetUtils.updateTvShowWidgets(this);
 
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 

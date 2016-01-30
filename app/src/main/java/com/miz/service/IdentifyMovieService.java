@@ -35,7 +35,6 @@ import com.miz.identification.MovieIdentification;
 import com.miz.identification.MovieStructure;
 import com.miz.mizuu.R;
 import com.miz.utils.LocalBroadcastUtils;
-import com.miz.utils.WidgetUtils;
 
 import java.util.ArrayList;
 
@@ -64,8 +63,6 @@ public class IdentifyMovieService extends IntentService implements MovieLibraryU
 		mNotificationManager.cancel(NOTIFICATION_ID);
 		
 		LocalBroadcastUtils.updateMovieLibrary(this);
-
-		WidgetUtils.updateMovieWidgets(this);
 	}
 
 	@Override

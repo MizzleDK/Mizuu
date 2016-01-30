@@ -38,9 +38,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TvShowDatabaseUtils;
-import com.miz.utils.WidgetUtils;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -71,8 +68,6 @@ public class IdentifyTvShowEpisodeService extends IntentService implements TvSho
         mNotificationManager.cancel(NOTIFICATION_ID);
 
         LocalBroadcastUtils.updateTvShowLibrary(this);
-
-        WidgetUtils.updateTvShowWidgets(this);
     }
 
     @Override

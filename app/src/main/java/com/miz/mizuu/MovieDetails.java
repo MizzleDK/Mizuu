@@ -16,7 +16,6 @@
 
 package com.miz.mizuu;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 import com.miz.base.MizActivity;
 import com.miz.mizuu.fragments.MovieDetailsFragment;
 import com.miz.utils.ViewUtils;
-import com.miz.utils.WidgetUtils;
 
 public class MovieDetails extends MizActivity {
 
