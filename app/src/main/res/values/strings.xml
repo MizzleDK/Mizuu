@@ -151,8 +151,6 @@
     <string name="editMoviePlot">Description</string>
     <string name="filesourcesDescription">These folders will be indexed for content</string>
     <string name="addCurrentFolderAsFileSource">Add folder as file source</string>
-    <string name="enableRootAccess">Request root access</string>
-    <string name="enableRootAccessDescription">Request root access at launch, can be useful for some third party applications.</string>
     <string name="widgetsMizuuMovies">Mizuu - Movies</string>
     <string name="widgetsMizuuShows">Mizuu - TV shows</string>
     <string name="detailsTrailer">Trailer</string>

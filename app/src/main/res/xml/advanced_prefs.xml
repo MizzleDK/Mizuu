@@ -2,12 +2,6 @@
 
     <PreferenceCategory android:title="@string/prefsUIGeneral" >
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_lock_white_24dp"
-            android:key="prefsRootAccess"
-            android:summary="@string/enableRootAccessDescription"
-            android:title="@string/enableRootAccess" />
-        <CheckBoxPreference
             android:icon="@drawable/ic_settings_white_24dp"
             android:key="prefsConfirmBackPress"
             android:summary="@string/confirmBackPressDescription"

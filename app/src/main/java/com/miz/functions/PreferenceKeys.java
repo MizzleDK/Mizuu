@@ -60,7 +60,6 @@ public class PreferenceKeys {
 	public static final String GRID_ITEM_SIZE = "prefsGridItemSize";
 	public static final String SORTING_MOVIES = "prefsSorting";
 	public static final String SORTING_TVSHOWS = "prefsSortingTv";
-	public static final String ROOT_ACCESS = "prefsRootAccess";
 	public static final String STARTUP_SELECTION = "prefsStartup";
 	public static final String USE_ENGLISH_LANGUAGE = "prefsUseEnglishLanguage";
 	public static final String CONFIRM_BACK_PRESS = "prefsConfirmBackPress";

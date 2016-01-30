@@ -31,10 +31,8 @@ import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
 import com.miz.utils.FileUtils;
 
-import java.io.IOException;
 import java.util.Locale;
 
-import static com.miz.functions.PreferenceKeys.ROOT_ACCESS;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
 import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
@@ -70,13 +68,6 @@ public class SplashScreen extends Activity {
 			config.locale = locale;
 			getBaseContext().getResources().updateConfiguration(config,
 					getBaseContext().getResources().getDisplayMetrics());
-		}
-
-		boolean rootPref = settings.getBoolean(ROOT_ACCESS, false);
-		if (rootPref) { // Request root access if preference is enabled
-			try {
-				Runtime.getRuntime().exec("su");
-			} catch (IOException e) {}
 		}
 
 		if (settings.getInt(SCHEDULED_UPDATES_MOVIE, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
