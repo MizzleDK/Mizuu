@@ -58,7 +58,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_TVSHOWS;
-import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
 import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_TVSHOWS;
 import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 
@@ -70,7 +69,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 	private ArrayList<TvShowFileSource<?>> mTvShowFileSources;
 	private ArrayList<ShowStructure> mFiles;
 	private HashSet<String> mUniqueShowIds = new HashSet<String>();
-	private boolean mClearLibrary, mSearchSubfolders, mClearUnavailable, mSyncLibraries, mStopUpdate;
+	private boolean mClearLibrary, mClearUnavailable, mSyncLibraries, mStopUpdate;
 	private int mTotalFiles, mShowCount, mEpisodeCount;
 	private SharedPreferences mSettings;
 	private Editor mEditor;
@@ -132,7 +131,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		log("setupTvShowsFileSources()");
 
 		// Add the different file sources to the TvShowFileSource ArrayList
-		setupTvShowsFileSources(mSearchSubfolders, mClearLibrary);
+		setupTvShowsFileSources(mClearLibrary);
 
 		if (mStopUpdate)
 			return;
@@ -217,19 +216,19 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		}
 	}
 
-	private void setupTvShowsFileSources(boolean mSearchSubfolders, boolean mClearLibrary) {
+	private void setupTvShowsFileSources(boolean mClearLibrary) {
 		for (FileSource fileSource : mFileSources) {
 			if (mStopUpdate)
 				return;
 			switch (fileSource.getFileSourceType()) {
 			case FileSource.FILE:
-				mTvShowFileSources.add(new FileTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
+				mTvShowFileSources.add(new FileTvShow(getApplicationContext(), fileSource, mClearLibrary));
 				break;
 			case FileSource.SMB:
-				mTvShowFileSources.add(new SmbTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
+				mTvShowFileSources.add(new SmbTvShow(getApplicationContext(), fileSource, mClearLibrary));
 				break;
 			case FileSource.UPNP:
-				mTvShowFileSources.add(new UpnpTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
+				mTvShowFileSources.add(new UpnpTvShow(getApplicationContext(), fileSource, mClearLibrary));
 				break;
 			}
 		}
@@ -326,7 +325,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		mSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		mClearLibrary = mSettings.getBoolean(CLEAR_LIBRARY_TVSHOWS, false);
-		mSearchSubfolders = mSettings.getBoolean(ENABLE_SUBFOLDER_SEARCH, true);
 		mClearUnavailable = mSettings.getBoolean(REMOVE_UNAVAILABLE_FILES_TVSHOWS, false);
 		mSyncLibraries = mSettings.getBoolean(SYNC_WITH_TRAKT, true);
 	}
@@ -359,7 +357,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 
 		// Booleans
 		mClearLibrary = false;
-		mSearchSubfolders = true;
 		mClearUnavailable = false;
 		mSyncLibraries = true;
 		mStopUpdate = false;

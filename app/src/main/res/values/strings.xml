@@ -148,8 +148,6 @@
     <string name="widgetsMizuuMovies">Mizuu - Movies</string>
     <string name="widgetsMizuuShows">Mizuu - TV shows</string>
     <string name="detailsTrailer">Trailer</string>
-    <string name="prefsSubfolderSearchTitle">Enable sub-folder search</string>
-    <string name="prefsSubfolderSearch">Include sub-folders in video file searches.</string>
     <string name="networkIpAddress">IP address or host name</string>
     <string name="enterNetworkAddress">No IP address or host name!</string>
     <string name="networkUsername">Username</string>

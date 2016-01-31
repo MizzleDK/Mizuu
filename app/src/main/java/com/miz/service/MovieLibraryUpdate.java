@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
-import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
 import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_MOVIES;
 import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 
@@ -66,7 +65,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private ArrayList<FileSource> mFileSources;
 	private ArrayList<MovieFileSource<?>> mMovieFileSources;
 	private ArrayList<MovieStructure> mMovieQueue = new ArrayList<MovieStructure>();
-	private boolean mClearLibrary, mSearchSubfolders, mClearUnavailable, mSyncLibraries, mStopUpdate;
+	private boolean mClearLibrary, mClearUnavailable, mSyncLibraries, mStopUpdate;
 	private int mTotalFiles, mCount;
 	private SharedPreferences mSettings;
 	private Editor mEditor;
@@ -128,7 +127,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		log("setupMovieFileSources()");
 
 		// Add the different file sources to the MovieFileSource ArrayList
-		setupMovieFileSources(mSearchSubfolders, mClearLibrary);
+		setupMovieFileSources(mClearLibrary);
 
 		if (mStopUpdate)
 			return;
@@ -221,19 +220,19 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		}
 	}
 
-	private void setupMovieFileSources(boolean mSearchSubfolders, boolean mClearLibrary) {
+	private void setupMovieFileSources(boolean mClearLibrary) {
 		for (FileSource fileSource : mFileSources) {
 			if (mStopUpdate)
 				return;
 			switch (fileSource.getFileSourceType()) {
 			case FileSource.FILE:
-				mMovieFileSources.add(new FileMovie(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
+				mMovieFileSources.add(new FileMovie(getApplicationContext(), fileSource, mClearLibrary));
 				break;
 			case FileSource.SMB:
-				mMovieFileSources.add(new SmbMovie(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
+				mMovieFileSources.add(new SmbMovie(getApplicationContext(), fileSource, mClearLibrary));
 				break;
 			case FileSource.UPNP:
-				mMovieFileSources.add(new UpnpMovie(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
+				mMovieFileSources.add(new UpnpMovie(getApplicationContext(), fileSource, mClearLibrary));
 				break;
 			}
 		}
@@ -309,7 +308,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		mSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		mClearLibrary = mSettings.getBoolean(CLEAR_LIBRARY_MOVIES, false);
-		mSearchSubfolders = mSettings.getBoolean(ENABLE_SUBFOLDER_SEARCH, true);
 		mClearUnavailable = mSettings.getBoolean(REMOVE_UNAVAILABLE_FILES_MOVIES, false);
 		mSyncLibraries = mSettings.getBoolean(SYNC_WITH_TRAKT, true);
 	}
@@ -337,7 +335,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 
 		// Booleans
 		mClearLibrary = false;
-		mSearchSubfolders = true;
 		mClearUnavailable = false;
 		mSyncLibraries = true;
 		mStopUpdate = false;

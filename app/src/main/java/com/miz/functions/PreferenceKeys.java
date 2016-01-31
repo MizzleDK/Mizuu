@@ -43,7 +43,6 @@ public class PreferenceKeys {
 	public static final String TMDB_BASE_URL_TIME = "tmdbBaseUrlTime";
 	public static final String CLEAR_LIBRARY_TVSHOWS = "prefsClearLibraryTv";
 	public static final String CLEAR_LIBRARY_MOVIES = "prefsClearLibrary";
-	public static final String ENABLE_SUBFOLDER_SEARCH = "prefsEnableSubFolderSearch";
 	public static final String REMOVE_UNAVAILABLE_FILES_TVSHOWS = "prefsRemoveUnavailableTv";
 	public static final String REMOVE_UNAVAILABLE_FILES_MOVIES = "prefsRemoveUnavailable";
 	public static final String IGNORE_VIDEO_FILE_TYPE = "prefsIgnoreFileType";

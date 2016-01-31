@@ -41,8 +41,8 @@ public class FileMovie extends MovieFileSource<File> {
 	private HashMap<String, String> existingMovies = new HashMap<String, String>();
 	private File tempFile;
 
-	public FileMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
-		super(context, fileSource, subFolderSearch, clearLibrary);
+	public FileMovie(Context context, FileSource fileSource, boolean clearLibrary) {
+		super(context, fileSource, clearLibrary);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class FileMovie extends MovieFileSource<File> {
 			if (!dbMovies.get(i).isNetworkFile() && !dbMovies.get(i).isUpnpFile()) {
 				temp = new File(dbMovies.get(i).getFilepath());
 				if (temp.exists() && dbMovies.get(i).isUnidentified())
-                    MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
+					MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
 			}
 		}
 	}
@@ -70,7 +70,7 @@ public class FileMovie extends MovieFileSource<File> {
 			if (!dbMovies.get(i).isNetworkFile()) {
 				temp = new File(dbMovies.get(i).getFilepath());
 				if (!temp.exists()) {
-                    MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
+					MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
 				}
 			}
 		}
@@ -82,7 +82,7 @@ public class FileMovie extends MovieFileSource<File> {
 		DbAdapterMovieMappings dbHelper = MizuuApplication.getMovieMappingAdapter();
 		Cursor cursor = dbHelper.getAllFilepaths(false); // Query database to return all filepaths in a cursor
 		ColumnIndexCache cache = new ColumnIndexCache();
-		
+
 		try {
 			while (cursor.moveToNext()) {// Add all movies in cursor to ArrayList of all existing movies
 				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMappings.KEY_FILEPATH)), "");
@@ -110,54 +110,48 @@ public class FileMovie extends MovieFileSource<File> {
 	@Override
 	public void recursiveSearch(File folder, TreeSet<String> results) {
 		try {
-			if (searchSubFolders()) {
-				if (folder.isDirectory()) {
-					// Check if this is a DVD folder
-					if (folder.getName().equalsIgnoreCase("video_ts")) {
-						File[] children = folder.listFiles();
-						for (int i = 0; i < children.length; i++) {
-							if (children[i].getName().equalsIgnoreCase("video_ts.ifo"))
-								addToResults(children[i], results);
-						}
-					} // Check if this is a Blu-ray folder
-					else if (folder.getName().equalsIgnoreCase("bdmv")) {
-						File[] children = folder.listFiles();
-						for (int i = 0; i < children.length; i++) {
-							if (children[i].getName().equalsIgnoreCase("stream")) {
-								File[] m2tsVideoFiles = children[i].listFiles();
+			if (folder.isDirectory()) {
+				// Check if this is a DVD folder
+				if (folder.getName().equalsIgnoreCase("video_ts")) {
+					File[] children = folder.listFiles();
+					for (int i = 0; i < children.length; i++) {
+						if (children[i].getName().equalsIgnoreCase("video_ts.ifo"))
+							addToResults(children[i], results);
+					}
+				} // Check if this is a Blu-ray folder
+				else if (folder.getName().equalsIgnoreCase("bdmv")) {
+					File[] children = folder.listFiles();
+					for (int i = 0; i < children.length; i++) {
+						if (children[i].getName().equalsIgnoreCase("stream")) {
+							File[] m2tsVideoFiles = children[i].listFiles();
 
-								if (m2tsVideoFiles.length > 0) {
-									File largestFile = m2tsVideoFiles[0];
+							if (m2tsVideoFiles.length > 0) {
+								File largestFile = m2tsVideoFiles[0];
 
-									for (int j = 0; j < m2tsVideoFiles.length; j++)
-										if (largestFile.length() < m2tsVideoFiles[j].length())
-											largestFile = m2tsVideoFiles[j];
+								for (int j = 0; j < m2tsVideoFiles.length; j++)
+									if (largestFile.length() < m2tsVideoFiles[j].length())
+										largestFile = m2tsVideoFiles[j];
 
-									addToResults(largestFile, results);
-								}
+								addToResults(largestFile, results);
 							}
-						}
-					} else {
-						String[] childs = folder.list();
-						for (int i = 0; i < childs.length; i++) {
-							tempFile = new File(folder.getAbsolutePath(), childs[i]);
-							recursiveSearch(tempFile, results);
 						}
 					}
 				} else {
-					addToResults(folder, results);
+					String[] childs = folder.list();
+					for (int i = 0; i < childs.length; i++) {
+						tempFile = new File(folder.getAbsolutePath(), childs[i]);
+						recursiveSearch(tempFile, results);
+					}
 				}
 			} else {
-				File[] children = folder.listFiles();
-				for (int i = 0; i < children.length; i++)
-					addToResults(children[i], results);
+				addToResults(folder, results);
 			}
 		} catch (Exception e) {}
 	}
 
 	@Override
 	public void addToResults(File file, TreeSet<String> results) {
-		 if (MizLib.checkFileTypes(file.getAbsolutePath())) {
+		if (MizLib.checkFileTypes(file.getAbsolutePath())) {
 			if (file.length() < getFileSizeLimit() && !file.getName().equalsIgnoreCase("video_ts.ifo"))
 				return;
 

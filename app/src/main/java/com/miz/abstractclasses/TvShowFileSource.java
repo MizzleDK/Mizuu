@@ -33,10 +33,9 @@ public abstract class TvShowFileSource<T> extends AbstractFileSource<T> {
 
 	protected List<DbEpisode> mDbEpisode = new ArrayList<DbEpisode>();
 
-	public TvShowFileSource(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
+	public TvShowFileSource(Context context, FileSource fileSource, boolean clearLibrary) {
 		mContext = context;
 		mFileSource = fileSource;
-		mSubFolderSearch = subFolderSearch;
 		mClearLibrary = clearLibrary;
 
 		mFileSizeLimit = MizLib.getFileSizeLimit(getContext());

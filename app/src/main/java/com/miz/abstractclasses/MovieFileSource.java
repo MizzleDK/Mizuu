@@ -34,10 +34,9 @@ public abstract class MovieFileSource<T> extends AbstractFileSource<T> {
 
 	protected List<DbMovie> mDbMovies = new ArrayList<DbMovie>();
 
-	public MovieFileSource(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
+	public MovieFileSource(Context context, FileSource fileSource, boolean clearLibrary) {
 		mContext = context;
 		mFileSource = fileSource;
-		mSubFolderSearch = subFolderSearch;
 		mClearLibrary = clearLibrary;
 
 		mFileSizeLimit = MizLib.getFileSizeLimit(getContext());

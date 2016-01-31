@@ -8,13 +8,6 @@
             android:title="@string/set_pref_language_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefsSearchNavTitle" >
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_folder_open_white_24dp"
-            android:key="prefsEnableSubFolderSearch"
-            android:summary="@string/prefsSubfolderSearch"
-            android:title="@string/prefsSubfolderSearchTitle" />
-
         <ListPreference
             android:defaultValue="@string/smallFilesOption_2"
             android:dialogTitle="@string/setFileSizeLimit"

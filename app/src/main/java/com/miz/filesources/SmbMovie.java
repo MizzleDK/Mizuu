@@ -43,8 +43,8 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 	private HashMap<String, String> existingMovies = new HashMap<String, String>();
 	private SmbFile tempSmbFile;
 
-	public SmbMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
-		super(context, fileSource, subFolderSearch, clearLibrary);
+	public SmbMovie(Context context, FileSource fileSource, boolean clearLibrary) {
+		super(context, fileSource, clearLibrary);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 
 						if (source == null) {
 							if (dbMovies.get(i).isUnidentified())
-                                MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
+								MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
 							continue;
 						}
 
@@ -81,10 +81,10 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 										source.getPassword(),
 										dbMovies.get(i).getFilepath(),
 										false
-										));
+								));
 
 						if (temp.exists() && dbMovies.get(i).isUnidentified())
-                            MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
+							MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
 					} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
 				}
 			}
@@ -112,7 +112,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 							}
 
 						if (source == null) {
-                            MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
+							MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
 							continue;
 						}
 
@@ -123,10 +123,10 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 										source.getPassword(),
 										dbMovies.get(i).getFilepath(),
 										false
-										));
+								));
 
 						if (!temp.exists()) {
-                            MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
+							MovieDatabaseUtils.deleteMovie(mContext, dbMovies.get(i).getTmdbId());
 						}
 					} catch (Exception e) {}  // Do nothing - the file isn't available (either MalformedURLException or SmbException)
 				}
@@ -145,7 +145,7 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 		DbAdapterMovieMappings dbHelper = MizuuApplication.getMovieMappingAdapter();
 		Cursor cursor = dbHelper.getAllFilepaths(false); // Query database to return all filepaths in a cursor
 		ColumnIndexCache cache = new ColumnIndexCache();
-		
+
 		try {
 			while (cursor.moveToNext()) {// Add all movies in cursor to ArrayList of all existing movies
 				existingMovies.put(cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovieMappings.KEY_FILEPATH)), "");
@@ -173,52 +173,46 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 	@Override
 	public void recursiveSearch(SmbFile folder, TreeSet<String> results) {
 		try {
-			if (searchSubFolders()) {
-				if (folder.isDirectory()) {
-					// Check if this is a DVD folder
-					if (folder.getName().equalsIgnoreCase("video_ts/")) {
-						SmbFile[] children = folder.listFiles();
-						for (int i = 0; i < children.length; i++) {
-							if (children[i].getName().equalsIgnoreCase("video_ts.ifo"))
-								addToResults(children[i], results);
-						}
-					} // Check if this is a Blu-ray folder
-					else if (folder.getName().equalsIgnoreCase("bdmv/")) {
-						SmbFile[] children = folder.listFiles();
-						for (int i = 0; i < children.length; i++) {
-							if (children[i].getName().equalsIgnoreCase("stream/")) {
-								SmbFile[] m2tsVideoFiles = children[i].listFiles();
+			if (folder.isDirectory()) {
+				// Check if this is a DVD folder
+				if (folder.getName().equalsIgnoreCase("video_ts/")) {
+					SmbFile[] children = folder.listFiles();
+					for (int i = 0; i < children.length; i++) {
+						if (children[i].getName().equalsIgnoreCase("video_ts.ifo"))
+							addToResults(children[i], results);
+					}
+				} // Check if this is a Blu-ray folder
+				else if (folder.getName().equalsIgnoreCase("bdmv/")) {
+					SmbFile[] children = folder.listFiles();
+					for (int i = 0; i < children.length; i++) {
+						if (children[i].getName().equalsIgnoreCase("stream/")) {
+							SmbFile[] m2tsVideoFiles = children[i].listFiles();
 
-								if (m2tsVideoFiles.length > 0) {
-									SmbFile largestFile = m2tsVideoFiles[0];
+							if (m2tsVideoFiles.length > 0) {
+								SmbFile largestFile = m2tsVideoFiles[0];
 
-									for (int j = 0; j < m2tsVideoFiles.length; j++)
-										if (largestFile.length() < m2tsVideoFiles[j].length())
-											largestFile = m2tsVideoFiles[j];
+								for (int j = 0; j < m2tsVideoFiles.length; j++)
+									if (largestFile.length() < m2tsVideoFiles[j].length())
+										largestFile = m2tsVideoFiles[j];
 
-									addToResults(largestFile, results);
-								}
-							}
-						}
-					} else {
-						String[] childs = folder.list();
-						for (int i = 0; i < childs.length; i++) {
-							tempSmbFile = new SmbFile(folder.getCanonicalPath() + childs[i] + "/");
-							if (tempSmbFile.isDirectory()) {
-								recursiveSearch(tempSmbFile, results);
-							} else {
-								tempSmbFile = new SmbFile(folder.getCanonicalPath() + childs[i]);
-								addToResults(tempSmbFile, results);
+								addToResults(largestFile, results);
 							}
 						}
 					}
 				} else {
-					addToResults(folder, results);
+					String[] childs = folder.list();
+					for (int i = 0; i < childs.length; i++) {
+						tempSmbFile = new SmbFile(folder.getCanonicalPath() + childs[i] + "/");
+						if (tempSmbFile.isDirectory()) {
+							recursiveSearch(tempSmbFile, results);
+						} else {
+							tempSmbFile = new SmbFile(folder.getCanonicalPath() + childs[i]);
+							addToResults(tempSmbFile, results);
+						}
+					}
 				}
 			} else {
-				SmbFile[] children = folder.listFiles();
-				for (int i = 0; i < children.length; i++)
-					addToResults(children[i], results);
+				addToResults(folder, results);
 			}
 		} catch (Exception e) {}
 	}
@@ -248,14 +242,14 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 	public SmbFile getRootFolder() {
 		try {
 			FileSource fs = getFileSource();
-            return new SmbFile(
+			return new SmbFile(
 					MizLib.createSmbLoginString(
 							fs.getDomain(),
 							fs.getUser(),
 							fs.getPassword(),
 							fs.getFilepath(),
 							true
-							));
+					));
 		} catch (Exception e) {}
 		return null;
 	}

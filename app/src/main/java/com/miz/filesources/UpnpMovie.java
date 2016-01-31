@@ -26,7 +26,6 @@ import android.text.TextUtils;
 
 import com.miz.abstractclasses.MovieFileSource;
 import com.miz.db.DbAdapterMovieMappings;
-import com.miz.db.DbAdapterMovies;
 import com.miz.functions.ColumnIndexCache;
 import com.miz.functions.DbMovie;
 import com.miz.functions.FileSource;
@@ -68,8 +67,8 @@ public class UpnpMovie extends MovieFileSource<String> {
 	private CountDownLatch mLatch = new CountDownLatch(1);
 	private AndroidUpnpService mUpnpService;
 
-	public UpnpMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
-		super(context, fileSource, subFolderSearch, clearLibrary);
+	public UpnpMovie(Context context, FileSource fileSource, boolean clearLibrary) {
+		super(context, fileSource, clearLibrary);
 	}
 
 	@Override

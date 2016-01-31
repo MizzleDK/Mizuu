@@ -41,8 +41,8 @@ public class FileTvShow extends TvShowFileSource<File> {
     private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
     private File tempFile;
 
-    public FileTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
-        super(context, fileSource, subFolderSearch, clearLibrary);
+    public FileTvShow(Context context, FileSource fileSource, boolean clearLibrary) {
+        super(context, fileSource, clearLibrary);
     }
 
     @Override
@@ -149,20 +149,14 @@ public class FileTvShow extends TvShowFileSource<File> {
     @Override
     public void recursiveSearch(File folder, TreeSet<String> results) {
         try {
-            if (searchSubFolders()) {
-                if (folder.isDirectory()) {
-                    String[] childs = folder.list();
-                    for (int i = 0; i < childs.length; i++) {
-                        tempFile = new File(folder.getAbsolutePath() + "/" + childs[i]);
-                        recursiveSearch(tempFile, results);
-                    }
-                } else {
-                    addToResults(folder, results);
+            if (folder.isDirectory()) {
+                String[] childs = folder.list();
+                for (int i = 0; i < childs.length; i++) {
+                    tempFile = new File(folder.getAbsolutePath() + "/" + childs[i]);
+                    recursiveSearch(tempFile, results);
                 }
             } else {
-                File[] children = folder.listFiles();
-                for (int i = 0; i < children.length; i++)
-                    addToResults(children[i], results);
+                addToResults(folder, results);
             }
         } catch (Exception e) {}
     }

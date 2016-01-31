@@ -44,8 +44,8 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
     private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
     private SmbFile tempSmbFile;
 
-    public SmbTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
-        super(context, fileSource, subFolderSearch, clearLibrary);
+    public SmbTvShow(Context context, FileSource fileSource, boolean clearLibrary) {
+        super(context, fileSource, clearLibrary);
     }
 
     @Override
@@ -214,25 +214,19 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
     @Override
     public void recursiveSearch(SmbFile folder, TreeSet<String> results) {
         try {
-            if (searchSubFolders()) {
-                if (folder.isDirectory()) {
-                    String[] childs = folder.list();
-                    for (int i = 0; i < childs.length; i++) {
-                        tempSmbFile = new SmbFile(folder.getCanonicalPath() + childs[i] + "/");
-                        if (tempSmbFile.isDirectory()) {
-                            recursiveSearch(tempSmbFile, results);
-                        } else {
-                            tempSmbFile = new SmbFile(folder.getCanonicalPath() + childs[i]);
-                            addToResults(tempSmbFile, results);
-                        }
+            if (folder.isDirectory()) {
+                String[] childs = folder.list();
+                for (int i = 0; i < childs.length; i++) {
+                    tempSmbFile = new SmbFile(folder.getCanonicalPath() + childs[i] + "/");
+                    if (tempSmbFile.isDirectory()) {
+                        recursiveSearch(tempSmbFile, results);
+                    } else {
+                        tempSmbFile = new SmbFile(folder.getCanonicalPath() + childs[i]);
+                        addToResults(tempSmbFile, results);
                     }
-                } else {
-                    addToResults(folder, results);
                 }
             } else {
-                SmbFile[] children = folder.listFiles();
-                for (int i = 0; i < children.length; i++)
-                    addToResults(children[i], results);
+                addToResults(folder, results);
             }
         } catch (Exception e) {}
     }

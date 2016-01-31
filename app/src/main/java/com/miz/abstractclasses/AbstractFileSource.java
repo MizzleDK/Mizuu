@@ -30,7 +30,7 @@ public abstract class AbstractFileSource<T> {
 	protected T mFolder;
 	protected FileSource mFileSource = null;
 	protected Context mContext;
-	protected boolean mSubFolderSearch, mClearLibrary;
+	protected boolean mClearLibrary;
 	protected int mFileSizeLimit;
 
 	public void setFolder(T folder) {
@@ -51,10 +51,6 @@ public abstract class AbstractFileSource<T> {
 
 	public Context getContext() {
 		return mContext;
-	}
-
-	public boolean searchSubFolders() {
-		return mSubFolderSearch;
 	}
 
 	public boolean clearLibrary() {
