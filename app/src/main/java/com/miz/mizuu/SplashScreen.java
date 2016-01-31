@@ -31,12 +31,9 @@ import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
 import com.miz.utils.FileUtils;
 
-import java.util.Locale;
-
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
 import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
-import static com.miz.functions.PreferenceKeys.USE_ENGLISH_LANGUAGE;
 
 public class SplashScreen extends Activity {
 
@@ -60,15 +57,6 @@ public class SplashScreen extends Activity {
 		// Initialize the PreferenceManager variable and preference variable(s)
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		String startup = settings.getString(STARTUP_SELECTION, "1");
-
-		if (settings.getBoolean(USE_ENGLISH_LANGUAGE, false)) {
-			Locale locale = new Locale("en");
-			Locale.setDefault(locale);
-			Configuration config = new Configuration();
-			config.locale = locale;
-			getBaseContext().getResources().updateConfiguration(config,
-					getBaseContext().getResources().getDisplayMetrics());
-		}
 
 		if (settings.getInt(SCHEDULED_UPDATES_MOVIE, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
 			getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));

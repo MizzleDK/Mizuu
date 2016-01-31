@@ -10,12 +10,6 @@
             android:key="prefsStartup"
             android:summary="@string/stringLaunchScreenDescription"
             android:title="@string/stringLaunchScreen" />
-
-        <CheckBoxPreference
-            android:icon="@drawable/ic_language_white_24dp"
-            android:key="prefsUseEnglishLanguage"
-            android:summary="@string/useEnglishLanguage"
-            android:title="@string/forceEnglishApplicationLanguage" />
     </PreferenceCategory>
 
 </PreferenceScreen>

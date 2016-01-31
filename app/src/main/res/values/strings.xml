@@ -270,8 +270,6 @@
     <string name="unidentified">Unidentified</string>
     <string name="translations">Translations</string>
     <string name="prefixes">the ,a ,an ,</string>
-    <string name="forceEnglishApplicationLanguage">Force English application language</string>
-    <string name="useEnglishLanguage">Use English language instead of the system language. Requires application restart.</string>
     <string name="gridView">Grid view</string>
     <string name="listView">List view</string>
     <string name="deleteFile">Delete file</string>

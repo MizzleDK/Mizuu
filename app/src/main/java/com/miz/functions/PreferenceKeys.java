@@ -57,7 +57,6 @@ public class PreferenceKeys {
 	public static final String SORTING_MOVIES = "prefsSorting";
 	public static final String SORTING_TVSHOWS = "prefsSortingTv";
 	public static final String STARTUP_SELECTION = "prefsStartup";
-	public static final String USE_ENGLISH_LANGUAGE = "prefsUseEnglishLanguage";
 	public static final String ALWAYS_DELETE_FILE = "prefsAlwaysDeleteFile";
 	public static final String BUFFER_SIZE = "prefsBufferSize";
 	public static final String HAS_SHOWN_FILEBROWSER_MESSAGE = "hasShownBrowserHelpMessage";
