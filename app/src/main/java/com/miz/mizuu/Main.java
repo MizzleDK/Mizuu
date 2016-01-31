@@ -49,7 +49,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovies;
@@ -67,7 +66,6 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.miz.functions.PreferenceKeys.CONFIRM_BACK_PRESS;
 import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
 import static com.miz.functions.PreferenceKeys.TRAKT_FULL_NAME;
 import static com.miz.functions.PreferenceKeys.TRAKT_USERNAME;
@@ -83,7 +81,6 @@ public class Main extends MizActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DbAdapterMovies mDbHelper;
     private DbAdapterTvShows mDbHelperTv;
-    private boolean mConfirmExit, mTriedOnce = false;
     private ArrayList<MenuItem> mMenuItems = new ArrayList<MenuItem>();
     private Picasso mPicasso;
 
@@ -101,7 +98,6 @@ public class Main extends MizActivity {
         mPicasso = MizuuApplication.getPicasso(getApplicationContext());
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        mConfirmExit = settings.getBoolean(CONFIRM_BACK_PRESS, false);
         mStartup = Integer.valueOf(settings.getString(STARTUP_SELECTION, "1"));
 
         mDbHelper = MizuuApplication.getMovieAdapter();
@@ -507,16 +503,7 @@ public class Main extends MizActivity {
         }
 
         if (!mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer))) {
-            if (mConfirmExit) {
-                if (mTriedOnce) {
-                    finish();
-                } else {
-                    Toast.makeText(this, getString(R.string.pressBackToExit), Toast.LENGTH_SHORT).show();
-                    mTriedOnce = true;
-                }
-            } else {
-                finish();
-            }
+            finish();
         } else {
             mDrawerLayout.closeDrawers();
         }

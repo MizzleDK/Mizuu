@@ -2,11 +2,6 @@
 
     <PreferenceCategory android:title="@string/prefsUIGeneral" >
         <CheckBoxPreference
-            android:icon="@drawable/ic_settings_white_24dp"
-            android:key="prefsConfirmBackPress"
-            android:summary="@string/confirmBackPressDescription"
-            android:title="@string/confirmBackPressTitle" />
-        <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_delete_white_24dp"
             android:key="prefsAlwaysDeleteFile"
