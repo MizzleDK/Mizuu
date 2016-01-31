@@ -17,7 +17,6 @@
 package com.miz.utils;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -28,8 +27,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 
 import java.util.List;
-
-import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
 
 public class MovieDatabaseUtils {
 
@@ -115,8 +112,7 @@ public class MovieDatabaseUtils {
             if (watched) {
                 Toast.makeText(context, context.getString(R.string.markedAsWatched), Toast.LENGTH_SHORT).show();
 
-                if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true))
-                    setMoviesWatchlist(context, movies, false); // False to remove from watchlist
+                setMoviesWatchlist(context, movies, false); // False to remove from watchlist
             } else
                 Toast.makeText(context, context.getString(R.string.markedAsUnwatched), Toast.LENGTH_SHORT).show();
         else

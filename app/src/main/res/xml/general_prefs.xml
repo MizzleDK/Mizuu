@@ -17,13 +17,5 @@
             android:summary="@string/useEnglishLanguage"
             android:title="@string/forceEnglishApplicationLanguage" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/chooserMovies" >
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_queue_white_24dp"
-            android:key="prefsRemoveMoviesFromWatchlist"
-            android:summary="@string/automaticallyRemoveMoviesFromWatchlistDescription"
-            android:title="@string/automaticallyRemoveMoviesFromWatchlist" />
-    </PreferenceCategory>
 
 </PreferenceScreen>

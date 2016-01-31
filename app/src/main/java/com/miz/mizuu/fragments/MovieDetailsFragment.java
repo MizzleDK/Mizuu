@@ -99,7 +99,6 @@ import java.util.Locale;
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
 import static com.miz.functions.PreferenceKeys.CHROMECAST_BETA_SUPPORT;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
-import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
 import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
 public class MovieDetailsFragment extends Fragment {
@@ -111,7 +110,7 @@ public class MovieDetailsFragment extends Fragment {
     private View mDetailsArea;
     private ObservableScrollView mScrollView;
     private HorizontalCardLayout mActorsLayout;
-    private boolean mIgnorePrefixes, mShowFileLocation, mRemoveMoviesFromWatchlist;
+    private boolean mIgnorePrefixes, mShowFileLocation;
     private ImageView mBackground, mCover;
     private Picasso mPicasso;
     private Typeface mLight, mMediumItalic, mMedium, mBold, mCondensedRegular;
@@ -145,7 +144,6 @@ public class MovieDetailsFragment extends Fragment {
 
         mIgnorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
         mShowFileLocation = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(SHOW_FILE_LOCATION, true);
-        mRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
 
         mLight = TypefaceUtils.getRobotoLight(mContext);
         mMediumItalic = TypefaceUtils.getRobotoMediumItalic(mContext);
@@ -777,8 +775,8 @@ public class MovieDetailsFragment extends Fragment {
 
         } else Toast.makeText(mContext, getString(R.string.errorOccured), Toast.LENGTH_SHORT).show();
 
-        if (mRemoveMoviesFromWatchlist)
-            removeFromWatchlist();
+        // Remove from watchlist when watched
+        removeFromWatchlist();
 
         new Thread() {
             @Override
