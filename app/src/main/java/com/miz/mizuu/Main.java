@@ -493,17 +493,8 @@ public class Main extends MizActivity {
 
     @Override
     public void onBackPressed() {
-        if (mStartup == 0 && !mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer)) && MizLib.isTablet(this)) { // Welcome screen
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            i.setClass(getApplicationContext(), Welcome.class);
-            startActivity(i);
-            finish();
-            return;
-        }
-
         if (!mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer))) {
-            finish();
+            super.onBackPressed();
         } else {
             mDrawerLayout.closeDrawers();
         }

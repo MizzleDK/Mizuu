@@ -230,7 +230,6 @@
     <string name="addFileSourcesAbove">Add file sources using the menu item above.</string>
     <string name="anonymous">Anonymous</string>
     <string name="selectLogin">Select user login</string>
-    <string name="welcomeScreen">Welcome screen (landscape only)</string>
     <string name="automaticallyRemoveMoviesFromWatchlist">Automatically remove movies from watchlist</string>
     <string name="automaticallyRemoveMoviesFromWatchlistDescription">Remove movies on the watchlist when marking as watched.</string>
     <string name="browseSources">Browse sources</string>

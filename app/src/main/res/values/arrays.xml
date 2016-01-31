@@ -2,12 +2,10 @@
 <resources>
 
     <string-array name="startup_screen">
-        <item>@string/welcomeScreen</item>
         <item>@string/drawerMyMovies</item>
         <item>@string/drawerMyTvShows</item>
     </string-array>
     <string-array name="startup_screen_codes">
-        <item>0</item>
         <item>1</item>
         <item>2</item>
     </string-array>

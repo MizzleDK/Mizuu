@@ -37,15 +37,6 @@
 
         <uses-library android:name="android.test.runner" />
 
-        <!-- Welcome activity -->
-        <activity
-            android:name="com.miz.mizuu.Welcome"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <!-- Show details activity -->
         <activity
             android:name="com.miz.mizuu.TvShowDetails"
