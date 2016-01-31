@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 public class TvShowIdentification {
@@ -49,7 +48,6 @@ public class TvShowIdentification {
     private final Picasso mPicasso;
     private final TvShowLibraryUpdateCallback mCallback;
     private final Context mContext;
-    private final String mIgnoredTags;
 
     private ArrayList<ShowStructure> mShowStructures = new ArrayList<ShowStructure>();
     private Multimap<String, Integer> mShowFolderNameMap = LinkedListMultimap.create();
@@ -62,8 +60,6 @@ public class TvShowIdentification {
         mContext = context;
         mCallback = callback;
         mShowStructures = new ArrayList<ShowStructure>(files);
-
-        mIgnoredTags = PreferenceManager.getDefaultSharedPreferences(mContext).getString(IGNORED_FILENAME_TAGS, "");
 
         mPicasso = MizuuApplication.getPicasso(mContext);
 
@@ -136,7 +132,6 @@ public class TvShowIdentification {
                 return;
 
             ShowStructure ss = mShowStructures.get(i);
-            ss.setCustomTags(mIgnoredTags);
 
             mShowFolderNameMap.put(ss.getDecryptedShowFolderName(), i);
             mImdbMap.put(i, ss.hasImdbId());

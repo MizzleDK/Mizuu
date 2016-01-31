@@ -37,7 +37,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.miz.functions.PreferenceKeys.IGNORED_FILENAME_TAGS;
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
 public class MovieIdentification {
@@ -45,7 +44,6 @@ public class MovieIdentification {
     private final Picasso mPicasso;
     private final MovieLibraryUpdateCallback mCallback;
     private final Context mContext;
-    private final String mIgnoredTags;
     private final ArrayList<MovieStructure> mMovieStructures;
 
     private SparseBooleanArray mImdbMap = new SparseBooleanArray();
@@ -57,8 +55,6 @@ public class MovieIdentification {
         mContext = context;
         mCallback = callback;
         mMovieStructures = new ArrayList<MovieStructure>(files);
-
-        mIgnoredTags = PreferenceManager.getDefaultSharedPreferences(mContext).getString(IGNORED_FILENAME_TAGS, "");
 
         mPicasso = Picasso.with(mContext);
 
@@ -117,7 +113,6 @@ public class MovieIdentification {
                 return;
 
             MovieStructure ms = mMovieStructures.get(i);
-            ms.setCustomTags(mIgnoredTags);
 
             mImdbMap.put(i, ms.hasImdbId());
         }

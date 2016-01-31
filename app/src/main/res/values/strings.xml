@@ -242,10 +242,6 @@
     <string name="relatedMovies">Similar movies</string>
     <string name="stringLocal">Local content</string>
     <string name="stringDiscover">Discover</string>
-    <string name="stringAdd">Add</string>
-    <string name="enterTagHint">Enter tag…</string>
-    <string name="ignoredFilenameTagsTitle">Ignored filename tags</string>
-    <string name="ignoreFilenameTagsDescription">Set up personalized filename tags to ignore when identifying movies and TV shows.</string>
     <string name="removeFromWatchlist">Remove from Watch list</string>
     <string name="watchLater">Watch later</string>
     <string name="ignoreSmallFilesDescription">Ignore video files smaller than the set file size.</string>

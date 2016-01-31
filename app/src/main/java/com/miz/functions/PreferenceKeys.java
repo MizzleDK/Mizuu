@@ -39,7 +39,6 @@ public class PreferenceKeys {
 	public static final String INCLUDE_ADULT_CONTENT = "prefsIncludeAdultContent";
 	public static final String MOVIE_RATINGS_SOURCE = "prefsMovieRatingsSource";
 	public static final String TVSHOWS_RATINGS_SOURCE = "prefsShowsRatingsSource";
-	public static final String IGNORED_FILENAME_TAGS = "ignoredTags";
 	public static final String TMDB_BASE_URL = "tmdbBaseUrl";
 	public static final String TMDB_BASE_URL_TIME = "tmdbBaseUrlTime";
 	public static final String CLEAR_LIBRARY_TVSHOWS = "prefsClearLibraryTv";

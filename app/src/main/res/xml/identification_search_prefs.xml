@@ -6,11 +6,6 @@
             android:key="prefsLanguagePreference"
             android:summary="@string/set_pref_language_description"
             android:title="@string/set_pref_language_title" />
-        <Preference
-            android:fragment="com.miz.mizuu.fragments.CustomTagsFragment"
-            android:icon="@drawable/ic_label_white_24dp"
-            android:summary="@string/ignoreFilenameTagsDescription"
-            android:title="@string/ignoredFilenameTagsTitle" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefsSearchNavTitle" >
         <CheckBoxPreference
