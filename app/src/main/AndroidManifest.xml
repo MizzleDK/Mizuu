@@ -493,20 +493,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Dream service -->
-
-        <service
-            android:name="com.miz.mizuu.MizuuDream"
-            android:exported="false"
-            android:icon="@drawable/menuicon"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.service.dreams.DreamService" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
         <receiver android:name="com.miz.functions.StartScheduledUpdatesService" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
