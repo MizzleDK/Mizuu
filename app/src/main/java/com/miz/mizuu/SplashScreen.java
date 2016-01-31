@@ -33,7 +33,6 @@ import com.miz.utils.FileUtils;
 
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
-import static com.miz.functions.PreferenceKeys.STARTUP_SELECTION;
 
 public class SplashScreen extends Activity {
 
@@ -56,7 +55,6 @@ public class SplashScreen extends Activity {
 
 		// Initialize the PreferenceManager variable and preference variable(s)
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		String startup = settings.getString(STARTUP_SELECTION, "1");
 
 		if (settings.getInt(SCHEDULED_UPDATES_MOVIE, ScheduledUpdatesFragment.NOT_ENABLED) == ScheduledUpdatesFragment.AT_LAUNCH)
 			getApplicationContext().startService(new Intent(getApplicationContext(), MovieLibraryUpdate.class));
