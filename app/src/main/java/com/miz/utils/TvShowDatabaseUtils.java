@@ -18,7 +18,6 @@ package com.miz.utils;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.miz.apis.trakt.Trakt;
@@ -27,7 +26,6 @@ import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.GridEpisode;
 import com.miz.functions.MizLib;
-import com.miz.functions.PreferenceKeys;
 import com.miz.functions.TvShowEpisode;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
@@ -67,9 +65,6 @@ public class TvShowDatabaseUtils {
 	 * the TV show database entry as well.
 	 */
 	public static void deleteSeason(Context context, String showId, int season) {
-		// Should filepaths be removed completely or ignored in future library updates?
-		boolean ignoreFiles = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PreferenceKeys.IGNORED_FILES_ENABLED, false);
-
 		// Database adapters
 		DbAdapterTvShows showAdapter = MizuuApplication.getTvDbAdapter();
 		DbAdapterTvShowEpisodes episodeAdapter = MizuuApplication.getTvEpisodeDbAdapter();
@@ -81,11 +76,8 @@ public class TvShowDatabaseUtils {
 		// Remove all episodes from the season
 		episodeAdapter.deleteSeason(showId, season);
 
-		// Remove / ignore all filepath mappings to the season
-		if (ignoreFiles)
-			episodeMappingsAdapter.ignoreSeason(showId, season);
-		else
-			episodeMappingsAdapter.removeSeason(showId, season);
+		// Remove all filepath mappings to the season
+		episodeMappingsAdapter.removeSeason(showId, season);
 
 		// Remove all episode images
 		for (GridEpisode episode : episodesInSeason) {
@@ -109,9 +101,6 @@ public class TvShowDatabaseUtils {
 	}
 
 	public static void deleteEpisode(Context context, String showId, String filepath) {
-		// Should filepaths be removed completely or ignored in future library updates?
-		boolean ignoreFiles = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PreferenceKeys.IGNORED_FILES_ENABLED, false);
-
 		// Database adapters
 		DbAdapterTvShows showAdapter = MizuuApplication.getTvDbAdapter();
 		DbAdapterTvShowEpisodes episodeAdapter = MizuuApplication.getTvEpisodeDbAdapter();
@@ -125,11 +114,8 @@ public class TvShowDatabaseUtils {
 					String season = cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_SEASON));
 					String episode = cursor.getString(cursor.getColumnIndex(DbAdapterTvShowEpisodeMappings.KEY_EPISODE));
 
-					// Remove / ignore the filepath mapping
-					if (ignoreFiles)
-						episodeMappingsAdapter.ignoreFilepath(filepath);
-					else
-						episodeMappingsAdapter.deleteFilepath(filepath);
+					// Remove the filepath mapping
+					episodeMappingsAdapter.deleteFilepath(filepath);
 
 					// Check if there are any more filepaths mapped to the season / episode
 					if (!episodeMappingsAdapter.hasMultipleFilepaths(showId, season, episode)) {
@@ -167,9 +153,6 @@ public class TvShowDatabaseUtils {
 	}
 
 	public static void deleteEpisode(Context context, String showId, int season, int episode) {
-		// Should filepaths be removed completely or ignored in future library updates?
-		boolean ignoreFiles = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PreferenceKeys.IGNORED_FILES_ENABLED, false);
-
 		// Database adapters
 		DbAdapterTvShows showAdapter = MizuuApplication.getTvDbAdapter();
 		DbAdapterTvShowEpisodes episodeAdapter = MizuuApplication.getTvEpisodeDbAdapter();
@@ -179,11 +162,8 @@ public class TvShowDatabaseUtils {
 
 		for (int i = 0; i < filepaths.size(); i++) {
 			String filepath = filepaths.get(i);
-			// Remove / ignore the filepath mapping
-			if (ignoreFiles)
-				episodeMappingsAdapter.ignoreFilepath(filepath);
-			else
-				episodeMappingsAdapter.deleteFilepath(filepath);
+			// Remove the filepath mapping
+			episodeMappingsAdapter.deleteFilepath(filepath);
 		}
 
         // Delete the episode

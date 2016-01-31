@@ -29,20 +29,6 @@
             android:key="prefsIgnoreFilesSize"
             android:summary="@string/ignoreSmallFilesDescription"
             android:title="@string/setFileSizeLimit" />
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_delete_white_24dp"
-            android:key="prefsIgnoredFilesEnabled"
-            android:summary="@string/includePreviouslyRemovedFiles"
-            android:title="@string/includePreviouslyRemovedFilesTitle" />
-
-        <Preference
-            android:fragment="com.miz.mizuu.fragments.IgnoredFilesFragment"
-            android:icon="@drawable/ic_list_white_24dp"
-            android:key="prefsIgnoredFiles"
-            android:summary="@string/ignoredFilesDescription"
-            android:title="@string/ignoredFilesTitle" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/chooserMovies" >
         <CheckBoxPreference

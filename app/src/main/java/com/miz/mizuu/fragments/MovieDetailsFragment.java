@@ -98,7 +98,6 @@ import java.util.Locale;
 
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
 import static com.miz.functions.PreferenceKeys.CHROMECAST_BETA_SUPPORT;
-import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
 import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
 import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
@@ -112,7 +111,7 @@ public class MovieDetailsFragment extends Fragment {
     private View mDetailsArea;
     private ObservableScrollView mScrollView;
     private HorizontalCardLayout mActorsLayout;
-    private boolean mIgnorePrefixes, mShowFileLocation, mIgnoreDeletedFiles, mRemoveMoviesFromWatchlist;
+    private boolean mIgnorePrefixes, mShowFileLocation, mRemoveMoviesFromWatchlist;
     private ImageView mBackground, mCover;
     private Picasso mPicasso;
     private Typeface mLight, mMediumItalic, mMedium, mBold, mCondensedRegular;
@@ -146,7 +145,6 @@ public class MovieDetailsFragment extends Fragment {
 
         mIgnorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
         mShowFileLocation = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(SHOW_FILE_LOCATION, true);
-        mIgnoreDeletedFiles = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_FILES_ENABLED, false);
         mRemoveMoviesFromWatchlist = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(REMOVE_MOVIES_FROM_WATCHLIST, true);
 
         mLight = TypefaceUtils.getRobotoLight(mContext);
@@ -659,11 +657,7 @@ public class MovieDetailsFragment extends Fragment {
                 .setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        if (mIgnoreDeletedFiles) {
-                            MovieDatabaseUtils.ignoreMovie(mMovie.getTmdbId());
-                        } else {
-                            MovieDatabaseUtils.deleteMovie(getActivity(), mMovie.getTmdbId());
-                        }
+                        MovieDatabaseUtils.deleteMovie(getActivity(), mMovie.getTmdbId());
 
                         if (cb.isChecked()) {
                             for (Filepath path : mMovie.getFilepaths()) {

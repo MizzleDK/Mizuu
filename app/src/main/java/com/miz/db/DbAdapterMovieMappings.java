@@ -57,10 +57,6 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
 		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, includeRemoved ? null : "NOT(" + KEY_IGNORED + " = '1')", null, null, null, null);
 	}
 
-    public Cursor getAllIgnoredFilepaths() {
-        return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_IGNORED + " = '1'", null, null, null, null);
-    }
-
 	public Cursor getAllUnidentifiedFilepaths() {
 		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, "NOT(" + KEY_IGNORED + " = '1') AND " + KEY_TMDB_ID + "='" + DbAdapterMovies.UNIDENTIFIED_ID + "'", null, null, null, null);
 	}
@@ -136,22 +132,12 @@ public class DbAdapterMovieMappings extends AbstractDbAdapter {
 		return result;
 	}
 
-    public boolean deleteIgnoredFilepath(String filepath) {
-        return mDatabase.delete(DATABASE_TABLE, KEY_FILEPATH + " = ?", new String[]{filepath}) > 0;
-    }
-
 	public boolean deleteMovie(String tmdbId) {
 		return mDatabase.delete(DATABASE_TABLE, KEY_TMDB_ID + " = ?", new String[]{tmdbId}) > 0;
 	}
 
 	public boolean deleteAllMovies() {
 		return mDatabase.delete(DATABASE_TABLE, null, null) > 0;
-	}
-
-	public boolean ignoreMovie(String tmdbId) {
-		ContentValues ignore = new ContentValues();
-		ignore.put(KEY_IGNORED, 1);
-		return mDatabase.update(DATABASE_TABLE, ignore, KEY_TMDB_ID + " = ?", new String[]{tmdbId}) > 0;
 	}
 
 	public boolean hasMultipleFilepaths(String tmdbId) {

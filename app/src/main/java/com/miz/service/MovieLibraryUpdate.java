@@ -57,7 +57,6 @@ import java.util.List;
 
 import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
 import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
-import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
 import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_MOVIES;
 import static com.miz.functions.PreferenceKeys.SYNC_WITH_TRAKT;
 
@@ -67,7 +66,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private ArrayList<FileSource> mFileSources;
 	private ArrayList<MovieFileSource<?>> mMovieFileSources;
 	private ArrayList<MovieStructure> mMovieQueue = new ArrayList<MovieStructure>();
-	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mSyncLibraries, mStopUpdate;
+	private boolean mClearLibrary, mSearchSubfolders, mClearUnavailable, mSyncLibraries, mStopUpdate;
 	private int mTotalFiles, mCount;
 	private SharedPreferences mSettings;
 	private Editor mEditor;
@@ -129,7 +128,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		log("setupMovieFileSources()");
 
 		// Add the different file sources to the MovieFileSource ArrayList
-		setupMovieFileSources(mIgnoreRemovedFiles, mSearchSubfolders, mClearLibrary);
+		setupMovieFileSources(mSearchSubfolders, mClearLibrary);
 
 		if (mStopUpdate)
 			return;
@@ -222,7 +221,7 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		}
 	}
 
-	private void setupMovieFileSources(boolean mIgnoreRemovedFiles, boolean mSearchSubfolders, boolean mClearLibrary) {
+	private void setupMovieFileSources(boolean mSearchSubfolders, boolean mClearLibrary) {
 		for (FileSource fileSource : mFileSources) {
 			if (mStopUpdate)
 				return;
@@ -312,7 +311,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mClearLibrary = mSettings.getBoolean(CLEAR_LIBRARY_MOVIES, false);
 		mSearchSubfolders = mSettings.getBoolean(ENABLE_SUBFOLDER_SEARCH, true);
 		mClearUnavailable = mSettings.getBoolean(REMOVE_UNAVAILABLE_FILES_MOVIES, false);
-		mIgnoreRemovedFiles = mSettings.getBoolean(IGNORED_FILES_ENABLED, false);
 		mSyncLibraries = mSettings.getBoolean(SYNC_WITH_TRAKT, true);
 	}
 
@@ -338,7 +336,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		mMovieQueue = new ArrayList<MovieStructure>();
 
 		// Booleans
-		mIgnoreRemovedFiles = false;
 		mClearLibrary = false;
 		mSearchSubfolders = true;
 		mClearUnavailable = false;

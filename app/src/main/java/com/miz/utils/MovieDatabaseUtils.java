@@ -24,11 +24,9 @@ import android.widget.Toast;
 import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.MediumMovie;
-import com.miz.functions.Movie;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.miz.functions.PreferenceKeys.REMOVE_MOVIES_FROM_WATCHLIST;
@@ -77,25 +75,6 @@ public class MovieDatabaseUtils {
 
         // Finally, delete all filepath mappings to this movie ID
         MizuuApplication.getMovieMappingAdapter().deleteMovie(tmdbId);
-    }
-
-    public static void ignoreMovie(String tmdbId) {
-        if (TextUtils.isEmpty(tmdbId))
-            return;
-
-        DbAdapterMovies db = MizuuApplication.getMovieAdapter();
-
-        // We delete the movie...
-        db.deleteMovie(tmdbId);
-
-        // ... check if there's other movies linked to the collection
-        // - if not, we delete the collection entry as well
-        String collectionId = db.getCollectionId(tmdbId);
-        if (MizuuApplication.getCollectionsAdapter().getMovieCount(collectionId) == 1)
-            MizuuApplication.getCollectionsAdapter().deleteCollection(collectionId);
-
-        // And finally we make sure that Mizuu ignores the filepath in the future
-        MizuuApplication.getMovieMappingAdapter().ignoreMovie(tmdbId);
     }
 
     public static void setMoviesFavourite(final Context context,

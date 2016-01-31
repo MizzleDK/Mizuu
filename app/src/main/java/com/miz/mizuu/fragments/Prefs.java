@@ -19,8 +19,6 @@ package com.miz.mizuu.fragments;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -37,12 +35,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
-import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
-public class Prefs extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+public class Prefs extends PreferenceFragment {
 
-	private Preference mPref, mLanguagePref, mCopyDatabase;
+	private Preference mLanguagePref, mCopyDatabase;
 	private Locale[] mSystemLocales;
 
 	@Override
@@ -51,12 +48,6 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 
 		int res=getActivity().getResources().getIdentifier(getArguments().getString("resource"), "xml", getActivity().getPackageName());
 		addPreferencesFromResource(res);
-
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
-
-		mPref = getPreferenceScreen().findPreference("prefsIgnoredFiles");
-		if (mPref != null)
-			mPref.setEnabled(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_FILES_ENABLED, false));
 
         mCopyDatabase = getPreferenceScreen().findPreference("prefsCopyDatabase");
         if (mCopyDatabase != null)
@@ -147,19 +138,5 @@ public class Prefs extends PreferenceFragment implements OnSharedPreferenceChang
 			if (languages[i].equalsIgnoreCase(locale))
 				return i;
 		return -1;
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(IGNORED_FILES_ENABLED)) {
-			if (mPref != null)
-				mPref.setEnabled(sharedPreferences.getBoolean(IGNORED_FILES_ENABLED, false));
-		}
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
 	}
 }

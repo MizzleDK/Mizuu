@@ -20,7 +20,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.miz.functions.Filepath;
 import com.miz.functions.MizLib;
 
 import java.util.ArrayList;
@@ -153,22 +152,9 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_SHOW_ID + " = ?", new String[]{showId}, null, null, null);
 	}
 
-	public Cursor getAllIgnoredFilepaths() {
-		return mDatabase.query(DATABASE_TABLE, ALL_COLUMNS, KEY_IGNORED + " = '1'", null, null, null, null);
-	}
-
 	public boolean deleteFilepath(String filepath) {
 		String[] selectionArgs = new String[]{filepath};
 		return mDatabase.delete(DATABASE_TABLE, KEY_FILEPATH + " = ?", selectionArgs) > 0;
-	}
-
-	public boolean ignoreFilepath(String filepath) {
-		String[] selectionArgs = new String[]{filepath};
-
-		ContentValues values = new ContentValues();
-		values.put(KEY_IGNORED, 1); // Set the ignored value to 1 (true)
-
-		return mDatabase.update(DATABASE_TABLE, values, KEY_FILEPATH + " = ?", selectionArgs) > 0;
 	}
 
 	public boolean deleteAllFilepaths(String showId) {
@@ -203,14 +189,6 @@ public class DbAdapterTvShowEpisodeMappings extends AbstractDbAdapter {
 
 	public boolean removeSeason(String showId, int season) {
 		return mDatabase.delete(DATABASE_TABLE, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ?",
-				new String[]{showId, MizLib.addIndexZero(season)}) > 0;
-	}
-
-	public boolean ignoreSeason(String showId, int season) {
-		ContentValues values = new ContentValues();
-		values.put(KEY_IGNORED, 1); // Set the ignored value to 1 (true)
-
-		return mDatabase.update(DATABASE_TABLE, values, KEY_SHOW_ID + " = ? AND " + KEY_SEASON + " = ?",
 				new String[]{showId, MizLib.addIndexZero(season)}) > 0;
 	}
 

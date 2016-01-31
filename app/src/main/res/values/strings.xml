@@ -248,10 +248,6 @@
     <string name="enterTagHint">Enter tag…</string>
     <string name="ignoredFilenameTagsTitle">Ignored filename tags</string>
     <string name="ignoreFilenameTagsDescription">Set up personalized filename tags to ignore when identifying movies and TV shows.</string>
-    <string name="ignoredFilesTitle">Ignored files</string>
-    <string name="ignoredFilesDescription">Set up previously removed files to ignore when updating the library.</string>
-    <string name="includePreviouslyRemovedFilesTitle">Ignore previously removed files</string>
-    <string name="includePreviouslyRemovedFiles">Don\'t include removed files in library updates.</string>
     <string name="removeFromWatchlist">Remove from Watch list</string>
     <string name="watchLater">Watch later</string>
     <string name="ignoreSmallFilesDescription">Ignore video files smaller than the set file size.</string>
