@@ -31,7 +31,6 @@ public class PreferenceKeys {
 	public static final String TRAKT_PASSWORD = "traktPassword";
 	public static final String TRAKT_FULL_NAME = "traktFullName";
 	public static final String SYNC_WITH_TRAKT = "syncLibrariesWithTrakt";
-	public static final String IGNORE_FILE_SIZE = "prefsIgnoreFilesSize";
 	public static final String SCHEDULED_UPDATES_MOVIE = "scheduleUpdatesMovies";
 	public static final String SCHEDULED_UPDATES_TVSHOWS = "scheduleUpdatesShows";
 	public static final String NEXT_SCHEDULED_MOVIE_UPDATE = "nextScheduledMovieUpdate";

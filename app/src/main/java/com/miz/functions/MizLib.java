@@ -113,7 +113,6 @@ import java.util.regex.Pattern;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
-import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
 import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
@@ -1593,31 +1592,7 @@ public class MizLib {
     }
 
     public static int getFileSizeLimit(Context c) {
-        String limit = PreferenceManager.getDefaultSharedPreferences(c).getString(IGNORE_FILE_SIZE, c.getString(R.string.smallFilesOption_1));
-        if (limit.equals(c.getString(R.string.smallFilesOption_1))) {
-            return 0;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_2))) {
-            return 50 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_3))) {
-            return 100 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_4))) {
-            return 150 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_5))) {
-            return 200 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_6))) {
-            return 250 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_7))) {
-            return 300 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_8))) {
-            return 350 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_9))) {
-            return 400 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_10))) {
-            return 450 * 1024 * 1024;
-        } else if (limit.equals(c.getString(R.string.smallFilesOption_11))) {
-            return 500 * 1024 * 1024;
-        }
-        return 50 * 1024 * 1024;
+        return 25 * 1024 * 1024; // 25 MB
     }
 
     public static String getTraktUserName(Context c) {

@@ -7,17 +7,6 @@
             android:summary="@string/set_pref_language_description"
             android:title="@string/set_pref_language_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefsSearchNavTitle" >
-        <ListPreference
-            android:defaultValue="@string/smallFilesOption_2"
-            android:dialogTitle="@string/setFileSizeLimit"
-            android:entries="@array/smallFiles"
-            android:entryValues="@array/smallFiles"
-            android:icon="@drawable/ic_cancel_white_24dp"
-            android:key="prefsIgnoreFilesSize"
-            android:summary="@string/ignoreSmallFilesDescription"
-            android:title="@string/setFileSizeLimit" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/chooserMovies" >
         <CheckBoxPreference
             android:defaultValue="false"

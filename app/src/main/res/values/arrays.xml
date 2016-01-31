@@ -13,19 +13,6 @@
         <item>@string/_8kb</item>
         <item>@string/_16kb</item>
     </string-array>
-    <string-array name="smallFiles">
-        <item>@string/smallFilesOption_1</item>
-        <item>@string/smallFilesOption_2</item>
-        <item>@string/smallFilesOption_3</item>
-        <item>@string/smallFilesOption_4</item>
-        <item>@string/smallFilesOption_5</item>
-        <item>@string/smallFilesOption_6</item>
-        <item>@string/smallFilesOption_7</item>
-        <item>@string/smallFilesOption_8</item>
-        <item>@string/smallFilesOption_9</item>
-        <item>@string/smallFilesOption_10</item>
-        <item>@string/smallFilesOption_11</item>
-    </string-array>
     <string-array name="seasonsLayout">
         <item>@string/gridView</item>
         <item>@string/listView</item>
