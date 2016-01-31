@@ -35,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.miz.abstractclasses.TvShowApiService;
-import com.miz.apis.thetvdb.TheTVDbService;
 import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.functions.CoverItem;
 import com.miz.mizuu.MizuuApplication;
@@ -181,14 +180,7 @@ public class FanartSearchFragmentTv extends Fragment {
 		protected String doInBackground(String... params) {
 			String id = params[0];
 
-			TvShowApiService service = null;
-			if (id.startsWith("tmdb_")) {
-				id = id.replace("tmdb_", "");
-				service = TMDbTvShowService.getInstance(getActivity());
-			} else {
-				service = TheTVDbService.getInstance(getActivity());
-			}
-
+			TvShowApiService service = TMDbTvShowService.getInstance(getActivity());
 			mImages.addAll(service.getBackdrops(id));
 
 			return null;

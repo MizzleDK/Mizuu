@@ -31,20 +31,6 @@
         <item>@string/scheduledEveryDay</item>
         <item>@string/scheduledEveryWeek</item>
     </string-array>
-    <string-array name="show_data_source">
-        <item>@string/ratings_option_0</item>
-        <item>@string/ratings_option_1</item>
-    </string-array>
-    <string-array name="rating_options">
-        <item>@string/ratings_option_1</item>
-        <item>@string/ratings_option_2</item>
-        <item>@string/ratings_option_3</item>
-    </string-array>
-    <string-array name="rating_options_shows">
-        <item>@string/ratings_option_4</item>
-        <item>@string/ratings_option_2</item>
-        <item>@string/ratings_option_3</item>
-    </string-array>
     <string-array name="grid_item_size">
         <item>@string/large</item>
         <item>@string/normal</item>

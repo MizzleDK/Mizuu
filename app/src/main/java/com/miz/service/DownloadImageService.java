@@ -109,25 +109,14 @@ public class DownloadImageService extends IntentService {
 		switch (mImageType) {
 		case IMAGE_TYPE_TVSHOW_COVER:
 
-			if (!mContentId.startsWith("tmdb_")) {
-				// TheTVDb URL's need to have part of it replaced
-				mImageUrl = mImageUrl.replace("/_cache/", "/");
-				mNeedsResizing = true;
-			}
-
 			mDownloadPath = FileUtils.getTvShowThumb(this, mContentId).getAbsolutePath();
 
 			break;
 
 		case IMAGE_TYPE_TVSHOW_BACKDROP:
 
-			if (mContentId.startsWith("tmdb_")) {
-				// TMDb URL's need to have part of it replaced with something else
-				mImageUrl = mImageUrl.replace(MizLib.getBackdropThumbUrlSize(this), MizLib.getBackdropUrlSize(this));
-			} else {
-				// TheTVDb URL's need to have part of it removed
-				mImageUrl = mImageUrl.replace("", "").replace("/_cache/", "/");
-			}
+            // TMDb URL's need to have part of it replaced with something else
+            mImageUrl = mImageUrl.replace(MizLib.getBackdropThumbUrlSize(this), MizLib.getBackdropUrlSize(this));
 
 			mDownloadPath = FileUtils.getTvShowBackdrop(this, mContentId).getAbsolutePath();
 

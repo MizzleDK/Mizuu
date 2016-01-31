@@ -120,20 +120,14 @@ public class TvShow implements Comparable<TvShow> {
 		}
 	}
 	
-	public String getIdWithoutHack() {
-		return mId.replace("tmdb_", "");
-	}
-	
-	public static final int TMDB = 1, THETVDB = 2;
+	public static final int TMDB = 1;
 	
 	/**
 	 * Get the service provider for the ID.
 	 * @return
 	 */
 	public int getIdType() {
-		if (mId.startsWith("tmdb_"))
-			return TMDB;
-		return THETVDB;
+		return TMDB;
 	}
 
 	public String getDescription() {

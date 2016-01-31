@@ -36,8 +36,6 @@ public class PreferenceKeys {
 	public static final String NEXT_SCHEDULED_MOVIE_UPDATE = "nextScheduledMovieUpdate";
 	public static final String NEXT_SCHEDULED_TVSHOWS_UPDATE = "nextScheduledShowsUpdate";
 	public static final String INCLUDE_ADULT_CONTENT = "prefsIncludeAdultContent";
-	public static final String MOVIE_RATINGS_SOURCE = "prefsMovieRatingsSource";
-	public static final String TVSHOWS_RATINGS_SOURCE = "prefsShowsRatingsSource";
 	public static final String TMDB_BASE_URL = "tmdbBaseUrl";
 	public static final String TMDB_BASE_URL_TIME = "tmdbBaseUrlTime";
 	public static final String CLEAR_LIBRARY_TVSHOWS = "prefsClearLibraryTv";
@@ -60,9 +58,7 @@ public class PreferenceKeys {
 	public static final String IGNORE_FILESIZE_CHECK = "prefsIgnoreFilesizeCheck";
 	public static final String SHOW_FILE_LOCATION = "prefsShowFileLocation";
 	public static final String LANGUAGE_PREFERENCE = "prefsLanguagePreference";
-	public static final String TV_SHOW_DATA_SOURCE = "prefsShowsDataSource";
 	public static final String BLUR_BACKDROPS = "prefsBlurBackdrops";
-    public static final String DVD_ORDERING = "prefsDvdOrdering";
     public static final String CHROMECAST_BETA_SUPPORT = "prefsChromecastBeta";
     public static final String USE_FAST_BLUR = "prefsUseFastBlur";
 

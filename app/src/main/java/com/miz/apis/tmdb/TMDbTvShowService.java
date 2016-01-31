@@ -1,17 +1,14 @@
 package com.miz.apis.tmdb;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.miz.abstractclasses.TvShowApiService;
 import com.miz.apis.thetvdb.Episode;
 import com.miz.apis.thetvdb.Season;
 import com.miz.apis.thetvdb.TvShow;
-import com.miz.apis.trakt.Trakt;
 import com.miz.functions.Actor;
 import com.miz.functions.MizLib;
-import com.miz.mizuu.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static com.miz.functions.PreferenceKeys.TVSHOWS_RATINGS_SOURCE;
 
 public class TMDbTvShowService extends TvShowApiService {
 
@@ -43,14 +38,6 @@ public class TMDbTvShowService extends TvShowApiService {
 		mContext = context;
 		mTmdbApiKey = MizLib.getTmdbApiKey(mContext);
 	}
-
-    /**
-     * Get the ratings provider. This isn't a static value, so it should be reloaded when needed.
-     * @return
-     */
-    public String getRatingsProvider() {
-        return PreferenceManager.getDefaultSharedPreferences(mContext).getString(TVSHOWS_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_4));
-    }
 
 	@Override
 	public List<TvShow> search(String query, String language) {
@@ -112,7 +99,7 @@ public class TMDbTvShowService extends TvShowApiService {
 		language = getLanguage(language);
 
 		TvShow show = new TvShow();
-		show.setId("tmdb_" + id); // this is a hack to store the TMDb ID for the show in the database without a separate column for it
+		show.setId(id);
 
 		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 
@@ -179,28 +166,6 @@ public class TMDbTvShowService extends TvShowApiService {
 			// Set IMDb ID
 			show.setIMDbId(jObject.getJSONObject("external_ids").getString("imdb_id"));
 		} catch (JSONException e) {}
-
-		// Trakt.tv
-		if (getRatingsProvider().equals(mContext.getString(R.string.ratings_option_2))) {
-			try {
-				com.miz.apis.trakt.Movie movieSummary = Trakt.getMovieSummary(mContext, id);
-				double rating = (double) (movieSummary.getRating() / 10);
-
-				if (rating > 0 || show.getRating().equals("0.0"))
-					show.setRating(String.valueOf(rating));	
-			} catch (Exception e) {}
-		}
-
-		// OMDb API / IMDb
-		if (getRatingsProvider().equals(mContext.getString(R.string.ratings_option_3))) {
-			try {
-				jObject = MizLib.getJSONObject(mContext, "http://www.omdbapi.com/?i=" + show.getImdbId());
-				double rating = Double.valueOf(MizLib.getStringFromJSONObject(jObject, "imdbRating", "0"));
-
-				if (rating > 0 || show.getRating().equals("0.0"))
-					show.setRating(String.valueOf(rating));	
-			} catch (Exception e) {}
-		}
 
 		// Seasons
 		try {
@@ -382,16 +347,7 @@ public class TMDbTvShowService extends TvShowApiService {
 		String baseUrl = MizLib.getTmdbImageBaseUrl(mContext);
 
 		try {
-			JSONObject jObject;
-			
-			if (!id.startsWith("tmdb_")) {
-				jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/find/" + id + "?api_key=" + mTmdbApiKey + "&external_source=tvdb_id");
-				id = MizLib.getStringFromJSONObject(jObject.getJSONArray("tv_results").getJSONObject(0), "id", "");
-			} else {
-				id = id.replace("tmdb_", "");
-			}
-			
-			jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "/credits?api_key=" + mTmdbApiKey);	
+			JSONObject jObject = MizLib.getJSONObject(mContext, "https://api.themoviedb.org/3/tv/" + id + "/credits?api_key=" + mTmdbApiKey);
 			JSONArray jArray = jObject.getJSONArray("cast");
 
 			Set<String> actorIds = new HashSet<String>();

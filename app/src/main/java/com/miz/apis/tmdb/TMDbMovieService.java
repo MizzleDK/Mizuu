@@ -5,13 +5,11 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.miz.abstractclasses.MovieApiService;
-import com.miz.apis.trakt.Trakt;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.Actor;
 import com.miz.functions.CompleteActor;
 import com.miz.functions.MizLib;
 import com.miz.functions.WebMovie;
-import com.miz.mizuu.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
-import static com.miz.functions.PreferenceKeys.MOVIE_RATINGS_SOURCE;
 
 public class TMDbMovieService extends MovieApiService {
 
@@ -44,14 +41,6 @@ public class TMDbMovieService extends MovieApiService {
 		mContext = context;
 		mTmdbApiKey = MizLib.getTmdbApiKey(mContext);
 	}
-
-    /**
-     * Get the ratings provider. This isn't a static value, so it should be reloaded when needed.
-     * @return
-     */
-    public String getRatingsProvider() {
-        return PreferenceManager.getDefaultSharedPreferences(mContext).getString(MOVIE_RATINGS_SOURCE, mContext.getString(R.string.ratings_option_1));
-    }
 
 	@Override
 	public List<Movie> search(String query, String language) {
@@ -241,28 +230,6 @@ public class TMDbMovieService extends MovieApiService {
 					} catch (Exception e) {}
 				}
 			} catch (Exception e) {}
-
-			// Trakt.tv
-			if (getRatingsProvider().equals(mContext.getString(R.string.ratings_option_2)) && json == null) {
-				try {
-					com.miz.apis.trakt.Movie movieSummary = Trakt.getMovieSummary(mContext, id);
-					double rating = (double) movieSummary.getRating() / 10;
-
-					if (rating > 0 || movie.getRating().equals("0.0"))
-						movie.setRating(String.valueOf(rating));	
-				} catch (Exception e) {}
-			}
-
-			// OMDb API / IMDb
-			if (getRatingsProvider().equals(mContext.getString(R.string.ratings_option_3)) && json == null) {
-				try {
-					jObject = MizLib.getJSONObject(mContext, "http://www.omdbapi.com/?i=" + movie.getImdbId());
-					double rating = Double.valueOf(MizLib.getStringFromJSONObject(jObject, "imdbRating", "0"));
-
-					if (rating > 0 || movie.getRating().equals("0.0"))
-						movie.setRating(String.valueOf(rating));	
-				} catch (Exception e) {}
-			}
 
 		} catch (Exception e) {
 			// If something goes wrong here, i.e. API error, we won't get any details

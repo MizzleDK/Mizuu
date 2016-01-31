@@ -14,42 +14,6 @@
             android:key="prefsIncludeAdultContent"
             android:summary="@string/includeAdultContentDescription"
             android:title="@string/includeAdultContent" />
-
-        <ListPreference
-            android:defaultValue="@string/ratings_option_1"
-            android:dialogTitle="@string/selectSourceForMovieRatings"
-            android:entries="@array/rating_options"
-            android:entryValues="@array/rating_options"
-            android:icon="@drawable/ic_grade_white_24dp"
-            android:key="prefsMovieRatingsSource"
-            android:summary="@string/dataSourceOfMovieRatings"
-            android:title="@string/sourceForMovieRatings" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/chooserTVShows" >
-        <ListPreference
-            android:defaultValue="@string/ratings_option_0"
-            android:dialogTitle="@string/select_data_source_shows"
-            android:entries="@array/show_data_source"
-            android:entryValues="@array/show_data_source"
-            android:icon="@drawable/ic_tv_white_24dp"
-            android:key="prefsShowsDataSource"
-            android:summary="@string/data_source_shows_description"
-            android:title="@string/data_source_shows" />
-        <ListPreference
-            android:defaultValue="@string/ratings_option_2"
-            android:dialogTitle="@string/selectSourceForShowRatings"
-            android:entries="@array/rating_options_shows"
-            android:entryValues="@array/rating_options_shows"
-            android:icon="@drawable/ic_grade_white_24dp"
-            android:key="prefsShowsRatingsSource"
-            android:summary="@string/dataSourceOfShowRatings"
-            android:title="@string/sourceForShowRatings" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_sort_white_24dp"
-            android:key="prefsDvdOrdering"
-            android:summary="@string/use_dvd_order_description"
-            android:title="@string/use_dvd_order" />
     </PreferenceCategory>
 
 </PreferenceScreen>

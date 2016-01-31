@@ -292,17 +292,6 @@
     <string name="tvShowEpisodesOrderTypeDescription">Show newest or oldest episodes first.</string>
     <string name="newestFirst">Newest first</string>
     <string name="oldestFirst">Oldest first</string>
-    <string name="ratings_option_0">Online TV Database (TheTVDb)</string>
-    <string name="ratings_option_1">The Movie Database (TMDb)</string>
-    <string name="ratings_option_2">Trakt.tv</string>
-    <string name="ratings_option_3">The Open Movie Database API (OMDb / IMDb)</string>
-    <string name="ratings_option_4">Online TV Database (TheTVDb) / The Movie Database (TMDb)</string>
-    <string name="selectSourceForMovieRatings">Select source for movie ratings</string>
-    <string name="selectSourceForShowRatings">Select source for TV show ratings</string>
-    <string name="sourceForMovieRatings">Source for movie ratings</string>
-    <string name="dataSourceOfMovieRatings">Set the data source of movie ratings. Defaults to TMDb if the selected source is unavailable.</string>
-    <string name="sourceForShowRatings">Source for TV show ratings</string>
-    <string name="dataSourceOfShowRatings">Set the data source of TV show ratings. Defaults to TheTVDb if the selected source is unavailable.</string>
     <string name="syncLibraries">Synchronize libraries</string>
     <string name="installed_media_apps">Media apps</string>
     <string name="searchMoviesFromMizuu">Search movies from Mizuu</string>
@@ -406,9 +395,6 @@
     <string name="identifying_show">Identifying show…</string>
     <string name="identifying_episodes">Identifying episodes…</string>
     <string name="cant_identify_while_updating">"You can't manually identify while the library is updating!"</string>
-    <string name="data_source_shows">Source for TV show data</string>
-    <string name="data_source_shows_description">Set the data source for TV show details.</string>
-    <string name="select_data_source_shows">Select source for TV show data</string>
     <string name="selectFile">Select a file</string>
     <string name="no_actors">No actors found!</string>
     <string name="no_actors_description">"It seems like there aren't any actors…"</string>
@@ -428,8 +414,6 @@
     <string name="blur_backdrops">Blur background images</string>
     <string name="sign_in_with_trakt">Sign in with Trakt.tv</string>
     <string name="logged_in_as">Logged in as %s</string>
-    <string name="use_dvd_order">Use DVD ordering</string>
-    <string name="use_dvd_order_description">Identify seasons and episodes using DVD ordering, if available.</string>
     <string name="early_access">Early access testing</string>
     <string name="chromecast_title">Chromecast support (preview)</string>
     <string name="chromecast_description">Enable support for casting of SMB and UPnP files.</string>

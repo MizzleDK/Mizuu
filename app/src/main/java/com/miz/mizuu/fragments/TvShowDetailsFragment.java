@@ -544,17 +544,13 @@ public class TvShowDetailsFragment extends Fragment {
                 break;
             case R.id.openInBrowser:
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW);
-                if (thisShow.getIdType() == TvShow.TMDB) {
-                    browserIntent.setData(Uri.parse("https://www.themoviedb.org/tv/" + thisShow.getIdWithoutHack()));
-                } else {
-                    browserIntent.setData(Uri.parse("http://thetvdb.com/?tab=series&id=" + thisShow.getId()));
-                }
+                browserIntent.setData(Uri.parse("https://www.themoviedb.org/tv/" + thisShow.getId()));
                 startActivity(browserIntent);
                 break;
             case R.id.share:
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_TEXT, ((thisShow.getIdType() == TvShow.THETVDB) ? "http://thetvdb.com/?tab=series&id=" : "http://www.themoviedb.org/tv/") + thisShow.getIdWithoutHack());
+                intent.putExtra(Intent.EXTRA_TEXT, "http://www.themoviedb.org/tv/" + thisShow.getId());
                 startActivity(intent);
                 break;
         }

@@ -41,7 +41,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.miz.apis.thetvdb.TheTVDbService;
 import com.miz.apis.tmdb.TMDbMovieService;
 import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.mizuu.R;
@@ -352,13 +351,8 @@ public class RemotePlaybackFragment extends Fragment {
                 TMDbMovieService service = TMDbMovieService.getInstance(getActivity());
                 covers = service.getCovers(mId);
             } else {
-                if (mId.startsWith("tmdb_")) {
-                    TMDbTvShowService service = TMDbTvShowService.getInstance(getActivity());
-                    covers = service.getCovers(mId.replace("tmdb_", ""));
-                } else {
-                    TheTVDbService service = TheTVDbService.getInstance(getActivity());
-                    covers = service.getCovers(mId);
-                }
+				TMDbTvShowService service = TMDbTvShowService.getInstance(getActivity());
+                covers = service.getCovers(mId);
             }
 
             if (covers.size() > 0)

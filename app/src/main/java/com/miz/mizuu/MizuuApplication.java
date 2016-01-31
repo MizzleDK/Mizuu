@@ -27,7 +27,6 @@ import android.support.v7.graphics.Palette;
 import com.google.common.collect.ArrayListMultimap;
 import com.miz.abstractclasses.MovieApiService;
 import com.miz.abstractclasses.TvShowApiService;
-import com.miz.apis.thetvdb.TheTVDbService;
 import com.miz.apis.tmdb.TMDbMovieService;
 import com.miz.apis.tmdb.TMDbTvShowService;
 import com.miz.db.DbAdapterCollections;
@@ -57,7 +56,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
-import static com.miz.functions.PreferenceKeys.TV_SHOW_DATA_SOURCE;
 
 public class MizuuApplication extends Application {
 
@@ -389,9 +387,6 @@ public class MizuuApplication extends Application {
 	}
 	
 	public static TvShowApiService getTvShowService(Context context) {
-		String option = PreferenceManager.getDefaultSharedPreferences(context).getString(TV_SHOW_DATA_SOURCE, context.getString(R.string.ratings_option_0));
-		if (option.equals(context.getString(R.string.ratings_option_0)))
-			return TheTVDbService.getInstance(context);
 		return TMDbTvShowService.getInstance(context);
 	}
 	

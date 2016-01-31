@@ -61,7 +61,7 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 	}
 
 	public boolean showExists(String id, String showTitle) {
-		// Test against TVDb ID's
+		// Test against ID's
 		String[] selectionArgs = new String[]{id};
 		Cursor cursor1 = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_ID + " = ?", selectionArgs, KEY_SHOW_ID, null, null, null);
 		if (cursor1 != null) {
@@ -75,9 +75,9 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 			}
 		}
 
-		// Test against TMDb ID's
-		selectionArgs = new String[]{"tmdb_" + id};
-		Cursor cursor2 = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_ID + " = ?", selectionArgs, KEY_SHOW_ID, null, null, null);
+		// Test against the TV show title as a fall back
+		selectionArgs = new String[]{showTitle};
+		Cursor cursor2 = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_TITLE + " = ?", selectionArgs, KEY_SHOW_TITLE, null, null, null);
 		if (cursor2 != null) {
 			try {
 				if (cursor2.getCount() > 0) {
@@ -86,20 +86,6 @@ public class DbAdapterTvShows extends AbstractDbAdapter {
 			} catch (Exception e) {} finally {
 				if (!cursor2.isClosed())
 					cursor2.close();
-			}
-		}
-
-		// Test against the TV show title as a fall back
-		selectionArgs = new String[]{showTitle};
-		Cursor cursor3 = mDatabase.query(true, DATABASE_TABLE, SELECT_ALL, KEY_SHOW_TITLE + " = ?", selectionArgs, KEY_SHOW_TITLE, null, null, null);
-		if (cursor3 != null) {
-			try {
-				if (cursor3.getCount() > 0) {
-					return true;
-				}
-			} catch (Exception e) {} finally {
-				if (!cursor3.isClosed())
-					cursor3.close();
 			}
 		}
 
