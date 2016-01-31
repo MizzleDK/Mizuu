@@ -52,9 +52,7 @@ import com.miz.mizuu.R;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.MovieDatabaseUtils;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_MOVIES;
@@ -261,7 +259,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 	private void searchFolders() {
 		// Temporary collections
 		List<String> tempList = null;
-		HashMap<String, InputStream> tempNfoMap = null;
 
 		for (int j = 0; j < mMovieFileSources.size(); j++) {
 			updateMovieScaningNotification(mMovieFileSources.get(j).toString());
@@ -274,9 +271,6 @@ public class MovieLibraryUpdate extends IntentService implements MovieLibraryUpd
 		// Clean up...
 		if (tempList != null)
 			tempList.clear();
-
-		if (tempNfoMap != null)
-			tempNfoMap.clear();
 
 		mTotalFiles = mMovieQueue.size();
 	}
