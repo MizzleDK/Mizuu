@@ -43,8 +43,8 @@ public class SmbMovie extends MovieFileSource<SmbFile> {
 	private HashMap<String, String> existingMovies = new HashMap<String, String>();
 	private SmbFile tempSmbFile;
 
-	public SmbMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
-		super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
+	public SmbMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
+		super(context, fileSource, subFolderSearch, clearLibrary);
 	}
 
 	@Override

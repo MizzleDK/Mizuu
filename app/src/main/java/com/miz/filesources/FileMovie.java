@@ -41,8 +41,8 @@ public class FileMovie extends MovieFileSource<File> {
 	private HashMap<String, String> existingMovies = new HashMap<String, String>();
 	private File tempFile;
 
-	public FileMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
-		super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
+	public FileMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
+		super(context, fileSource, subFolderSearch, clearLibrary);
 	}
 
 	@Override

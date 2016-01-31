@@ -217,8 +217,6 @@
     <string name="video">Video</string>
     <string name="ignoreFileType">Ignore file format when playing videos</string>
     <string name="ignoreFileTypeDescription">Disable MIME type specific video Intents and use a generic wildcard.</string>
-    <string name="disableEthernetWiFiCheck">Disable Ethernet / Wi-Fi check</string>
-    <string name="disableEthernetWiFiCheckDescription">Don\'t check for an Ethernet or Wi-Fi connection before connecting to a network share.</string>
     <string name="lookingForNetworkSources">Looking for network sources…</string>
     <string name="searching">Searching…</string>
     <string name="scanForSources">Scan for network sources</string>

@@ -68,8 +68,8 @@ public class UpnpMovie extends MovieFileSource<String> {
 	private CountDownLatch mLatch = new CountDownLatch(1);
 	private AndroidUpnpService mUpnpService;
 
-	public UpnpMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
-		super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
+	public UpnpMovie(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
+		super(context, fileSource, subFolderSearch, clearLibrary);
 	}
 
 	@Override

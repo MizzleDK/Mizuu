@@ -57,8 +57,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_TVSHOWS;
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
+import static com.miz.functions.PreferenceKeys.CLEAR_LIBRARY_TVSHOWS;;
 import static com.miz.functions.PreferenceKeys.ENABLE_SUBFOLDER_SEARCH;
 import static com.miz.functions.PreferenceKeys.IGNORED_FILES_ENABLED;
 import static com.miz.functions.PreferenceKeys.REMOVE_UNAVAILABLE_FILES_TVSHOWS;
@@ -72,7 +71,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 	private ArrayList<TvShowFileSource<?>> mTvShowFileSources;
 	private ArrayList<ShowStructure> mFiles;
 	private HashSet<String> mUniqueShowIds = new HashSet<String>();
-	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mDisableEthernetWiFiCheck, mSyncLibraries, mStopUpdate;
+	private boolean mIgnoreRemovedFiles, mClearLibrary, mSearchSubfolders, mClearUnavailable, mSyncLibraries, mStopUpdate;
 	private int mTotalFiles, mShowCount, mEpisodeCount;
 	private SharedPreferences mSettings;
 	private Editor mEditor;
@@ -134,7 +133,7 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		log("setupTvShowsFileSources()");
 
 		// Add the different file sources to the TvShowFileSource ArrayList
-		setupTvShowsFileSources(mIgnoreRemovedFiles, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck);
+		setupTvShowsFileSources(mIgnoreRemovedFiles, mSearchSubfolders, mClearLibrary);
 
 		if (mStopUpdate)
 			return;
@@ -219,19 +218,19 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		}
 	}
 
-	private void setupTvShowsFileSources(boolean mIgnoreRemovedFiles, boolean mSearchSubfolders, boolean mClearLibrary, boolean mDisableEthernetWiFiCheck) {
+	private void setupTvShowsFileSources(boolean mIgnoreRemovedFiles, boolean mSearchSubfolders, boolean mClearLibrary) {
 		for (FileSource fileSource : mFileSources) {
 			if (mStopUpdate)
 				return;
 			switch (fileSource.getFileSourceType()) {
 			case FileSource.FILE:
-				mTvShowFileSources.add(new FileTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck));
+				mTvShowFileSources.add(new FileTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
 				break;
 			case FileSource.SMB:
-				mTvShowFileSources.add(new SmbTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck));
+				mTvShowFileSources.add(new SmbTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
 				break;
 			case FileSource.UPNP:
-				mTvShowFileSources.add(new UpnpTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary, mDisableEthernetWiFiCheck));
+				mTvShowFileSources.add(new UpnpTvShow(getApplicationContext(), fileSource, mSearchSubfolders, mClearLibrary));
 				break;
 			}
 		}
@@ -330,7 +329,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		mClearLibrary = mSettings.getBoolean(CLEAR_LIBRARY_TVSHOWS, false);
 		mSearchSubfolders = mSettings.getBoolean(ENABLE_SUBFOLDER_SEARCH, true);
 		mClearUnavailable = mSettings.getBoolean(REMOVE_UNAVAILABLE_FILES_TVSHOWS, false);
-		mDisableEthernetWiFiCheck = mSettings.getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
 		mIgnoreRemovedFiles = mSettings.getBoolean(IGNORED_FILES_ENABLED, false);
 		mSyncLibraries = mSettings.getBoolean(SYNC_WITH_TRAKT, true);
 	}
@@ -366,7 +364,6 @@ public class TvShowsLibraryUpdate extends IntentService implements TvShowLibrary
 		mClearLibrary = false;
 		mSearchSubfolders = true;
 		mClearUnavailable = false;
-		mDisableEthernetWiFiCheck = false;
 		mSyncLibraries = true;
 		mStopUpdate = false;
 

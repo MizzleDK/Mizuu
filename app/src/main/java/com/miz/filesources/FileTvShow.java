@@ -41,8 +41,8 @@ public class FileTvShow extends TvShowFileSource<File> {
     private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
     private File tempFile;
 
-    public FileTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
-        super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
+    public FileTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
+        super(context, fileSource, subFolderSearch, clearLibrary);
     }
 
     @Override

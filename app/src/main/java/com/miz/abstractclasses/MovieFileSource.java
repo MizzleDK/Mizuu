@@ -34,7 +34,7 @@ public abstract class MovieFileSource<T> extends AbstractFileSource<T> {
 
 	protected List<DbMovie> mDbMovies = new ArrayList<DbMovie>();
 
-	public MovieFileSource(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
+	public MovieFileSource(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
 		mContext = context;
 		mFileSource = fileSource;
 		mSubFolderSearch = subFolderSearch;

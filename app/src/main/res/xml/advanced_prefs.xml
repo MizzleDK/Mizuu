@@ -23,13 +23,6 @@
             android:key="prefsBufferSize"
             android:summary="@string/bufferSizeDescription"
             android:title="@string/bufferSize" />
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_signal_wifi_statusbar_not_connected_white_24dp"
-            android:key="prefsDisableEthernetWiFiCheck"
-            android:summary="@string/disableEthernetWiFiCheckDescription"
-            android:title="@string/disableEthernetWiFiCheck" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_file_download_white_24dp"

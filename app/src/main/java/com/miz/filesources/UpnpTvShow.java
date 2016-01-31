@@ -68,8 +68,8 @@ public class UpnpTvShow extends TvShowFileSource<String> {
     private CountDownLatch mLatch = new CountDownLatch(1);
     private AndroidUpnpService mUpnpService;
 
-    public UpnpTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
-        super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
+    public UpnpTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
+        super(context, fileSource, subFolderSearch, clearLibrary);
     }
 
     @Override

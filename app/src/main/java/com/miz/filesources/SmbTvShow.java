@@ -44,8 +44,8 @@ public class SmbTvShow extends TvShowFileSource<SmbFile> {
     private HashMap<String, String> existingEpisodes = new HashMap<String, String>();
     private SmbFile tempSmbFile;
 
-    public SmbTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary, boolean disableEthernetWiFiCheck) {
-        super(context, fileSource, subFolderSearch, clearLibrary, disableEthernetWiFiCheck);
+    public SmbTvShow(Context context, FileSource fileSource, boolean subFolderSearch, boolean clearLibrary) {
+        super(context, fileSource, subFolderSearch, clearLibrary);
     }
 
     @Override

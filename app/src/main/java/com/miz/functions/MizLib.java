@@ -113,7 +113,6 @@ import java.util.regex.Pattern;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
-import static com.miz.functions.PreferenceKeys.DISABLE_ETHERNET_WIFI_CHECK;
 import static com.miz.functions.PreferenceKeys.IGNORE_FILE_SIZE;
 import static com.miz.functions.PreferenceKeys.INCLUDE_ADULT_CONTENT;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
@@ -313,11 +312,6 @@ public class MizLib {
      */
     public static boolean isWifiConnected(Context c) {
         if (c!= null) {
-            boolean disableEthernetWiFiCheck = PreferenceManager.getDefaultSharedPreferences(c).getBoolean(DISABLE_ETHERNET_WIFI_CHECK, false);
-
-            if (disableEthernetWiFiCheck)
-                return isOnline(c);
-
             ConnectivityManager connManager = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo[] connections = connManager.getAllNetworkInfo();
             int count = connections.length;
