@@ -33,10 +33,10 @@ public class Movie extends MediumBaseMovie {
 
 	public Movie(Context context, String title, String plot, String tagline, String tmdbId, String imdbId, String rating, String releasedate,
 			String certification, String runtime, String trailer, String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
-			String date_added, boolean ignorePrefixes) {
+			String date_added) {
 
 		super(context, title, tmdbId, rating, releasedate, genres, favourite, cast, collection,
-				collectionId, toWatch, hasWatched, date_added, certification, runtime, ignorePrefixes);
+				collectionId, toWatch, hasWatched, date_added, certification, runtime);
 		
 		// Set up movie fields based on constructor
 		PLOT = plot;

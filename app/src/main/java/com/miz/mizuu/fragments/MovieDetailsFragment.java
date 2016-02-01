@@ -98,7 +98,6 @@ import java.util.Locale;
 
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
 import static com.miz.functions.PreferenceKeys.CHROMECAST_BETA_SUPPORT;
-import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
 public class MovieDetailsFragment extends Fragment {
@@ -110,7 +109,7 @@ public class MovieDetailsFragment extends Fragment {
     private View mDetailsArea;
     private ObservableScrollView mScrollView;
     private HorizontalCardLayout mActorsLayout;
-    private boolean mIgnorePrefixes, mShowFileLocation;
+    private boolean mShowFileLocation;
     private ImageView mBackground, mCover;
     private Picasso mPicasso;
     private Typeface mLight, mMediumItalic, mMedium, mBold, mCondensedRegular;
@@ -142,7 +141,6 @@ public class MovieDetailsFragment extends Fragment {
 
         mContext = getActivity();
 
-        mIgnorePrefixes = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORED_TITLE_PREFIXES, false);
         mShowFileLocation = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(SHOW_FILE_LOCATION, true);
 
         mLight = TypefaceUtils.getRobotoLight(mContext);
@@ -175,8 +173,7 @@ public class MovieDetailsFragment extends Fragment {
                     cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_COLLECTION_ID)),
                     cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TO_WATCH)),
                     cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_HAS_WATCHED)),
-                    cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_DATE_ADDED)),
-                    mIgnorePrefixes
+                    cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_DATE_ADDED))
             );
         } catch (Exception e) {} finally {
             if (cursor != null) {

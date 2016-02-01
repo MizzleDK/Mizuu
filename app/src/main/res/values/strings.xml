@@ -198,8 +198,6 @@
     <string name="done">Done</string>
     <string name="other">Other</string>
     <string name="noVideoPlayerFound">No compatible video player found!</string>
-    <string name="ignoreMoviePrefixes">Ignore title prefixes</string>
-    <string name="ignoreMoviePrefixesDescription">Ignore prefixes like "A" and "The".</string>
     <string name="loginAsAnonymous">Log in as anonymous</string>
     <string name="loginAsGuest">Log in as guest (for Windows)</string>
     <string name="coverart">Cover art</string>
@@ -250,7 +248,6 @@
     <string name="removeAllUnidentifiedFiles">Remove all unidentified files</string>
     <string name="unidentified">Unidentified</string>
     <string name="translations">Translations</string>
-    <string name="prefixes">the ,a ,an ,</string>
     <string name="gridView">Grid view</string>
     <string name="listView">List view</string>
     <string name="deleteFile">Delete file</string>

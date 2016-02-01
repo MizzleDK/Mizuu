@@ -35,7 +35,7 @@ public class TvShow implements Comparable<TvShow> {
 	private boolean mFavorite;
 	private File mThumbnail;
 
-	public TvShow(Context context, String id, String title, String description, String rating, String genres, String actors, String certification, String firstAirdate, String runtime, boolean ignorePrefixes, String isFavorite, String latestEpisodeAirDate) {
+	public TvShow(Context context, String id, String title, String description, String rating, String genres, String actors, String certification, String firstAirdate, String runtime, String isFavorite, String latestEpisodeAirDate) {
 
 		// Set up episode fields based on constructor
 		mContext = context;
@@ -59,17 +59,6 @@ public class TvShow implements Comparable<TvShow> {
 			mTitle = "";
 		} else {
 			mTitle = TITLE;
-			if (ignorePrefixes) {
-				String temp = TITLE.toLowerCase(Locale.ENGLISH);
-				String[] prefixes = MizLib.getPrefixes(mContext);
-				int count = prefixes.length;
-				for (int i = 0; i < count; i++) {
-					if (temp.startsWith(prefixes[i])) {
-						mTitle = TITLE.substring(prefixes[i].length());
-						break;
-					}
-				}
-			}
 		}
 
 		// getReleaseYear()

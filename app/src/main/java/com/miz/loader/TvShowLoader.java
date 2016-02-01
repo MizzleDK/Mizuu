@@ -84,8 +84,7 @@ public class TvShowLoader {
     private ArrayList<TvShow> mResults = new ArrayList<>();
     private HashSet<TvShowFilter> mFilters = new HashSet<>();
     private TvShowLoaderAsyncTask mAsyncTask;
-    private boolean mIgnorePrefixes = false,
-            mShowingSearchResults = false;
+    private boolean mShowingSearchResults = false;
 
     public TvShowLoader(Context context, TvShowLibraryType libraryType, OnLoadCompletedCallback callback) {
         mContext = context;
@@ -105,14 +104,6 @@ public class TvShowLoader {
      */
     public TvShowLibraryType getType() {
         return mLibraryType;
-    }
-
-    /**
-     * Determine whether the TvShowLoader should ignore title prefixes.
-     * @param ignore
-     */
-    public void setIgnorePrefixes(boolean ignore) {
-        mIgnorePrefixes = ignore;
     }
 
     /**
@@ -265,7 +256,6 @@ public class TvShowLoader {
                             cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
                             cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
                             cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_RUNTIME)),
-                            mIgnorePrefixes,
                             cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
                             mTvShowEpisodeDatabase.getLatestEpisodeAirdate(cursor.getString(cache.getColumnIndex(cursor, DbAdapterTvShows.KEY_SHOW_ID)))
                     ));

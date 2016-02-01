@@ -138,8 +138,7 @@ public class MovieContentProvider extends SearchRecentSuggestionsProvider {
 								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_HAS_WATCHED)),
 								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_DATE_ADDED)),
 								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_CERTIFICATION)),
-								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_RUNTIME)),
-								false
+								c.getString(cache.getColumnIndex(c, DbAdapterMovies.KEY_RUNTIME))
 								));
 					}
 				}

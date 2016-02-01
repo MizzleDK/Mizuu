@@ -34,8 +34,8 @@ public abstract class MediumBaseMovie extends BaseMovie {
 	
 	public MediumBaseMovie(Context context, String title, String tmdbId, String rating, String releasedate,
 			String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
-			String date_added, String certification, String runtime, boolean ignorePrefixes) {
-		super(context, title, tmdbId, ignorePrefixes);
+			String date_added, String certification, String runtime) {
+		super(context, title, tmdbId);
 		
 		RATING = rating;
 		RELEASEDATE = releasedate;

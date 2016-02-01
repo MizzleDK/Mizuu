@@ -87,8 +87,7 @@ public class MovieLoader {
     private ArrayList<MediumMovie> mResults = new ArrayList<>();
     private HashSet<MovieFilter> mFilters = new HashSet<>();
     private MovieLoaderAsyncTask mAsyncTask;
-    private boolean mIgnorePrefixes = false,
-            mShowingSearchResults = false;
+    private boolean mShowingSearchResults = false;
 
     public MovieLoader(Context context, MovieLibraryType libraryType, OnLoadCompletedCallback callback) {
         mContext = context;
@@ -107,14 +106,6 @@ public class MovieLoader {
      */
     public MovieLibraryType getType() {
         return mLibraryType;
-    }
-
-    /**
-     * Determine whether the MovieLoader should ignore title prefixes.
-     * @param ignore
-     */
-    public void setIgnorePrefixes(boolean ignore) {
-        mIgnorePrefixes = ignore;
     }
 
     /**
@@ -282,8 +273,7 @@ public class MovieLoader {
                             cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_HAS_WATCHED)),
                             cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_DATE_ADDED)),
                             cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_CERTIFICATION)),
-                            cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RUNTIME)),
-                            mIgnorePrefixes
+                            cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RUNTIME))
                     ));
                 }
             } catch (Exception e) {} finally {

@@ -20,7 +20,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.miz.functions.Filepath;
-import com.miz.functions.MizLib;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.utils.FileUtils;
 import com.miz.utils.StringUtils;
@@ -28,34 +27,18 @@ import com.miz.utils.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public abstract class BaseMovie implements Comparable<BaseMovie> {
 
 	protected ArrayList<Filepath> mFilepaths = new ArrayList<Filepath>();
 	protected Context mContext;
 	protected String mTitle, mTmdbId;
-	protected boolean mIgnorePrefixes;
 
-	public BaseMovie(Context context, String title, String tmdbId, boolean ignorePrefixes) {
+	public BaseMovie(Context context, String title, String tmdbId) {
 		// Set up movie fields based on constructor
 		mContext = context;
 		mTitle = title;
 		mTmdbId = tmdbId;
-		mIgnorePrefixes = ignorePrefixes;
-
-		// getTitle()
-		if (!TextUtils.isEmpty(mTitle) && ignorePrefixes) {
-			String temp = mTitle.toLowerCase(Locale.ENGLISH);
-			String[] prefixes = MizLib.getPrefixes(mContext);
-			int count = prefixes.length;
-			for (int i = 0; i < count; i++) {
-				if (temp.startsWith(prefixes[i])) {
-					mTitle = mTitle.substring(prefixes[i].length());
-					break;
-				}
-			}
-		}
 
         List<String> paths = MizuuApplication.getMovieFilepaths(mTmdbId);
         if (paths != null)

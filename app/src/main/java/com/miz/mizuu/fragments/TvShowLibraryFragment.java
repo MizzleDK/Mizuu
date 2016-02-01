@@ -81,7 +81,6 @@ import java.util.Random;
 import java.util.Set;
 
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
-import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
 
 public class TvShowLibraryFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -92,7 +91,7 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
     private LoaderAdapter mAdapter;
     private ObservableGridView mGridView;
     private ProgressBar mProgressBar;
-    private boolean mShowTitles, mIgnorePrefixes, mLoading = true;
+    private boolean mShowTitles, mLoading = true;
     private Picasso mPicasso;
     private Config mConfig;
     private TvShowLoader mTvShowLoader;
@@ -127,7 +126,6 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
         // Initialize the PreferenceManager variable and preference variable(s)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
         mShowTitles = mSharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
 
         mImageThumbSize = ViewUtils.getGridViewThumbSize(mContext);
@@ -253,7 +251,6 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
         });
 
         mTvShowLoader = new TvShowLoader(mContext, TvShowLibraryType.fromInt(getArguments().getInt("type")), mCallback);
-        mTvShowLoader.setIgnorePrefixes(mIgnorePrefixes);
         mTvShowLoader.load();
         showProgressBar();
 
@@ -571,15 +568,7 @@ public class TvShowLibraryFragment extends Fragment implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(IGNORED_TITLE_PREFIXES)) {
-            mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
-
-            if (mTvShowLoader != null) {
-                mTvShowLoader.setIgnorePrefixes(mIgnorePrefixes);
-                mTvShowLoader.load();
-            }
-
-        } else if (key.equals(GRID_ITEM_SIZE)) {
+        if (key.equals(GRID_ITEM_SIZE)) {
             mImageThumbSize = ViewUtils.getGridViewThumbSize(mContext);
 
             if (mGridView != null)

@@ -184,8 +184,7 @@ public class EditMovieFragment extends Fragment {
                     cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_COLLECTION_ID)),
                     cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_TO_WATCH)),
                     cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_HAS_WATCHED)),
-                    cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_DATE_ADDED)),
-                    false
+                    cursor.getString(cursor.getColumnIndex(DbAdapterMovies.KEY_DATE_ADDED))
             );
         } catch (Exception e) {} finally {
             cursor.close();

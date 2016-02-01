@@ -8,13 +8,6 @@
             android:summary="@string/prefsShowGridTitles"
             android:title="@string/prefsShowGridTitlesTitle" />
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_format_clear_white_24dp"
-            android:key="prefsIgnorePrefixesInTitles"
-            android:summary="@string/ignoreMoviePrefixesDescription"
-            android:title="@string/ignoreMoviePrefixes" />
-
         <ListPreference
             android:defaultValue="@string/normal"
             android:entries="@array/grid_item_size"

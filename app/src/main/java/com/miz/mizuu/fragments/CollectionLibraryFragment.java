@@ -44,7 +44,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -68,7 +67,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.miz.functions.PreferenceKeys.GRID_ITEM_SIZE;
-import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
 import static com.miz.functions.PreferenceKeys.SHOW_TITLES_IN_GRID;
 
 public class CollectionLibraryFragment extends Fragment implements OnSharedPreferenceChangeListener {
@@ -80,7 +78,7 @@ public class CollectionLibraryFragment extends Fragment implements OnSharedPrefe
     private ArrayList<Integer> mMovieKeys = new ArrayList<Integer>();
     private GridView mGridView = null;
     private ProgressBar mProgressBar;
-    private boolean mIgnorePrefixes, mLoading, mShowTitles;
+    private boolean mLoading, mShowTitles;
     private Picasso mPicasso;
     private Config mConfig;
     private MovieSectionLoader mMovieSectionLoader;
@@ -119,7 +117,6 @@ public class CollectionLibraryFragment extends Fragment implements OnSharedPrefe
         // Initialize the PreferenceManager variable and preference variable(s)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
         mShowTitles = mSharedPreferences.getBoolean(SHOW_TITLES_IN_GRID, true);
 
         String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
@@ -190,8 +187,7 @@ public class CollectionLibraryFragment extends Fragment implements OnSharedPrefe
                                     cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_HAS_WATCHED)),
                                     cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_DATE_ADDED)),
                                     cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_CERTIFICATION)),
-                                    cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RUNTIME)),
-                                    mIgnorePrefixes
+                                    cursor.getString(cache.getColumnIndex(cursor, DbAdapterMovies.KEY_RUNTIME))
                             ));
                         }
                     } catch (Exception e) {
@@ -499,10 +495,7 @@ public class CollectionLibraryFragment extends Fragment implements OnSharedPrefe
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(IGNORED_TITLE_PREFIXES)) {
-            mIgnorePrefixes = mSharedPreferences.getBoolean(IGNORED_TITLE_PREFIXES, false);
-            forceLoaderLoad();
-        } else if (key.equals(GRID_ITEM_SIZE)) {
+        if (key.equals(GRID_ITEM_SIZE)) {
             String thumbnailSize = mSharedPreferences.getString(GRID_ITEM_SIZE, getString(R.string.normal));
             if (thumbnailSize.equals(getString(R.string.large)))
                 mImageThumbSize = (int) (getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size) * 1.33);

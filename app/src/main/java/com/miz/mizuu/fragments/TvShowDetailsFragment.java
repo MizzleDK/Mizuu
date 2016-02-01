@@ -94,8 +94,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.miz.functions.PreferenceKeys.IGNORED_TITLE_PREFIXES;
-
 public class TvShowDetailsFragment extends Fragment {
 
     private Activity mContext;
@@ -105,7 +103,6 @@ public class TvShowDetailsFragment extends Fragment {
     private ImageView background, cover;
     private ObservableScrollView mScrollView;
     private View mDetailsArea;
-    private boolean ignorePrefixes;
     private Picasso mPicasso;
     private Typeface mMediumItalic, mMedium, mBold, mCondensedRegular;
     private Bus mBus;
@@ -144,8 +141,6 @@ public class TvShowDetailsFragment extends Fragment {
         mBold = TypefaceUtils.getRobotoBold(mContext);
         mCondensedRegular = TypefaceUtils.getRobotoCondensedRegular(mContext);
 
-        ignorePrefixes = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(IGNORED_TITLE_PREFIXES, false);
-
         // Create and open database
         dbHelper = MizuuApplication.getTvDbAdapter();
 
@@ -162,7 +157,6 @@ public class TvShowDetailsFragment extends Fragment {
                         cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_CERTIFICATION)),
                         cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_FIRST_AIRDATE)),
                         cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_RUNTIME)),
-                        ignorePrefixes,
                         cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_FAVOURITE)),
                         MizuuApplication.getTvEpisodeDbAdapter().getLatestEpisodeAirdate(cursor.getString(cursor.getColumnIndex(DbAdapterTvShows.KEY_SHOW_ID)))
                 );

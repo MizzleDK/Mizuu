@@ -160,20 +160,6 @@ public class MizLib {
         return key;
     }
 
-    public static String[] getPrefixes(Context c) {
-        ArrayList<String> prefixesArray = new ArrayList<String>();
-        String prefix = c.getString(R.string.prefixes);
-
-        String[] split = prefix.split(",");
-        int count = split.length;
-        prefixesArray.addAll(Arrays.asList(split).subList(0, count));
-
-        count = prefixes.length;
-        prefixesArray.addAll(Arrays.asList(prefixes).subList(0, count));
-
-        return prefixesArray.toArray(new String[prefixesArray.size()]);
-    }
-
     public static boolean isVideoFile(String s) {
         String[] fileTypes = new String[]{".3gp",".aaf.","mp4",".ts",".webm",".m4v",".mkv",".divx",".xvid",".rec",".avi",".flv",".f4v",".moi",".mpeg",".mpg",".mts",".m2ts",".ogv",".rm",".rmvb",".mov",".wmv",".iso",".vob",".ifo",".wtv",".pyv",".ogm",".img"};
         int count = fileTypes.length;

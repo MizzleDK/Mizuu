@@ -24,10 +24,10 @@ public class MediumMovie extends MediumBaseMovie {
 	
 	public MediumMovie(Context context, String title, String tmdbId, String rating, String releasedate,
 			String genres, String favourite, String cast, String collection, String collectionId, String toWatch, String hasWatched,
-			String date_added, String certification, String runtime, boolean ignorePrefixes) {
+			String date_added, String certification, String runtime) {
 		
 		super(context, title, tmdbId, rating, releasedate, genres, favourite, cast, collection, collectionId,
-				toWatch, hasWatched, date_added, certification, runtime, ignorePrefixes);
+				toWatch, hasWatched, date_added, certification, runtime);
 	}
 	
 }
