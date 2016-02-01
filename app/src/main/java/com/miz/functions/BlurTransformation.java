@@ -18,7 +18,6 @@ package com.miz.functions;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.preference.PreferenceManager;
 
 import com.squareup.picasso.Transformation;
 
@@ -41,13 +40,8 @@ public class BlurTransformation implements Transformation {
 
 	@Override
 	public Bitmap transform(Bitmap source) {
-		Bitmap blur;
-
-        if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(PreferenceKeys.USE_FAST_BLUR, true))
-            blur = MizLib.fastBlur(mContext, Bitmap.createScaledBitmap(source, source.getWidth() / 2, source.getHeight() / 2, true), mBlurRadius);
-        else
-            blur = MizLib.slowBlur(Bitmap.createScaledBitmap(source, source.getWidth() / 2, source.getHeight() / 2, true), mBlurRadius);
-
+		Bitmap blur = MizLib.fastBlur(mContext, Bitmap.createScaledBitmap(source,
+				source.getWidth() / 2, source.getHeight() / 2, true), mBlurRadius);
         source.recycle();
 		
 		return blur;

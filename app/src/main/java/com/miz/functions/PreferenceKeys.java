@@ -58,6 +58,5 @@ public class PreferenceKeys {
 	public static final String SHOW_FILE_LOCATION = "prefsShowFileLocation";
 	public static final String LANGUAGE_PREFERENCE = "prefsLanguagePreference";
     public static final String CHROMECAST_BETA_SUPPORT = "prefsChromecastBeta";
-    public static final String USE_FAST_BLUR = "prefsUseFastBlur";
 
 }

@@ -7,12 +7,6 @@
             android:key="prefsAlwaysDeleteFile"
             android:summary="@string/alwaysDeleteFile"
             android:title="@string/alwaysDeleteFileTitle" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_blur_circular_white_24dp"
-            android:key="prefsUseFastBlur"
-            android:summary="@string/use_fast_blur_description"
-            android:title="@string/use_fast_blur" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/network" >
         <ListPreference
