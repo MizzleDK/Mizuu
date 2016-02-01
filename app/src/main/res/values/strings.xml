@@ -80,8 +80,6 @@
     <string name="prefsSearchNavTitle">Search</string>
     <string name="prefsUI">User Interface</string>
     <string name="prefsUIGeneral">General</string>
-    <string name="prefsAppFeedback">Application feedback</string>
-    <string name="prefsAppFeedbackDescription">Tell the world what you think of Mizuu on Google Play.</string>
     <string name="prefsIdentificationAndSearch">Identification &amp; search</string>
     <string name="shareWith">Share with…</string>
     <string name="addedToFavs">Added to favorites!</string>

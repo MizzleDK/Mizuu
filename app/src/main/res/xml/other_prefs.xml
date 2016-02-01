@@ -1,41 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="@string/other" >
-        <Preference
-            android:icon="@drawable/ic_play_shopping_bag_white_24dp"
-            android:key="prefsFeedback"
-            android:summary="@string/prefsAppFeedbackDescription"
-            android:title="@string/prefsAppFeedback" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="market://details?id=com.miz.mizuu" />
-        </Preference>
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefsCredits" >
-        <Preference
-            android:icon="@drawable/ic_tv_white_24dp"
-            android:summary="@string/prefsCreditsTvDbDescription"
-            android:title="@string/prefsCreditsTvDb" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://thetvdb.com" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_language_white_24dp"
-            android:summary="www.reddit.com"
-            android:title="@string/choiceReddit" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://reddit.com/r/videos/" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_language_white_24dp"
-            android:summary="www.ted.com"
-            android:title="@string/choiceTedTalks" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://youtube.com" />
-        </Preference>
         <Preference
             android:icon="@drawable/ic_movie_white_24dp"
             android:summary="@string/prefsCreditsTmdbDescription"
@@ -43,38 +8,6 @@
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="http://themoviedb.org" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_tv_white_24dp"
-            android:summary="@string/prefsCreditsTraktDescription"
-            android:title="@string/prefsCreditsTraktTitle" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://trakt.tv" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_tv_white_24dp"
-            android:summary="@string/prefsCreditsTvRageDescription"
-            android:title="@string/prefsCreditsTvRage" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://tvrage.com" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_language_white_24dp"
-            android:summary="@string/prefsCreditsWikipediaDescription"
-            android:title="@string/prefsCreditsWikipedia" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://wikipedia.org" />
-        </Preference>
-        <Preference
-            android:icon="@drawable/ic_language_white_24dp"
-            android:summary="www.youtube.com"
-            android:title="@string/choiceYouTube" >
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://youtube.com" />
         </Preference>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/thirdPartyLibraries" >
