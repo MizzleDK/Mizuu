@@ -33,12 +33,6 @@
             android:title="@string/ignoreFileType" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/early_access" >
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_cast_connected_white_24dp"
-            android:key="prefsChromecastBeta"
-            android:summary="@string/chromecast_description"
-            android:title="@string/chromecast_title" />
         <Preference
             android:key="prefsCopyDatabase"
             android:icon="@drawable/ic_action_database"

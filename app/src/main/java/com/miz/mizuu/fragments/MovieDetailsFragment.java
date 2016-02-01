@@ -74,7 +74,6 @@ import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieCoverFanartBrowser;
 import com.miz.mizuu.R;
-import com.miz.remoteplayback.RemotePlayback;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.utils.IntentUtils;
@@ -95,7 +94,6 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
-import static com.miz.functions.PreferenceKeys.CHROMECAST_BETA_SUPPORT;
 import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
 public class MovieDetailsFragment extends Fragment {
@@ -482,55 +480,6 @@ public class MovieDetailsFragment extends Fragment {
             menu.findItem(R.id.movie_fav).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             menu.findItem(R.id.share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             menu.findItem(R.id.watch_list).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        }
-
-        if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(CHROMECAST_BETA_SUPPORT, false)) {
-
-            boolean add = false;
-            for (Filepath path : mMovie.getFilepaths()) {
-                if (path.isNetworkFile()) {
-                    add = true;
-                    break;
-                }
-            }
-
-            if (add) {
-                menu.add("Remote play").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        final ArrayList<Filepath> networkFiles = new ArrayList<Filepath>();
-
-                        for (Filepath path : mMovie.getFilepaths()) {
-                            if (path.isNetworkFile()) {
-                                networkFiles.add(path);
-                            }
-                        }
-
-                        MizLib.showSelectFileDialog(mContext, networkFiles, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                Intent i = new Intent(mContext, RemotePlayback.class);
-                                i.putExtra("coverUrl", "");
-                                i.putExtra("title", mMovie.getTitle());
-                                i.putExtra("id", mMovie.getTmdbId());
-                                i.putExtra("type", "movie");
-
-                                if (networkFiles.get(which).getType() == FileSource.SMB) {
-                                    String url = VideoUtils.startSmbServer(getActivity(), networkFiles.get(which).getFilepath(), mMovie);
-                                    i.putExtra("videoUrl", url);
-                                } else {
-                                    i.putExtra("videoUrl", networkFiles.get(which).getFilepath());
-                                }
-
-                                startActivity(i);
-                            }
-                        });
-
-                        return false;
-                    }
-                });
-            }
         }
 
         // Favourite

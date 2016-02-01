@@ -408,8 +408,6 @@
     <string name="sign_in_with_trakt">Sign in with Trakt.tv</string>
     <string name="logged_in_as">Logged in as %s</string>
     <string name="early_access">Early access testing</string>
-    <string name="chromecast_title">Chromecast support (preview)</string>
-    <string name="chromecast_description">Enable support for casting of SMB and UPnP files.</string>
     <string name="choiceNewReleases">New releases</string>
     <string name="data_collection">Data collection</string>
     <string name="improve_filename_recognition">Improve filename recognition</string>
@@ -441,10 +439,6 @@
     <string name="no_unwatched_tv_shows_descriptions">Good job!</string>
     <string name="no_episodes_to_play">Sorry, no episodes to play!</string>
     <string name="playing_season_episode">Playing %1$s (S%2$sE%3$s): %4$s</string>
-    <string name="play">Play</string>
-    <string name="stop">Stop</string>
-    <string name="pause">Pause</string>
-    <string name="connect">Connect</string>
     <string name="watched_tv_shows">Watched shows</string>
     <string name="unwatched_tv_shows">Unwatched shows</string>
     <string name="all_episodes">All episodes</string>

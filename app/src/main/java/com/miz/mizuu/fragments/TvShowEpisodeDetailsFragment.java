@@ -65,7 +65,6 @@ import com.miz.mizuu.Main;
 import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
-import com.miz.remoteplayback.RemotePlayback;
 import com.miz.service.DeleteFile;
 import com.miz.service.MakeAvailableOffline;
 import com.miz.utils.LocalBroadcastUtils;
@@ -82,7 +81,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import static com.miz.functions.PreferenceKeys.ALWAYS_DELETE_FILE;
-import static com.miz.functions.PreferenceKeys.CHROMECAST_BETA_SUPPORT;
 import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
 @SuppressLint("InflateParams") public class TvShowEpisodeDetailsFragment extends Fragment {
@@ -469,57 +467,6 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.episode_details, menu);
-
-        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(CHROMECAST_BETA_SUPPORT, false)) {
-
-            boolean add = false;
-            for (Filepath path : mEpisode.getFilepaths()) {
-                if (path.isNetworkFile()) {
-                    add = true;
-                    break;
-                }
-            }
-
-            if (add) {
-                menu.add("Remote play").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        final ArrayList<Filepath> networkFiles = new ArrayList<Filepath>();
-
-                        for (Filepath path : mEpisode.getFilepaths()) {
-                            if (path.isNetworkFile()) {
-                                networkFiles.add(path);
-                            }
-                        }
-
-                        MizLib.showSelectFileDialog(getActivity(), networkFiles, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                String showName = MizuuApplication.getTvDbAdapter().getShowTitle(mEpisode.getShowId());
-
-                                Intent i = new Intent(getActivity(), RemotePlayback.class);
-                                i.putExtra("coverUrl", "");
-                                i.putExtra("title", showName + " (S" + MizLib.addIndexZero(mEpisode.getSeason()) + "E" + MizLib.addIndexZero(mEpisode.getEpisode()) + "): " + mEpisode.getTitle());
-                                i.putExtra("id", mEpisode.getShowId());
-                                i.putExtra("type", "tv");
-
-                                if (networkFiles.get(which).getType() == FileSource.SMB) {
-                                    String url = VideoUtils.startSmbServer(getActivity(), networkFiles.get(which).getFilepath(), mEpisode);
-                                    i.putExtra("videoUrl", url);
-                                } else {
-                                    i.putExtra("videoUrl", networkFiles.get(which).getFilepath());
-                                }
-
-                                startActivity(i);
-                            }
-                        });
-
-                        return false;
-                    }
-                });
-            }
-        }
 
         try {
             if (mEpisode.hasWatched()) {

@@ -476,13 +476,6 @@
         </activity>
 
         <!-- Remote playback activity -->
-        <activity
-            android:name="com.miz.remoteplayback.RemotePlayback"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
-            </intent-filter>
-        </activity>
 
         <receiver android:name="com.miz.functions.StartScheduledUpdatesService" >
             <intent-filter>

@@ -57,6 +57,5 @@ public class PreferenceKeys {
 	public static final String IGNORE_FILESIZE_CHECK = "prefsIgnoreFilesizeCheck";
 	public static final String SHOW_FILE_LOCATION = "prefsShowFileLocation";
 	public static final String LANGUAGE_PREFERENCE = "prefsLanguagePreference";
-    public static final String CHROMECAST_BETA_SUPPORT = "prefsChromecastBeta";
 
 }
