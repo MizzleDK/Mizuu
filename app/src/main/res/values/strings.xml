@@ -407,8 +407,6 @@
     <string name="see_more">See more</string>
     <string name="birthday">Birthday</string>
     <string name="actor_known_credits">Known credits</string>
-    <string name="blur_backdrops_description">Background images for movies and TV shows will be blurry in landscape mode.</string>
-    <string name="blur_backdrops">Blur background images</string>
     <string name="sign_in_with_trakt">Sign in with Trakt.tv</string>
     <string name="logged_in_as">Logged in as %s</string>
     <string name="early_access">Early access testing</string>

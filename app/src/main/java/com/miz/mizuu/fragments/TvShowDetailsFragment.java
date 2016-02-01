@@ -30,7 +30,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -58,7 +57,6 @@ import com.miz.db.DbAdapterTvShowEpisodeMappings;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
 import com.miz.functions.Actor;
-import com.miz.functions.BlurTransformation;
 import com.miz.functions.EpisodeCounter;
 import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
@@ -66,7 +64,6 @@ import com.miz.functions.GridSeason;
 import com.miz.functions.IntentKeys;
 import com.miz.functions.MizLib;
 import com.miz.functions.PaletteLoader;
-import com.miz.functions.PreferenceKeys;
 import com.miz.functions.SimpleAnimatorListener;
 import com.miz.mizuu.EditTvShow;
 import com.miz.mizuu.IdentifyTvShow;
@@ -399,7 +396,7 @@ public class TvShowDetailsFragment extends Fragment {
                         @Override
                         public void onPaletteLoaded(int swatchColor) {
                             mToolbarColor = swatchColor;
-	                        ViewUtils.updateToolbarBackground(getActivity(), mToolbar, 0, thisShow.getTitle(), mToolbarColor);
+                            ViewUtils.updateToolbarBackground(getActivity(), mToolbar, 0, thisShow.getTitle(), mToolbarColor);
                         }
                     });
 
@@ -430,11 +427,7 @@ public class TvShowDetailsFragment extends Fragment {
         });
 
         if (!MizLib.isPortrait(getActivity())) {
-            if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(PreferenceKeys.BLUR_BACKDROPS, false)) {
-                mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).transform(new BlurTransformation(mContext, thisShow.getBackdrop(), 8)).into(background);
-            } else {
-                mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
-            }
+            mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(background);
         } else {
             mPicasso.load(thisShow.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(background, new Callback() {
                 @Override

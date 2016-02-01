@@ -61,14 +61,12 @@ import com.miz.apis.trakt.Trakt;
 import com.miz.base.MizActivity;
 import com.miz.db.DbAdapterMovies;
 import com.miz.functions.Actor;
-import com.miz.functions.BlurTransformation;
 import com.miz.functions.FileSource;
 import com.miz.functions.Filepath;
 import com.miz.functions.IntentKeys;
 import com.miz.functions.MizLib;
 import com.miz.functions.Movie;
 import com.miz.functions.PaletteLoader;
-import com.miz.functions.PreferenceKeys;
 import com.miz.functions.SimpleAnimatorListener;
 import com.miz.mizuu.EditMovie;
 import com.miz.mizuu.IdentifyMovie;
@@ -459,11 +457,7 @@ public class MovieDetailsFragment extends Fragment {
         });
 
         if (!MizLib.isPortrait(mContext)) {
-            if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(PreferenceKeys.BLUR_BACKDROPS, false)) {
-                mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).transform(new BlurTransformation(mContext, mMovie.getBackdrop().getAbsolutePath(), 8)).into(mBackground);
-            } else {
-                mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(mBackground);
-            }
+            mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().error(R.drawable.bg).placeholder(R.drawable.bg).into(mBackground);
         } else {
             mPicasso.load(mMovie.getBackdrop()).skipMemoryCache().placeholder(R.drawable.bg).into(mBackground, new Callback() {
                 @Override

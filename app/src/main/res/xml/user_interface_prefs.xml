@@ -18,13 +18,6 @@
             android:title="@string/overviewGridItemSizeTitle" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_image_white_24dp"
-            android:key="prefsBlurBackdrops"
-            android:summary="@string/blur_backdrops_description"
-            android:title="@string/blur_backdrops" />
-
-        <CheckBoxPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_insert_drive_file_white_24dp"
             android:key="prefsShowFileLocation"
