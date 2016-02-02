@@ -17,8 +17,6 @@
 package com.miz.mizuu;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -27,7 +25,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
@@ -156,12 +153,6 @@ public class ImageViewer extends MizActivity {
         mBus.unregister(this);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.open_in_browser, menu);
-        return true;
-    }
-
     private class ActorPhotosAdapter extends FragmentPagerAdapter {
 
         public ActorPhotosAdapter(FragmentManager fm) {
@@ -185,17 +176,9 @@ public class ImageViewer extends MizActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.openInBrowser:
-                openInBrowser();
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void openInBrowser() {
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(mPhotos[mViewPager.getCurrentItem()]));
-        startActivity(i);
     }
 
     @Override

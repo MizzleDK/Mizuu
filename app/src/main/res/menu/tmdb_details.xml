@@ -12,10 +12,5 @@
         android:icon="@drawable/ic_done_white_24dp"
         android:title="@string/check_in">
     </item>
-    <item
-        android:id="@+id/openInBrowser"
-        android:icon="@drawable/ic_language_white_24dp"
-        android:title="@string/openInBrowser">
-    </item>
 
 </menu>

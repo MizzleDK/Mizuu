@@ -521,16 +521,6 @@ public class MovieDetailsFragment extends Fragment {
                 intent.putExtra(Intent.EXTRA_TEXT, "http://www.imdb.com/title/" + mMovie.getImdbId());
                 startActivity(intent);
                 return true;
-            case R.id.imdb:
-                Intent imdbIntent = new Intent(Intent.ACTION_VIEW);
-                imdbIntent.setData(Uri.parse("http://www.imdb.com/title/" + mMovie.getImdbId()));
-                startActivity(imdbIntent);
-                return true;
-            case R.id.tmdb:
-                Intent tmdbIntent = new Intent(Intent.ACTION_VIEW);
-                tmdbIntent.setData(Uri.parse("http://www.themoviedb.org/movie/" + mMovie.getTmdbId()));
-                startActivity(tmdbIntent);
-                return true;
             case R.id.change_cover:
                 searchCover();
                 return true;

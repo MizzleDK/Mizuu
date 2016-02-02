@@ -434,7 +434,6 @@ public class TmdbMovieDetailsFragment extends Fragment {
             if (MizLib.isTablet(mContext)) {
                 menu.findItem(R.id.share).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 menu.findItem(R.id.checkIn).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                menu.findItem(R.id.openInBrowser).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             }
 
             if (!Trakt.hasTraktAccount(mContext))
@@ -451,9 +450,6 @@ public class TmdbMovieDetailsFragment extends Fragment {
             case R.id.share:
                 shareMovie();
                 break;
-            case R.id.openInBrowser:
-                openInBrowser();
-                break;
             case R.id.checkIn:
                 checkIn();
                 break;
@@ -467,12 +463,6 @@ public class TmdbMovieDetailsFragment extends Fragment {
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, "http://www.themoviedb.org/movie/" + mMovie.getId());
         startActivity(Intent.createChooser(intent, getString(R.string.shareWith)));
-    }
-
-    public void openInBrowser() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse("http://www.themoviedb.org/movie/" + mMovie.getId()));
-        startActivity(Intent.createChooser(intent, getString(R.string.openWith)));
     }
 
     public void watchTrailer() {

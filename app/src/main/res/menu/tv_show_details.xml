@@ -30,11 +30,6 @@
         android:title="@string/stringEditTvShow">
     </item>
     <item
-        android:id="@+id/openInBrowser"
-        android:icon="@drawable/ic_language_white_24dp"
-        android:title="@string/openInBrowser">
-    </item>
-    <item
         android:id="@+id/menuDeleteShow"
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/removeShow"/>

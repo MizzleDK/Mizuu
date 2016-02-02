@@ -529,11 +529,6 @@ public class TvShowDetailsFragment extends Fragment {
             case R.id.editTvShow:
                 editTvShow();
                 break;
-            case R.id.openInBrowser:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW);
-                browserIntent.setData(Uri.parse("https://www.themoviedb.org/tv/" + thisShow.getId()));
-                startActivity(browserIntent);
-                break;
             case R.id.share:
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");

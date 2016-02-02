@@ -43,16 +43,6 @@
         android:icon="@drawable/ic_image_white_24dp"
         android:title="@string/browseMedia">
     </item>
-    <item android:title="@string/openInBrowser">
-        <menu>
-            <item
-                android:id="@+id/imdb"
-                android:title="@string/IMDb"/>
-            <item
-                android:id="@+id/tmdb"
-                android:title="@string/TMDb"/>
-        </menu>
-    </item>
     <item
         android:id="@+id/delete_movie"
         android:enabled="true"
