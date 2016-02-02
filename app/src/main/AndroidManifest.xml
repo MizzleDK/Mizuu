@@ -268,7 +268,6 @@
         <service android:name="com.miz.service.MoveFilesService" />
         <service android:name="com.miz.service.TraktMoviesSyncService" />
         <service android:name="com.miz.service.TraktTvShowsSyncService" />
-        <service android:name="com.miz.service.MakeAvailableOffline" />
         <service android:name="com.miz.service.MovieLibraryUpdate" />
         <service android:name="com.miz.service.TvShowsLibraryUpdate" />
         <service android:name="com.miz.service.WireUpnpService" />
@@ -450,16 +449,6 @@
             android:name=".SimilarMovies"
             android:exported="false"
             android:label="@string/relatedMovies" >
-            <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.miz.mizuu.CancelOfflineDownload"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:noHistory="true"
-            android:theme="@style/Mizuu.Theme.Transparent.Dialog" >
             <intent-filter>
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>

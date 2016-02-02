@@ -69,12 +69,10 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShow;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
-import com.miz.service.MakeAvailableOffline;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
 import com.miz.utils.FileUtils;
 import com.miz.utils.ViewUtils;
-import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -100,7 +98,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1324,18 +1321,6 @@ public class MizLib {
         int count = services.size();
         for (int i = 0; i < count; i++) {
             if (TvShowsLibraryUpdate.class.getName().equals(services.get(i).service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isLocalCopyBeingDownloaded(Context c) {
-        ActivityManager manager = (ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
-        List<RunningServiceInfo> services = manager.getRunningServices(Integer.MAX_VALUE);
-        int count = services.size();
-        for (int i = 0; i < count; i++) {
-            if (MakeAvailableOffline.class.getName().equals(services.get(i).service.getClassName())) {
                 return true;
             }
         }

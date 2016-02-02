@@ -75,7 +75,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.MovieCoverFanartBrowser;
 import com.miz.mizuu.R;
 import com.miz.service.DeleteFile;
-import com.miz.service.MakeAvailableOffline;
 import com.miz.utils.IntentUtils;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.MovieDatabaseUtils;
@@ -500,18 +499,6 @@ public class MovieDetailsFragment extends Fragment {
 
         // Only allow the user to browse artwork if it's a valid TMDb movie
         menu.findItem(R.id.change_cover).setVisible(MizLib.isValidTmdbId(mMovie.getTmdbId()));
-
-        // Go through filepaths and find a network file for offline watching
-        for (Filepath path : mMovie.getFilepaths()) {
-            if (path.isNetworkFile()) {
-                menu.findItem(R.id.watchOffline)
-                        .setVisible(true)
-                        .setTitle(mMovie.hasOfflineCopy(path) ?
-                                R.string.removeOfflineCopy : R.string.watchOffline);
-
-                break;
-            }
-        }
     }
 
     @Override
@@ -543,9 +530,6 @@ public class MovieDetailsFragment extends Fragment {
                 Intent tmdbIntent = new Intent(Intent.ACTION_VIEW);
                 tmdbIntent.setData(Uri.parse("http://www.themoviedb.org/movie/" + mMovie.getTmdbId()));
                 startActivity(tmdbIntent);
-                return true;
-            case R.id.watchOffline:
-                watchOffline();
                 return true;
             case R.id.change_cover:
                 searchCover();
@@ -774,69 +758,6 @@ public class MovieDetailsFragment extends Fragment {
                 Trakt.movieWatchlist(watchlist, mContext);
             }
         }.start();
-    }
-
-    public void watchOffline() {
-        if (mMovie.getFilepaths().size() == 1) {
-            watchOffline(mMovie.getFilepaths().get(0));
-        } else {
-            MizLib.showSelectFileDialog(mContext, mMovie.getFilepaths(), new Dialog.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    watchOffline(mMovie.getFilepaths().get(which));
-
-                    // Dismiss the dialog
-                    dialog.dismiss();
-                }
-            });
-        }
-    }
-
-    public void watchOffline(final Filepath path) {
-        if (mMovie.hasOfflineCopy(path)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setMessage(getString(R.string.areYouSure))
-                    .setTitle(getString(R.string.removeOfflineCopy))
-                    .setCancelable(false)
-                    .setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            boolean success = mMovie.getOfflineCopyFile(path).delete();
-                            if (!success)
-                                mMovie.getOfflineCopyFile(path).delete();
-                            getActivity().invalidateOptionsMenu();
-                        }
-                    })
-                    .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    })
-                    .create().show();
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setMessage(getString(R.string.downloadOfflineCopy))
-                    .setTitle(getString(R.string.watchOffline))
-                    .setCancelable(false)
-                    .setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            if (MizLib.isLocalCopyBeingDownloaded(mContext))
-                                Toast.makeText(mContext, R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
-
-                            Intent i = new Intent(mContext, MakeAvailableOffline.class);
-                            i.putExtra(MakeAvailableOffline.FILEPATH, path.getFilepath());
-                            i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_MOVIE);
-                            i.putExtra("thumb", mMovie.getThumbnail().getAbsolutePath());
-                            i.putExtra("backdrop", mMovie.getBackdrop().getAbsolutePath());
-                            mContext.startService(i);
-                        }
-                    })
-                    .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    })
-                    .create().show();
-        }
     }
 
     public void searchCover() {

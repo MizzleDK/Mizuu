@@ -66,7 +66,6 @@ import com.miz.mizuu.MizuuApplication;
 import com.miz.mizuu.R;
 import com.miz.mizuu.TvShowEpisode;
 import com.miz.service.DeleteFile;
-import com.miz.service.MakeAvailableOffline;
 import com.miz.utils.LocalBroadcastUtils;
 import com.miz.utils.TvShowDatabaseUtils;
 import com.miz.utils.TypefaceUtils;
@@ -474,23 +473,6 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
             } else {
                 menu.findItem(R.id.watched).setTitle(R.string.stringMarkAsWatched);
             }
-
-            for (Filepath path : mEpisode.getFilepaths()) {
-                if (path.isNetworkFile()) {
-
-                    // Set the menu item visibility
-                    menu.findItem(R.id.watchOffline).setVisible(true);
-
-                    if (mEpisode.hasOfflineCopy(path))
-                        // There's already an offline copy, so let's allow the user to remove it
-                        menu.findItem(R.id.watchOffline).setTitle(R.string.removeOfflineCopy);
-                    else
-                        // There's no offline copy, so let the user download one
-                        menu.findItem(R.id.watchOffline).setTitle(R.string.watchOffline);
-
-                    break;
-                }
-            }
         } catch (Exception e) {}
     }
 
@@ -506,9 +488,6 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
             case R.id.identify:
                 identifyEpisode();
                 break;
-            case R.id.watchOffline:
-                watchOffline();
-                break;
             case R.id.editTvShowEpisode:
                 editEpisode();
                 break;
@@ -522,70 +501,6 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
         intent.putExtra("season", MizLib.getInteger(mEpisode.getSeason()));
         intent.putExtra("episode", MizLib.getInteger(mEpisode.getEpisode()));
         startActivityForResult(intent, 0);
-    }
-
-    public void watchOffline() {
-
-        if (mEpisode.getFilepaths().size() == 1) {
-            watchOffline(mEpisode.getFilepaths().get(0));
-        } else {
-            MizLib.showSelectFileDialog(getActivity(), mEpisode.getFilepaths(), new Dialog.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    watchOffline(mEpisode.getFilepaths().get(which));
-
-                    // Dismiss the dialog
-                    dialog.dismiss();
-                }
-            });
-        }
-    }
-
-    private void watchOffline(final Filepath path) {
-        if (mEpisode.hasOfflineCopy(path)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(getString(R.string.areYouSure))
-                    .setTitle(getString(R.string.removeOfflineCopy))
-                    .setCancelable(false)
-                    .setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            boolean success = mEpisode.getOfflineCopyFile(path).delete();
-                            if (!success)
-                                mEpisode.getOfflineCopyFile(path).delete();
-                            getActivity().invalidateOptionsMenu();
-                        }
-                    })
-                    .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    })
-                    .create().show();
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(getString(R.string.downloadOfflineCopy))
-                    .setTitle(getString(R.string.watchOffline))
-                    .setCancelable(false)
-                    .setPositiveButton(getString(android.R.string.yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            if (MizLib.isLocalCopyBeingDownloaded(getActivity()))
-                                Toast.makeText(getActivity(), R.string.addedToDownloadQueue, Toast.LENGTH_SHORT).show();
-
-                            Intent i = new Intent(getActivity(), MakeAvailableOffline.class);
-                            i.putExtra(MakeAvailableOffline.FILEPATH, path.getFilepath());
-                            i.putExtra(MakeAvailableOffline.TYPE, MizLib.TYPE_SHOWS);
-                            i.putExtra("thumb", mEpisode.getThumbnail().getAbsolutePath());
-                            i.putExtra("backdrop", mEpisode.getEpisodePhoto().getAbsolutePath());
-                            getActivity().startService(i);
-                        }
-                    })
-                    .setNegativeButton(getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    })
-                    .create().show();
-        }
     }
 
     private void identifyEpisode() {

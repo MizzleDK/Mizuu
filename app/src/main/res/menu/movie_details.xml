@@ -41,12 +41,6 @@
         android:icon="@drawable/ic_image_white_24dp"
         android:title="@string/browseMedia">
     </item>
-    <item
-        android:id="@+id/watchOffline"
-        android:icon="@drawable/ic_file_download_white_24dp"
-        android:title="@string/watchOffline"
-        android:visible="false">
-    </item>
     <item android:title="@string/openInBrowser">
         <menu>
             <item

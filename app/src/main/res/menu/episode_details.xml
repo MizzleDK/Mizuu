@@ -17,12 +17,6 @@
         android:title="@string/stringEditTvShowEpisode">
     </item>
     <item
-        android:id="@+id/watchOffline"
-        android:icon="@drawable/ic_file_download_white_24dp"
-        android:title="@string/watchOffline"
-        android:visible="false">
-    </item>
-    <item
         android:id="@+id/menuDeleteEpisode"
         android:icon="@drawable/ic_delete_white_24dp"
         app:showAsAction="never"
