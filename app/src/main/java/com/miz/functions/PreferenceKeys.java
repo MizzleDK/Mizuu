@@ -42,7 +42,6 @@ public class PreferenceKeys {
 	public static final String CLEAR_LIBRARY_MOVIES = "prefsClearLibrary";
 	public static final String REMOVE_UNAVAILABLE_FILES_TVSHOWS = "prefsRemoveUnavailableTv";
 	public static final String REMOVE_UNAVAILABLE_FILES_MOVIES = "prefsRemoveUnavailable";
-	public static final String IGNORE_VIDEO_FILE_TYPE = "prefsIgnoreFileType";
 	public static final String TVSHOWS_COLLECTION_LAYOUT = "prefsSeasonsLayout";
 	public static final String TVSHOWS_EPISODE_ORDER = "prefsEpisodesOrder";
 	public static final String TVSHOWS_SEASON_ORDER = "prefsSeasonsOrder";

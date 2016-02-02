@@ -208,9 +208,6 @@
     <string name="bufferSizeDescription">Set the buffer size of the video streaming service.</string>
     <string name="_8kb">8 KB</string>
     <string name="_16kb">16 KB</string>
-    <string name="video">Video</string>
-    <string name="ignoreFileType">Ignore file format when playing videos</string>
-    <string name="ignoreFileTypeDescription">Disable MIME type specific video Intents and use a generic wildcard.</string>
     <string name="lookingForNetworkSources">Looking for network sources…</string>
     <string name="searching">Searching…</string>
     <string name="scanForSources">Scan for network sources</string>

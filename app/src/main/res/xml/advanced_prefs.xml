@@ -24,14 +24,6 @@
             android:summary="@string/ignoreFilesizeCheck"
             android:title="@string/ignoreFilesizeCheckTitle" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/video" >
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_movie_white_24dp"
-            android:key="prefsIgnoreFileType"
-            android:summary="@string/ignoreFileTypeDescription"
-            android:title="@string/ignoreFileType" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/early_access" >
         <Preference
             android:key="prefsCopyDatabase"

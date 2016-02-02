@@ -16,8 +16,6 @@
 
 package com.miz.smbstreamer;
 
-import com.miz.utils.VideoUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -36,7 +34,7 @@ public class StreamSource {
 	public StreamSource(SmbFile file) throws SmbException{
 		fp = 0;
 		len = file.length();
-		mime = VideoUtils.getMimeType(file.getName(), false);
+		mime = "video/*";
 		name = file.getName();
 		this.file = file;
 		bufferSize = 16 * 1024;
