@@ -47,16 +47,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DecimalFormat;
 
-import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
 
 import static com.miz.functions.PreferenceKeys.BUFFER_SIZE;
-import static com.miz.functions.PreferenceKeys.IGNORE_FILESIZE_CHECK;
 
 public class MakeAvailableOffline extends IntentService {
 
@@ -172,22 +168,6 @@ public class MakeAvailableOffline extends IntentService {
 			return;
 		}
 
-		boolean ignoreSizeCheck = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(IGNORE_FILESIZE_CHECK, false);
-		if (!ignoreSizeCheck) {
-			boolean sizeOK = checkFilesize();
-
-			if (!sizeOK) {
-				mHandler.post(new Runnable() {            
-					@Override
-					public void run() {
-						Toast.makeText(mContext, R.string.not_enough_space, Toast.LENGTH_LONG).show();              
-					}
-				});
-				stopSelf();
-				return;
-			}
-		}
-
 		exists = checkIfLocalCopyExists();
 		if (exists) { // There's already an exact local copy - don't download again
 			stopSelf();
@@ -242,21 +222,6 @@ public class MakeAvailableOffline extends IntentService {
 		else
 			f = FileUtils.getOfflineFile(mContext, mSmb.getCanonicalPath());
 		return f.exists() && mSize == f.length();
-	}
-
-	private boolean checkFilesize() {
-		try {			
-			long freeMemory = (long) (MizLib.getFreeMemory() * 0.975);
-			if (mFileUrl.startsWith("http"))
-				mSize = MizLib.getFileSize(new URL(mFileUrl));
-			else
-				mSize = mSmb.length();
-			return freeMemory > mSize;
-		} catch (SmbException e) {
-			return false;
-		} catch (MalformedURLException e) {
-			return false;
-		}
 	}
 
 	private boolean beginTransfer() {

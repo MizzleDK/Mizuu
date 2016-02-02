@@ -17,12 +17,6 @@
             android:key="prefsBufferSize"
             android:summary="@string/bufferSizeDescription"
             android:title="@string/bufferSize" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_file_download_white_24dp"
-            android:key="prefsIgnoreFilesizeCheck"
-            android:summary="@string/ignoreFilesizeCheck"
-            android:title="@string/ignoreFilesizeCheckTitle" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/early_access" >
         <Preference

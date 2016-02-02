@@ -53,7 +53,6 @@ public class PreferenceKeys {
 	public static final String ALWAYS_DELETE_FILE = "prefsAlwaysDeleteFile";
 	public static final String BUFFER_SIZE = "prefsBufferSize";
 	public static final String HAS_SHOWN_FILEBROWSER_MESSAGE = "hasShownBrowserHelpMessage";
-	public static final String IGNORE_FILESIZE_CHECK = "prefsIgnoreFilesizeCheck";
 	public static final String SHOW_FILE_LOCATION = "prefsShowFileLocation";
 	public static final String LANGUAGE_PREFERENCE = "prefsLanguagePreference";
 
