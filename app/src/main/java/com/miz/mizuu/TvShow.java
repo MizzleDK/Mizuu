@@ -25,7 +25,6 @@ import com.miz.utils.FileUtils;
 import com.miz.utils.StringUtils;
 
 import java.io.File;
-import java.util.Locale;
 
 public class TvShow implements Comparable<TvShow> {
 

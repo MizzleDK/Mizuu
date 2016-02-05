@@ -16,9 +16,6 @@
 
 package com.miz.loader;
 
-import android.text.TextUtils;
-
-import com.miz.functions.MediumMovie;
 import com.miz.functions.MizLib;
 import com.miz.mizuu.TvShow;
 

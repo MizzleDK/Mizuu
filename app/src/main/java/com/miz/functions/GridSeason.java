@@ -24,7 +24,6 @@ import com.miz.mizuu.R;
 import java.io.File;
 
 import static com.miz.functions.PreferenceKeys.TVSHOWS_COLLECTION_LAYOUT;
-import static com.miz.functions.PreferenceKeys.TVSHOWS_SEASON_ORDER;
 
 public class GridSeason implements Comparable<GridSeason> {
 	
