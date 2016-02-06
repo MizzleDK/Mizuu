@@ -144,7 +144,7 @@ public class MovieDetailsFragment extends Fragment {
         mBold = TypefaceUtils.getRobotoBold(mContext);
         mCondensedRegular = TypefaceUtils.getRobotoCondensedRegular(mContext);
 
-        mPicasso = MizuuApplication.getPicassoDetailsView(mContext);
+        mPicasso = MizuuApplication.getPicasso(mContext);
 
         mDatabase = MizuuApplication.getMovieAdapter();
 

@@ -54,7 +54,7 @@ public class LocalBroadcastUtils {
 	 * @param context
 	 */
 	public static void clearImageCache(Context context) {
-		MizuuApplication.clearLruCache(context);
+		MizuuApplication.clearPicassoCache(context);
 		LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(CLEAR_IMAGE_CACHE));
 	}
 

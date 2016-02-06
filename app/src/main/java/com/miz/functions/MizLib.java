@@ -1763,7 +1763,7 @@ public class MizLib {
         return output;
     }
 
-    public static String getRandomBackdropPath(Context c) {
+    public static File getRandomBackdropFile(Context c) {
         ArrayList<File> files = new ArrayList<File>();
 
         File[] f = MizuuApplication.getMovieBackdropFolder(c).listFiles();
@@ -1776,10 +1776,10 @@ public class MizLib {
 
         if (files.size() > 0) {
             Random rndm = new Random();
-            return files.get(rndm.nextInt(files.size())).getAbsolutePath();
+            return files.get(rndm.nextInt(files.size()));
         }
 
-        return "";
+        return new File("");
     }
 
     public static boolean isValidFilename(String name) {

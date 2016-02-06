@@ -112,7 +112,7 @@ public class TmdbMovieDetailsFragment extends Fragment {
         mMovie = new Movie();
         mMovie.setId(getArguments().getString("movieId"));
 
-        mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
+        mPicasso = MizuuApplication.getPicasso(getActivity());
     }
 
     @Override

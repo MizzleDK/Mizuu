@@ -317,12 +317,12 @@ public class Main extends MizActivity {
 
     public class MenuAdapter extends BaseAdapter {
 
-        private String mBackdropPath;
+        private File mBackdropFile;
         private LayoutInflater mInflater;
 
         public MenuAdapter() {
             mInflater = LayoutInflater.from(getApplicationContext());
-            mBackdropPath = MizLib.getRandomBackdropPath(getApplicationContext());
+            mBackdropFile = MizLib.getRandomBackdropFile(getApplicationContext());
         }
 
         @Override
@@ -411,16 +411,11 @@ public class Main extends MizActivity {
                 }
 
                 // Background image
-                if (!TextUtils.isEmpty(mBackdropPath))
-                    mPicasso.load(mBackdropPath)
-                            .resize(MizLib.convertDpToPixels(getApplicationContext(), 320),
-                                    MizLib.convertDpToPixels(getApplicationContext(), 180))
-                            .into(backgroundImage);
-                else
-                    mPicasso.load(R.drawable.default_menu_backdrop)
-                            .resize(MizLib.convertDpToPixels(getApplicationContext(), 320),
-                                    MizLib.convertDpToPixels(getApplicationContext(), 180))
-                            .into(backgroundImage);
+                mPicasso.load(mBackdropFile)
+                        .error(R.drawable.default_menu_backdrop)
+                        .resize(MizLib.convertDpToPixels(getApplicationContext(), 320),
+                                MizLib.convertDpToPixels(getApplicationContext(), 180))
+                        .into(backgroundImage);
 
                 // Dark color filter on the background image
                 backgroundImage.setColorFilter(Color.parseColor("#50181818"), android.graphics.PorterDuff.Mode.SRC_OVER);

@@ -163,7 +163,7 @@ public class TvShowDetailsFragment extends Fragment {
             cursor.close();
         }
 
-        mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
+        mPicasso = MizuuApplication.getPicasso(getActivity());
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(LocalBroadcastUtils.CLEAR_IMAGE_CACHE));
     }

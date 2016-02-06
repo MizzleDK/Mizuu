@@ -91,7 +91,7 @@ public class ActorDetailsFragment extends Fragment {
 
         mActorId = getArguments().getString("actorId");
 
-        mPicasso = MizuuApplication.getPicassoDetailsView(mContext);
+        mPicasso = MizuuApplication.getPicasso(mContext);
 
         mMedium = TypefaceUtils.getRobotoMedium(mContext);
         mBold = TypefaceUtils.getRobotoBold(mContext);

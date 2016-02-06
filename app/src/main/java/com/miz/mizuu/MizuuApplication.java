@@ -16,7 +16,6 @@
 
 package com.miz.mizuu;
 
-import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -36,24 +35,16 @@ import com.miz.db.DbAdapterSources;
 import com.miz.db.DbAdapterTvShowEpisodeMappings;
 import com.miz.db.DbAdapterTvShowEpisodes;
 import com.miz.db.DbAdapterTvShows;
-import com.miz.functions.FileRequestTransformer;
-import com.miz.functions.OkHttpDownloader;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Bus;
-import com.squareup.picasso.Downloader;
-import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.PicassoTools;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import static com.miz.functions.PreferenceKeys.LANGUAGE_PREFERENCE;
 
@@ -67,29 +58,25 @@ public class MizuuApplication extends Application {
 	private static DbAdapterMovieMappings sDbMovieMapping;
 	private static DbAdapterCollections sDbCollections;
 	private static HashMap<String, String[]> sMap = new HashMap<String, String[]>();
-	private static Picasso sPicasso, sPicassoDetailsView;
-	private static LruCache sLruCache;
-	private static Downloader sDownloader;
-	private static ThreadPoolExecutor sThreadPoolExecutor;
+	private static Picasso sPicasso;
 	private static HashMap<String, Typeface> sTypefaces = new HashMap<String, Typeface>();
 	private static HashMap<String, Palette> sPalettes = new HashMap<String, Palette>();
 	private static Bus sBus;
 	private static File sBaseAppFolder, sMovieThumbFolder, sMovieBackdropFolder, sTvShowThumbFolder, sTvShowBackdropFolder, sTvShowEpisodeFolder, sTvShowSeasonFolder, sAvailableOfflineFolder, sCacheFolder;
 	private static Context mInstance;
-	private static FileRequestTransformer mFileRequestTransformer;
 	private static ArrayListMultimap<String, String> mMovieFilepaths;
 	private static OkHttpClient mOkHttpClient;
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
 		mInstance = this;
-		
+
 		jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords", "false");
 
-        // Initialize the preferences
-        initializePreferences();
+		// Initialize the preferences
+		initializePreferences();
 
 		// Database setup
 		sDbMovies = new DbAdapterMovies(this);
@@ -109,7 +96,7 @@ public class MizuuApplication extends Application {
 		getAvailableOfflineFolder(this);
 
 		transitionLocalizationPreference();
-    }
+	}
 
 	@Override
 	public void onTerminate() {
@@ -127,13 +114,13 @@ public class MizuuApplication extends Application {
 		return mInstance;
 	}
 
-    private void initializePreferences() {
-        PreferenceManager.setDefaultValues(this, R.xml.advanced_prefs, false);
-        PreferenceManager.setDefaultValues(this, R.xml.general_prefs, false);
-        PreferenceManager.setDefaultValues(this, R.xml.identification_search_prefs, false);
-        PreferenceManager.setDefaultValues(this, R.xml.other_prefs, false);
-        PreferenceManager.setDefaultValues(this, R.xml.user_interface_prefs, false);
-    }
+	private void initializePreferences() {
+		PreferenceManager.setDefaultValues(this, R.xml.advanced_prefs, false);
+		PreferenceManager.setDefaultValues(this, R.xml.general_prefs, false);
+		PreferenceManager.setDefaultValues(this, R.xml.identification_search_prefs, false);
+		PreferenceManager.setDefaultValues(this, R.xml.other_prefs, false);
+		PreferenceManager.setDefaultValues(this, R.xml.user_interface_prefs, false);
+	}
 
 	private void transitionLocalizationPreference() {
 		// Transition from the old localization preference if such exists
@@ -156,7 +143,7 @@ public class MizuuApplication extends Application {
 	public static DbAdapterTvShowEpisodes getTvEpisodeDbAdapter() {
 		return sDbTvShowEpisode;
 	}
-	
+
 	public static DbAdapterTvShowEpisodeMappings getTvShowEpisodeMappingsDbAdapter() {
 		return sDbTvShowEpisodeMappings;
 	}
@@ -172,7 +159,7 @@ public class MizuuApplication extends Application {
 	public static DbAdapterMovieMappings getMovieMappingAdapter() {
 		return sDbMovieMapping;
 	}
-	
+
 	public static DbAdapterCollections getCollectionsAdapter() {
 		return sDbCollections;
 	}
@@ -188,74 +175,8 @@ public class MizuuApplication extends Application {
 
 	public static Picasso getPicasso(Context context) {
 		if (sPicasso == null)
-			sPicasso = new Picasso.Builder(context).downloader(getDownloader(context)).executor(getThreadPoolExecutor()).memoryCache(getLruCache(context)).requestTransformer(getFileRequestTransformer()).build();
+			sPicasso = Picasso.with(context);
 		return sPicasso;
-	}
-	
-	/**
-	 * A Picasso instance used in the details view for movies and TV shows
-	 * to load cover art and backdrop images instantly.
-	 * @param context
-	 * @return
-	 */
-	public static Picasso getPicassoDetailsView(Context context) {
-		if (sPicassoDetailsView == null)
-			sPicassoDetailsView = new Picasso.Builder(context).downloader(getDownloader(context)).memoryCache(getLruCache(context)).requestTransformer(getFileRequestTransformer()).build();
-		return sPicassoDetailsView;
-	}
-
-	private static FileRequestTransformer getFileRequestTransformer() {
-		if (mFileRequestTransformer == null)
-			mFileRequestTransformer = new FileRequestTransformer();
-		return mFileRequestTransformer;
-	}
-	
-	private static ThreadPoolExecutor getThreadPoolExecutor() {
-		if (sThreadPoolExecutor == null)
-			sThreadPoolExecutor = new ThreadPoolExecutor(3, 3, 0, TimeUnit.MILLISECONDS,
-					new LinkedBlockingQueue<Runnable>(), new PicassoThreadFactory());
-		return sThreadPoolExecutor;
-	}
-
-	static class PicassoThreadFactory implements ThreadFactory {
-		public Thread newThread(Runnable r) {
-			return new PicassoThread(r);
-		}
-	}
-
-	private static class PicassoThread extends Thread {
-		public PicassoThread(Runnable r) {
-			super(r);
-		}
-
-		@Override public void run() {
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-			super.run();
-		}
-	}
-
-	public static LruCache getLruCache(Context context) {
-		if (sLruCache == null)
-			sLruCache = new LruCache(calculateMemoryCacheSize(context));
-		return sLruCache;
-	}
-	
-	public static void clearLruCache(Context context) {
-		getLruCache(context).clear();
-	}
-
-	public static Downloader getDownloader(Context context) {
-		if (sDownloader == null)
-			sDownloader = new OkHttpDownloader(context);
-		return sDownloader;
-	}
-
-	public static int calculateMemoryCacheSize(Context context) {
-		ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
-		int memoryClass = am.getLargeMemoryClass();
-
-		// Target 20% of the available heap.
-		return 1024 * 1024 * memoryClass / 5;
 	}
 
 	public static Bitmap.Config getBitmapConfig() {
@@ -267,11 +188,11 @@ public class MizuuApplication extends Application {
 			sTypefaces.put(key, Typeface.createFromAsset(context.getAssets(), key));
 		return sTypefaces.get(key);
 	}
-	
+
 	public static Palette getPalette(String key) {
 		return sPalettes.get(key);
 	}
-	
+
 	public static void addToPaletteCache(String key, Palette palette) {
 		sPalettes.put(key, palette);
 	}
@@ -282,17 +203,17 @@ public class MizuuApplication extends Application {
 
 	public static Bus getBus() {
 		if (sBus == null)
-			sBus = new Bus();	
+			sBus = new Bus();
 		return sBus;
 	}
-	
+
 	public static File getAppFolder(Context c) {
 		if (sBaseAppFolder == null) {
 			sBaseAppFolder = c.getExternalFilesDir(null);
-        }
+		}
 		return sBaseAppFolder;
 	}
-	
+
 	private static File getSubAppFolder(Context c, String foldername) {
 		return new File(getAppFolder(c), foldername);
 	}
@@ -344,7 +265,7 @@ public class MizuuApplication extends Application {
 	/*
 	 * Please refrain from using this when you need a File object for a specific image.
 	 */
-	public static File getTvShowEpisodeFolder(Context c) {		
+	public static File getTvShowEpisodeFolder(Context c) {
 		if (sTvShowEpisodeFolder == null) {
 			sTvShowEpisodeFolder = getSubAppFolder(c, "tvshows-episodes");
 			sTvShowEpisodeFolder.mkdirs();
@@ -373,7 +294,7 @@ public class MizuuApplication extends Application {
 		}
 		return sAvailableOfflineFolder;
 	}
-	
+
 	/*
 	 * Cache folder is used to store videos that are available offline as well
 	 * as user profile photo from Trakt.
@@ -385,15 +306,15 @@ public class MizuuApplication extends Application {
 		}
 		return sCacheFolder;
 	}
-	
+
 	public static TvShowApiService getTvShowService(Context context) {
 		return TMDbTvShowService.getInstance(context);
 	}
-	
+
 	public static MovieApiService getMovieService(Context context) {
 		return TMDbMovieService.getInstance(context);
 	}
-	
+
 	/**
 	 * This is used as an optimization to loading the movie library view.
 	 * @param filepaths
@@ -401,13 +322,13 @@ public class MizuuApplication extends Application {
 	public static void setMovieFilepaths(ArrayListMultimap<String, String> filepaths) {
 		mMovieFilepaths = filepaths;
 	}
-	
+
 	public static List<String> getMovieFilepaths(String id) {
-        if (mMovieFilepaths != null && mMovieFilepaths.containsKey(id))
-		    return mMovieFilepaths.get(id);
-        return null;
+		if (mMovieFilepaths != null && mMovieFilepaths.containsKey(id))
+			return mMovieFilepaths.get(id);
+		return null;
 	}
-	
+
 	/**
 	 * OkHttpClient singleton with 2 MB cache.
 	 * @return
@@ -415,14 +336,16 @@ public class MizuuApplication extends Application {
 	public static OkHttpClient getOkHttpClient() {
 		if (mOkHttpClient == null) {
 			mOkHttpClient = new OkHttpClient();
-			
-			try {
-				File cacheDir = getContext().getCacheDir();
-			    Cache cache = new Cache(cacheDir, 2 * 1024 * 1024); // 25 MB cache
-			    mOkHttpClient.setCache(cache);
-			} catch (IOException e) {}
+
+			File cacheDir = getContext().getCacheDir();
+			Cache cache = new Cache(cacheDir, 2 * 1024 * 1024);
+			mOkHttpClient.setCache(cache);
 		}
-		
+
 		return mOkHttpClient;
+	}
+
+	public static void clearPicassoCache(Context context) {
+		PicassoTools.clearCache(getPicasso(context));
 	}
 }

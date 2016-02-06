@@ -128,7 +128,7 @@ import static com.miz.functions.PreferenceKeys.SHOW_FILE_LOCATION;
 
         mShowFileLocation = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SHOW_FILE_LOCATION, true);
 
-        mPicasso = MizuuApplication.getPicassoDetailsView(getActivity());
+        mPicasso = MizuuApplication.getPicasso(getActivity());
 
         mMediumItalic = TypefaceUtils.getRobotoMediumItalic(mContext);
         mMedium = TypefaceUtils.getRobotoMedium(mContext);

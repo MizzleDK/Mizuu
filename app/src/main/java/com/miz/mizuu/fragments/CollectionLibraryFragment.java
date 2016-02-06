@@ -221,7 +221,7 @@ public class CollectionLibraryFragment extends Fragment implements OnSharedPrefe
 
     private void clearCaches() {
         if (isAdded())
-            MizuuApplication.clearLruCache(getActivity());
+            MizuuApplication.clearPicassoCache(getActivity());
     }
 
     @Override
