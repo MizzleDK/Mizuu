@@ -260,7 +260,6 @@
         </activity>
 
         <service android:name="com.miz.service.DeleteFile" />
-        <service android:name="com.miz.service.MoveFilesService" />
         <service android:name="com.miz.service.TraktMoviesSyncService" />
         <service android:name="com.miz.service.TraktTvShowsSyncService" />
         <service android:name="com.miz.service.MovieLibraryUpdate" />

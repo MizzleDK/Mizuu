@@ -17,7 +17,6 @@
 package com.miz.utils;
 
 import android.content.Context;
-import android.os.Environment;
 
 import com.miz.db.DatabaseHelper;
 import com.miz.functions.Filepath;
@@ -53,11 +52,6 @@ public class FileUtils {
 		out.close();
 	}
 
-	public static void moveFile(File src, File dst) throws IOException {
-		copyFile(src, dst);
-		src.delete();
-	}
-
 	public static void deleteRecursive(File fileOrDirectory, boolean deleteTopFolder) {
 		if (fileOrDirectory.isDirectory()) {
 			File[] listFiles = fileOrDirectory.listFiles();
@@ -70,14 +64,6 @@ public class FileUtils {
 
 		if (deleteTopFolder)
 			fileOrDirectory.delete();
-	}
-	
-	public static File getOldDataFolder() {
-		return new File(Environment.getExternalStorageDirectory().toString() + "/data/com.miz.mizuu");
-	}
-
-	public static boolean oldDataFolderExists() {
-		return getOldDataFolder().exists() && getOldDataFolder().list() != null;
 	}
 
 	public static File getMovieThumb(Context c, String movieId) {

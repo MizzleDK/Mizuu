@@ -212,7 +212,6 @@
     <string name="searching">Searching…</string>
     <string name="scanForSources">Scan for network sources</string>
     <string name="detailsFirstAired">First aired</string>
-    <string name="deviceNotSupported">Unsupported device!</string>
     <string name="choiceWatchedMovies">Watched movies</string>
     <string name="choiceUnwatchedMovies">Unwatched movies</string>
     <string name="allGenres">All genres</string>

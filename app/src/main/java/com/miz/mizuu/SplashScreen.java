@@ -19,17 +19,12 @@ package com.miz.mizuu;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.widget.Toast;
 
-import com.miz.functions.MizLib;
 import com.miz.mizuu.fragments.ScheduledUpdatesFragment;
-import com.miz.service.MoveFilesService;
 import com.miz.service.MovieLibraryUpdate;
 import com.miz.service.TvShowsLibraryUpdate;
-import com.miz.utils.FileUtils;
 
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_MOVIE;
 import static com.miz.functions.PreferenceKeys.SCHEDULED_UPDATES_TVSHOWS;
@@ -39,19 +34,6 @@ public class SplashScreen extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if (!isDeviceCompatible()) {
-			Toast.makeText(this, getString(R.string.deviceNotSupported), Toast.LENGTH_LONG).show();
-			finish();
-			return;
-		}
-
-		if (FileUtils.oldDataFolderExists()) {	
-			Intent moveFiles = new Intent(this, MoveFilesService.class);
-			startService(moveFiles);
-			finish();
-			return;
-		}
 
 		// Initialize the PreferenceManager variable and preference variable(s)
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -70,8 +52,4 @@ public class SplashScreen extends Activity {
 		
 		finish();
 	}
-
-	private boolean isDeviceCompatible() {
-        return (getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) != Configuration.SCREENLAYOUT_SIZE_SMALL && MizLib.hasICSMR1();
-    }
 }
