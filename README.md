@@ -1,7 +1,7 @@
 Mizuu - media indexer for Android
 =====
 
-Mizuu is no longer being maintained and hasn't been maintained since late 2015.
+Mizuu is no longer being maintained and hasn't been maintained since early 2015.
 
 This GitHub repository houses the source code of the Mizuu application for Android.
 
